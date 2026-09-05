@@ -312,7 +312,9 @@ fn disabled_initial_scan_rebuilds_memory_without_replaying_side_effects() -> Res
             location: "wrld_replay:1".into(),
             ..Default::default()
         },
-        1,
+        chrono::DateTime::parse_from_rfc3339("2026-05-14T05:11:00Z")
+            .unwrap()
+            .timestamp_millis(),
     );
     processor.deps.instance_roster_observer = Some(timers.clone());
     store.set_bool("gameLogDisabled", true)?;
@@ -357,6 +359,59 @@ fn disabled_initial_scan_rebuilds_memory_without_replaying_side_effects() -> Res
         .snapshot()
         .entries
         .is_empty());
+    Ok(())
+}
+
+#[test]
+fn entering_a_friends_instance_keeps_dwell_without_rewriting_log_join_time() -> Result<()> {
+    for batched in [false, true] {
+        let (_dir, _store, mut processor) = test_processor("runtime-gamelog-arrival-dwell")?;
+        let timers = Arc::new(vrcx_0_application_core::InstanceDwellRegistry::new());
+        let started_at = chrono::DateTime::parse_from_rfc3339("2026-09-06T10:00:00Z")
+            .unwrap()
+            .timestamp_millis();
+        timers.observe_friend_record(
+            "usr_friend",
+            &vrcx_0_core::friends::FriendRecord {
+                id: "usr_friend".into(),
+                state: "online".into(),
+                location: "wrld_local:1".into(),
+                ..Default::default()
+            },
+            started_at,
+        );
+        processor.deps.instance_roster_observer = Some(timers.clone());
+        let location = GameLogWorkerJob::Event(event(
+            "2026-09-06T10:30:00Z",
+            GameLogEventKind::Location {
+                location: "wrld_local:1".into(),
+                world_name: "Local".into(),
+            },
+        ));
+        let joined = GameLogWorkerJob::Event(event(
+            "2026-09-06T10:30:12Z",
+            GameLogEventKind::PlayerJoined {
+                display_name: "Friend".into(),
+                user_id: "usr_friend".into(),
+            },
+        ));
+        if batched {
+            processor.handle_jobs(vec![location, joined])?;
+        } else {
+            processor.handle_jobs(vec![location])?;
+            processor.handle_jobs(vec![joined])?;
+        }
+
+        assert_eq!(timers.snapshot()[0].since_ms, Some(started_at));
+        assert_eq!(
+            timers.snapshot()[0].source,
+            vrcx_0_application_core::FriendLocationTimeSource::GameLog
+        );
+        assert_eq!(
+            processor.deps.snapshot.snapshot().players[0].join_time_ms,
+            Some(started_at + 30 * 60_000 + 12_000)
+        );
+    }
     Ok(())
 }
 
@@ -432,7 +487,7 @@ fn local_mode_initial_replay_does_not_restart_remote_timers() -> Result<()> {
             .iter()
             .find(|entry| entry.user_id == "usr_local")
             .unwrap();
-        assert_eq!(local.since_ms, Some(5_000));
+        assert_eq!(local.since_ms, Some(500));
         assert_eq!(
             local.source,
             vrcx_0_application_core::FriendLocationTimeSource::GameLog
@@ -532,7 +587,7 @@ fn local_mode_distinguishes_player_leave_rejoin_and_own_room_exit() -> Result<()
         )),
         GameLogWorkerJob::InitialEvent(event("1970-01-01T00:00:02Z", joined.clone())),
     ])?;
-    assert_eq!(timers.snapshot()[0].since_ms, Some(2_000));
+    assert_eq!(timers.snapshot()[0].since_ms, Some(500));
 
     processor.handle_jobs(vec![
         GameLogWorkerJob::Event(event("1970-01-01T00:00:03Z", left.clone())),
@@ -600,7 +655,7 @@ fn local_mode_player_leave_is_not_lost_when_own_exit_is_in_the_same_batch() -> R
             },
         )),
     ])?;
-    assert_eq!(timers.snapshot()[0].since_ms, Some(2_000));
+    assert_eq!(timers.snapshot()[0].since_ms, Some(500));
 
     processor.handle_jobs(vec![
         GameLogWorkerJob::Event(event(

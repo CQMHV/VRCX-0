@@ -100,6 +100,12 @@ impl GameLogProcessorDeps {
                         GameLogEventOrigin::Live => std::mem::take(&mut output.departed_user_ids),
                         GameLogEventOrigin::InitialScan => Vec::new(),
                     },
+                    replayed_departed_user_ids: match origin {
+                        GameLogEventOrigin::Live => Vec::new(),
+                        GameLogEventOrigin::InitialScan => {
+                            std::mem::take(&mut output.departed_user_ids)
+                        }
+                    },
                     members: snapshot
                         .players
                         .iter()
