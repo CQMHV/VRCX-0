@@ -12,6 +12,7 @@ use vrcx_0_application::social::{
     MutualGraphFriendRefreshInput, MutualGraphFriendRefreshOutput, MutualGraphRequestDeps,
     UserMutualFriendsListInput, UserMutualFriendsListOutput,
 };
+use vrcx_0_application_activity::OverlayActivityRuntime;
 use vrcx_0_application_core::vrchat_api::VrchatApiResponse;
 use vrcx_0_application_core::{
     AvatarCache, FavoriteEntityKind, Result, RuntimeAuthScope, TaskSupervisor, WebClient,
@@ -104,6 +105,7 @@ pub struct LocalDataRuntime {
     avatar_cache: Arc<AvatarCache>,
     world_cache: Arc<WorldCache>,
     realtime: Arc<RealtimeHostRuntime>,
+    overlay_activity: OverlayActivityRuntime,
     favorite_mutations: FavoriteMutationCoordinator,
     mutual_graph_fetch: MutualGraphFetchRuntime,
     mutual_graph_store: Arc<vrcx_0_outbound_adapters::LocalMutualGraphStore>,
@@ -122,6 +124,7 @@ impl LocalDataRuntime {
         avatar_cache: Arc<AvatarCache>,
         world_cache: Arc<WorldCache>,
         realtime: Arc<RealtimeHostRuntime>,
+        overlay_activity: OverlayActivityRuntime,
         favorite_mutations: FavoriteMutationCoordinator,
         mutual_graph_fetch: MutualGraphFetchRuntime,
     ) -> Self {
@@ -140,6 +143,7 @@ impl LocalDataRuntime {
             avatar_cache,
             world_cache,
             realtime,
+            overlay_activity,
             favorite_mutations,
             mutual_graph_fetch,
             mutual_graph_store,
@@ -271,27 +275,27 @@ impl LocalDataRuntime {
                 "Saved group collection name is required.".into(),
             ));
         }
-        Ok(
-            vrcx_0_persistence::saved_group_favorites::create_collection(
-                self.db.as_ref(),
-                &self.saved_group_owner()?,
-                &uuid::Uuid::new_v4().to_string(),
-                name,
-            )?,
-        )
+        let affected = vrcx_0_persistence::saved_group_favorites::create_collection(
+            self.db.as_ref(),
+            &self.saved_group_owner()?,
+            &uuid::Uuid::new_v4().to_string(),
+            name,
+        )?;
+        self.overlay_activity.invalidate_group_notification_inputs();
+        Ok(affected)
     }
 
     pub fn saved_group_collection_delete(
         &self,
         input: SavedGroupCollectionDeleteInput,
     ) -> Result<i64> {
-        Ok(
-            vrcx_0_persistence::saved_group_favorites::delete_collection(
-                self.db.as_ref(),
-                &self.saved_group_owner()?,
-                &input.collection_id,
-            )?,
-        )
+        let affected = vrcx_0_persistence::saved_group_favorites::delete_collection(
+            self.db.as_ref(),
+            &self.saved_group_owner()?,
+            &input.collection_id,
+        )?;
+        self.overlay_activity.invalidate_group_notification_inputs();
+        Ok(affected)
     }
 
     pub fn saved_group_favorite_add(&self, input: SavedGroupFavoriteAddInput) -> Result<i64> {
@@ -300,12 +304,14 @@ impl LocalDataRuntime {
                 "Saved group favorite requires a canonical group ID.".into(),
             ));
         }
-        Ok(vrcx_0_persistence::saved_group_favorites::add_group(
+        let affected = vrcx_0_persistence::saved_group_favorites::add_group(
             self.db.as_ref(),
             &self.saved_group_owner()?,
             &input.collection_id,
             &input.group_id,
-        )?)
+        )?;
+        self.overlay_activity.invalidate_group_notification_inputs();
+        Ok(affected)
     }
 
     pub fn saved_group_favorite_remove(&self, input: SavedGroupFavoriteRemoveInput) -> Result<i64> {
@@ -314,11 +320,13 @@ impl LocalDataRuntime {
                 "Saved group favorite requires a canonical group ID.".into(),
             ));
         }
-        Ok(vrcx_0_persistence::saved_group_favorites::remove_group(
+        let affected = vrcx_0_persistence::saved_group_favorites::remove_group(
             self.db.as_ref(),
             &self.saved_group_owner()?,
             &input.group_id,
-        )?)
+        )?;
+        self.overlay_activity.invalidate_group_notification_inputs();
+        Ok(affected)
     }
 
     pub fn mutual_graph_fetch_status(&self) -> MutualGraphFetchStatus {
