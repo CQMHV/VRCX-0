@@ -9119,6 +9119,7 @@ dependencies = [
  "tracing",
  "url",
  "vrcx-0-application-core",
+ "vrcx-0-contracts",
  "vrcx-0-core",
  "vrcx-0-i18n",
 ]

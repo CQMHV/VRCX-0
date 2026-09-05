@@ -29,15 +29,14 @@ use vrcx_0_contracts::{
 };
 use vrcx_0_core::json::RawJson;
 use vrcx_0_core::vrchat_endpoints::VRCHAT_API_DEFAULT_ENDPOINT;
-use vrcx_0_core::vrchat_ids::is_group_id;
 use vrcx_0_persistence::DatabaseService;
 
+pub use vrcx_0_application_activity::activity_page::{ActivityPageBuildInput, ActivityPageView};
 pub use vrcx_0_core::OwnerId;
 pub use vrcx_0_persistence::activity::{
     ActivityOverlapViewBuildInput, ActivityOverlapViewOutput, ActivityViewBuildInput,
     ActivityViewOutput,
 };
-pub use vrcx_0_persistence::activity_page::{ActivityPageBuildInput, ActivityPageView};
 pub use vrcx_0_persistence::avatars::{
     AvatarCacheOutput, AvatarTagInput, AvatarTagOutput, AvatarTagsPatchInput,
     AvatarTimeSpentOutput, AvatarUsageRow,
@@ -105,7 +104,7 @@ pub struct LocalDataRuntime {
     avatar_cache: Arc<AvatarCache>,
     world_cache: Arc<WorldCache>,
     realtime: Arc<RealtimeHostRuntime>,
-    overlay_activity: OverlayActivityRuntime,
+    saved_group_favorites: vrcx_0_application::social::SavedGroupFavoritesRuntime,
     favorite_mutations: FavoriteMutationCoordinator,
     mutual_graph_fetch: MutualGraphFetchRuntime,
     mutual_graph_store: Arc<vrcx_0_outbound_adapters::LocalMutualGraphStore>,
@@ -134,6 +133,15 @@ impl LocalDataRuntime {
         let mutual_graph_remote = Arc::new(vrcx_0_outbound_adapters::VrchatRequestAdapter::new(
             Arc::clone(&web),
         ));
+        let saved_group_favorites = vrcx_0_application::social::SavedGroupFavoritesRuntime::new(
+            Arc::new(
+                vrcx_0_outbound_adapters::LocalSavedGroupFavoritesAdapter::new(
+                    Arc::clone(&db),
+                    overlay_activity,
+                ),
+            ),
+            auth_scope.clone(),
+        );
         Self {
             db,
             profile_config,
@@ -143,7 +151,7 @@ impl LocalDataRuntime {
             avatar_cache,
             world_cache,
             realtime,
-            overlay_activity,
+            saved_group_favorites,
             favorite_mutations,
             mutual_graph_fetch,
             mutual_graph_store,
@@ -156,16 +164,6 @@ impl LocalDataRuntime {
 
     fn current_owner(&self) -> OwnerId {
         OwnerId::new(self.auth_scope.snapshot().current_user_id)
-    }
-
-    fn saved_group_owner(&self) -> Result<OwnerId> {
-        let scope = self.auth_scope.snapshot();
-        if !scope.active {
-            return Err(vrcx_0_application_core::Error::Custom(
-                "Saved group favorites require an authenticated session.".into(),
-            ));
-        }
-        Ok(OwnerId::new(scope.current_user_id))
     }
 
     fn game_state_store(&self) -> crate::game_state_store::PersistenceGameStateStore {
@@ -259,74 +257,29 @@ impl LocalDataRuntime {
     }
 
     pub fn saved_group_favorites_snapshot(&self) -> Result<SavedGroupFavoritesSnapshot> {
-        Ok(vrcx_0_persistence::saved_group_favorites::snapshot(
-            self.db.as_ref(),
-            &self.saved_group_owner()?,
-        )?)
+        self.saved_group_favorites.snapshot()
     }
 
     pub fn saved_group_collection_create(
         &self,
         input: SavedGroupCollectionCreateInput,
     ) -> Result<i64> {
-        let name = input.name.trim();
-        if name.is_empty() {
-            return Err(vrcx_0_application_core::Error::Custom(
-                "Saved group collection name is required.".into(),
-            ));
-        }
-        let affected = vrcx_0_persistence::saved_group_favorites::create_collection(
-            self.db.as_ref(),
-            &self.saved_group_owner()?,
-            &uuid::Uuid::new_v4().to_string(),
-            name,
-        )?;
-        self.overlay_activity.invalidate_group_notification_inputs();
-        Ok(affected)
+        self.saved_group_favorites.create_collection(input)
     }
 
     pub fn saved_group_collection_delete(
         &self,
         input: SavedGroupCollectionDeleteInput,
     ) -> Result<i64> {
-        let affected = vrcx_0_persistence::saved_group_favorites::delete_collection(
-            self.db.as_ref(),
-            &self.saved_group_owner()?,
-            &input.collection_id,
-        )?;
-        self.overlay_activity.invalidate_group_notification_inputs();
-        Ok(affected)
+        self.saved_group_favorites.delete_collection(input)
     }
 
     pub fn saved_group_favorite_add(&self, input: SavedGroupFavoriteAddInput) -> Result<i64> {
-        if !is_group_id(input.group_id.trim()) {
-            return Err(vrcx_0_application_core::Error::Custom(
-                "Saved group favorite requires a canonical group ID.".into(),
-            ));
-        }
-        let affected = vrcx_0_persistence::saved_group_favorites::add_group(
-            self.db.as_ref(),
-            &self.saved_group_owner()?,
-            &input.collection_id,
-            &input.group_id,
-        )?;
-        self.overlay_activity.invalidate_group_notification_inputs();
-        Ok(affected)
+        self.saved_group_favorites.add_group(input)
     }
 
     pub fn saved_group_favorite_remove(&self, input: SavedGroupFavoriteRemoveInput) -> Result<i64> {
-        if !is_group_id(input.group_id.trim()) {
-            return Err(vrcx_0_application_core::Error::Custom(
-                "Saved group favorite requires a canonical group ID.".into(),
-            ));
-        }
-        let affected = vrcx_0_persistence::saved_group_favorites::remove_group(
-            self.db.as_ref(),
-            &self.saved_group_owner()?,
-            &input.group_id,
-        )?;
-        self.overlay_activity.invalidate_group_notification_inputs();
-        Ok(affected)
+        self.saved_group_favorites.remove_group(input)
     }
 
     pub fn mutual_graph_fetch_status(&self) -> MutualGraphFetchStatus {
@@ -405,10 +358,10 @@ impl LocalDataRuntime {
     }
 
     pub fn activity_page_view(&self, input: ActivityPageBuildInput) -> Result<ActivityPageView> {
-        Ok(vrcx_0_persistence::activity_page::activity_page_view_build(
-            self.db.as_ref(),
+        vrcx_0_application_activity::activity_page::activity_page_view_build(
+            &vrcx_0_outbound_adapters::LocalActivityPageStore::new(self.db.as_ref()),
             input,
-        )?)
+        )
     }
 
     pub fn avatar_history_clear(&self, user_id: String) -> Result<()> {
