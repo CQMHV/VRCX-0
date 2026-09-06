@@ -30,7 +30,7 @@ export function usePlayerListRuntime() {
         (state) => state.gameState.isGameRunning === true
     );
     const addGameLogEventCount = useRuntimeStore(
-        (state) => state.runtimeEvents.gameLogProjection?.count ?? 0
+        (state) => state.runtimeEvents.gameLogProjection.count
     );
     const gameLogTailSyncedAt = useRuntimeStore(
         (state) => state.updateLoop.lastGameLogSyncAt

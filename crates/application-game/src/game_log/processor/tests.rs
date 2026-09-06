@@ -1648,7 +1648,8 @@ fn unchanged_log_publishes_snapshot_after_each_restart() -> Result<()> {
         let restored = build_test_processor(store.clone())?;
         assert!(!restored.deps.snapshot.snapshot().ready);
         let mut cursor = restored.replay_cursor().unwrap();
-        cursor.start_position = cursor.context.position;
+        let scanned_position = cursor.context.position;
+        cursor.start_position = scanned_position;
         let scan = GameLogWorkerJob::Scan {
             events: Vec::new(),
             origin: crate::GameLogEventOrigin::InitialScan,
@@ -1670,10 +1671,7 @@ fn unchanged_log_publishes_snapshot_after_each_restart() -> Result<()> {
         );
         let checkpoint: super::ReplayCheckpoint =
             serde_json::from_str(&store.get_string("gameLogReplayCheckpoint", "")?)?;
-        assert_eq!(
-            checkpoint.cursor.start_position,
-            checkpoint.cursor.context.position
-        );
+        assert_eq!(checkpoint.cursor.context.position, scanned_position);
         let events = restored.deps.event_bus.take_events_for_test();
         assert_eq!(
             events
@@ -1738,5 +1736,120 @@ fn duplicate_scan_can_publish_without_replaying_rows_or_side_effects() -> Result
         .take_events_for_test()
         .iter()
         .any(|event| event.name == "runtimeGameLogEvent"));
+    Ok(())
+}
+
+#[test]
+fn a_scan_without_events_keeps_the_persisted_checkpoint_and_the_database_idle() -> Result<()> {
+    let (_dir, store, processor) = test_processor("eventless-scan-checkpoint")?;
+    processor.handle_jobs(vec![scan_job(
+        "output_log_current.txt",
+        200,
+        vec![event(
+            "2026-05-14T04:00:00Z",
+            GameLogEventKind::Location {
+                location: "wrld_eventless:1".into(),
+                world_name: "Eventless".into(),
+            },
+        )],
+        true,
+    )])?;
+    let persisted = store.get_string("gameLogReplayCheckpoint", "")?;
+    assert!(!persisted.is_empty());
+    processor.deps.event_bus.take_events_for_test();
+
+    processor.handle_jobs(vec![scan_job(
+        "output_log_current.txt",
+        400,
+        Vec::new(),
+        true,
+    )])?;
+
+    assert_eq!(
+        store.get_string("gameLogReplayCheckpoint", "")?,
+        persisted,
+        "a poll over log lines that parse to nothing must not rewrite the checkpoint"
+    );
+    assert!(!processor
+        .deps
+        .event_bus
+        .take_events_for_test()
+        .iter()
+        .any(|event| event.name == "backendRuntimeTelemetry"
+            && event.payload.get("kind").and_then(|kind| kind.as_str())
+                == Some("gameLogPersisted")));
+    Ok(())
+}
+
+#[test]
+fn side_effect_events_without_history_rows_still_advance_the_restart_position() -> Result<()> {
+    let (_dir, store, processor) = test_processor("side-effect-restart-position")?;
+    let location = event(
+        "2026-05-14T04:00:00Z",
+        GameLogEventKind::Location {
+            location: "wrld_sync:1".into(),
+            world_name: "Sync".into(),
+        },
+    );
+    let video_sync = event(
+        "2026-05-14T04:00:20Z",
+        GameLogEventKind::VideoSync {
+            timestamp: "1000".into(),
+        },
+    );
+    let side_effects = |processor: &GameLogProcessor| {
+        processor
+            .deps
+            .event_bus
+            .take_events_for_test()
+            .iter()
+            .filter(|event| event.name == "gameLogSideEffect")
+            .count()
+    };
+
+    processor.handle_jobs(vec![scan_job(
+        "output_log_current.txt",
+        200,
+        vec![location.clone()],
+        true,
+    )])?;
+    processor.handle_jobs(vec![scan_job(
+        "output_log_current.txt",
+        300,
+        vec![video_sync.clone()],
+        true,
+    )])?;
+    assert_eq!(side_effects(&processor), 1);
+
+    let restored = build_test_processor(store.clone())?;
+    let resume_position = restored.replay_cursor().unwrap().context.position;
+    let mut replayed = Vec::new();
+    if resume_position <= 100 {
+        replayed.push(location);
+    }
+    if resume_position <= 200 {
+        replayed.push(video_sync);
+    }
+    let mut context = crate::game_log_parser::LogContext::new();
+    context.position = 300;
+    restored.handle_jobs(vec![GameLogWorkerJob::Scan {
+        events: replayed,
+        origin: crate::GameLogEventOrigin::InitialScan,
+        cursor: Box::new(crate::GameLogScanCursor {
+            file_created_at: None,
+            start_position: resume_position,
+            rebuild: false,
+            file_name: "output_log_current.txt".into(),
+            context,
+            cutoff: "2026-05-14T04:00:00Z".into(),
+        }),
+        publish: true,
+        completed: None,
+    }])?;
+    assert_eq!(
+        side_effects(&restored),
+        0,
+        "an already consumed side effect must not run again after a restart"
+    );
     Ok(())
 }

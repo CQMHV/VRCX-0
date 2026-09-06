@@ -478,6 +478,7 @@ impl GameLogProcessor {
             self.side_effect_deps(),
             output,
             origin == GameLogEventOrigin::Live,
+            !events.is_empty(),
         )
     }
 
@@ -520,7 +521,7 @@ impl GameLogProcessor {
         if self.deps.store.get_bool("gameLogDisabled", false)? || before_resume_cutoff {
             return self.apply_without_core_persistence(output, GameLogEventOrigin::Live);
         }
-        self.apply_ingest_output(self.side_effect_deps(), output, true)
+        self.apply_ingest_output(self.side_effect_deps(), output, true, true)
     }
 
     fn apply_without_core_persistence(
@@ -552,18 +553,21 @@ impl GameLogProcessor {
         deps: GameLogSideEffectDeps,
         mut output: GameLogIngestOutput,
         deliver_activity: bool,
+        consumed_events: bool,
     ) -> Result<()> {
         self.enrich_ingest_output_world_names(&mut output);
-        if let Some(cursor) = self.replay_cursor() {
-            output.batch.replay_checkpoint = Some(serde_json::to_string(&ReplayCheckpoint {
-                cursor,
-                replayed_departures: self
-                    .replayed_departures
-                    .lock()
-                    .map_err(|error| Error::Custom(error.to_string()))?
-                    .clone(),
-                state: self.with_engine(|engine| engine.checkpoint_state())?,
-            })?);
+        if consumed_events || !output.batch.is_empty() {
+            if let Some(cursor) = self.replay_cursor() {
+                output.batch.replay_checkpoint = Some(serde_json::to_string(&ReplayCheckpoint {
+                    cursor,
+                    replayed_departures: self
+                        .replayed_departures
+                        .lock()
+                        .map_err(|error| Error::Custom(error.to_string()))?
+                        .clone(),
+                    state: self.with_engine(|engine| engine.checkpoint_state())?,
+                })?);
+            }
         }
         if let Some(projection) = output.projection.take() {
             self.deps.event_bus.emit_game_log_projection(projection);
@@ -572,15 +576,18 @@ impl GameLogProcessor {
         if deliver_activity {
             self.ingest_overlay_activity(&output);
         }
+        let has_write = !output.batch.is_empty();
         {
             let mut pending = self
                 .pending_write
                 .lock()
                 .map_err(|error| Error::Custom(error.to_string()))?;
             if let Some(pending) = pending.as_mut() {
-                pending.output.batch.replay_checkpoint = output.batch.replay_checkpoint.take();
+                if let Some(checkpoint) = output.batch.replay_checkpoint.take() {
+                    pending.output.batch.replay_checkpoint = Some(checkpoint);
+                }
                 pending.output.append(output);
-            } else {
+            } else if has_write {
                 *pending = Some(PendingGameLogWrite {
                     owner_user_id: OwnerId::new(deps.auth_identity.user_id.clone()),
                     output,

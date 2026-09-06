@@ -63,19 +63,15 @@ export function useWorldDialogCurrentInstance({
         | 'currentLocationStartedAt'
         | 'currentUserId'
         | 'currentUserSnapshot'
-        | 'currentWorldId'
-        | 'currentWorldName'
     >;
     worldName?: string;
 }) {
     const {
         currentEndpoint,
-        currentLocationPlayers,
+        currentLocationPlayers: currentInstanceRosterRevision,
         currentLocationStartedAt,
         currentUserId,
-        currentUserSnapshot,
-        currentWorldId,
-        currentWorldName
+        currentUserSnapshot
     } = runtime;
     const [details, setDetails] = useState<WorldDialogCurrentInstanceDetails>(
         EMPTY_CURRENT_INSTANCE
@@ -269,13 +265,11 @@ export function useWorldDialogCurrentInstance({
         };
     }, [
         currentEndpoint,
-        currentLocationPlayers,
+        currentInstanceRosterRevision,
         currentResolvedLocation,
         currentLocationStartedAt,
         currentUserId,
         currentUserSnapshot,
-        currentWorldId,
-        currentWorldName,
         isInstanceLocation,
         normalizedWorldId,
         worldName

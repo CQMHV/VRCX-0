@@ -56,9 +56,7 @@ it('shows the backend roster while remote instance metadata is still pending', a
                 currentLocationPlayers: [],
                 currentLocationStartedAt: null,
                 currentUserId: 'usr_self',
-                currentUserSnapshot: null,
-                currentWorldId: worldId,
-                currentWorldName: 'World'
+                currentUserSnapshot: null
             }
         })
     );
