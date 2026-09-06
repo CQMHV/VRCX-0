@@ -817,7 +817,6 @@
             "group_by_instance": "Group by Instance",
             "split_favorite_friends": "Show Favorite Groups",
             "show_grouped_friends": "Show Grouped Friends",
-            "show_current_user_in_same_instance": "Show yourself in the same instance",
             "same_instance_above_favorites": "Prioritize Same Instance",
             "sort_secondary": "Then by",
             "sort_tertiary": "Then by",
