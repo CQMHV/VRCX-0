@@ -20,7 +20,7 @@ use vrcx_0_application_core::{
 };
 use vrcx_0_application_game::{
     GameLogSessionDto, GameLogSessionsQueryInput, InstanceHistoryEntryOutput,
-    InstanceHistoryQueryInput, PlayerListSnapshotOutput,
+    InstanceHistoryQueryInput,
 };
 use vrcx_0_application_realtime::RealtimeHostRuntime;
 use vrcx_0_contracts::{
@@ -940,21 +940,6 @@ impl LocalDataRuntime {
                 user_id,
                 id,
             )?,
-        )
-    }
-
-    pub fn player_list_current_snapshot(
-        &self,
-        current_user_id: String,
-        current_location: String,
-        current_location_started_at: String,
-    ) -> Result<PlayerListSnapshotOutput> {
-        vrcx_0_application_game::player_list_current_snapshot(
-            &self.game_state_store(),
-            &self.current_owner(),
-            &current_user_id,
-            &current_location,
-            &current_location_started_at,
         )
     }
 
