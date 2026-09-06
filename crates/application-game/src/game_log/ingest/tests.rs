@@ -1,12 +1,98 @@
 use vrcx_0_core::game_log_parser::{GameLogEvent, GameLogEventKind};
 
-use super::{GameLogIngestEngine, GameLogIngestOptions, GameLogSideEffect};
+use super::{GameLogIngestEngine, GameLogIngestOptions, GameLogIngestOutput, GameLogSideEffect};
 
 fn event(created_at: &str, kind: GameLogEventKind) -> GameLogEvent {
     GameLogEvent {
         file_name: "output_log.txt".into(),
         created_at: created_at.into(),
         kind,
+    }
+}
+
+#[test]
+fn room_exit_cleanup_does_not_report_friends_as_departed() {
+    for batched in [false, true] {
+        let mut engine = GameLogIngestEngine::default();
+        let mut initial = vec![event(
+            "2026-09-06T15:52:04Z",
+            GameLogEventKind::Location {
+                location: "wrld_old:1".into(),
+                world_name: "Old".into(),
+            },
+        )];
+        for user_id in ["usr_staying", "usr_leaving"] {
+            initial.push(event(
+                "2026-09-06T15:52:29Z",
+                GameLogEventKind::PlayerJoined {
+                    display_name: user_id.into(),
+                    user_id: user_id.into(),
+                },
+            ));
+        }
+        engine.ingest_events(&initial, GameLogIngestOptions::default());
+        let events = [
+            event(
+                "2026-09-06T15:53:01Z",
+                GameLogEventKind::PlayerLeft {
+                    display_name: "usr_leaving".into(),
+                    user_id: "usr_leaving".into(),
+                },
+            ),
+            event(
+                "2026-09-06T15:53:01Z",
+                GameLogEventKind::LocationDestination {
+                    location: "wrld_next:2".into(),
+                },
+            ),
+            event(
+                "2026-09-06T15:53:01Z",
+                GameLogEventKind::PlayerLeft {
+                    display_name: "usr_staying".into(),
+                    user_id: "usr_staying".into(),
+                },
+            ),
+            event(
+                "2026-09-06T15:53:02Z",
+                GameLogEventKind::Location {
+                    location: "wrld_next:2".into(),
+                    world_name: "Next".into(),
+                },
+            ),
+            event(
+                "2026-09-06T15:53:12Z",
+                GameLogEventKind::PlayerJoined {
+                    display_name: "usr_next".into(),
+                    user_id: "usr_next".into(),
+                },
+            ),
+            event(
+                "2026-09-06T15:53:13Z",
+                GameLogEventKind::PlayerLeft {
+                    display_name: "usr_next".into(),
+                    user_id: "usr_next".into(),
+                },
+            ),
+        ];
+        let mut output = GameLogIngestOutput::default();
+        for chunk in events.chunks(if batched { events.len() } else { 1 }) {
+            output.append(engine.ingest_events(chunk, GameLogIngestOptions::default()));
+        }
+
+        assert_eq!(output.departed_user_ids, ["usr_leaving", "usr_next"]);
+        let staying_rows = output
+            .batch
+            .join_leave
+            .iter()
+            .filter(|row| row.user_id == "usr_staying")
+            .collect::<Vec<_>>();
+        assert_eq!(staying_rows.len(), 2);
+        assert_eq!(staying_rows[0].location, "wrld_old:1");
+        assert_eq!(staying_rows[0].time, 32_000);
+        assert_eq!(staying_rows[1].location, "traveling");
+        assert_eq!(staying_rows[1].time, 0);
+        assert_eq!(engine.runtime_snapshot().location, "wrld_next:2");
+        assert!(engine.runtime_snapshot().players.is_empty());
     }
 }
 

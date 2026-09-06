@@ -5,6 +5,7 @@ use vrcx_0_contracts::game_log::{
 };
 use vrcx_0_core::game_log_parser::{GameLogEvent, GameLogEventKind};
 use vrcx_0_core::game_process::GameProcessEvent;
+use vrcx_0_core::location::parse_location;
 
 use super::runtime_state::{
     duration_ms, parse_event_time_ms, player_key, world_id_from_location, GameLogProjection,
@@ -411,6 +412,9 @@ impl GameLogIngestEngine {
             world_name: self.state.current_world_name.clone(),
             time: duration,
         });
+        if !parse_location(&self.state.current_location).is_real_instance {
+            return None;
+        }
         player
             .map(|player| player.user_id)
             .filter(|id| !id.is_empty())
