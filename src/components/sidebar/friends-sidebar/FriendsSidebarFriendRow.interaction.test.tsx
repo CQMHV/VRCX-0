@@ -99,7 +99,9 @@ describe('FriendRow menus', () => {
             expect(isSidebarAutoHideInteractionBlocked()).toBe(true);
 
             await user.click(
-                screen.getByRole('menuitem', { name: 'common.actions.open' })
+                screen.getByRole('menuitem', {
+                    name: 'common.actions.view_profile'
+                })
             );
 
             expect(onOpen).toHaveBeenCalledOnce();

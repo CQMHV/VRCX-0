@@ -387,9 +387,10 @@ function GroupInstanceRow({
                     </div>
                 }
             />
-            <ContextMenuContent className="w-52">
+            <ContextMenuContent className="w-max max-w-[calc(100vw-1rem)] min-w-52">
                 <LaunchModeContextMenuGroup
                     disabled={!canUseInstanceAction}
+                    instanceClosed={Boolean(instanceRef?.closedAt)}
                     errorMessage={t(
                         'component.groups_sidebar.toast.failed_to_launch_instance'
                     )}

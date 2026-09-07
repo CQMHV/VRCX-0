@@ -308,7 +308,7 @@ export function FriendRow({
     const rowButton = sidebarWindowMode ? (
         <DropdownMenu>
             <DropdownMenuTrigger render={podButton} />
-            <DropdownMenuContent className="w-56">
+            <DropdownMenuContent className="w-max max-w-[calc(100vw-1rem)] min-w-56">
                 {menuItems}
             </DropdownMenuContent>
         </DropdownMenu>
@@ -344,7 +344,7 @@ export function FriendRow({
                     />
                 </UserHoverCard>
             )}
-            <ContextMenuContent className="w-56">
+            <ContextMenuContent className="w-max max-w-[calc(100vw-1rem)] min-w-56">
                 {menuItems}
             </ContextMenuContent>
         </ContextMenu>

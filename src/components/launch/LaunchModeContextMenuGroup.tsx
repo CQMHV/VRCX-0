@@ -1,22 +1,51 @@
-import { MonitorIcon, RectangleGogglesIcon } from 'lucide-react';
+import { Gamepad2Icon, MonitorIcon, RectangleGogglesIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
+import { isUsableInstanceLocation } from '@/components/location/locationModel';
+import { tryOpenLaunchLocation } from '@/services/directAccessService';
 import { launchVrchat } from '@/services/launchService';
+import { parseLocation } from '@/shared/utils/location';
 import { ContextMenuGroup, ContextMenuItem } from '@/ui/shadcn/context-menu';
 
 export function LaunchModeContextMenuGroup({
     disabled,
     errorMessage,
     location,
+    instanceClosed = false,
     shortName = ''
 }: {
     disabled: boolean;
     errorMessage: string;
     location: string;
+    instanceClosed?: boolean;
     shortName?: string;
 }) {
     const { t } = useTranslation();
+    const canOpenInGame =
+        !instanceClosed && isUsableInstanceLocation(parseLocation(location));
+
+    async function openInGame() {
+        if (!canOpenInGame) {
+            return;
+        }
+        try {
+            const opened = await tryOpenLaunchLocation(location, shortName);
+            if (opened) {
+                toast.success(
+                    t('dialog.instance.success.vrchat_launch_request_sent')
+                );
+            } else {
+                toast.error(
+                    t(
+                        'dialog.instance.error.unable_to_open_this_instance_in_vrchat'
+                    )
+                );
+            }
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : errorMessage);
+        }
+    }
 
     async function launch(desktopMode: boolean) {
         try {
@@ -28,6 +57,16 @@ export function LaunchModeContextMenuGroup({
 
     return (
         <ContextMenuGroup className="grid grid-cols-2 gap-0.5">
+            <ContextMenuItem
+                className="col-span-2 justify-center"
+                disabled={!canOpenInGame}
+                onClick={() => {
+                    void openInGame();
+                }}
+            >
+                <Gamepad2Icon />
+                {t('dialog.instance.action.open_in_game')}
+            </ContextMenuItem>
             <ContextMenuItem
                 className="justify-center"
                 disabled={disabled}

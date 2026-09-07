@@ -6,6 +6,10 @@ vi.mock('@/services/launchService', () => ({
     launchVrchat: vi.fn()
 }));
 
+vi.mock('@/services/directAccessService', () => ({
+    tryOpenLaunchLocation: vi.fn()
+}));
+
 vi.mock('@/ui/shadcn/context-menu', async () => {
     const React = await import('react');
 

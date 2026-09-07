@@ -6,6 +6,10 @@ vi.mock('@/services/launchService', () => ({
     launchVrchat: vi.fn()
 }));
 
+vi.mock('@/services/directAccessService', () => ({
+    tryOpenLaunchLocation: vi.fn()
+}));
+
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({ t: (key: string) => key })
 }));
