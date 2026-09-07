@@ -4214,7 +4214,8 @@
                 "delete_impostor": "Eliminar impostor",
                 "regenerate_impostor": "Regenerar impostor",
                 "create_impostor": "Crear impostor",
-                "manage_tags": "Gestionar etiquetas"
+                "manage_tags": "Gestionar etiquetas",
+                "open_cache": "Abrir caché"
             },
             "info": {
                 "header": "Información",
@@ -4241,7 +4242,8 @@
                 "memo": "Nota local",
                 "memo_placeholder": "Haz clic para agregar una nota local",
                 "listings": "Listados",
-                "gallery": "Galería"
+                "gallery": "Galería",
+                "attributes": "Atributos"
             },
             "performance": {
                 "header": "Rendimiento",

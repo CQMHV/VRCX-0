@@ -4209,7 +4209,8 @@
                 "delete_impostor": "インポスターを削除",
                 "regenerate_impostor": "インポスターを再生成",
                 "create_impostor": "インポスターを作成",
-                "manage_tags": "タグを管理"
+                "manage_tags": "タグを管理",
+                "open_cache": "キャッシュを開く"
             },
             "info": {
                 "header": "情報",
@@ -4236,7 +4237,8 @@
                 "memo": "ローカルノート",
                 "memo_placeholder": "クリックしてローカルノートを追加",
                 "listings": "リスティング",
-                "gallery": "ギャラリー"
+                "gallery": "ギャラリー",
+                "attributes": "属性"
             },
             "performance": {
                 "header": "パフォーマンス",

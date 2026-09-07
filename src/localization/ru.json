@@ -4219,7 +4219,8 @@
                 "delete_impostor": "Удалить импостора",
                 "regenerate_impostor": "Воссоздать импостора",
                 "create_impostor": "Создать импостора",
-                "manage_tags": "Управление метками"
+                "manage_tags": "Управление метками",
+                "open_cache": "Открыть кэш"
             },
             "info": {
                 "header": "Информация",
@@ -4246,7 +4247,8 @@
                 "memo": "Заметка VRCX-0",
                 "memo_placeholder": "Нажмите, чтобы добавить локальную заметку",
                 "listings": "Списки",
-                "gallery": "Галерея"
+                "gallery": "Галерея",
+                "attributes": "Атрибуты"
             },
             "performance": {
                 "header": "Производительность",

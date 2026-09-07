@@ -4214,7 +4214,8 @@
                 "delete_impostor": "Delete Impostor",
                 "regenerate_impostor": "Regenerate Impostor",
                 "create_impostor": "Create Impostor",
-                "manage_tags": "Manage Tags"
+                "manage_tags": "Manage Tags",
+                "open_cache": "Open Cache"
             },
             "info": {
                 "header": "Info",
@@ -4241,7 +4242,8 @@
                 "memo": "Local Note",
                 "memo_placeholder": "Click to add a local note",
                 "listings": "Listings",
-                "gallery": "Gallery"
+                "gallery": "Gallery",
+                "attributes": "Attributes"
             },
             "performance": {
                 "header": "Performance",

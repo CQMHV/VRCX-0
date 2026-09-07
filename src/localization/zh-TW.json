@@ -4215,7 +4215,8 @@
                 "delete_impostor": "刪除投影替身",
                 "regenerate_impostor": "重新建立投影替身",
                 "create_impostor": "建立投影替身",
-                "manage_tags": "管理標籤"
+                "manage_tags": "管理標籤",
+                "open_cache": "開啟快取"
             },
             "info": {
                 "header": "資訊",
@@ -4242,7 +4243,8 @@
                 "memo": "本機備註",
                 "memo_placeholder": "點擊新增本機備註",
                 "listings": "列表",
-                "gallery": "相簿"
+                "gallery": "相簿",
+                "attributes": "特性"
             },
             "performance": {
                 "header": "效能",

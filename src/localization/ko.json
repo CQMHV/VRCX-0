@@ -4164,7 +4164,8 @@
                 "delete_impostor": "임포스터 삭제",
                 "regenerate_impostor": "임포스터 재생성",
                 "create_impostor": "임포스터 생성",
-                "manage_tags": "태그 관리"
+                "manage_tags": "태그 관리",
+                "open_cache": "캐시 열기"
             },
             "info": {
                 "header": "정보",
@@ -4191,7 +4192,8 @@
                 "vrcx_url": "공유 링크",
                 "vrcx_url_description": "이 링크를 열면 VRCX-0 앱이 바로 실행됩니다",
                 "vrcx_share_text": "VRCX-0에서 아바타 “{name}” 열기: {url}",
-                "copy_vrcx_url": "공유 링크 복사"
+                "copy_vrcx_url": "공유 링크 복사",
+                "attributes": "속성"
             },
             "performance": {
                 "header": "성능",

@@ -4215,7 +4215,8 @@
                 "delete_impostor": "删除模型替身",
                 "regenerate_impostor": "重新创建模型替身",
                 "create_impostor": "创建模型替身",
-                "manage_tags": "管理标签"
+                "manage_tags": "管理标签",
+                "open_cache": "打开缓存"
             },
             "info": {
                 "header": "信息",
@@ -4242,7 +4243,8 @@
                 "memo": "本地备注",
                 "memo_placeholder": "点此添加本地备注",
                 "listings": "列表",
-                "gallery": "模型相册"
+                "gallery": "模型相册",
+                "attributes": "特性"
             },
             "performance": {
                 "header": "性能",

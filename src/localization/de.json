@@ -4214,7 +4214,8 @@
                 "delete_impostor": "Impostor löschen",
                 "regenerate_impostor": "Impostor neu erstellen",
                 "create_impostor": "Impostor erstellen",
-                "manage_tags": "Tags verwalten"
+                "manage_tags": "Tags verwalten",
+                "open_cache": "Cache öffnen"
             },
             "info": {
                 "header": "Info",
@@ -4241,7 +4242,8 @@
                 "memo": "Lokale Notiz",
                 "memo_placeholder": "Klicken, um eine lokale Notiz hinzuzufügen",
                 "listings": "Einträge",
-                "gallery": "Galerie"
+                "gallery": "Galerie",
+                "attributes": "Attribute"
             },
             "performance": {
                 "header": "Leistung",

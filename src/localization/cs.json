@@ -4218,7 +4218,8 @@
                 "delete_impostor": "Odstranit impostora",
                 "regenerate_impostor": "Vygenerovat impostora znovu",
                 "create_impostor": "Vytvořit impostora",
-                "manage_tags": "Spravovat štítky"
+                "manage_tags": "Spravovat štítky",
+                "open_cache": "Otevřít mezipaměť"
             },
             "info": {
                 "header": "Info",
@@ -4245,7 +4246,8 @@
                 "memo": "Memo",
                 "memo_placeholder": "Click to add a memo",
                 "listings": "Výpisy",
-                "gallery": "Galerie"
+                "gallery": "Galerie",
+                "attributes": "Atributy"
             },
             "performance": {
                 "header": "Výkon",

@@ -4215,7 +4215,8 @@
                 "delete_impostor": "Excluir Impostor",
                 "regenerate_impostor": "Regenerar Impostor",
                 "create_impostor": "Criar Impostor",
-                "manage_tags": "Gerenciar Tags"
+                "manage_tags": "Gerenciar Tags",
+                "open_cache": "Abrir Cache"
             },
             "info": {
                 "header": "Informações",
@@ -4242,7 +4243,8 @@
                 "memo": "Memo",
                 "memo_placeholder": "Clique para adicionar um memo",
                 "listings": "Listagens",
-                "gallery": "Galeria"
+                "gallery": "Galeria",
+                "attributes": "Atributos"
             },
             "performance": {
                 "header": "Desempenho",
