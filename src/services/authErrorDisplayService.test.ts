@@ -6,14 +6,14 @@ import { setI18nLanguage } from './i18nService';
 describe('login error localization', () => {
     it.each([
         ['Invalid Username/Email or Password', '用户名、邮箱或密码错误。'],
-        ['Missing Credentials', '缺少有效的登录凭据，请重新登录。'],
+        ['Missing Credentials', '缺少有效的登录信息，请重新登录。'],
         [
             'The stored browser session still requires interactive verification.',
-            '此会话需要完成额外验证，请手动登录。'
+            '此次登录需要额外验证，请手动登录。'
         ],
         [
             '2FA is required but no supported method was returned.',
-            '此账号需要双重验证，但未找到支持的验证方式。'
+            '此账号需要双重认证，但未找到支持的验证方式。'
         ]
     ])('localizes known login failures: %s', async (message, translation) => {
         await setI18nLanguage('zh-CN');
@@ -30,7 +30,7 @@ describe('login error localization', () => {
             code: 'AUTH_SAVED_CREDENTIALS_INVALID'
         });
         expect(getLoginErrorMessage(error, 'Login failed')).toBe(
-            '保存的登录凭据已失效，已移除此保存账号，请重新登录。'
+            '保存的登录信息已失效，已移除此保存账号，请重新登录。'
         );
         expect(error.message).toBe('Original diagnostic message');
     });
