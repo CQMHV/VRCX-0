@@ -177,7 +177,10 @@ function formatVrcStatusTooltip(
 }
 
 export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
-    function StatusBarFooter({ className, footer, ...props }, ref) {
+    function StatusBarFooter(
+        { className, footer, connectionsOnly = false, ...props },
+        ref
+    ) {
         const {
             appStartedAt,
             clockPopoverOpen,
@@ -249,6 +252,75 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
             server: proxyServer,
             hasNetworkIssue: Boolean(proxyEnabled && vrcStatus.error)
         });
+
+        const connections = (
+            <>
+                <StatusSegment
+                    visible={connectionsOnly || visibility.servers}
+                    active={!vrcStatusHasIssue}
+                    dotClassName={cn(
+                        vrcStatus.refreshing && 'motion-safe:animate-pulse',
+                        vrcStatusHasIssue
+                            ? vrcStatusIsMajor
+                                ? 'bg-[var(--status-busy)]'
+                                : 'bg-[var(--status-askme)]'
+                            : undefined
+                    )}
+                    label={t('status_bar.servers')}
+                    className="cursor-pointer"
+                    onClick={() => {
+                        onOpenStatusPage();
+                    }}
+                    tooltip={formatVrcStatusTooltip(
+                        vrcStatus,
+                        t,
+                        formatStatusDate
+                    )}
+                />
+                {connectionsOnly || visibility.ws ? (
+                    <Tooltip>
+                        <TooltipTrigger
+                            render={
+                                <div className="flex h-6 shrink-0 items-center gap-1.5 px-2">
+                                    <StatusDot
+                                        active={Boolean(
+                                            runtimeTransport.websocketConnected
+                                        )}
+                                    />
+                                    <span className="text-content-tertiary text-xs">
+                                        {t('status_bar.realtime_connection')}
+                                    </span>
+                                </div>
+                            }
+                        />
+                        <TooltipContent className="flex max-w-xs flex-col gap-1 text-xs">
+                            <span>
+                                WebSocket{' '}
+                                {runtimeTransport.websocketConnected
+                                    ? t('status_bar.ws_connected')
+                                    : t('status_bar.ws_disconnected')}
+                            </span>
+                        </TooltipContent>
+                    </Tooltip>
+                ) : null}
+            </>
+        );
+
+        if (connectionsOnly) {
+            return (
+                <footer
+                    ref={ref}
+                    data-vrcx-0-surface="statusbar"
+                    className={cn(
+                        'vrcx-0-statusbar flex h-8 shrink-0 items-center border-t px-2 text-xs',
+                        className
+                    )}
+                    {...props}
+                >
+                    {connections}
+                </footer>
+            );
+        }
 
         return (
             <footer
@@ -402,57 +474,7 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
                                 </div>
                             }
                         />
-                        <StatusSegment
-                            visible={visibility.servers}
-                            active={!vrcStatusHasIssue}
-                            dotClassName={cn(
-                                vrcStatus.refreshing &&
-                                    'motion-safe:animate-pulse',
-                                vrcStatusHasIssue
-                                    ? vrcStatusIsMajor
-                                        ? 'bg-[var(--status-busy)]'
-                                        : 'bg-[var(--status-askme)]'
-                                    : undefined
-                            )}
-                            label={t('status_bar.servers')}
-                            className="cursor-pointer"
-                            onClick={() => {
-                                onOpenStatusPage();
-                            }}
-                            tooltip={formatVrcStatusTooltip(
-                                vrcStatus,
-                                t,
-                                formatStatusDate
-                            )}
-                        />
-                        {visibility.ws ? (
-                            <Tooltip>
-                                <TooltipTrigger
-                                    render={
-                                        <div className="flex h-6 shrink-0 items-center gap-1.5 px-2">
-                                            <StatusDot
-                                                active={Boolean(
-                                                    runtimeTransport.websocketConnected
-                                                )}
-                                            />
-                                            <span className="text-content-tertiary text-xs">
-                                                {t(
-                                                    'status_bar.realtime_connection'
-                                                )}
-                                            </span>
-                                        </div>
-                                    }
-                                />
-                                <TooltipContent className="flex max-w-xs flex-col gap-1 text-xs">
-                                    <span>
-                                        WebSocket{' '}
-                                        {runtimeTransport.websocketConnected
-                                            ? t('status_bar.ws_connected')
-                                            : t('status_bar.ws_disconnected')}
-                                    </span>
-                                </TooltipContent>
-                            </Tooltip>
-                        ) : null}
+                        {connections}
                         <StatusSegment
                             visible={
                                 visibility.nowPlaying && Boolean(nowPlaying.url)

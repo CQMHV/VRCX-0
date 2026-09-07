@@ -179,7 +179,13 @@ function formatStatusDate(value: string | null | undefined) {
     });
 }
 
-export function AppStatusBar({ className }: { className?: string }) {
+export function AppStatusBar({
+    className,
+    connectionsOnly = false
+}: {
+    className?: string;
+    connectionsOnly?: boolean;
+}) {
     const { t } = useTranslation();
     const [appStartedAt] = useState(Date.now);
     const observedMutualGraphRunRef = useRef(0);
@@ -823,6 +829,16 @@ export function AppStatusBar({ className }: { className?: string }) {
         onStepZoomLevel: stepQueuedZoomLevel,
         onUpdateClockTimezone: updateClockTimezone
     };
+
+    if (connectionsOnly) {
+        return (
+            <StatusBarFooter
+                className={className}
+                footer={footer}
+                connectionsOnly
+            />
+        );
+    }
 
     return (
         <ContextMenu>
