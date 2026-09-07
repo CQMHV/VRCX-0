@@ -406,7 +406,8 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
                             visible={visibility.servers}
                             active={!vrcStatusHasIssue}
                             dotClassName={cn(
-                                vrcStatus.refreshing && 'animate-pulse',
+                                vrcStatus.refreshing &&
+                                    'motion-safe:animate-pulse',
                                 vrcStatusHasIssue
                                     ? vrcStatusIsMajor
                                         ? 'bg-[var(--status-busy)]'
