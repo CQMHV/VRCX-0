@@ -104,6 +104,29 @@ describe('directAccessParse detect mode', () => {
         expect(mocks.openWorldDialog).not.toHaveBeenCalled();
     });
 
+    it('recognises direct access links embedded in surrounding text', async () => {
+        const links = [
+            `https://open.vrcx-0.dev/world/${WORLD_ID}`,
+            `https://open.vrcx-0.dev/avatar/${AVATAR_ID}`,
+            `https://vrchat.com/home/world/${WORLD_ID}`,
+            'https://vrchat.com/home/user/usr_id',
+            'https://vrchat.com/home/avatar/avtr_id',
+            'https://vrchat.com/home/group/grp_id',
+            'https://vrch.at/abcd1234',
+            'https://vrc.group/vrcx.1234',
+            `vrchat://launch?id=${encodeURIComponent(LOCATION)}`
+        ];
+
+        for (const link of links) {
+            await expect(
+                directAccessParse(`Copied link: ${link}。`, 'detect')
+            ).resolves.toBe(true);
+        }
+
+        expect(mocks.openInstanceInGame).not.toHaveBeenCalled();
+        expect(mocks.openWorldDialog).not.toHaveBeenCalled();
+    });
+
     it('rejects bare tokens that collide with name searches', async () => {
         await expect(directAccessParse('Kagamine', 'detect')).resolves.toBe(
             false
@@ -124,6 +147,7 @@ describe('directAccessParse detect mode', () => {
             'https://vrchat.com/home',
             'https://open.vrcx-0.dev/world/wrld_invalid',
             `https://open.vrcx-0.dev/avatar/${WORLD_ID}`,
+            'Copied link: https://example.com/x',
             'https://example.com/x'
         ]) {
             await expect(directAccessParse(value, 'detect')).resolves.toBe(
@@ -136,10 +160,14 @@ describe('directAccessParse detect mode', () => {
         const dialogService = await import('@/services/dialogService');
 
         await expect(
-            directAccessParse(`https://open.vrcx-0.dev/world/${WORLD_ID}`)
+            directAccessParse(
+                `Open world in VRCX-0: https://open.vrcx-0.dev/world/${WORLD_ID}`
+            )
         ).resolves.toBe(true);
         await expect(
-            directAccessParse(`https://open.vrcx-0.dev/avatar/${AVATAR_ID}`)
+            directAccessParse(
+                `Open avatar in VRCX-0: https://open.vrcx-0.dev/avatar/${AVATAR_ID}`
+            )
         ).resolves.toBe(true);
 
         expect(mocks.openWorldDialog).toHaveBeenCalledWith({
