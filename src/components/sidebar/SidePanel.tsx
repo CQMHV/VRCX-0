@@ -407,9 +407,12 @@ export const SidePanel = forwardRef<HTMLElement, SidePanelProps>(
                                                             ? ''
                                                             : undefined
                                                     }
-                                                    className="h-auto w-full flex-col justify-center gap-0.5 px-0 py-1.5 data-active:bg-(--vrcx-0-toolbar-item-selected-surface)"
+                                                    className="h-auto w-full flex-col justify-center gap-0.5 px-0 py-1.5 data-active:bg-(--vrcx-0-toolbar-item-selected-surface) sm:h-auto"
                                                 >
-                                                    <Icon data-icon="icon" />
+                                                    <Icon
+                                                        className="size-4.5"
+                                                        data-icon="icon"
+                                                    />
                                                     <span className="sr-only">
                                                         {item.label}
                                                     </span>
