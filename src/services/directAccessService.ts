@@ -29,7 +29,7 @@ export type DirectAccessMode = 'open' | 'detect';
 type LooseRecord = Record<string, unknown>;
 type ParsedLocation = ReturnType<typeof parseLocation>;
 
-const URL_IN_TEXT_RE = /(?:https|vrchat|vrcx-0):\/\/[^\s<>"'`]+/giu;
+const URL_IN_TEXT_RE = /(?:https|vrchat|vrcx-0|vrcx):\/\/[^\s<>"'`]+/giu;
 const TRAILING_URL_PUNCTUATION_RE =
     /[.,;:!?，。；：！？、)\]}>）】〉》」』]+$/u;
 
@@ -38,6 +38,14 @@ function parseUrlOrNull(value: string) {
         return new URL(value);
     } catch {
         return null;
+    }
+}
+
+function decodeUrlPathOrEmpty(value: string): string {
+    try {
+        return decodeURIComponent(value);
+    } catch {
+        return '';
     }
 }
 
@@ -104,6 +112,51 @@ function parseVrcxNativeDeepLink(input: string): DeepLinkAction | null {
         return { type: 'importCollection', collectionId: id };
     }
     return null;
+}
+
+function directAccessLegacyVrcxDeepLink(
+    input: string,
+    mode: DirectAccessMode
+): boolean {
+    const url = parseUrlOrNull(input);
+    if (!url || url.protocol !== 'vrcx:') {
+        return false;
+    }
+
+    const id = decodeUrlPathOrEmpty(url.pathname.slice(1));
+    if (!id) {
+        return false;
+    }
+
+    if (url.hostname === 'world' && hasWorldIdPrefix(id)) {
+        if (mode === 'detect') {
+            return true;
+        }
+        openWorldLocation(id);
+        return true;
+    }
+    if (url.hostname === 'user' && hasUserIdPrefix(id)) {
+        if (mode === 'detect') {
+            return true;
+        }
+        openUserDialog({ userId: id });
+        return true;
+    }
+    if (url.hostname === 'avatar' && hasAvatarIdPrefix(id)) {
+        if (mode === 'detect') {
+            return true;
+        }
+        openAvatarDialog({ avatarId: id });
+        return true;
+    }
+    if (url.hostname === 'group' && hasGroupIdPrefix(id)) {
+        if (mode === 'detect') {
+            return true;
+        }
+        openGroupDialog({ groupId: id });
+        return true;
+    }
+    return false;
 }
 
 function emptyRecordArray(value: unknown): LooseRecord[] {
@@ -402,6 +455,10 @@ export async function directAccessParse(
             return true;
         }
         handleDeepLinkAction(vrcxNativeDeepLink);
+        return true;
+    }
+
+    if (directAccessLegacyVrcxDeepLink(value, mode)) {
         return true;
     }
 

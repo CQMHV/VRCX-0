@@ -122,7 +122,11 @@ describe('directAccessParse detect mode', () => {
             `vrchat://launch?id=${encodeURIComponent(LOCATION)}`,
             `vrcx-0://world/open?id=${WORLD_ID}`,
             `vrcx-0://avatar/open?id=${AVATAR_ID}`,
-            'vrcx-0://collection/import?id=AbC123z'
+            'vrcx-0://collection/import?id=AbC123z',
+            `vrcx://world/${WORLD_ID}`,
+            'vrcx://user/usr_id',
+            'vrcx://avatar/avtr_id',
+            'vrcx://group/grp_id'
         ];
 
         for (const link of links) {
@@ -156,6 +160,7 @@ describe('directAccessParse detect mode', () => {
             'https://open.vrcx-0.dev/world/wrld_invalid',
             `https://open.vrcx-0.dev/avatar/${WORLD_ID}`,
             'Copied link: https://example.com/x',
+            'Copied link: vrcx://addavatardb/https://example.com/avatar-db',
             'https://example.com/x'
         ]) {
             await expect(directAccessParse(value, 'detect')).resolves.toBe(
@@ -197,6 +202,37 @@ describe('directAccessParse detect mode', () => {
         expect(mocks.handleDeepLinkAction).toHaveBeenCalledWith({
             type: 'openWorld',
             worldId: WORLD_ID
+        });
+    });
+
+    it('opens embedded legacy VRCX deep links', async () => {
+        const dialogService = await import('@/services/dialogService');
+
+        await expect(
+            directAccessParse(`Open in VRCX: vrcx://world/${WORLD_ID}`)
+        ).resolves.toBe(true);
+        await expect(
+            directAccessParse('Open in VRCX: vrcx://user/usr_id')
+        ).resolves.toBe(true);
+        await expect(
+            directAccessParse('Open in VRCX: vrcx://avatar/avtr_id')
+        ).resolves.toBe(true);
+        await expect(
+            directAccessParse('Open in VRCX: vrcx://group/grp_id')
+        ).resolves.toBe(true);
+
+        expect(mocks.openWorldDialog).toHaveBeenCalledWith({
+            worldId: WORLD_ID,
+            title: undefined
+        });
+        expect(dialogService.openUserDialog).toHaveBeenCalledWith({
+            userId: 'usr_id'
+        });
+        expect(dialogService.openAvatarDialog).toHaveBeenCalledWith({
+            avatarId: 'avtr_id'
+        });
+        expect(dialogService.openGroupDialog).toHaveBeenCalledWith({
+            groupId: 'grp_id'
         });
     });
 
