@@ -99,13 +99,30 @@ export function performanceRankClass(rank: string | undefined) {
         case 'VeryPoor':
             return 'text-red-700 dark:text-red-400';
         default:
-            return '';
+            return 'text-muted-foreground';
+    }
+}
+
+export function performanceRankFillClass(rank: string | undefined) {
+    switch (rank) {
+        case 'Excellent':
+        case 'Good':
+            return 'bg-muted-foreground/40';
+        case 'Medium':
+            return 'bg-amber-600 dark:bg-amber-500';
+        case 'Poor':
+            return 'bg-orange-600 dark:bg-orange-500';
+        case 'VeryPoor':
+            return 'bg-red-600 dark:bg-red-500';
+        default:
+            return 'bg-muted';
     }
 }
 
 type StatAssessment = {
     maximum?: number | boolean | number[];
     rank?: PerformanceRank;
+    ratio?: number;
     removed?: boolean;
 };
 
@@ -131,9 +148,11 @@ export function assessPerformanceStat(
         const index = BOUNDS.findIndex((limit) =>
             value.every((v, axis) => v <= limit[axis]!)
         );
+        const maximum = BOUNDS[3]!;
         return {
-            maximum: BOUNDS[3],
-            rank: PERFORMANCE_RANKS[index < 0 ? 4 : index]
+            maximum,
+            rank: PERFORMANCE_RANKS[index < 0 ? 4 : index],
+            ratio: Math.max(...value.map((v, axis) => v / maximum[axis]!))
         };
     }
     const limits = (platform === 'pc' ? PC : MOBILE)[key];
@@ -149,8 +168,10 @@ export function assessPerformanceStat(
     }
     const numeric = Number(value) / (key === 'totalTextureUsage' ? 1048576 : 1);
     const index = limits.findIndex((limit) => numeric <= limit);
+    const maximum = limits[3]!;
     return {
-        maximum: isBoolean ? Boolean(limits[3]) : limits[3],
-        rank: PERFORMANCE_RANKS[index < 0 ? 4 : index]
+        maximum: isBoolean ? Boolean(maximum) : maximum,
+        rank: PERFORMANCE_RANKS[index < 0 ? 4 : index],
+        ratio: maximum > 0 ? numeric / maximum : Number(numeric > 0)
     };
 }

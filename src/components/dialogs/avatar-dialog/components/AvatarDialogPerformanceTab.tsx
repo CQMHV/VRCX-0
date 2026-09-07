@@ -1,4 +1,5 @@
 import type { TFunction } from 'i18next';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type {
@@ -6,25 +7,30 @@ import type {
     FileAnalysisRecord,
     PlatformFileAnalysis
 } from '@/domain/entities/world';
+import { cn } from '@/lib/utils';
 import { openExternalLink } from '@/services/entityMediaService';
 import {
     assessPerformanceStat,
     performanceDocsUrl,
     performanceRankClass,
+    performanceRankFillClass,
     type PerformancePlatform
 } from '@/shared/utils/avatarPerformanceLimits';
-import { Badge } from '@/ui/shadcn/badge';
 import { Spinner } from '@/ui/shadcn/spinner';
+import { Tabs, TabsList, TabsTab, TabsPanel } from '@/ui/shadcn/tabs';
 
 import { EntityDialogTabContent } from '../../EntityDialogScaffold';
 import type { AvatarPlatformInfo } from '../avatarDialogTypes';
 
-const EMPTY_VALUE = '\u2014';
+const EMPTY_VALUE = '—';
+const STAT_GRID_CLASS =
+    'grid grid-cols-1 @2xl/performance:grid-cols-2 @max-2xl/performance:[&>div:nth-child(even)]:bg-muted/30 @2xl/performance:[&>div:nth-child(4n+3)]:bg-muted/30 @2xl/performance:[&>div:nth-child(4n+4)]:bg-muted/30 @2xl/performance:[&>div:last-child:nth-child(odd)]:col-span-2';
 
 type PerformanceStat = {
     key: keyof AvatarStatsRecord;
     label: string;
     format?: 'boolean' | 'bounds';
+    unit?: string;
 };
 
 type PerformanceStatGroup = {
@@ -32,18 +38,22 @@ type PerformanceStatGroup = {
     stats: PerformanceStat[];
 };
 
+const TRIANGLE_STAT: PerformanceStat = {
+    key: 'totalPolygons',
+    label: 'triangles'
+};
+
 const PERFORMANCE_STAT_GROUPS: PerformanceStatGroup[] = [
     {
         label: 'geometry',
         stats: [
-            { key: 'totalPolygons', label: 'triangles' },
-            { key: 'totalVertices', label: 'vertices' },
+            { key: 'bounds', label: 'bounds', format: 'bounds', unit: 'm' },
             { key: 'skinnedMeshCount', label: 'skinned_meshes' },
             { key: 'meshCount', label: 'basic_meshes' },
             { key: 'materialSlotsUsed', label: 'material_slots' },
             { key: 'boneCount', label: 'bones' },
-            { key: 'blendShapeCount', label: 'blend_shapes' },
-            { key: 'bounds', label: 'bounds', format: 'bounds' }
+            { key: 'totalVertices', label: 'vertices' },
+            { key: 'blendShapeCount', label: 'blend_shapes' }
         ]
     },
     {
@@ -105,7 +115,7 @@ function formatBounds(value: unknown, locale: string): string {
         (entry): entry is number => typeof entry === 'number'
     );
     return bounds.length
-        ? `${bounds.map((entry) => formatter.format(entry)).join(' \u00d7 ')} m`
+        ? bounds.map((entry) => formatter.format(entry)).join('×')
         : EMPTY_VALUE;
 }
 
@@ -131,104 +141,112 @@ function formatStatValue(
 function PerformanceFact({
     label,
     value,
+    limit,
+    unit,
     rank,
+    ratio,
     note
 }: {
     label: string;
     value: string;
+    limit?: string;
+    unit?: string;
     rank?: string;
+    ratio?: number;
     note?: string;
 }) {
     const { t } = useTranslation();
     const rankLabel = rank
         ? t(`dialog.avatar.performance.ranks.${rank}`, { defaultValue: rank })
         : undefined;
+    const rankClass = performanceRankClass(rank);
+    const detail =
+        note ??
+        (rank === 'Poor' || rank === 'VeryPoor' ? rankLabel : undefined);
+    const measured = value || EMPTY_VALUE;
+    const suffix = unit && measured !== EMPTY_VALUE ? ` ${unit}` : '';
     return (
-        <div className="bg-muted/40 min-w-0 rounded-md border px-3 py-2">
-            <span className="text-muted-foreground block truncate text-xs">
-                {label}
-            </span>
-            <span
-                title={note || rankLabel}
-                className={`mt-0.5 block font-mono text-sm font-medium break-words ${performanceRankClass(rank)}`}
-            >
-                {value || EMPTY_VALUE}
-            </span>
-            {note || rank ? (
-                <span className="text-muted-foreground block text-xs">
-                    {note || rankLabel}
+        <div className="min-w-0 px-3 py-2">
+            <span className="text-muted-foreground block text-xs">{label}</span>
+            <div className="mt-0.5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                <span
+                    title={note || rankLabel}
+                    className={cn(
+                        'min-w-0 text-sm font-semibold break-words tabular-nums',
+                        rankClass
+                    )}
+                >
+                    {limit
+                        ? `${measured}/${limit}${suffix}`
+                        : `${measured}${suffix}`}
                 </span>
+                {detail ? (
+                    <span className={cn('text-xs', rankClass)}>{detail}</span>
+                ) : null}
+            </div>
+            {ratio ? (
+                <div className="bg-border mt-1.5 h-0.5 w-20 overflow-hidden rounded-full">
+                    <div
+                        className={cn(
+                            'h-full rounded-full',
+                            performanceRankFillClass(rank)
+                        )}
+                        style={{ width: `${Math.min(100, ratio * 100)}%` }}
+                    />
+                </div>
             ) : null}
         </div>
     );
 }
 
-function PerformanceGroup({
-    group,
+function PerformanceMetric({
+    stat,
     stats,
     locale,
     targetPlatform,
     t
 }: {
-    group: PerformanceStatGroup;
+    stat: PerformanceStat;
     stats: AvatarStatsRecord;
     locale: string;
     targetPlatform: PerformancePlatform;
     t: TFunction;
 }) {
+    const assessment = assessPerformanceStat(
+        stat.key,
+        stats[stat.key],
+        targetPlatform
+    );
     return (
-        <section className="space-y-2">
-            <h4 className="text-sm font-medium">
-                {t(`dialog.avatar.performance.group.${group.label}`)}
-            </h4>
-            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                {group.stats.map((stat) => {
-                    const assessment = assessPerformanceStat(
-                        stat.key,
-                        stats[stat.key],
-                        targetPlatform
-                    );
-                    const current = formatStatValue(
-                        stats[stat.key],
-                        stat.format,
-                        locale,
-                        t
-                    );
-                    const value =
-                        assessment.maximum === undefined
-                            ? current
-                            : `${current} / ${formatStatValue(assessment.maximum, stat.format, locale, t)}`;
-                    return (
-                        <PerformanceFact
-                            key={stat.key}
-                            label={t(
-                                `dialog.avatar.performance.stat.${stat.label}`
-                            )}
-                            value={value}
-                            rank={assessment.rank}
-                            note={
-                                assessment.removed
-                                    ? t(
-                                          'dialog.avatar.performance.mobile_removed'
-                                      )
-                                    : undefined
-                            }
-                        />
-                    );
-                })}
-            </div>
-        </section>
+        <PerformanceFact
+            label={t(`dialog.avatar.performance.stat.${stat.label}`)}
+            value={formatStatValue(stats[stat.key], stat.format, locale, t)}
+            limit={
+                stat.format === 'boolean' || assessment.maximum === undefined
+                    ? undefined
+                    : formatStatValue(
+                          assessment.maximum,
+                          stat.format,
+                          locale,
+                          t
+                      )
+            }
+            unit={stat.unit}
+            rank={assessment.rank}
+            ratio={assessment.ratio}
+            note={
+                assessment.removed
+                    ? t('dialog.avatar.performance.mobile_removed')
+                    : undefined
+            }
+        />
     );
 }
 
 function PlatformPerformanceSection({
-    label,
-    platform,
     targetPlatform,
     analysis
 }: {
-    label: string;
-    platform: AvatarPlatformInfo['pc'];
     targetPlatform: PerformancePlatform;
     analysis?: FileAnalysisRecord;
 }) {
@@ -239,34 +257,15 @@ function PlatformPerformanceSection({
         stats?.totalTextureUsage,
         targetPlatform
     );
-    const rating =
-        analysis?.performanceRating ||
-        platform.performanceRating ||
-        EMPTY_VALUE;
-
     return (
-        <section className="space-y-4 rounded-lg border p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="text-base font-semibold">{label}</h3>
-                <Badge
-                    variant="outline"
-                    className={performanceRankClass(rating)}
-                >
-                    {t('dialog.avatar.performance.rating')}:{' '}
-                    {t(`dialog.avatar.performance.ranks.${rating}`, {
-                        defaultValue: rating
-                    })}
-                </Badge>
-            </div>
+        <section className="@container/performance space-y-4">
             <p className="text-muted-foreground text-xs">
                 {t('dialog.avatar.performance.limits_help', {
-                    poor: t('dialog.avatar.performance.ranks.Poor'),
-                    good: t('dialog.avatar.performance.ranks.Good'),
-                    medium: t('dialog.avatar.performance.ranks.Medium')
+                    poor: t('dialog.avatar.performance.ranks.Poor')
                 })}{' '}
                 <a
                     href={performanceDocsUrl(targetPlatform)}
-                    className="text-primary underline"
+                    className="text-foreground underline underline-offset-2"
                     onClick={(event) => {
                         event.preventDefault();
                         void openExternalLink(
@@ -281,24 +280,36 @@ function PlatformPerformanceSection({
                     )}
                 </a>
             </p>
-            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            <div className={STAT_GRID_CLASS}>
                 <PerformanceFact
                     label={t('dialog.avatar.performance.download_size')}
                     value={analysis?._fileSize || EMPTY_VALUE}
                 />
                 <PerformanceFact
+                    label={t('dialog.avatar.performance.texture_memory')}
+                    value={(analysis?._totalTextureUsage || '').replace(
+                        / MB$/,
+                        ''
+                    )}
+                    limit={
+                        texture.maximum === undefined
+                            ? undefined
+                            : String(texture.maximum)
+                    }
+                    unit="MB"
+                    rank={texture.rank}
+                    ratio={texture.ratio}
+                />
+                <PerformanceFact
                     label={t('dialog.avatar.performance.uncompressed_size')}
                     value={analysis?._uncompressedSize || EMPTY_VALUE}
                 />
-                <PerformanceFact
-                    label={t('dialog.avatar.performance.texture_memory')}
-                    value={
-                        texture.maximum !== undefined &&
-                        analysis?._totalTextureUsage
-                            ? `${analysis._totalTextureUsage} / ${texture.maximum} MB`
-                            : analysis?._totalTextureUsage || EMPTY_VALUE
-                    }
-                    rank={texture.rank}
+                <PerformanceMetric
+                    stat={TRIANGLE_STAT}
+                    stats={stats ?? {}}
+                    locale={i18n.language || 'en'}
+                    targetPlatform={targetPlatform}
+                    t={t}
                 />
             </div>
             {stats ? (
@@ -321,6 +332,40 @@ function PlatformPerformanceSection({
     );
 }
 
+function PerformanceGroup({
+    group,
+    stats,
+    locale,
+    targetPlatform,
+    t
+}: {
+    group: PerformanceStatGroup;
+    stats: AvatarStatsRecord;
+    locale: string;
+    targetPlatform: PerformancePlatform;
+    t: TFunction;
+}) {
+    return (
+        <section className="space-y-1.5 pt-2">
+            <h4 className="text-muted-foreground px-3 text-xs font-medium">
+                {t(`dialog.avatar.performance.group.${group.label}`)}
+            </h4>
+            <div className={STAT_GRID_CLASS}>
+                {group.stats.map((stat) => (
+                    <PerformanceMetric
+                        key={stat.key}
+                        stat={stat}
+                        stats={stats}
+                        locale={locale}
+                        targetPlatform={targetPlatform}
+                        t={t}
+                    />
+                ))}
+            </div>
+        </section>
+    );
+}
+
 export function AvatarDialogPerformanceTab({
     platformInfo,
     fileAnalysis,
@@ -333,6 +378,9 @@ export function AvatarDialogPerformanceTab({
     pending?: boolean;
 }) {
     const { t } = useTranslation();
+    const [selectedPlatform, setSelectedPlatform] =
+        useState<PerformancePlatform>('pc');
+    const contentRef = useRef<HTMLDivElement>(null);
     const platforms: Array<{
         key: PerformancePlatform;
         label: string;
@@ -364,6 +412,13 @@ export function AvatarDialogPerformanceTab({
     const displayedPlatforms = pending
         ? availablePlatforms.filter(({ analysis }) => Boolean(analysis))
         : availablePlatforms;
+    const activePlatform =
+        displayedPlatforms.find(({ key }) => key === selectedPlatform) ??
+        displayedPlatforms[0];
+    const rating =
+        activePlatform?.analysis?.performanceRating ||
+        activePlatform?.platform.performanceRating ||
+        EMPTY_VALUE;
 
     return (
         <EntityDialogTabContent value="performance">
@@ -375,23 +430,68 @@ export function AvatarDialogPerformanceTab({
                     </span>
                 </div>
             ) : (
-                <div className="space-y-4">
+                <div ref={contentRef} className="space-y-4">
                     {pending ? (
                         <div className="text-muted-foreground rounded-md border border-dashed px-3 py-2 text-sm">
                             {t('dialog.avatar.performance.analysis_pending')}
                         </div>
                     ) : null}
-                    {displayedPlatforms.map(
-                        ({ key, label, platform, analysis }) => (
-                            <PlatformPerformanceSection
-                                key={key}
-                                label={label}
-                                targetPlatform={key}
-                                platform={platform}
-                                analysis={analysis}
-                            />
-                        )
-                    )}
+                    {activePlatform ? (
+                        <Tabs
+                            className="gap-4"
+                            value={activePlatform.key}
+                            onValueChange={(value) => {
+                                const next = displayedPlatforms.find(
+                                    ({ key }) => key === value
+                                );
+                                if (next) {
+                                    setSelectedPlatform(next.key);
+                                    const scrollContainer =
+                                        contentRef.current?.parentElement;
+                                    if (scrollContainer)
+                                        scrollContainer.scrollTop = 0;
+                                }
+                            }}
+                        >
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                                {displayedPlatforms.length > 1 ? (
+                                    <TabsList>
+                                        {displayedPlatforms.map(
+                                            ({ key, label }) => (
+                                                <TabsTab key={key} value={key}>
+                                                    {label}
+                                                </TabsTab>
+                                            )
+                                        )}
+                                    </TabsList>
+                                ) : null}
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-muted-foreground text-xs">
+                                        {t('dialog.avatar.performance.rating')}
+                                    </span>
+                                    <span
+                                        className={cn(
+                                            'text-xl font-semibold',
+                                            performanceRankClass(rating)
+                                        )}
+                                    >
+                                        {t(
+                                            `dialog.avatar.performance.ranks.${rating}`,
+                                            { defaultValue: rating }
+                                        )}
+                                    </span>
+                                </div>
+                            </div>
+                            {displayedPlatforms.map(({ key, analysis }) => (
+                                <TabsPanel key={key} value={key}>
+                                    <PlatformPerformanceSection
+                                        targetPlatform={key}
+                                        analysis={analysis}
+                                    />
+                                </TabsPanel>
+                            ))}
+                        </Tabs>
+                    ) : null}
                 </div>
             )}
         </EntityDialogTabContent>
