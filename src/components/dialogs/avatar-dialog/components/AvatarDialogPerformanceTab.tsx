@@ -6,6 +6,13 @@ import type {
     FileAnalysisRecord,
     PlatformFileAnalysis
 } from '@/domain/entities/world';
+import { openExternalLink } from '@/services/entityMediaService';
+import {
+    assessPerformanceStat,
+    performanceDocsUrl,
+    performanceRankClass,
+    type PerformancePlatform
+} from '@/shared/utils/avatarPerformanceLimits';
 import { Badge } from '@/ui/shadcn/badge';
 import { Spinner } from '@/ui/shadcn/spinner';
 
@@ -121,15 +128,37 @@ function formatStatValue(
         : EMPTY_VALUE;
 }
 
-function PerformanceFact({ label, value }: { label: string; value: string }) {
+function PerformanceFact({
+    label,
+    value,
+    rank,
+    note
+}: {
+    label: string;
+    value: string;
+    rank?: string;
+    note?: string;
+}) {
+    const { t } = useTranslation();
+    const rankLabel = rank
+        ? t(`dialog.avatar.performance.ranks.${rank}`, { defaultValue: rank })
+        : undefined;
     return (
         <div className="bg-muted/40 min-w-0 rounded-md border px-3 py-2">
             <span className="text-muted-foreground block truncate text-xs">
                 {label}
             </span>
-            <span className="mt-0.5 block truncate font-mono text-sm font-medium">
+            <span
+                title={note || rankLabel}
+                className={`mt-0.5 block font-mono text-sm font-medium break-words ${performanceRankClass(rank)}`}
+            >
                 {value || EMPTY_VALUE}
             </span>
+            {note || rank ? (
+                <span className="text-muted-foreground block text-xs">
+                    {note || rankLabel}
+                </span>
+            ) : null}
         </div>
     );
 }
@@ -138,11 +167,13 @@ function PerformanceGroup({
     group,
     stats,
     locale,
+    targetPlatform,
     t
 }: {
     group: PerformanceStatGroup;
     stats: AvatarStatsRecord;
     locale: string;
+    targetPlatform: PerformancePlatform;
     t: TFunction;
 }) {
     return (
@@ -151,20 +182,40 @@ function PerformanceGroup({
                 {t(`dialog.avatar.performance.group.${group.label}`)}
             </h4>
             <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                {group.stats.map((stat) => (
-                    <PerformanceFact
-                        key={stat.key}
-                        label={t(
-                            `dialog.avatar.performance.stat.${stat.label}`
-                        )}
-                        value={formatStatValue(
-                            stats[stat.key],
-                            stat.format,
-                            locale,
-                            t
-                        )}
-                    />
-                ))}
+                {group.stats.map((stat) => {
+                    const assessment = assessPerformanceStat(
+                        stat.key,
+                        stats[stat.key],
+                        targetPlatform
+                    );
+                    const current = formatStatValue(
+                        stats[stat.key],
+                        stat.format,
+                        locale,
+                        t
+                    );
+                    const value =
+                        assessment.maximum === undefined
+                            ? current
+                            : `${current} / ${formatStatValue(assessment.maximum, stat.format, locale, t)}`;
+                    return (
+                        <PerformanceFact
+                            key={stat.key}
+                            label={t(
+                                `dialog.avatar.performance.stat.${stat.label}`
+                            )}
+                            value={value}
+                            rank={assessment.rank}
+                            note={
+                                assessment.removed
+                                    ? t(
+                                          'dialog.avatar.performance.mobile_removed'
+                                      )
+                                    : undefined
+                            }
+                        />
+                    );
+                })}
             </div>
         </section>
     );
@@ -173,14 +224,21 @@ function PerformanceGroup({
 function PlatformPerformanceSection({
     label,
     platform,
+    targetPlatform,
     analysis
 }: {
     label: string;
     platform: AvatarPlatformInfo['pc'];
+    targetPlatform: PerformancePlatform;
     analysis?: FileAnalysisRecord;
 }) {
     const { t, i18n } = useTranslation();
     const stats = analysis?.avatarStats;
+    const texture = assessPerformanceStat(
+        'totalTextureUsage',
+        stats?.totalTextureUsage,
+        targetPlatform
+    );
     const rating =
         analysis?.performanceRating ||
         platform.performanceRating ||
@@ -190,10 +248,39 @@ function PlatformPerformanceSection({
         <section className="space-y-4 rounded-lg border p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-base font-semibold">{label}</h3>
-                <Badge variant="outline">
-                    {t('dialog.avatar.performance.rating')}: {rating}
+                <Badge
+                    variant="outline"
+                    className={performanceRankClass(rating)}
+                >
+                    {t('dialog.avatar.performance.rating')}:{' '}
+                    {t(`dialog.avatar.performance.ranks.${rating}`, {
+                        defaultValue: rating
+                    })}
                 </Badge>
             </div>
+            <p className="text-muted-foreground text-xs">
+                {t('dialog.avatar.performance.limits_help', {
+                    poor: t('dialog.avatar.performance.ranks.Poor'),
+                    good: t('dialog.avatar.performance.ranks.Good'),
+                    medium: t('dialog.avatar.performance.ranks.Medium')
+                })}{' '}
+                <a
+                    href={performanceDocsUrl(targetPlatform)}
+                    className="text-primary underline"
+                    onClick={(event) => {
+                        event.preventDefault();
+                        void openExternalLink(
+                            performanceDocsUrl(targetPlatform)
+                        );
+                    }}
+                >
+                    {t(
+                        targetPlatform === 'pc'
+                            ? 'dialog.avatar.performance.pc_rules'
+                            : 'dialog.avatar.performance.mobile_rules'
+                    )}
+                </a>
+            </p>
             <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                 <PerformanceFact
                     label={t('dialog.avatar.performance.download_size')}
@@ -205,7 +292,13 @@ function PlatformPerformanceSection({
                 />
                 <PerformanceFact
                     label={t('dialog.avatar.performance.texture_memory')}
-                    value={analysis?._totalTextureUsage || EMPTY_VALUE}
+                    value={
+                        texture.maximum !== undefined &&
+                        analysis?._totalTextureUsage
+                            ? `${analysis._totalTextureUsage} / ${texture.maximum} MB`
+                            : analysis?._totalTextureUsage || EMPTY_VALUE
+                    }
+                    rank={texture.rank}
                 />
             </div>
             {stats ? (
@@ -215,6 +308,7 @@ function PlatformPerformanceSection({
                         group={group}
                         stats={stats}
                         locale={i18n.language || 'en'}
+                        targetPlatform={targetPlatform}
                         t={t}
                     />
                 ))
@@ -239,7 +333,12 @@ export function AvatarDialogPerformanceTab({
     pending?: boolean;
 }) {
     const { t } = useTranslation();
-    const platforms = [
+    const platforms: Array<{
+        key: PerformancePlatform;
+        label: string;
+        platform: AvatarPlatformInfo['pc'];
+        analysis?: FileAnalysisRecord;
+    }> = [
         {
             key: 'pc',
             label: 'PC',
@@ -258,10 +357,13 @@ export function AvatarDialogPerformanceTab({
             platform: platformInfo.ios,
             analysis: fileAnalysis.ios
         }
-    ].filter(({ platform, analysis }) => platform.platform || analysis);
+    ];
+    const availablePlatforms = platforms.filter(
+        ({ platform, analysis }) => platform.platform || analysis
+    );
     const displayedPlatforms = pending
-        ? platforms.filter(({ analysis }) => Boolean(analysis))
-        : platforms;
+        ? availablePlatforms.filter(({ analysis }) => Boolean(analysis))
+        : availablePlatforms;
 
     return (
         <EntityDialogTabContent value="performance">
@@ -284,6 +386,7 @@ export function AvatarDialogPerformanceTab({
                             <PlatformPerformanceSection
                                 key={key}
                                 label={label}
+                                targetPlatform={key}
                                 platform={platform}
                                 analysis={analysis}
                             />

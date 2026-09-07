@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import { isValidElement, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,16 +21,25 @@ import { AvatarDialogTagList } from './AvatarDialogTagList';
 
 const EMPTY_VALUE = '\u2014';
 
-function getPlatformSummary(platformInfo: AvatarPlatformInfo): string {
+function getPlatformSummary(
+    platformInfo: AvatarPlatformInfo,
+    t: TFunction
+): string {
+    const ratingLabel = (rating?: string) =>
+        rating
+            ? t(`dialog.avatar.performance.ranks.${rating}`, {
+                  defaultValue: rating
+              })
+            : '';
     return [
         platformInfo?.pc?.platform
-            ? `PC ${platformInfo.pc.performanceRating || ''}`
+            ? `PC ${ratingLabel(platformInfo.pc.performanceRating)}`
             : '',
         platformInfo?.android?.platform
-            ? `Android ${platformInfo.android.performanceRating || ''}`
+            ? `Android ${ratingLabel(platformInfo.android.performanceRating)}`
             : '',
         platformInfo?.ios?.platform
-            ? `iOS ${platformInfo.ios.performanceRating || ''}`
+            ? `iOS ${ratingLabel(platformInfo.ios.performanceRating)}`
             : ''
     ]
         .filter(Boolean)
@@ -56,7 +66,7 @@ export function AvatarDialogInfoTab({
     const { t } = useTranslation();
 
     const { localTags, contentTags, authorTags, otherTags } = tags;
-    const platformSummary = getPlatformSummary(platformInfo);
+    const platformSummary = getPlatformSummary(platformInfo, t);
 
     return (
         <EntityDialogTabContent value="info" forceMount>

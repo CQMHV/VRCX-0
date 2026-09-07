@@ -27,12 +27,17 @@ function PlatformBadge({
     fileSize?: string;
     icon?: LucideIcon;
 }) {
+    const { t } = useTranslation();
     return (
         <Badge variant="outline">
             {Icon ? <Icon data-icon="inline-start" /> : null}
             {label}
             {rating ? (
-                <span className="ml-1 border-l pl-1">{rating}</span>
+                <span className="ml-1 border-l pl-1">
+                    {t(`dialog.avatar.performance.ranks.${rating}`, {
+                        defaultValue: rating
+                    })}
+                </span>
             ) : null}
             {fileSize ? (
                 <span className="ml-1 border-l pl-1">{fileSize}</span>
