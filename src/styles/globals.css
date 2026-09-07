@@ -268,6 +268,13 @@
 .dark {
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
+    --surface-canvas: var(--background);
+    --content-secondary: color-mix(
+        in oklch,
+        var(--foreground) 64%,
+        var(--surface-canvas)
+    );
+    --muted-foreground: var(--content-secondary);
     --card: oklch(0.205 0 0);
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.225 0 0);
