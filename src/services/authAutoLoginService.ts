@@ -1,5 +1,3 @@
-import { toast } from 'sonner';
-
 import {
     commands,
     type AutoLoginOutcome,
@@ -8,6 +6,7 @@ import {
 import { flashWindow } from '@/platform/tauri/webview';
 import type { SavedAuthSnapshot } from '@/repositories/authRepository';
 import vrchatAuthRepository from '@/repositories/vrchatAuthRepository';
+import { toast } from '@/services/toastService';
 import { useRuntimeStore } from '@/state/runtimeStore';
 
 import {
@@ -179,13 +178,15 @@ async function applyAutoLoginDelay(
         throw createAutoLoginAbortError();
     }
 
-    const toastId = toast.info(message, {
-        duration: delaySeconds * 1000
+    const toastId = toast.add({
+        type: 'info',
+        title: message,
+        timeout: delaySeconds * 1000
     });
     try {
         await waitForAutoLoginDelay(delaySeconds, { signal, onCountdown });
     } finally {
-        toast.dismiss(toastId);
+        toast.close(toastId);
         onCountdown?.(0);
     }
 }
@@ -283,9 +284,11 @@ export async function executeReactAutoLogin(
             await showAuthFailureNotificationSafely(
                 'frontend-auto-login-throttled'
             );
-            toast.error(await i18n.t('message.auth.auto_login_failed'), {
-                duration: Infinity,
-                closeButton: true
+            toast.add({
+                type: 'error',
+                title: await i18n.t('message.auth.auto_login_failed'),
+                timeout: 0,
+                data: { closeButton: true }
             });
             return {
                 status: 'throttled',
@@ -336,7 +339,7 @@ export async function executeReactAutoLogin(
 
         const successMessage = await i18n.t('message.auth.auto_login_success');
         ensureCurrentAuthAttempt(attempt);
-        toast.success(successMessage);
+        toast.add({ type: 'success', title: successMessage });
         return {
             status: 'success',
             snapshot: finalSnapshot
@@ -375,13 +378,15 @@ export async function executeReactAutoLogin(
             'error',
             error instanceof Error ? error.message : String(error)
         );
-        toast.error(
-            getErrorMessage(
+        toast.add({
+            type: 'error',
+            title: getErrorMessage(
                 error,
                 await i18n.t('message.auth.auto_login_failed')
             ),
-            { duration: Infinity, closeButton: true }
-        );
+            timeout: 0,
+            data: { closeButton: true }
+        });
         if (shouldShowManualAuthFailureNotification(authError)) {
             await showAuthFailureNotificationSafely(
                 'frontend-auto-login-failed'
@@ -389,9 +394,11 @@ export async function executeReactAutoLogin(
         }
 
         if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-            toast.error(await i18n.t('message.auth.offline'), {
-                duration: Infinity,
-                closeButton: true
+            toast.add({
+                type: 'error',
+                title: await i18n.t('message.auth.offline'),
+                timeout: 0,
+                data: { closeButton: true }
             });
         }
 

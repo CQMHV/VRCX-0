@@ -9,6 +9,8 @@ import {
 } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { AppToastOptions } from '@/services/toastService';
+
 afterEach(cleanup);
 
 const mocks = vi.hoisted(() => ({
@@ -45,10 +47,18 @@ vi.mock('@/ui/shadcn/context-menu', () => ({
     )
 }));
 
-vi.mock('sonner', () => ({
+vi.mock('@/services/toastService', () => ({
     toast: {
-        error: mocks.error,
-        success: mocks.success
+        add: (options: AppToastOptions) => {
+            switch (options.type) {
+                case 'error':
+                    return mocks.error(options);
+                case 'success':
+                    return mocks.success(options);
+                default:
+                    throw new Error('Unhandled toast type: ' + options.type);
+            }
+        }
     }
 }));
 
@@ -161,7 +171,10 @@ describe('LaunchModeContextMenuGroup', () => {
 
         await waitFor(() =>
             expect(mocks.success).toHaveBeenCalledWith(
-                'dialog.instance.success.vrchat_launch_request_sent'
+                expect.objectContaining({
+                    type: 'success',
+                    title: 'dialog.instance.success.vrchat_launch_request_sent'
+                })
             )
         );
         expect(mocks.tryOpenLaunchLocation).toHaveBeenCalledExactlyOnceWith(
@@ -208,7 +221,10 @@ describe('LaunchModeContextMenuGroup', () => {
 
         await waitFor(() =>
             expect(mocks.error).toHaveBeenCalledWith(
-                'dialog.instance.error.unable_to_open_this_instance_in_vrchat'
+                expect.objectContaining({
+                    type: 'error',
+                    title: 'dialog.instance.error.unable_to_open_this_instance_in_vrchat'
+                })
             )
         );
         expect(mocks.success).not.toHaveBeenCalled();
@@ -229,7 +245,12 @@ describe('LaunchModeContextMenuGroup', () => {
         fireEvent.click(getByRole('button', { name: 'Open In-Game' }));
 
         await waitFor(() =>
-            expect(mocks.error).toHaveBeenCalledWith('Connection failed')
+            expect(mocks.error).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    type: 'error',
+                    title: 'Connection failed'
+                })
+            )
         );
         expect(mocks.success).not.toHaveBeenCalled();
     });

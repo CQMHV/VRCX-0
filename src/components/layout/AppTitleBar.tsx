@@ -95,7 +95,7 @@ export function AppTitleBar() {
                     data-tauri-drag-region
                     className="flex h-full min-w-0 flex-1 items-center gap-2 pr-3"
                 >
-                    {isSessionReady && !sidebarWindowMode ? (
+                    {isSessionReady ? (
                         <div
                             role="presentation"
                             data-titlebar-interactive="true"
@@ -107,7 +107,7 @@ export function AppTitleBar() {
                                 event.stopPropagation();
                             }}
                         >
-                            <AppMenuBar />
+                            <AppMenuBar showHelp={!sidebarWindowMode} />
                         </div>
                     ) : null}
                     <div

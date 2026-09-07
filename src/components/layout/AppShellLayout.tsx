@@ -205,7 +205,7 @@ export function AppShellLayout() {
                         </>
                     ) : null}
                 </div>
-                <AppStatusBar connectionsOnly={sidebarWindowMode} />
+                <AppStatusBar sidebarWindowMode={sidebarWindowMode} />
             </div>
         </AppSidebar>
     );

@@ -108,3 +108,7 @@ describe('LocationContextMenu', () => {
         expect(html).not.toContain('New Instance and Open In-game');
     });
 });
+
+vi.mock('@/services/toastService', () => ({
+    toast: { add: vi.fn(), close: vi.fn() }
+}));

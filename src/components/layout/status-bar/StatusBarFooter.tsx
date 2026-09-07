@@ -178,7 +178,7 @@ function formatVrcStatusTooltip(
 
 export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
     function StatusBarFooter(
-        { className, footer, connectionsOnly = false, ...props },
+        { className, footer, sidebarWindowMode = false, ...props },
         ref
     ) {
         const {
@@ -256,7 +256,7 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
         const connections = (
             <>
                 <StatusSegment
-                    visible={connectionsOnly || visibility.servers}
+                    visible={sidebarWindowMode || visibility.servers}
                     active={!vrcStatusHasIssue}
                     dotClassName={cn(
                         vrcStatus.refreshing && 'motion-safe:animate-pulse',
@@ -277,7 +277,7 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
                         formatStatusDate
                     )}
                 />
-                {connectionsOnly || visibility.ws ? (
+                {sidebarWindowMode || visibility.ws ? (
                     <Tooltip>
                         <TooltipTrigger
                             render={
@@ -306,7 +306,37 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
             </>
         );
 
-        if (connectionsOnly) {
+        const sessionActions = (
+            <>
+                <DoNotDisturbMenu />
+                <Tooltip>
+                    <TooltipTrigger
+                        render={
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                aria-label={t(
+                                    'status_bar.start_background_mode'
+                                )}
+                                className={cn(
+                                    'size-6 shrink-0 rounded-none',
+                                    'text-muted-foreground hover:text-muted-foreground'
+                                )}
+                                onClick={onStartBackgroundMode}
+                            >
+                                <Minimize2Icon data-icon="icon" />
+                            </Button>
+                        }
+                    />
+                    <TooltipContent>
+                        {t('status_bar.start_background_mode_tooltip')}
+                    </TooltipContent>
+                </Tooltip>
+            </>
+        );
+
+        if (sidebarWindowMode) {
             return (
                 <footer
                     ref={ref}
@@ -318,6 +348,9 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
                     {...props}
                 >
                     {connections}
+                    <div className="ml-auto flex shrink-0 items-center">
+                        {sessionActions}
+                    </div>
                 </footer>
             );
         }
@@ -901,31 +934,7 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
                                 </PopoverContent>
                             </Popover>
                         ) : null}
-                        <DoNotDisturbMenu />
-                        <Tooltip>
-                            <TooltipTrigger
-                                render={
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        aria-label={t(
-                                            'status_bar.start_background_mode'
-                                        )}
-                                        className={cn(
-                                            'size-6 shrink-0 rounded-none',
-                                            'text-muted-foreground hover:text-muted-foreground'
-                                        )}
-                                        onClick={onStartBackgroundMode}
-                                    >
-                                        <Minimize2Icon data-icon="icon" />
-                                    </Button>
-                                }
-                            />
-                            <TooltipContent>
-                                {t('status_bar.start_background_mode_tooltip')}
-                            </TooltipContent>
-                        </Tooltip>
+                        {sessionActions}
                     </div>
                 </div>
             </footer>

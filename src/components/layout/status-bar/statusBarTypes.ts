@@ -144,7 +144,7 @@ export type StatusBarFooterModel = {
 };
 
 export type StatusBarFooterProps = ComponentPropsWithoutRef<'footer'> & {
-    connectionsOnly?: boolean;
+    sidebarWindowMode?: boolean;
     footer: StatusBarFooterModel;
 };
 

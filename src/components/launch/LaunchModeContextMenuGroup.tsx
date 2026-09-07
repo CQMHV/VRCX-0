@@ -1,10 +1,10 @@
 import { Gamepad2Icon, MonitorIcon, RectangleGogglesIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 import { isUsableInstanceLocation } from '@/components/location/locationModel';
 import { tryOpenLaunchLocation } from '@/services/directAccessService';
 import { launchVrchat } from '@/services/launchService';
+import { toast } from '@/services/toastService';
 import { parseLocation } from '@/shared/utils/location';
 import { ContextMenuGroup, ContextMenuItem } from '@/ui/shadcn/context-menu';
 
@@ -32,18 +32,25 @@ export function LaunchModeContextMenuGroup({
         try {
             const opened = await tryOpenLaunchLocation(location, shortName);
             if (opened) {
-                toast.success(
-                    t('dialog.instance.success.vrchat_launch_request_sent')
-                );
+                toast.add({
+                    type: 'success',
+                    title: t(
+                        'dialog.instance.success.vrchat_launch_request_sent'
+                    )
+                });
             } else {
-                toast.error(
-                    t(
+                toast.add({
+                    type: 'error',
+                    title: t(
                         'dialog.instance.error.unable_to_open_this_instance_in_vrchat'
                     )
-                );
+                });
             }
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : errorMessage);
+            toast.add({
+                type: 'error',
+                title: error instanceof Error ? error.message : errorMessage
+            });
         }
     }
 
@@ -51,7 +58,10 @@ export function LaunchModeContextMenuGroup({
         try {
             await launchVrchat(location, shortName, desktopMode);
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : errorMessage);
+            toast.add({
+                type: 'error',
+                title: error instanceof Error ? error.message : errorMessage
+            });
         }
     }
 
