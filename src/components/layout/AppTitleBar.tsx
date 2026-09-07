@@ -8,6 +8,7 @@ import {
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { markAppTitleBarWindowAction } from '@/lib/overlayTitlebar';
 import { cn } from '@/lib/utils';
 import {
     closeWindow,
@@ -43,11 +44,13 @@ function TitleBarWindowButton({
             )}
             onPointerDown={(event: React.PointerEvent) => {
                 if (event.button === 0) {
+                    markAppTitleBarWindowAction();
                     onAction();
                 }
             }}
             onClick={(event: React.MouseEvent) => {
                 if (event.detail === 0) {
+                    markAppTitleBarWindowAction();
                     onAction();
                 }
             }}
