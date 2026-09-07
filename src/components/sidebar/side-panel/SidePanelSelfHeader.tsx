@@ -230,12 +230,6 @@ export function SidePanelSelfHeader() {
                                                     />
                                                 }
                                             >
-                                                <i
-                                                    aria-hidden="true"
-                                                    className={userStatusIndicatorClassName(
-                                                        statusValue
-                                                    )}
-                                                />
                                                 {t(
                                                     resolveCurrentUserStatusLabelKey(
                                                         statusValue
