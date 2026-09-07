@@ -50,7 +50,6 @@ function TitleBarWindowButton({
             }}
             onClick={(event: React.MouseEvent) => {
                 if (event.detail === 0) {
-                    markAppTitleBarWindowAction();
                     onAction();
                 }
             }}

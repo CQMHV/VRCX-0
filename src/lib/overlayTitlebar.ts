@@ -18,18 +18,23 @@ function isAppTitleBarTarget(target: EventTarget | null) {
 }
 
 function markAppTitleBarWindowAction() {
+    clearPendingWindowAction();
     pendingWindowAction = true;
-    if (clearPendingWindowActionTimer) {
-        clearTimeout(clearPendingWindowActionTimer);
-    }
-    clearPendingWindowActionTimer = setTimeout(() => {
-        pendingWindowAction = false;
-        clearPendingWindowActionTimer = undefined;
-    }, WINDOW_ACTION_GRACE_PERIOD_MS);
+    // A new gesture must clear protection before Base UI's document capture handlers.
+    window.addEventListener('pointerdown', clearPendingWindowAction, true);
+    window.addEventListener('pointercancel', clearPendingWindowAction, true);
+    window.addEventListener('keydown', clearPendingWindowAction, true);
+    clearPendingWindowActionTimer = setTimeout(
+        clearPendingWindowAction,
+        WINDOW_ACTION_GRACE_PERIOD_MS
+    );
 }
 
 function clearPendingWindowAction() {
     pendingWindowAction = false;
+    window.removeEventListener('pointerdown', clearPendingWindowAction, true);
+    window.removeEventListener('pointercancel', clearPendingWindowAction, true);
+    window.removeEventListener('keydown', clearPendingWindowAction, true);
     if (clearPendingWindowActionTimer) {
         clearTimeout(clearPendingWindowActionTimer);
         clearPendingWindowActionTimer = undefined;
