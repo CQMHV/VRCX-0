@@ -4250,6 +4250,17 @@
                 "uncompressed_size": "Uncompressed size",
                 "texture_memory": "Texture memory",
                 "analysis_loading": "Loading detailed performance analysis…",
+                "ranks": {
+                    "Excellent": "Excellent",
+                    "Good": "Good",
+                    "Medium": "Medium",
+                    "Poor": "Poor",
+                    "VeryPoor": "Very Poor"
+                },
+                "limits_help": "Values show current / {poor}-rank maximum, not an upload limit or optimization target. Colors and labels indicate each metric's rank using the published thresholds; the overall rating comes from VRChat. Aim for {good} or {medium}. Unlisted metrics have no rank comparison.",
+                "pc_rules": "PC performance rules ↗",
+                "mobile_rules": "Android / iOS performance rules ↗",
+                "mobile_removed": "Disabled on Android and iOS",
                 "analysis_pending": "Detailed performance analysis is not ready yet. Refresh the avatar to try again.",
                 "analysis_unavailable": "Detailed performance analysis is unavailable for this platform.",
                 "yes": "Yes",

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -16,6 +16,9 @@ vi.mock('../../EntityDialogScaffold', () => ({
         <div>{children}</div>
     )
 }));
+
+vi.mock('@/services/entityMediaService', () => ({ openExternalLink: vi.fn() }));
+import { openExternalLink } from '@/services/entityMediaService';
 
 import { AvatarDialogPerformanceTab } from './AvatarDialogPerformanceTab';
 
@@ -87,6 +90,7 @@ describe('AvatarDialogPerformanceTab', () => {
                         avatarStats: {
                             totalPolygons: 123456,
                             totalVertices: 65432,
+                            totalTextureUsage: 32 * 1048576,
                             raycastCount: 4,
                             particleTrailsEnabled: true,
                             particleCollisionEnabled: false
@@ -100,12 +104,22 @@ describe('AvatarDialogPerformanceTab', () => {
         expect(screen.getByText('rating: VeryPoor')).toBeTruthy();
         expect(screen.getByText('12.50 MB')).toBeTruthy();
         expect(screen.getByText('48.25 MB')).toBeTruthy();
-        expect(screen.getByText('32.00 MB')).toBeTruthy();
-        expect(screen.getByText('123,456')).toBeTruthy();
+        expect(screen.getByText('32.00 MB / 150 MB')).toBeTruthy();
+        expect(screen.getByText('123,456 / 70,000').className).toContain(
+            'text-red-700'
+        );
         expect(screen.getByText('65,432')).toBeTruthy();
-        expect(screen.getByText('4')).toBeTruthy();
-        expect(screen.getAllByText('yes')).toHaveLength(1);
-        expect(screen.getAllByText('no')).toHaveLength(1);
+        expect(screen.getByText('4 / 15')).toBeTruthy();
+        expect(screen.getByText('yes / yes').className).toContain(
+            'text-amber-700'
+        );
+        expect(screen.getByText('no / yes').className).toContain(
+            'text-green-700'
+        );
+        fireEvent.click(screen.getByText('pc_rules'));
+        expect(openExternalLink).toHaveBeenCalledWith(
+            'https://creators.vrchat.com/avatars/avatar-performance-ranking-system/#pc-limits'
+        );
     });
 
     it('keeps the rating visible when detailed analysis is unavailable', () => {
@@ -127,4 +141,29 @@ describe('AvatarDialogPerformanceTab', () => {
         expect(screen.getByText('rating: Medium')).toBeTruthy();
         expect(screen.getByText('analysis_unavailable')).toBeTruthy();
     });
+
+    it.each(['android', 'ios'] as const)(
+        'renders mobile limits and documentation for %s',
+        (platform) => {
+            render(
+                <AvatarDialogPerformanceTab
+                    platformInfo={{ pc: {}, android: {}, ios: {} }}
+                    fileAnalysis={{
+                        [platform]: {
+                            avatarStats: { totalPolygons: 18000, lightCount: 0 }
+                        }
+                    }}
+                />
+            );
+            expect(screen.getByText('18,000 / 20,000').className).toContain(
+                'text-orange-700'
+            );
+            expect(
+                screen.getAllByText('mobile_removed').length
+            ).toBeGreaterThan(0);
+            expect(
+                screen.getByText('mobile_rules').getAttribute('href')
+            ).toContain('#mobile-limits');
+        }
+    );
 });
