@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
+    handleDeepLinkAction: vi.fn(),
     openInstanceInGame: vi.fn(),
     openWorldDialog: vi.fn()
 }));
@@ -24,6 +25,10 @@ vi.mock('@/services/dialogService', () => ({
 
 vi.mock('@/services/instanceActionService', () => ({
     openInstanceInGame: mocks.openInstanceInGame
+}));
+
+vi.mock('@/services/deepLinkService', () => ({
+    handleDeepLinkAction: mocks.handleDeepLinkAction
 }));
 
 import {
@@ -114,7 +119,10 @@ describe('directAccessParse detect mode', () => {
             'https://vrchat.com/home/group/grp_id',
             'https://vrch.at/abcd1234',
             'https://vrc.group/vrcx.1234',
-            `vrchat://launch?id=${encodeURIComponent(LOCATION)}`
+            `vrchat://launch?id=${encodeURIComponent(LOCATION)}`,
+            `vrcx-0://world/open?id=${WORLD_ID}`,
+            `vrcx-0://avatar/open?id=${AVATAR_ID}`,
+            'vrcx-0://collection/import?id=AbC123z'
         ];
 
         for (const link of links) {
@@ -176,6 +184,19 @@ describe('directAccessParse detect mode', () => {
         });
         expect(dialogService.openAvatarDialog).toHaveBeenCalledWith({
             avatarId: AVATAR_ID
+        });
+    });
+
+    it('opens embedded VRCX-0 native deep links', async () => {
+        await expect(
+            directAccessParse(
+                `Open in VRCX-0: vrcx-0://world/open?id=${WORLD_ID}`
+            )
+        ).resolves.toBe(true);
+
+        expect(mocks.handleDeepLinkAction).toHaveBeenCalledWith({
+            type: 'openWorld',
+            worldId: WORLD_ID
         });
     });
 

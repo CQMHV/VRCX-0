@@ -1,5 +1,7 @@
+import type { DeepLinkAction } from '@/platform/tauri/bindings';
 import vrchatInstanceRepository from '@/repositories/vrchatInstanceRepository';
 import vrchatSearchRepository from '@/repositories/vrchatSearchRepository';
+import { handleDeepLinkAction } from '@/services/deepLinkService';
 import {
     openAvatarDialog,
     openGroupDialog,
@@ -7,6 +9,7 @@ import {
     openWorldDialog
 } from '@/services/dialogService';
 import { openInstanceInGame } from '@/services/instanceActionService';
+import { isCollectionShortcode } from '@/shared/constants/collectionShare';
 import {
     hasAvatarIdPrefix,
     hasGroupIdPrefix,
@@ -26,7 +29,7 @@ export type DirectAccessMode = 'open' | 'detect';
 type LooseRecord = Record<string, unknown>;
 type ParsedLocation = ReturnType<typeof parseLocation>;
 
-const URL_IN_TEXT_RE = /(?:https|vrchat):\/\/[^\s<>"'`]+/giu;
+const URL_IN_TEXT_RE = /(?:https|vrchat|vrcx-0):\/\/[^\s<>"'`]+/giu;
 const TRAILING_URL_PUNCTUATION_RE =
     /[.,;:!?，。；：！？、)\]}>）】〉》」』]+$/u;
 
@@ -68,6 +71,37 @@ function parseVrcxShareLink(
     }
     if (type === 'avatar' && isAvatarId(id)) {
         return { type, id };
+    }
+    return null;
+}
+
+function parseVrcxNativeDeepLink(input: string): DeepLinkAction | null {
+    const url = parseUrlOrNull(input);
+    if (!url || url.protocol !== 'vrcx-0:' || url.hash) {
+        return null;
+    }
+
+    const id = url.searchParams.get('id');
+    if (!id) {
+        return null;
+    }
+
+    if (url.hostname === 'world' && url.pathname === '/open' && isWorldId(id)) {
+        return { type: 'openWorld', worldId: id };
+    }
+    if (
+        url.hostname === 'avatar' &&
+        url.pathname === '/open' &&
+        isAvatarId(id)
+    ) {
+        return { type: 'openAvatar', avatarId: id };
+    }
+    if (
+        url.hostname === 'collection' &&
+        url.pathname === '/import' &&
+        isCollectionShortcode(id)
+    ) {
+        return { type: 'importCollection', collectionId: id };
     }
     return null;
 }
@@ -359,6 +393,15 @@ export async function directAccessParse(
         } else {
             openAvatarDialog({ avatarId: vrcxShareLink.id });
         }
+        return true;
+    }
+
+    const vrcxNativeDeepLink = parseVrcxNativeDeepLink(value);
+    if (vrcxNativeDeepLink) {
+        if (mode === 'detect') {
+            return true;
+        }
+        handleDeepLinkAction(vrcxNativeDeepLink);
         return true;
     }
 
