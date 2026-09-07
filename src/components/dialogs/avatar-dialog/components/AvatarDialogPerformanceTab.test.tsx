@@ -20,11 +20,18 @@ vi.mock('../../EntityDialogScaffold', () => ({
 vi.mock('@/services/entityMediaService', () => ({ openExternalLink: vi.fn() }));
 import { openExternalLink } from '@/services/entityMediaService';
 
+import { performanceDocsUrl } from '../avatarPerformancePresentation';
 import { AvatarDialogPerformanceTab } from './AvatarDialogPerformanceTab';
 
 afterEach(cleanup);
 
 describe('AvatarDialogPerformanceTab', () => {
+    it.each(['android', 'ios'] as const)(
+        'links %s to the mobile limits',
+        (platform) => {
+            expect(performanceDocsUrl(platform)).toContain('#mobile-limits');
+        }
+    );
     it('switches platform values, thresholds and documentation together', () => {
         const { rerender } = render(
             <AvatarDialogPerformanceTab

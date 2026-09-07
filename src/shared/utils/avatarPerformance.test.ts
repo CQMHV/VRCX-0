@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-    assessPerformanceStat,
-    performanceDocsUrl
-} from './avatarPerformanceLimits';
+import { assessPerformanceStat } from './avatarPerformance';
 
 describe('avatar performance rank thresholds', () => {
     it.each([
@@ -70,10 +67,10 @@ describe('avatar performance rank thresholds', () => {
                 assessPerformanceStat('particleTrailsEnabled', true, platform)
                     .rank
             ).toBe('Poor');
+
             expect(assessPerformanceStat('lightCount', 0, platform)).toEqual({
                 removed: true
             });
-            expect(performanceDocsUrl(platform)).toContain('#mobile-limits');
         }
     );
 

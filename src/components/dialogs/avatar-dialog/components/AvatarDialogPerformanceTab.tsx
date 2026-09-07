@@ -1,4 +1,3 @@
-import type { TFunction } from 'i18next';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,134 +8,31 @@ import type {
 } from '@/domain/entities/world';
 import { cn } from '@/lib/utils';
 import { openExternalLink } from '@/services/entityMediaService';
-import {
-    assessPerformanceStat,
-    performanceDocsUrl,
-    performanceRankClass,
-    performanceRankFillClass,
-    type PerformancePlatform
-} from '@/shared/utils/avatarPerformanceLimits';
+import type { PerformancePlatform } from '@/shared/constants/avatarPerformance';
+import { assessPerformanceStat } from '@/shared/utils/avatarPerformance';
 import { Spinner } from '@/ui/shadcn/spinner';
 import { Tabs, TabsList, TabsTab, TabsPanel } from '@/ui/shadcn/tabs';
 
 import { EntityDialogTabContent } from '../../EntityDialogScaffold';
 import type { AvatarPlatformInfo } from '../avatarDialogTypes';
+import {
+    EMPTY_VALUE,
+    PERFORMANCE_STAT_GROUPS,
+    TRIANGLE_STAT,
+    formatStatValue,
+    type PerformanceStat,
+    performanceDocsUrl,
+    performanceRankClass,
+    performanceRankFillClass
+} from '../avatarPerformancePresentation';
 
-const EMPTY_VALUE = '—';
+const PLATFORM_TABS = [
+    { key: 'pc', label: 'PC', analysisKey: 'standalonewindows' },
+    { key: 'android', label: 'Android', analysisKey: 'android' },
+    { key: 'ios', label: 'iOS', analysisKey: 'ios' }
+] as const;
 const STAT_GRID_CLASS =
     'grid grid-cols-1 @2xl/performance:grid-cols-2 @max-2xl/performance:[&>div:nth-child(even)]:bg-muted/30 @2xl/performance:[&>div:nth-child(4n+3)]:bg-muted/30 @2xl/performance:[&>div:nth-child(4n+4)]:bg-muted/30 @2xl/performance:[&>div:last-child:nth-child(odd)]:col-span-2';
-
-type PerformanceStat = {
-    key: keyof AvatarStatsRecord;
-    label: string;
-    format?: 'boolean' | 'bounds';
-    unit?: string;
-};
-
-type PerformanceStatGroup = {
-    label: string;
-    stats: PerformanceStat[];
-};
-
-const TRIANGLE_STAT: PerformanceStat = {
-    key: 'totalPolygons',
-    label: 'triangles'
-};
-
-const PERFORMANCE_STAT_GROUPS: PerformanceStatGroup[] = [
-    {
-        label: 'geometry',
-        stats: [
-            { key: 'bounds', label: 'bounds', format: 'bounds', unit: 'm' },
-            { key: 'skinnedMeshCount', label: 'skinned_meshes' },
-            { key: 'meshCount', label: 'basic_meshes' },
-            { key: 'materialSlotsUsed', label: 'material_slots' },
-            { key: 'boneCount', label: 'bones' },
-            { key: 'totalVertices', label: 'vertices' },
-            { key: 'blendShapeCount', label: 'blend_shapes' }
-        ]
-    },
-    {
-        label: 'dynamics',
-        stats: [
-            { key: 'physBoneComponentCount', label: 'physbone_components' },
-            { key: 'physBoneTransformCount', label: 'affected_transforms' },
-            { key: 'physBoneColliderCount', label: 'physbone_colliders' },
-            {
-                key: 'physBoneCollisionCheckCount',
-                label: 'collision_checks'
-            },
-            { key: 'contactCount', label: 'contacts' },
-            { key: 'constraintCount', label: 'constraints' },
-            { key: 'constraintDepth', label: 'constraint_depth' }
-        ]
-    },
-    {
-        label: 'components',
-        stats: [
-            { key: 'animatorCount', label: 'animators' },
-            { key: 'particleSystemCount', label: 'particle_systems' },
-            { key: 'totalMaxParticles', label: 'max_particles' },
-            {
-                key: 'meshParticleMaxPolygons',
-                label: 'mesh_particle_triangles'
-            },
-            { key: 'lightCount', label: 'lights' },
-            { key: 'audioSourceCount', label: 'audio_sources' },
-            { key: 'raycastCount', label: 'raycasts' },
-            { key: 'clothCount', label: 'cloths' },
-            { key: 'totalClothVertices', label: 'cloth_vertices' },
-            { key: 'trailRendererCount', label: 'trail_renderers' },
-            { key: 'lineRendererCount', label: 'line_renderers' },
-            { key: 'physicsColliders', label: 'physics_colliders' },
-            { key: 'physicsRigidbodies', label: 'rigidbodies' },
-            {
-                key: 'particleTrailsEnabled',
-                label: 'particle_trails',
-                format: 'boolean'
-            },
-            {
-                key: 'particleCollisionEnabled',
-                label: 'particle_collision',
-                format: 'boolean'
-            }
-        ]
-    }
-];
-
-function formatBounds(value: unknown, locale: string): string {
-    if (!Array.isArray(value) || value.length === 0) {
-        return EMPTY_VALUE;
-    }
-    const formatter = new Intl.NumberFormat(locale, {
-        maximumFractionDigits: 2
-    });
-    const bounds = value.filter(
-        (entry): entry is number => typeof entry === 'number'
-    );
-    return bounds.length
-        ? bounds.map((entry) => formatter.format(entry)).join('×')
-        : EMPTY_VALUE;
-}
-
-function formatStatValue(
-    value: unknown,
-    format: PerformanceStat['format'],
-    locale: string,
-    t: TFunction
-): string {
-    if (format === 'boolean' && typeof value === 'boolean') {
-        return value
-            ? t('dialog.avatar.performance.yes')
-            : t('dialog.avatar.performance.no');
-    }
-    if (format === 'bounds') {
-        return formatBounds(value, locale);
-    }
-    return typeof value === 'number'
-        ? new Intl.NumberFormat(locale).format(value)
-        : EMPTY_VALUE;
-}
 
 function PerformanceFact({
     label,
@@ -202,16 +98,14 @@ function PerformanceFact({
 function PerformanceMetric({
     stat,
     stats,
-    locale,
-    targetPlatform,
-    t
+    targetPlatform
 }: {
     stat: PerformanceStat;
     stats: AvatarStatsRecord;
-    locale: string;
     targetPlatform: PerformancePlatform;
-    t: TFunction;
 }) {
+    const { t, i18n } = useTranslation();
+    const locale = i18n.language || 'en';
     const assessment = assessPerformanceStat(
         stat.key,
         stats[stat.key],
@@ -250,7 +144,8 @@ function PlatformPerformanceSection({
     targetPlatform: PerformancePlatform;
     analysis?: FileAnalysisRecord;
 }) {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
+    const docsUrl = performanceDocsUrl(targetPlatform);
     const stats = analysis?.avatarStats;
     const texture = assessPerformanceStat(
         'totalTextureUsage',
@@ -264,13 +159,11 @@ function PlatformPerformanceSection({
                     poor: t('dialog.avatar.performance.ranks.Poor')
                 })}{' '}
                 <a
-                    href={performanceDocsUrl(targetPlatform)}
+                    href={docsUrl}
                     className="text-foreground underline underline-offset-2"
                     onClick={(event) => {
                         event.preventDefault();
-                        void openExternalLink(
-                            performanceDocsUrl(targetPlatform)
-                        );
+                        void openExternalLink(docsUrl);
                     }}
                 >
                     {t(
@@ -307,61 +200,34 @@ function PlatformPerformanceSection({
                 <PerformanceMetric
                     stat={TRIANGLE_STAT}
                     stats={stats ?? {}}
-                    locale={i18n.language || 'en'}
                     targetPlatform={targetPlatform}
-                    t={t}
                 />
             </div>
             {stats ? (
                 PERFORMANCE_STAT_GROUPS.map((group) => (
-                    <PerformanceGroup
-                        key={group.label}
-                        group={group}
-                        stats={stats}
-                        locale={i18n.language || 'en'}
-                        targetPlatform={targetPlatform}
-                        t={t}
-                    />
+                    <section key={group.label} className="space-y-1.5 pt-2">
+                        <h4 className="text-muted-foreground px-3 text-xs font-medium">
+                            {t(
+                                `dialog.avatar.performance.group.${group.label}`
+                            )}
+                        </h4>
+                        <div className={STAT_GRID_CLASS}>
+                            {group.stats.map((stat) => (
+                                <PerformanceMetric
+                                    key={stat.key}
+                                    stat={stat}
+                                    stats={stats}
+                                    targetPlatform={targetPlatform}
+                                />
+                            ))}
+                        </div>
+                    </section>
                 ))
             ) : (
                 <p className="text-muted-foreground text-sm">
                     {t('dialog.avatar.performance.analysis_unavailable')}
                 </p>
             )}
-        </section>
-    );
-}
-
-function PerformanceGroup({
-    group,
-    stats,
-    locale,
-    targetPlatform,
-    t
-}: {
-    group: PerformanceStatGroup;
-    stats: AvatarStatsRecord;
-    locale: string;
-    targetPlatform: PerformancePlatform;
-    t: TFunction;
-}) {
-    return (
-        <section className="space-y-1.5 pt-2">
-            <h4 className="text-muted-foreground px-3 text-xs font-medium">
-                {t(`dialog.avatar.performance.group.${group.label}`)}
-            </h4>
-            <div className={STAT_GRID_CLASS}>
-                {group.stats.map((stat) => (
-                    <PerformanceMetric
-                        key={stat.key}
-                        stat={stat}
-                        stats={stats}
-                        locale={locale}
-                        targetPlatform={targetPlatform}
-                        t={t}
-                    />
-                ))}
-            </div>
         </section>
     );
 }
@@ -381,37 +247,16 @@ export function AvatarDialogPerformanceTab({
     const [selectedPlatform, setSelectedPlatform] =
         useState<PerformancePlatform>('pc');
     const contentRef = useRef<HTMLDivElement>(null);
-    const platforms: Array<{
-        key: PerformancePlatform;
-        label: string;
-        platform: AvatarPlatformInfo['pc'];
-        analysis?: FileAnalysisRecord;
-    }> = [
-        {
-            key: 'pc',
-            label: 'PC',
-            platform: platformInfo.pc,
-            analysis: fileAnalysis.standalonewindows
-        },
-        {
-            key: 'android',
-            label: 'Android',
-            platform: platformInfo.android,
-            analysis: fileAnalysis.android
-        },
-        {
-            key: 'ios',
-            label: 'iOS',
-            platform: platformInfo.ios,
-            analysis: fileAnalysis.ios
-        }
-    ];
-    const availablePlatforms = platforms.filter(
-        ({ platform, analysis }) => platform.platform || analysis
+    const displayedPlatforms = PLATFORM_TABS.map(
+        ({ key, label, analysisKey }) => ({
+            key,
+            label,
+            platform: platformInfo[key],
+            analysis: fileAnalysis[analysisKey]
+        })
+    ).filter(({ platform, analysis }) =>
+        pending ? Boolean(analysis) : Boolean(platform.platform || analysis)
     );
-    const displayedPlatforms = pending
-        ? availablePlatforms.filter(({ analysis }) => Boolean(analysis))
-        : availablePlatforms;
     const activePlatform =
         displayedPlatforms.find(({ key }) => key === selectedPlatform) ??
         displayedPlatforms[0];
