@@ -4258,10 +4258,8 @@
                     "Poor": "高负载",
                     "VeryPoor": "极高负载"
                 },
-                "limits_help": "数值按当前值 / {poor}档上限显示；颜色表示单项评级。",
-                "pc_rules": "PC 性能评级规则 ↗",
-                "mobile_rules": "Android / iOS 性能评级规则 ↗",
-                "mobile_removed": "Android 和 iOS 禁用此组件",
+                "pc_rules": "PC 性能评级规则",
+                "mobile_rules": "Android / iOS 性能评级规则",
                 "analysis_pending": "详细性能分析尚未生成，请稍后刷新 Avatar 重试。",
                 "analysis_unavailable": "此平台暂无详细性能分析数据。",
                 "yes": "是",

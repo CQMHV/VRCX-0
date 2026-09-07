@@ -4194,7 +4194,6 @@
                 "copy_vrcx_url": "공유 링크 복사"
             },
             "performance": {
-                "limits_help": "수치는 현재 값 / {poor} 등급 상한으로 표시되며, 색상은 각 항목의 등급을 나타냅니다.",
                 "header": "성능",
                 "rating": "등급",
                 "analysis_loading": "상세 성능 분석을 불러오는 중…",

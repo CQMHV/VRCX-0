@@ -4244,7 +4244,6 @@
                 "gallery": "Galería"
             },
             "performance": {
-                "limits_help": "Se muestra el valor actual / límite de la categoría {poor}; el color indica la clasificación de cada métrica.",
                 "header": "Rendimiento",
                 "rating": "Clasificación",
                 "analysis_loading": "Cargando el análisis detallado de rendimiento…",

@@ -23,7 +23,10 @@ import { openExternalLink } from '@/services/entityMediaService';
 import { performanceDocsUrl } from '../avatarPerformancePresentation';
 import { AvatarDialogPerformanceTab } from './AvatarDialogPerformanceTab';
 
-afterEach(cleanup);
+afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+});
 
 describe('AvatarDialogPerformanceTab', () => {
     it.each(['android', 'ios'] as const)(
@@ -64,8 +67,9 @@ describe('AvatarDialogPerformanceTab', () => {
         expect(screen.getByText('18,000/20,000')).toBeTruthy();
         expect(screen.getByText('3 MB')).toBeTruthy();
         expect(screen.queryByText('12 MB')).toBeNull();
-        expect(screen.getByText('mobile_rules').getAttribute('href')).toContain(
-            '#mobile-limits'
+        fireEvent.click(screen.getByText('mobile_rules'));
+        expect(openExternalLink).toHaveBeenCalledWith(
+            'https://creators.vrchat.com/avatars/avatar-performance-ranking-system/#mobile-limits'
         );
         rerender(
             <AvatarDialogPerformanceTab
@@ -92,15 +96,19 @@ describe('AvatarDialogPerformanceTab', () => {
     });
 
     it('explains when detailed analysis is not ready yet', () => {
+        const onRefresh = vi.fn();
         render(
             <AvatarDialogPerformanceTab
                 platformInfo={{ pc: {}, android: {}, ios: {} }}
                 fileAnalysis={{}}
                 pending
+                onRefresh={onRefresh}
             />
         );
 
         expect(screen.getByText('analysis_pending')).toBeTruthy();
+        fireEvent.click(screen.getByText('refresh'));
+        expect(onRefresh).toHaveBeenCalledTimes(1);
     });
 
     it('renders completed platforms while another platform is pending', () => {
@@ -177,6 +185,7 @@ describe('AvatarDialogPerformanceTab', () => {
     });
 
     it('keeps the rating visible when detailed analysis is unavailable', () => {
+        const onRefresh = vi.fn();
         render(
             <AvatarDialogPerformanceTab
                 platformInfo={{
@@ -188,6 +197,7 @@ describe('AvatarDialogPerformanceTab', () => {
                     ios: {}
                 }}
                 fileAnalysis={{}}
+                onRefresh={onRefresh}
             />
         );
 
@@ -197,6 +207,8 @@ describe('AvatarDialogPerformanceTab', () => {
             'text-amber-700'
         );
         expect(screen.getByText('analysis_unavailable')).toBeTruthy();
+        fireEvent.click(screen.getByText('refresh'));
+        expect(onRefresh).toHaveBeenCalledTimes(1);
     });
 
     it.each(['android', 'ios'] as const)(
@@ -215,12 +227,11 @@ describe('AvatarDialogPerformanceTab', () => {
             expect(screen.getByText('18,000/20,000').className).toContain(
                 'text-orange-700'
             );
-            expect(
-                screen.getAllByText('mobile_removed').length
-            ).toBeGreaterThan(0);
-            expect(
-                screen.getByText('mobile_rules').getAttribute('href')
-            ).toContain('#mobile-limits');
+            expect(screen.queryByText('lights')).toBeNull();
+            fireEvent.click(screen.getByText('mobile_rules'));
+            expect(openExternalLink).toHaveBeenCalledWith(
+                'https://creators.vrchat.com/avatars/avatar-performance-ranking-system/#mobile-limits'
+            );
         }
     );
 });

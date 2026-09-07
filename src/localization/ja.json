@@ -4239,7 +4239,6 @@
                 "gallery": "ギャラリー"
             },
             "performance": {
-                "limits_help": "数値は現在値 / {poor}の上限値です。色は各項目の評価を表します。",
                 "header": "パフォーマンス",
                 "rating": "評価",
                 "download_size": "ダウンロードサイズ",

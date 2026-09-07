@@ -4248,7 +4248,6 @@
                 "gallery": "Galerie"
             },
             "performance": {
-                "limits_help": "Hodnoty zobrazují aktuální stav / horní mez hodnocení {poor}; barvy označují hodnocení jednotlivých metrik.",
                 "header": "Výkon",
                 "rating": "Hodnocení",
                 "analysis_loading": "Načítá se podrobná analýza výkonu…",

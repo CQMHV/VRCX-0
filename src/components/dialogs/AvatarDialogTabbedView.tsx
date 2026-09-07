@@ -612,6 +612,7 @@ export function AvatarDialogTabbedView({
                         fileAnalysis={fileAnalysis}
                         loading={fileAnalysisStatus === 'running'}
                         pending={fileAnalysisStatus === 'pending'}
+                        onRefresh={onRefresh}
                     />
                     <AvatarDialogGalleryTab
                         canManageAvatar={canManageAvatar}

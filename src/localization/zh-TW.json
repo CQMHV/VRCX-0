@@ -4245,7 +4245,6 @@
                 "gallery": "相簿"
             },
             "performance": {
-                "limits_help": "數值以目前值 / {poor}級上限顯示；顏色表示各項目的評級。",
                 "header": "效能",
                 "rating": "評級",
                 "download_size": "下載容量",

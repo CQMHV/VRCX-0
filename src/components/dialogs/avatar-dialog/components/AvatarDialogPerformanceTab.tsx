@@ -1,3 +1,4 @@
+import { ExternalLinkIcon, RefreshCwIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { openExternalLink } from '@/services/entityMediaService';
 import type { PerformancePlatform } from '@/shared/constants/avatarPerformance';
 import { assessPerformanceStat } from '@/shared/utils/avatarPerformance';
+import { Button } from '@/ui/shadcn/button';
 import { Spinner } from '@/ui/shadcn/spinner';
 import { Tabs, TabsList, TabsTab, TabsPanel } from '@/ui/shadcn/tabs';
 
@@ -40,8 +42,7 @@ function PerformanceFact({
     limit,
     unit,
     rank,
-    ratio,
-    note
+    ratio
 }: {
     label: string;
     value: string;
@@ -49,7 +50,6 @@ function PerformanceFact({
     unit?: string;
     rank?: string;
     ratio?: number;
-    note?: string;
 }) {
     const { t } = useTranslation();
     const rankLabel = rank
@@ -57,8 +57,7 @@ function PerformanceFact({
         : undefined;
     const rankClass = performanceRankClass(rank);
     const detail =
-        note ??
-        (rank === 'Poor' || rank === 'VeryPoor' ? rankLabel : undefined);
+        rank === 'Poor' || rank === 'VeryPoor' ? rankLabel : undefined;
     const measured = value || EMPTY_VALUE;
     const suffix = unit && measured !== EMPTY_VALUE ? ` ${unit}` : '';
     return (
@@ -66,7 +65,7 @@ function PerformanceFact({
             <span className="text-muted-foreground block text-xs">{label}</span>
             <div className="mt-0.5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <span
-                    title={note || rankLabel}
+                    title={rankLabel}
                     className={cn(
                         'min-w-0 text-sm font-semibold break-words tabular-nums',
                         rankClass
@@ -111,6 +110,9 @@ function PerformanceMetric({
         stats[stat.key],
         targetPlatform
     );
+    if (assessment.removed) {
+        return null;
+    }
     return (
         <PerformanceFact
             label={t(`dialog.avatar.performance.stat.${stat.label}`)}
@@ -128,24 +130,20 @@ function PerformanceMetric({
             unit={stat.unit}
             rank={assessment.rank}
             ratio={assessment.ratio}
-            note={
-                assessment.removed
-                    ? t('dialog.avatar.performance.mobile_removed')
-                    : undefined
-            }
         />
     );
 }
 
 function PlatformPerformanceSection({
     targetPlatform,
-    analysis
+    analysis,
+    onRefresh
 }: {
     targetPlatform: PerformancePlatform;
     analysis?: FileAnalysisRecord;
+    onRefresh?: () => void;
 }) {
     const { t } = useTranslation();
-    const docsUrl = performanceDocsUrl(targetPlatform);
     const stats = analysis?.avatarStats;
     const texture = assessPerformanceStat(
         'totalTextureUsage',
@@ -154,25 +152,6 @@ function PlatformPerformanceSection({
     );
     return (
         <section className="@container/performance space-y-4">
-            <p className="text-muted-foreground text-xs">
-                {t('dialog.avatar.performance.limits_help', {
-                    poor: t('dialog.avatar.performance.ranks.Poor')
-                })}{' '}
-                <a
-                    href={docsUrl}
-                    className="text-foreground underline underline-offset-2"
-                    onClick={(event) => {
-                        event.preventDefault();
-                        void openExternalLink(docsUrl);
-                    }}
-                >
-                    {t(
-                        targetPlatform === 'pc'
-                            ? 'dialog.avatar.performance.pc_rules'
-                            : 'dialog.avatar.performance.mobile_rules'
-                    )}
-                </a>
-            </p>
             <div className={STAT_GRID_CLASS}>
                 <PerformanceFact
                     label={t('dialog.avatar.performance.download_size')}
@@ -224,11 +203,26 @@ function PlatformPerformanceSection({
                     </section>
                 ))
             ) : (
-                <p className="text-muted-foreground text-sm">
-                    {t('dialog.avatar.performance.analysis_unavailable')}
-                </p>
+                <div className="text-muted-foreground flex flex-wrap items-center gap-2 px-3 text-sm">
+                    <span>
+                        {t('dialog.avatar.performance.analysis_unavailable')}
+                    </span>
+                    {onRefresh ? (
+                        <PerformanceRefreshButton onRefresh={onRefresh} />
+                    ) : null}
+                </div>
             )}
         </section>
+    );
+}
+
+function PerformanceRefreshButton({ onRefresh }: { onRefresh: () => void }) {
+    const { t } = useTranslation();
+    return (
+        <Button type="button" variant="outline" size="xs" onClick={onRefresh}>
+            <RefreshCwIcon data-icon="inline-start" />
+            {t('common.actions.refresh')}
+        </Button>
     );
 }
 
@@ -236,12 +230,14 @@ export function AvatarDialogPerformanceTab({
     platformInfo,
     fileAnalysis,
     loading = false,
-    pending = false
+    pending = false,
+    onRefresh
 }: {
     platformInfo: AvatarPlatformInfo;
     fileAnalysis: PlatformFileAnalysis;
     loading?: boolean;
     pending?: boolean;
+    onRefresh?: () => void;
 }) {
     const { t } = useTranslation();
     const [selectedPlatform, setSelectedPlatform] =
@@ -277,8 +273,17 @@ export function AvatarDialogPerformanceTab({
             ) : (
                 <div ref={contentRef} className="space-y-4">
                     {pending ? (
-                        <div className="text-muted-foreground rounded-md border border-dashed px-3 py-2 text-sm">
-                            {t('dialog.avatar.performance.analysis_pending')}
+                        <div className="text-muted-foreground flex flex-wrap items-center gap-2 rounded-md border border-dashed px-3 py-2 text-sm">
+                            <span>
+                                {t(
+                                    'dialog.avatar.performance.analysis_pending'
+                                )}
+                            </span>
+                            {onRefresh ? (
+                                <PerformanceRefreshButton
+                                    onRefresh={onRefresh}
+                                />
+                            ) : null}
                         </div>
                     ) : null}
                     {activePlatform ? (
@@ -298,9 +303,9 @@ export function AvatarDialogPerformanceTab({
                                 }
                             }}
                         >
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 px-3">
                                 {displayedPlatforms.length > 1 ? (
-                                    <TabsList>
+                                    <TabsList size="sm">
                                         {displayedPlatforms.map(
                                             ({ key, label }) => (
                                                 <TabsTab key={key} value={key}>
@@ -326,12 +331,33 @@ export function AvatarDialogPerformanceTab({
                                         )}
                                     </span>
                                 </div>
+                                <Button
+                                    type="button"
+                                    variant="link"
+                                    size="xs"
+                                    className="text-muted-foreground hover:text-foreground ml-auto h-auto p-0"
+                                    onClick={() => {
+                                        void openExternalLink(
+                                            performanceDocsUrl(
+                                                activePlatform.key
+                                            )
+                                        );
+                                    }}
+                                >
+                                    <ExternalLinkIcon data-icon="inline-start" />
+                                    {t(
+                                        activePlatform.key === 'pc'
+                                            ? 'dialog.avatar.performance.pc_rules'
+                                            : 'dialog.avatar.performance.mobile_rules'
+                                    )}
+                                </Button>
                             </div>
                             {displayedPlatforms.map(({ key, analysis }) => (
                                 <TabsPanel key={key} value={key}>
                                     <PlatformPerformanceSection
                                         targetPlatform={key}
                                         analysis={analysis}
+                                        onRefresh={onRefresh}
                                     />
                                 </TabsPanel>
                             ))}

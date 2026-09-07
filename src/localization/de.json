@@ -4244,7 +4244,6 @@
                 "gallery": "Galerie"
             },
             "performance": {
-                "limits_help": "Die Werte zeigen den aktuellen Wert / die Obergrenze für {poor}; Farben kennzeichnen die Bewertung des jeweiligen Werts.",
                 "header": "Leistung",
                 "rating": "Bewertung",
                 "analysis_loading": "Detaillierte Leistungsanalyse wird geladen…",
