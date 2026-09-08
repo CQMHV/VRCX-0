@@ -1,4 +1,4 @@
-import { ChevronDownIcon, UsersIcon } from 'lucide-react';
+import { ChevronDownIcon, UsersRoundIcon } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -351,14 +351,14 @@ function GroupInstanceRow({
                                         alt=""
                                         className="size-full object-cover"
                                         fallback={
-                                            <UsersIcon
+                                            <UsersRoundIcon
                                                 data-icon="inline-start"
                                                 className="text-muted-foreground"
                                             />
                                         }
                                     />
                                 ) : (
-                                    <UsersIcon
+                                    <UsersRoundIcon
                                         data-icon="inline-start"
                                         className="text-muted-foreground"
                                     />
