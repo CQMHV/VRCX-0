@@ -294,13 +294,13 @@ export function SidePanelSelfHeader() {
                                                     }}
                                                 >
                                                     {statusDescription ||
-                                                        editDescriptionLabel}
+                                                        t('dialog.user.action.edit_social_status')}
                                                 </button>
                                             }
                                         />
                                         <TooltipContent>
                                             {statusDescription ||
-                                                editDescriptionLabel}
+                                                t('dialog.user.action.edit_social_status')}
                                         </TooltipContent>
                                     </Tooltip>
                                 )}
