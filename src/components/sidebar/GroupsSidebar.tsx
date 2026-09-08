@@ -331,7 +331,7 @@ function GroupInstanceRow({
         <ContextMenu>
             <ContextMenuTrigger
                 render={
-                    <div className="hover:bg-muted/50 flex w-full items-center rounded-lg">
+                    <div className="flex w-full items-center rounded-lg hover:bg-(--state-hover-surface)">
                         <Button
                             type="button"
                             variant="ghost"
