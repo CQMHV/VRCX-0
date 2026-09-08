@@ -40,6 +40,7 @@ import {
     communityThemeControlsAppearance,
     useCommunityThemeStore
 } from '@/state/communityThemeStore';
+import { useCriticalTaskStore } from '@/state/criticalTaskStore';
 import { usePreferencesStore } from '@/state/preferencesStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
 import { useSessionStore } from '@/state/sessionStore';
@@ -184,6 +185,9 @@ export function useTitleBarActions(
     const sidebarWindowMode = useShellStore(
         (state) => state.windowDisplayMode === 'sidebar'
     );
+    const criticalTaskActive = useCriticalTaskStore(
+        (state) => state.activeTasks.length > 0
+    );
     const shortcutHintsVisible = useShellStore(
         (state) => state.shortcutHintsVisible
     );
@@ -223,24 +227,29 @@ export function useTitleBarActions(
     const quickSearchShortcutLabel = getTitleBarShortcutLabel(isMacHost, 'K');
     const quickSearchLabel = t('app_menu.quick_search');
     const directAccessLabel = t('prompt.direct_access_omni.header');
+    const sidebarWindowModeBlocked = !sidebarWindowMode && criticalTaskActive;
     const sidebarWindowModeLabel = sidebarWindowMode
         ? t('app_menu.restore_full_window')
         : t('app_menu.enter_sidebar_mode');
 
     const toggleSidebarWindowMode = useCallback(() => {
+        if (sidebarWindowModeBlocked) {
+            return;
+        }
         const transition = sidebarWindowMode
             ? restoreNormalWindowMode()
             : enterSidebarWindowMode();
         void transition.catch((error: unknown) => {
             console.warn('Failed to change the window display mode:', error);
         });
-    }, [sidebarWindowMode]);
+    }, [sidebarWindowMode, sidebarWindowModeBlocked]);
 
     const sidebarWindowModeButton = (
         <TitleBarButton
             label={sidebarWindowModeLabel}
             aria-pressed={sidebarWindowMode}
-            className="ml-1 size-7 min-w-7 rounded-md px-0"
+            aria-disabled={sidebarWindowModeBlocked}
+            className="ml-1 size-7 min-w-7 rounded-md px-0 aria-disabled:opacity-50"
             onClick={toggleSidebarWindowMode}
         >
             {sidebarWindowMode ? (
