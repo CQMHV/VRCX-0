@@ -21,6 +21,8 @@ import {
     DropdownMenuTrigger
 } from '@/ui/shadcn/dropdown-menu';
 
+import { useSidebarMenuDoubleClick } from './useSidebarMenuDoubleClick';
+
 export function SidebarLocationMenu({
     children,
     openOnClick,
@@ -35,6 +37,7 @@ export function SidebarLocationMenu({
     onOpen(event: SyntheticEvent<HTMLElement>): void;
 }) {
     const { t } = useTranslation();
+    const doubleClick = useSidebarMenuDoubleClick(onOpen);
     const parsedLocation = parseLocation(location);
     const canUseInstance =
         !instanceClosed && isUsableInstanceLocation(parsedLocation);
@@ -101,10 +104,11 @@ export function SidebarLocationMenu({
                 render={
                     <span className="inline-flex max-w-full min-w-0">
                         {openOnClick ? (
-                            <DropdownMenu>
+                            <DropdownMenu {...doubleClick.menuProps}>
                                 <DropdownMenuTrigger
                                     nativeButton={false}
                                     render={children}
+                                    {...doubleClick.triggerProps}
                                 />
                                 <DropdownMenuContent className="w-max max-w-[calc(100vw-1rem)] min-w-56">
                                     {menuItems}

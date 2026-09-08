@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -48,6 +48,21 @@ function renderLocation() {
 }
 
 describe('sidebar location menus', () => {
+    it('opens details on double click in sidebar mode', async () => {
+        useShellStore.setState({ windowDisplayMode: 'sidebar' });
+        const user = userEvent.setup();
+        await user.dblClick(renderLocation());
+        expect(openWorldDialog).toHaveBeenCalledExactlyOnceWith({
+            worldId: location,
+            title: undefined
+        });
+        await waitFor(() => expect(screen.queryByRole('menu')).toBeNull());
+        expect(isSidebarAutoHideInteractionBlocked()).toBe(false);
+        await user.click(screen.getByRole('button', { name: /^Test room/ }));
+        expect(await screen.findAllByRole('menu')).toHaveLength(1);
+        expect(openWorldDialog).toHaveBeenCalledOnce();
+    });
+
     it.each(['left', 'right'])(
         'self invites from the %s-click menu without leaving sidebar mode',
         async (button) => {
