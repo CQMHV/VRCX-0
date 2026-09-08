@@ -31,6 +31,7 @@ vi.mock('./sidebarAutoHideService', () => ({
     suspendSidebarAutoHide: mocks.suspendSidebarAutoHide
 }));
 
+import { useCriticalTaskStore } from '@/state/criticalTaskStore';
 import { useShellStore } from '@/state/shellStore';
 
 import {
@@ -79,6 +80,7 @@ function createGeometry(
 beforeEach(() => {
     window.localStorage.clear();
     useShellStore.setState({ windowDisplayMode: 'normal' });
+    useCriticalTaskStore.setState({ activeTasks: [] });
     Object.values(mocks).forEach((mock) => mock.mockReset());
     mocks.suspendSidebarAutoHide.mockResolvedValue(undefined);
     mocks.getWindowGeometry.mockResolvedValue(null);
@@ -407,5 +409,38 @@ describe('remembered window display mode', () => {
         restoreSidebarWindowModeAfterLogin();
 
         expect(useShellStore.getState().windowDisplayMode).toBe('normal');
+    });
+
+    it('keeps the full window while a critical task is running', async () => {
+        useCriticalTaskStore
+            .getState()
+            .setCriticalTaskActive('databaseUpgrade', true);
+
+        await enterSidebarWindowMode();
+
+        expect(useShellStore.getState().windowDisplayMode).toBe('normal');
+        expect(mocks.getWindowGeometry).not.toHaveBeenCalled();
+        expect(mocks.suspendSidebarAutoHide).not.toHaveBeenCalled();
+    });
+
+    it('defers the post-login sidebar restore until the critical task ends', async () => {
+        useShellStore.getState().setWindowDisplayMode('sidebar');
+        mocks.getWindowGeometry.mockResolvedValue(createGeometry());
+        leaveSidebarWindowModeForLogin();
+        await Promise.resolve();
+        await Promise.resolve();
+        useCriticalTaskStore
+            .getState()
+            .setCriticalTaskActive('databaseUpgrade', true);
+
+        restoreSidebarWindowModeAfterLogin();
+        expect(useShellStore.getState().windowDisplayMode).toBe('normal');
+
+        useCriticalTaskStore
+            .getState()
+            .setCriticalTaskActive('databaseUpgrade', false);
+        restoreSidebarWindowModeAfterLogin();
+
+        expect(useShellStore.getState().windowDisplayMode).toBe('sidebar');
     });
 });
