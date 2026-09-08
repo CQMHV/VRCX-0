@@ -7,7 +7,6 @@ import { XIcon } from 'lucide-react';
 import type React from 'react';
 
 import { preserveAppTitleBarOnOpenChange } from '@/lib/overlayTitlebar';
-import { useCloseOnSidebarMode } from '@/lib/useCloseOnSidebarMode';
 import { cn } from '@/lib/utils';
 import { Button } from '@/ui/shadcn/button';
 import { ScrollArea } from '@/ui/shadcn/scroll-area';
@@ -16,8 +15,6 @@ export function Sheet({
     onOpenChange,
     ...props
 }: SheetPrimitive.Root.Props): React.ReactElement {
-    const sidebarClose = useCloseOnSidebarMode({ ...props, onOpenChange });
-
     return (
         <SheetPrimitive.Root
             data-slot="sheet"
@@ -25,10 +22,9 @@ export function Sheet({
                 if (preserveAppTitleBarOnOpenChange(open, eventDetails)) {
                     return;
                 }
-                sidebarClose.onOpenChange(open, eventDetails);
+                onOpenChange?.(open, eventDetails);
             }}
             {...props}
-            actionsRef={sidebarClose.actionsRef}
         />
     );
 }
