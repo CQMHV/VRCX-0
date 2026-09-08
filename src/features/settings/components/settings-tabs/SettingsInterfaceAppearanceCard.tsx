@@ -3,13 +3,13 @@ import { ChevronDownIcon, Settings2Icon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { getLanguageName, languageCodes } from '@/localization/index';
+import { supportsConfigurableCjkFontPack } from '@/services/themeService';
 import {
     APP_CJK_FONT_PACK_DEFAULT_KEY,
     APP_CJK_FONT_PACKS,
     APP_FONT_DEFAULT_KEY,
-    APP_FONT_FAMILIES,
-    supportsConfigurableCjkFontPack
-} from '@/services/themeService';
+    APP_FONT_FAMILIES
+} from '@/shared/constants/fonts';
 import type { NotificationLayout, TableDensity } from '@/state/shellStore';
 import { Button } from '@/ui/shadcn/button';
 import {
