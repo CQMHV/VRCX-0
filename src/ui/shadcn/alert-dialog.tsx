@@ -2,6 +2,7 @@ import { AlertDialog as AlertDialogPrimitive } from '@base-ui/react/alert-dialog
 import * as React from 'react';
 
 import { preserveAppTitleBarOnOpenChange } from '@/lib/overlayTitlebar';
+import { useCloseOnSidebarMode } from '@/lib/useCloseOnSidebarMode';
 import { cn } from '@/lib/utils';
 import { Button } from '@/ui/shadcn/button';
 
@@ -9,6 +10,8 @@ function AlertDialog({
     onOpenChange,
     ...props
 }: AlertDialogPrimitive.Root.Props) {
+    const sidebarClose = useCloseOnSidebarMode({ ...props, onOpenChange });
+
     return (
         <AlertDialogPrimitive.Root
             data-slot="alert-dialog"
@@ -16,9 +19,10 @@ function AlertDialog({
                 if (preserveAppTitleBarOnOpenChange(open, eventDetails)) {
                     return;
                 }
-                onOpenChange?.(open, eventDetails);
+                sidebarClose.onOpenChange(open, eventDetails);
             }}
             {...props}
+            actionsRef={sidebarClose.actionsRef}
         />
     );
 }

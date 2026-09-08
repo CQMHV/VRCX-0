@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { preserveAppTitleBarOnOpenChange } from '@/lib/overlayTitlebar';
+import { useCloseOnSidebarMode } from '@/lib/useCloseOnSidebarMode';
 import { cn } from '@/lib/utils';
 import { Button } from '@/ui/shadcn/button';
 
@@ -12,6 +13,8 @@ function Dialog({
     modal = 'trap-focus',
     ...props
 }: DialogPrimitive.Root.Props) {
+    const sidebarClose = useCloseOnSidebarMode({ ...props, onOpenChange });
+
     return (
         <DialogPrimitive.Root
             data-slot="dialog"
@@ -20,9 +23,10 @@ function Dialog({
                 if (preserveAppTitleBarOnOpenChange(open, eventDetails)) {
                     return;
                 }
-                onOpenChange?.(open, eventDetails);
+                sidebarClose.onOpenChange(open, eventDetails);
             }}
             {...props}
+            actionsRef={sidebarClose.actionsRef}
         />
     );
 }
