@@ -1,7 +1,5 @@
-import type { DeepLinkAction } from '@/platform/tauri/bindings';
 import vrchatInstanceRepository from '@/repositories/vrchatInstanceRepository';
 import vrchatSearchRepository from '@/repositories/vrchatSearchRepository';
-import { handleDeepLinkAction } from '@/services/deepLinkService';
 import {
     openAvatarDialog,
     openGroupDialog,
@@ -9,7 +7,6 @@ import {
     openWorldDialog
 } from '@/services/dialogService';
 import { openInstanceInGame } from '@/services/instanceActionService';
-import { isCollectionShortcode } from '@/shared/constants/collectionShare';
 import {
     hasAvatarIdPrefix,
     hasGroupIdPrefix,
@@ -29,35 +26,12 @@ export type DirectAccessMode = 'open' | 'detect';
 type LooseRecord = Record<string, unknown>;
 type ParsedLocation = ReturnType<typeof parseLocation>;
 
-const URL_IN_TEXT_RE = /(?:https|vrchat|vrcx-0|vrcx):\/\/[^\s<>"'`]+/giu;
-const TRAILING_URL_PUNCTUATION_RE =
-    /[.,;:!?，。；：！？、)\]}>）】〉》」』]+$/u;
-
 function parseUrlOrNull(value: string) {
     try {
         return new URL(value);
     } catch {
         return null;
     }
-}
-
-function decodeUrlPathOrEmpty(value: string): string {
-    try {
-        return decodeURIComponent(value);
-    } catch {
-        return '';
-    }
-}
-
-function extractLinksFromText(value: string): string[] {
-    const links = new Set<string>();
-    for (const match of value.match(URL_IN_TEXT_RE) ?? []) {
-        const link = match.replace(TRAILING_URL_PUNCTUATION_RE, '');
-        if (link && link !== value) {
-            links.add(link);
-        }
-    }
-    return [...links];
 }
 
 function parseVrcxShareLink(
@@ -68,12 +42,12 @@ function parseVrcxShareLink(
         return null;
     }
 
-    const pathParts = url.pathname.split('/').filter(Boolean);
-    if (pathParts.length !== 2) {
+    const pathParts = url.pathname.split('/');
+    if (pathParts.length !== 3) {
         return null;
     }
 
-    const [type, id] = pathParts;
+    const [, type, id] = pathParts;
     if (type === 'world' && isWorldId(id)) {
         return { type, id };
     }
@@ -81,82 +55,6 @@ function parseVrcxShareLink(
         return { type, id };
     }
     return null;
-}
-
-function parseVrcxNativeDeepLink(input: string): DeepLinkAction | null {
-    const url = parseUrlOrNull(input);
-    if (!url || url.protocol !== 'vrcx-0:' || url.hash) {
-        return null;
-    }
-
-    const id = url.searchParams.get('id');
-    if (!id) {
-        return null;
-    }
-
-    if (url.hostname === 'world' && url.pathname === '/open' && isWorldId(id)) {
-        return { type: 'openWorld', worldId: id };
-    }
-    if (
-        url.hostname === 'avatar' &&
-        url.pathname === '/open' &&
-        isAvatarId(id)
-    ) {
-        return { type: 'openAvatar', avatarId: id };
-    }
-    if (
-        url.hostname === 'collection' &&
-        url.pathname === '/import' &&
-        isCollectionShortcode(id)
-    ) {
-        return { type: 'importCollection', collectionId: id };
-    }
-    return null;
-}
-
-function directAccessLegacyVrcxDeepLink(
-    input: string,
-    mode: DirectAccessMode
-): boolean {
-    const url = parseUrlOrNull(input);
-    if (!url || url.protocol !== 'vrcx:') {
-        return false;
-    }
-
-    const id = decodeUrlPathOrEmpty(url.pathname.slice(1));
-    if (!id) {
-        return false;
-    }
-
-    if (url.hostname === 'world' && hasWorldIdPrefix(id)) {
-        if (mode === 'detect') {
-            return true;
-        }
-        openWorldLocation(id);
-        return true;
-    }
-    if (url.hostname === 'user' && hasUserIdPrefix(id)) {
-        if (mode === 'detect') {
-            return true;
-        }
-        openUserDialog({ userId: id });
-        return true;
-    }
-    if (url.hostname === 'avatar' && hasAvatarIdPrefix(id)) {
-        if (mode === 'detect') {
-            return true;
-        }
-        openAvatarDialog({ avatarId: id });
-        return true;
-    }
-    if (url.hostname === 'group' && hasGroupIdPrefix(id)) {
-        if (mode === 'detect') {
-            return true;
-        }
-        openGroupDialog({ groupId: id });
-        return true;
-    }
-    return false;
 }
 
 function emptyRecordArray(value: unknown): LooseRecord[] {
@@ -442,23 +340,10 @@ export async function directAccessParse(
             return true;
         }
         if (vrcxShareLink.type === 'world') {
-            openWorldLocation(vrcxShareLink.id);
+            openWorldDialog({ worldId: vrcxShareLink.id });
         } else {
             openAvatarDialog({ avatarId: vrcxShareLink.id });
         }
-        return true;
-    }
-
-    const vrcxNativeDeepLink = parseVrcxNativeDeepLink(value);
-    if (vrcxNativeDeepLink) {
-        if (mode === 'detect') {
-            return true;
-        }
-        handleDeepLinkAction(vrcxNativeDeepLink);
-        return true;
-    }
-
-    if (directAccessLegacyVrcxDeepLink(value, mode)) {
         return true;
     }
 
@@ -537,12 +422,6 @@ export async function directAccessParse(
         }
         openGroupDialog({ groupId: value });
         return true;
-    }
-
-    for (const link of extractLinksFromText(value)) {
-        if (await directAccessParse(link, mode)) {
-            return true;
-        }
     }
 
     return false;

@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-    handleDeepLinkAction: vi.fn(),
     openInstanceInGame: vi.fn(),
     openWorldDialog: vi.fn()
 }));
@@ -25,10 +24,6 @@ vi.mock('@/services/dialogService', () => ({
 
 vi.mock('@/services/instanceActionService', () => ({
     openInstanceInGame: mocks.openInstanceInGame
-}));
-
-vi.mock('@/services/deepLinkService', () => ({
-    handleDeepLinkAction: mocks.handleDeepLinkAction
 }));
 
 import {
@@ -109,36 +104,6 @@ describe('directAccessParse detect mode', () => {
         expect(mocks.openWorldDialog).not.toHaveBeenCalled();
     });
 
-    it('recognises direct access links embedded in surrounding text', async () => {
-        const links = [
-            `https://open.vrcx-0.dev/world/${WORLD_ID}`,
-            `https://open.vrcx-0.dev/avatar/${AVATAR_ID}`,
-            `https://vrchat.com/home/world/${WORLD_ID}`,
-            'https://vrchat.com/home/user/usr_id',
-            'https://vrchat.com/home/avatar/avtr_id',
-            'https://vrchat.com/home/group/grp_id',
-            'https://vrch.at/abcd1234',
-            'https://vrc.group/vrcx.1234',
-            `vrchat://launch?id=${encodeURIComponent(LOCATION)}`,
-            `vrcx-0://world/open?id=${WORLD_ID}`,
-            `vrcx-0://avatar/open?id=${AVATAR_ID}`,
-            'vrcx-0://collection/import?id=AbC123z',
-            `vrcx://world/${WORLD_ID}`,
-            'vrcx://user/usr_id',
-            'vrcx://avatar/avtr_id',
-            'vrcx://group/grp_id'
-        ];
-
-        for (const link of links) {
-            await expect(
-                directAccessParse(`Copied link: ${link}。`, 'detect')
-            ).resolves.toBe(true);
-        }
-
-        expect(mocks.openInstanceInGame).not.toHaveBeenCalled();
-        expect(mocks.openWorldDialog).not.toHaveBeenCalled();
-    });
-
     it('rejects bare tokens that collide with name searches', async () => {
         await expect(directAccessParse('Kagamine', 'detect')).resolves.toBe(
             false
@@ -158,9 +123,12 @@ describe('directAccessParse detect mode', () => {
             'hello world',
             'https://vrchat.com/home',
             'https://open.vrcx-0.dev/world/wrld_invalid',
+            `http://open.vrcx-0.dev/world/${WORLD_ID}`,
+            `https://open.vrcx-0.dev.example.com/world/${WORLD_ID}`,
+            `https://open.vrcx-0.dev//world/${WORLD_ID}`,
+            `https://open.vrcx-0.dev/world/${WORLD_ID}/extra`,
+            `Open world: https://open.vrcx-0.dev/world/${WORLD_ID}`,
             `https://open.vrcx-0.dev/avatar/${WORLD_ID}`,
-            'Copied link: https://example.com/x',
-            'Copied link: vrcx://addavatardb/https://example.com/avatar-db',
             'https://example.com/x'
         ]) {
             await expect(directAccessParse(value, 'detect')).resolves.toBe(
@@ -173,66 +141,17 @@ describe('directAccessParse detect mode', () => {
         const dialogService = await import('@/services/dialogService');
 
         await expect(
-            directAccessParse(
-                `Open world in VRCX-0: https://open.vrcx-0.dev/world/${WORLD_ID}`
-            )
+            directAccessParse(`https://open.vrcx-0.dev/world/${WORLD_ID}`)
         ).resolves.toBe(true);
         await expect(
-            directAccessParse(
-                `Open avatar in VRCX-0: https://open.vrcx-0.dev/avatar/${AVATAR_ID}`
-            )
+            directAccessParse(`https://open.vrcx-0.dev/avatar/${AVATAR_ID}`)
         ).resolves.toBe(true);
 
         expect(mocks.openWorldDialog).toHaveBeenCalledWith({
-            worldId: WORLD_ID,
-            title: undefined
+            worldId: WORLD_ID
         });
         expect(dialogService.openAvatarDialog).toHaveBeenCalledWith({
             avatarId: AVATAR_ID
-        });
-    });
-
-    it('opens embedded VRCX-0 native deep links', async () => {
-        await expect(
-            directAccessParse(
-                `Open in VRCX-0: vrcx-0://world/open?id=${WORLD_ID}`
-            )
-        ).resolves.toBe(true);
-
-        expect(mocks.handleDeepLinkAction).toHaveBeenCalledWith({
-            type: 'openWorld',
-            worldId: WORLD_ID
-        });
-    });
-
-    it('opens embedded legacy VRCX deep links', async () => {
-        const dialogService = await import('@/services/dialogService');
-
-        await expect(
-            directAccessParse(`Open in VRCX: vrcx://world/${WORLD_ID}`)
-        ).resolves.toBe(true);
-        await expect(
-            directAccessParse('Open in VRCX: vrcx://user/usr_id')
-        ).resolves.toBe(true);
-        await expect(
-            directAccessParse('Open in VRCX: vrcx://avatar/avtr_id')
-        ).resolves.toBe(true);
-        await expect(
-            directAccessParse('Open in VRCX: vrcx://group/grp_id')
-        ).resolves.toBe(true);
-
-        expect(mocks.openWorldDialog).toHaveBeenCalledWith({
-            worldId: WORLD_ID,
-            title: undefined
-        });
-        expect(dialogService.openUserDialog).toHaveBeenCalledWith({
-            userId: 'usr_id'
-        });
-        expect(dialogService.openAvatarDialog).toHaveBeenCalledWith({
-            avatarId: 'avtr_id'
-        });
-        expect(dialogService.openGroupDialog).toHaveBeenCalledWith({
-            groupId: 'grp_id'
         });
     });
 
