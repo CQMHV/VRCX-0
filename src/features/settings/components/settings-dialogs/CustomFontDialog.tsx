@@ -38,7 +38,11 @@ import {
 import { Input } from '@/ui/shadcn/input';
 import { InputGroupAddon } from '@/ui/shadcn/input-group';
 import { Skeleton } from '@/ui/shadcn/skeleton';
-import { ToggleGroup, ToggleGroupItem } from '@/ui/shadcn/toggle-group';
+import {
+    ToggleGroup,
+    ToggleGroupItem,
+    ToggleGroupSeparator
+} from '@/ui/shadcn/toggle-group';
 
 type FontFamilyComboboxProps = {
     controlId: string;
@@ -229,7 +233,7 @@ export function CustomFontDialog({
                                 variant="outline"
                                 value={[mode]}
                                 onValueChange={handleModeChange}
-                                className="grid w-full grid-cols-2"
+                                className="w-full [&>[data-slot=toggle]]:min-w-0 [&>[data-slot=toggle]]:flex-1"
                             >
                                 <ToggleGroupItem
                                     value="installed"
@@ -240,6 +244,7 @@ export function CustomFontDialog({
                                         'view.settings.appearance.appearance.font_family_custom_mode_installed'
                                     )}
                                 </ToggleGroupItem>
+                                <ToggleGroupSeparator />
                                 <ToggleGroupItem value="css">
                                     <CodeXmlIcon data-icon="inline-start" />
                                     {t(

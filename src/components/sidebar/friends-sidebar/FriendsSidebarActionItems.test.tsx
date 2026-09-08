@@ -47,7 +47,9 @@ describe('CurrentUserActionItems', () => {
             />
         );
 
-        const checkboxItems = html.match(/<button data-close-on-click[^>]*>.*?<\/button>/g);
+        const checkboxItems = html.match(
+            /<button data-close-on-click[^>]*>.*?<\/button>/g
+        );
         expect(checkboxItems).toHaveLength(5);
         for (const item of checkboxItems ?? []) {
             expect(item).toContain('data-close-on-click="true"');

@@ -1049,48 +1049,6 @@
         border-color: var(--stroke-strong);
     }
 
-    [data-slot='toggle-group'].vrcx-0-segmented-control {
-        padding: 0.125rem;
-        background: var(--vrcx-0-toolbar-group-surface);
-        border: 1px solid var(--vrcx-0-toolbar-group-border);
-    }
-
-    [data-slot='toggle-group'].vrcx-0-segmented-control.vrcx-0-filter-chips {
-        padding-inline: 0;
-        background: transparent;
-        border-color: transparent;
-    }
-
-    [data-slot='toggle-group'].vrcx-0-segmented-control
-        > [data-slot='toggle-group-item'] {
-        color: var(--vrcx-0-toolbar-item-foreground);
-        background: transparent;
-        border: 0;
-    }
-
-    [data-slot='toggle-group'].vrcx-0-segmented-control
-        > [data-slot='toggle-group-item']:hover {
-        color: var(--content-primary);
-        background: var(--vrcx-0-toolbar-item-hover-surface);
-    }
-
-    [data-slot='toggle-group'].vrcx-0-segmented-control
-        > [data-slot='toggle-group-item']:is(
-            [aria-pressed='true'],
-            [data-pressed]
-        ) {
-        color: var(--vrcx-0-toolbar-item-selected-foreground);
-        background: var(--vrcx-0-toolbar-item-selected-surface);
-    }
-
-    [data-slot='toggle-group'].vrcx-0-segmented-control
-        > [data-slot='toggle-group-item']:is(
-            [aria-pressed='true'],
-            [data-pressed]
-        ):hover {
-        background: var(--vrcx-0-toolbar-item-selected-hover-surface);
-    }
-
     .app-data-table {
         font-variant-numeric: tabular-nums;
     }
@@ -1521,30 +1479,6 @@
 }
 
 @layer utilities {
-    [data-slot='toggle-group'].vrcx-0-icon-segmented-control
-        > .vrcx-0-icon-segmented-item {
-        background: transparent !important;
-    }
-
-    [data-slot='toggle-group'].vrcx-0-icon-segmented-control
-        > .vrcx-0-icon-segmented-item
-        > svg {
-        color: var(--content-primary);
-        opacity: 0.4;
-    }
-
-    [data-slot='toggle-group'].vrcx-0-icon-segmented-control
-        > .vrcx-0-icon-segmented-item:hover
-        > svg {
-        opacity: 0.68;
-    }
-
-    [data-slot='toggle-group'].vrcx-0-icon-segmented-control
-        > .vrcx-0-icon-segmented-item:is([aria-pressed='true'], [data-pressed])
-        > svg {
-        opacity: 1;
-    }
-
     :is(
             [data-slot='dropdown-menu-content'],
             [data-slot='dropdown-menu-sub-content'],

@@ -9,7 +9,7 @@ import {
     Settings2Icon,
     XIcon
 } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/lib/utils';
@@ -26,7 +26,11 @@ import {
     InputGroupInput
 } from '@/ui/shadcn/input-group';
 import { Spinner } from '@/ui/shadcn/spinner';
-import { ToggleGroup, ToggleGroupItem } from '@/ui/shadcn/toggle-group';
+import {
+    ToggleGroup,
+    ToggleGroupItem,
+    ToggleGroupSeparator
+} from '@/ui/shadcn/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
 type ToolbarSlotProps = {
@@ -155,8 +159,7 @@ export function ToolbarSegmented<TValue extends string>({
 }) {
     return (
         <ToggleGroup
-            variant="default"
-            spacing={0.5}
+            variant="outline"
             value={value ? [value] : []}
             onValueChange={(next) => {
                 const selected = options.find(
@@ -166,21 +169,14 @@ export function ToolbarSegmented<TValue extends string>({
                     onValueChange(selected.value);
                 }
             }}
-            className={cn(
-                'vrcx-0-segmented-control shrink-0',
-                iconOnly && 'vrcx-0-icon-segmented-control'
-            )}
+            className="shrink-0"
         >
-            {options.map((option) => {
+            {options.map((option, index) => {
                 const Icon = option.icon;
                 const item = (
                     <ToggleGroupItem
-                        key={option.value}
                         value={option.value}
                         aria-label={option.label}
-                        className={
-                            iconOnly ? 'vrcx-0-icon-segmented-item' : undefined
-                        }
                     >
                         {Icon ? <Icon data-icon="inline-start" /> : null}
                         {iconOnly ? null : option.label}
@@ -192,15 +188,18 @@ export function ToolbarSegmented<TValue extends string>({
                     </ToggleGroupItem>
                 );
 
-                if (!iconOnly) {
-                    return item;
-                }
-
                 return (
-                    <Tooltip key={option.value}>
-                        <TooltipTrigger render={item} />
-                        <TooltipContent>{option.label}</TooltipContent>
-                    </Tooltip>
+                    <Fragment key={option.value}>
+                        {index > 0 ? <ToggleGroupSeparator /> : null}
+                        {iconOnly ? (
+                            <Tooltip>
+                                <TooltipTrigger render={item} />
+                                <TooltipContent>{option.label}</TooltipContent>
+                            </Tooltip>
+                        ) : (
+                            item
+                        )}
+                    </Fragment>
                 );
             })}
         </ToggleGroup>
@@ -282,7 +281,6 @@ export function ToolbarFilterChips<TValue extends string>({
         <ToggleGroup
             multiple
             variant="default"
-            spacing={0.5}
             value={pressed}
             onValueChange={(next) => {
                 if (leading && leadingPressed) {
@@ -302,7 +300,7 @@ export function ToolbarFilterChips<TValue extends string>({
                 }
                 onValueChange(picked.length === options.length ? [] : picked);
             }}
-            className="vrcx-0-segmented-control vrcx-0-filter-chips max-w-full shrink-0 overflow-x-auto"
+            className="max-w-full shrink-0 overflow-x-auto"
         >
             {leadingPressed && leading && LeadingIcon ? (
                 <Tooltip>

@@ -12,6 +12,7 @@ import {
     UploadIcon,
     XIcon
 } from 'lucide-react';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -57,7 +58,11 @@ import {
     PopoverTrigger
 } from '@/ui/shadcn/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/shadcn/tabs';
-import { ToggleGroup, ToggleGroupItem } from '@/ui/shadcn/toggle-group';
+import {
+    ToggleGroup,
+    ToggleGroupItem,
+    ToggleGroupSeparator
+} from '@/ui/shadcn/toggle-group';
 
 import { GalleryEmojiImage } from './components/GalleryEmojiImage';
 import { GalleryEmojiUploadSettings } from './components/GalleryEmojiUploadSettings';
@@ -122,7 +127,6 @@ function GridSettingsMenu({
                         <ToggleGroup
                             variant="outline"
                             size="sm"
-                            spacing={1}
                             value={gridDensity ? [gridDensity] : []}
                             onValueChange={(nextValue) => {
                                 if (nextValue[0]) {
@@ -131,20 +135,26 @@ function GridSettingsMenu({
                                     );
                                 }
                             }}
-                            className="grid w-full grid-cols-3"
+                            className="w-full [&>[data-slot=toggle]]:min-w-0 [&>[data-slot=toggle]]:flex-1"
                         >
-                            {GALLERY_GRID_DENSITY_OPTIONS.map((option) => (
-                                <ToggleGroupItem
-                                    key={option.value}
-                                    value={option.value}
-                                    aria-label={t(option.labelKey)}
-                                    className="w-full min-w-0 justify-center px-2"
-                                >
-                                    <span className="truncate">
-                                        {t(option.labelKey)}
-                                    </span>
-                                </ToggleGroupItem>
-                            ))}
+                            {GALLERY_GRID_DENSITY_OPTIONS.map(
+                                (option, index) => (
+                                    <Fragment key={option.value}>
+                                        {index > 0 ? (
+                                            <ToggleGroupSeparator />
+                                        ) : null}
+                                        <ToggleGroupItem
+                                            value={option.value}
+                                            aria-label={t(option.labelKey)}
+                                            className="w-full min-w-0 justify-center px-2"
+                                        >
+                                            <span className="truncate">
+                                                {t(option.labelKey)}
+                                            </span>
+                                        </ToggleGroupItem>
+                                    </Fragment>
+                                )
+                            )}
                         </ToggleGroup>
                     </Field>
                 </FieldGroup>
@@ -542,7 +552,6 @@ export function InventoryPage() {
                                             <ToggleGroup
                                                 variant="outline"
                                                 size="sm"
-                                                spacing={1}
                                                 value={
                                                     categorySubTab
                                                         ? [categorySubTab]
@@ -560,19 +569,27 @@ export function InventoryPage() {
                                                         })
                                                     );
                                                 }}
-                                                className="flex flex-wrap justify-start"
+                                                className="flex justify-start overflow-x-auto"
                                             >
-                                                {definition.tabs.map((tab) => (
-                                                    <ToggleGroupItem
-                                                        key={tab.key}
-                                                        value={tab.key}
-                                                        aria-label={t(
-                                                            tab.labelKey
-                                                        )}
-                                                    >
-                                                        {t(tab.labelKey)}
-                                                    </ToggleGroupItem>
-                                                ))}
+                                                {definition.tabs.map(
+                                                    (tab, index) => (
+                                                        <Fragment key={tab.key}>
+                                                            {index > 0 ? (
+                                                                <ToggleGroupSeparator />
+                                                            ) : null}
+                                                            <ToggleGroupItem
+                                                                value={tab.key}
+                                                                aria-label={t(
+                                                                    tab.labelKey
+                                                                )}
+                                                            >
+                                                                {t(
+                                                                    tab.labelKey
+                                                                )}
+                                                            </ToggleGroupItem>
+                                                        </Fragment>
+                                                    )
+                                                )}
                                             </ToggleGroup>
                                         }
                                         actions={

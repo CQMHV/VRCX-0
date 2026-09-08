@@ -1,4 +1,5 @@
 import { RefreshCwIcon, SettingsIcon } from 'lucide-react';
+import { Fragment } from 'react';
 import type { ChangeEvent, RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +14,11 @@ import {
 } from '@/ui/shadcn/dropdown-menu';
 import { Field, FieldGroup, FieldLabel } from '@/ui/shadcn/field';
 import { Input } from '@/ui/shadcn/input';
-import { ToggleGroup, ToggleGroupItem } from '@/ui/shadcn/toggle-group';
+import {
+    ToggleGroup,
+    ToggleGroupItem,
+    ToggleGroupSeparator
+} from '@/ui/shadcn/toggle-group';
 
 import {
     GALLERY_GRID_DENSITY_OPTIONS,
@@ -53,7 +58,6 @@ function GalleryGridSettingsMenu({
                         <ToggleGroup
                             variant="outline"
                             size="sm"
-                            spacing={1}
                             value={gridDensity ? [gridDensity] : []}
                             onValueChange={(nextValue) => {
                                 if (nextValue[0]) {
@@ -62,20 +66,26 @@ function GalleryGridSettingsMenu({
                                     );
                                 }
                             }}
-                            className="grid w-full grid-cols-3"
+                            className="w-full [&>[data-slot=toggle]]:min-w-0 [&>[data-slot=toggle]]:flex-1"
                         >
-                            {GALLERY_GRID_DENSITY_OPTIONS.map((option) => (
-                                <ToggleGroupItem
-                                    key={option.value}
-                                    value={option.value}
-                                    aria-label={t(option.labelKey)}
-                                    className="w-full min-w-0 justify-center px-2"
-                                >
-                                    <span className="truncate">
-                                        {t(option.labelKey)}
-                                    </span>
-                                </ToggleGroupItem>
-                            ))}
+                            {GALLERY_GRID_DENSITY_OPTIONS.map(
+                                (option, index) => (
+                                    <Fragment key={option.value}>
+                                        {index > 0 ? (
+                                            <ToggleGroupSeparator />
+                                        ) : null}
+                                        <ToggleGroupItem
+                                            value={option.value}
+                                            aria-label={t(option.labelKey)}
+                                            className="w-full min-w-0 justify-center px-2"
+                                        >
+                                            <span className="truncate">
+                                                {t(option.labelKey)}
+                                            </span>
+                                        </ToggleGroupItem>
+                                    </Fragment>
+                                )
+                            )}
                         </ToggleGroup>
                     </Field>
                 </FieldGroup>

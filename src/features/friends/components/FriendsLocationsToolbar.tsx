@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PageToolbar, PageToolbarRow } from '@/components/layout/PageScaffold';
@@ -11,7 +12,11 @@ import {
 } from '@/components/layout/ToolbarControls';
 import { Field, FieldContent, FieldGroup, FieldLabel } from '@/ui/shadcn/field';
 import { Switch } from '@/ui/shadcn/switch';
-import { ToggleGroup, ToggleGroupItem } from '@/ui/shadcn/toggle-group';
+import {
+    ToggleGroup,
+    ToggleGroupItem,
+    ToggleGroupSeparator
+} from '@/ui/shadcn/toggle-group';
 
 import {
     isFriendsLocationsSegment,
@@ -111,7 +116,6 @@ export function FriendsLocationsToolbar({
                                 <ToggleGroup
                                     variant="outline"
                                     size="sm"
-                                    spacing={1}
                                     value={density ? [density] : []}
                                     onValueChange={(nextValue) => {
                                         if (nextValue[0]) {
@@ -122,20 +126,26 @@ export function FriendsLocationsToolbar({
                                             );
                                         }
                                     }}
-                                    className="grid w-full grid-cols-3"
+                                    className="w-full [&>[data-slot=toggle]]:min-w-0 [&>[data-slot=toggle]]:flex-1"
                                 >
                                     {FRIENDS_LOCATIONS_DENSITY_OPTIONS.map(
-                                        (option) => (
-                                            <ToggleGroupItem
-                                                key={option.value}
-                                                value={option.value}
-                                                aria-label={t(option.labelKey)}
-                                                className="w-full min-w-0 justify-center px-2"
-                                            >
-                                                <span className="truncate">
-                                                    {t(option.labelKey)}
-                                                </span>
-                                            </ToggleGroupItem>
+                                        (option, index) => (
+                                            <Fragment key={option.value}>
+                                                {index > 0 ? (
+                                                    <ToggleGroupSeparator />
+                                                ) : null}
+                                                <ToggleGroupItem
+                                                    value={option.value}
+                                                    aria-label={t(
+                                                        option.labelKey
+                                                    )}
+                                                    className="w-full min-w-0 justify-center px-2"
+                                                >
+                                                    <span className="truncate">
+                                                        {t(option.labelKey)}
+                                                    </span>
+                                                </ToggleGroupItem>
+                                            </Fragment>
                                         )
                                     )}
                                 </ToggleGroup>

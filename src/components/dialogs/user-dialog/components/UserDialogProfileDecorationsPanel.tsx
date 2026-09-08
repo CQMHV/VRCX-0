@@ -1,5 +1,5 @@
 import { BanIcon, PackageIcon } from 'lucide-react';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -19,7 +19,11 @@ import {
     resolveProfileDecorationTypeLabelKey
 } from '@/domain/entities/inventory';
 import { cn } from '@/lib/utils';
-import { ToggleGroup, ToggleGroupItem } from '@/ui/shadcn/toggle-group';
+import {
+    ToggleGroup,
+    ToggleGroupItem,
+    ToggleGroupSeparator
+} from '@/ui/shadcn/toggle-group';
 
 import {
     PROFILE_DECORATION_SLOTS,
@@ -104,7 +108,6 @@ export function UserDialogProfileDecorationsPanel({
             <ToggleGroup
                 variant="outline"
                 size="sm"
-                spacing={1}
                 value={[activeSlot]}
                 onValueChange={(value) => {
                     const nextSlot = value[0];
@@ -112,26 +115,31 @@ export function UserDialogProfileDecorationsPanel({
                         setActiveSlot(nextSlot);
                     }
                 }}
-                className="flex flex-wrap justify-start"
+                className="flex justify-start overflow-x-auto"
             >
-                {[...PROFILE_DECORATION_SLOTS, 'background'].map((slot) => {
-                    const label =
-                        slot === 'background'
-                            ? t('dialog.inventory.background')
-                            : t(
-                                  resolveProfileDecorationTypeLabelKey(slot) ??
-                                      ''
-                              );
-                    return (
-                        <ToggleGroupItem
-                            key={slot}
-                            value={slot}
-                            aria-label={label}
-                        >
-                            {label}
-                        </ToggleGroupItem>
-                    );
-                })}
+                {[...PROFILE_DECORATION_SLOTS, 'background'].map(
+                    (slot, index) => {
+                        const label =
+                            slot === 'background'
+                                ? t('dialog.inventory.background')
+                                : t(
+                                      resolveProfileDecorationTypeLabelKey(
+                                          slot
+                                      ) ?? ''
+                                  );
+                        return (
+                            <Fragment key={slot}>
+                                {index > 0 ? <ToggleGroupSeparator /> : null}
+                                <ToggleGroupItem
+                                    value={slot}
+                                    aria-label={label}
+                                >
+                                    {label}
+                                </ToggleGroupItem>
+                            </Fragment>
+                        );
+                    }
+                )}
             </ToggleGroup>
             <div className="min-h-0 flex-1 overflow-y-auto p-1">
                 {isBackground ? (
