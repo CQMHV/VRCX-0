@@ -2714,8 +2714,6 @@
                     "troubleshooting": {
                         "header": "Solução de problemas",
                         "description": "Ferramentas de registro e diagnóstico para investigar problemas.",
-                        "show": "Mostrar ferramentas",
-                        "hide": "Ocultar ferramentas",
                         "gamelog": "Salvar histórico do registro do jogo",
                         "gamelog_description": "Quando desativado, nenhum novo histórico é salvo. Recursos em tempo real como Lista de usuários e Tocando agora continuam disponíveis.",
                         "feed_history": "Salvar histórico do Feed",

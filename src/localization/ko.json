@@ -2667,8 +2667,6 @@
                     "troubleshooting": {
                         "header": "문제 해결",
                         "description": "문제를 조사하기 위한 로그 및 진단 도구입니다.",
-                        "show": "도구 표시",
-                        "hide": "도구 숨기기",
                         "gamelog": "게임 로그 기록 저장",
                         "gamelog_description": "끄면 새 기록이 저장되지 않습니다. 플레이어 목록, 지금 재생 중 등 실시간 기능은 그대로 사용할 수 있습니다.",
                         "feed_history": "피드 기록 저장",

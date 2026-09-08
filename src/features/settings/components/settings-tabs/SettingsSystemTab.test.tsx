@@ -35,9 +35,6 @@ vi.mock('../SettingsField', () => ({
             <span>{description}</span>
             {children}
         </section>
-    ),
-    SettingsGroup: ({ children }: ChildrenProps) => (
-        <section>{children}</section>
     )
 }));
 

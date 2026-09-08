@@ -2714,8 +2714,6 @@
                     "troubleshooting": {
                         "header": "Problembehandlung",
                         "description": "Protokollierungs- und Diagnosewerkzeuge zur Fehlersuche.",
-                        "show": "Werkzeuge anzeigen",
-                        "hide": "Werkzeuge ausblenden",
                         "gamelog": "Spielprotokollverlauf speichern",
                         "gamelog_description": "Wenn deaktiviert, wird kein neuer Verlauf gespeichert. Echtzeitfunktionen wie Aktuelle Spieler und Läuft gerade bleiben verfügbar.",
                         "feed_history": "Feed-Verlauf speichern",

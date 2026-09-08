@@ -15,15 +15,27 @@ let writeQueue = Promise.resolve();
 type NavigationCacheStore = {
     lastRoute: string;
     folders: Record<string, boolean>;
+    settingsCards: Record<string, boolean>;
     hydrated: boolean;
     hydrate(): Promise<void>;
     setLastRoute(route: string): void;
     setFolderOpen(index: string, open: boolean): void;
+    setSettingsCardOpen(id: string, open: boolean): void;
 };
 
+function readExpansionStates(value: unknown): Record<string, boolean> {
+    if (!isRecord(value)) return {};
+    return Object.fromEntries(
+        Object.entries(value).filter(
+            (entry): entry is [string, boolean] => typeof entry[1] === 'boolean'
+        )
+    );
+}
+
 function persistNavigation(): void {
-    const { lastRoute, folders } = useNavigationCacheStore.getState();
-    const contents = JSON.stringify({ lastRoute, folders });
+    const { lastRoute, folders, settingsCards } =
+        useNavigationCacheStore.getState();
+    const contents = JSON.stringify({ lastRoute, folders, settingsCards });
     writeQueue = writeQueue
         .then(async () => {
             await mkdir('', {
@@ -43,6 +55,7 @@ export const useNavigationCacheStore = create<NavigationCacheStore>(
     (set, get) => ({
         lastRoute: '/feed',
         folders: {},
+        settingsCards: {},
         hydrated: false,
         hydrate: () => {
             hydration ??= (async () => {
@@ -58,14 +71,10 @@ export const useNavigationCacheStore = create<NavigationCacheStore>(
                                 typeof value.lastRoute === 'string'
                                     ? value.lastRoute
                                     : '/feed',
-                            folders: isRecord(value.folders)
-                                ? Object.fromEntries(
-                                      Object.entries(value.folders).filter(
-                                          (entry): entry is [string, boolean] =>
-                                              typeof entry[1] === 'boolean'
-                                      )
-                                  )
-                                : {}
+                            folders: readExpansionStates(value.folders),
+                            settingsCards: readExpansionStates(
+                                value.settingsCards
+                            )
                         });
                     }
                 } catch {
@@ -84,6 +93,11 @@ export const useNavigationCacheStore = create<NavigationCacheStore>(
         setFolderOpen: (index, open) => {
             if (!get().hydrated || get().folders[index] === open) return;
             set({ folders: { ...get().folders, [index]: open } });
+            persistNavigation();
+        },
+        setSettingsCardOpen: (id, open) => {
+            if (!get().hydrated || get().settingsCards[id] === open) return;
+            set({ settingsCards: { ...get().settingsCards, [id]: open } });
             persistNavigation();
         }
     })

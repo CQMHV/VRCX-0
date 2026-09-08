@@ -2716,8 +2716,6 @@
                     "troubleshooting": {
                         "header": "Řešení potíží",
                         "description": "Nástroje protokolování a diagnostiky pro hledání problémů.",
-                        "show": "Zobrazit nástroje",
-                        "hide": "Skrýt nástroje",
                         "gamelog": "Ukládat historii herního záznamu",
                         "gamelog_description": "Při vypnutí se nová historie neukládá. Živé funkce jako Seznam hráčů a Nyní hraje zůstanou dostupné.",
                         "feed_history": "Ukládat historii Zdroje",

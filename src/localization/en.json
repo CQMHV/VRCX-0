@@ -2714,8 +2714,6 @@
                     "troubleshooting": {
                         "header": "Troubleshooting",
                         "description": "Logging and diagnostic tools for investigating problems.",
-                        "show": "Show tools",
-                        "hide": "Hide tools",
                         "gamelog": "Save GameLog history",
                         "gamelog_description": "When off, new history is not saved. Live features like Player List and Now Playing still work.",
                         "feed_history": "Save Feed history",

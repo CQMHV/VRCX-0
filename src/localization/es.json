@@ -2714,8 +2714,6 @@
                     "troubleshooting": {
                         "header": "Solución de problemas",
                         "description": "Herramientas de registro y diagnóstico para investigar problemas.",
-                        "show": "Mostrar herramientas",
-                        "hide": "Ocultar herramientas",
                         "gamelog": "Guardar historial del registro del juego",
                         "gamelog_description": "Al desactivarlo, no se guarda nuevo historial. Funciones en tiempo real como Lista de jugadores y Reproduciendo ahora siguen disponibles.",
                         "feed_history": "Guardar historial del Feed",

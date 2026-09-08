@@ -2714,8 +2714,6 @@
                     "troubleshooting": {
                         "header": "疑難排解",
                         "description": "用於調查問題的記錄與診斷工具。",
-                        "show": "顯示工具",
-                        "hide": "隱藏工具",
                         "gamelog": "儲存遊戲紀錄歷史",
                         "gamelog_description": "關閉後不會儲存新的遊戲紀錄歷史；房間用戶列表、正在播放、截圖後設資料、房間媒體與其他即時日誌功能仍可使用。",
                         "feed_history": "儲存好友動態歷史",

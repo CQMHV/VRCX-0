@@ -2714,8 +2714,6 @@
                     "troubleshooting": {
                         "header": "故障排查",
                         "description": "用于排查问题的日志与诊断工具。",
-                        "show": "显示工具",
-                        "hide": "隐藏工具",
                         "gamelog": "保存游戏日志历史",
                         "gamelog_description": "关闭后不会保存新的游戏日志历史；当前玩家、正在播放、截图元数据、房间媒体和其他实时日志功能仍可使用。",
                         "feed_history": "保存好友动态历史",

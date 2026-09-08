@@ -5,7 +5,8 @@ import { Badge } from '@/ui/shadcn/badge';
 import { Button } from '@/ui/shadcn/button';
 import { Switch } from '@/ui/shadcn/switch';
 
-import { Field, SettingsGroup } from '../SettingsField';
+import { SettingsCard } from '../SettingsCard';
+import { Field } from '../SettingsField';
 import { SettingsTabContent } from '../SettingsViewParts';
 import { useSettingsSystemTabState } from '../useSettingsSystemTabState';
 
@@ -93,7 +94,8 @@ export function SettingsSystemTabContent({
 
     return (
         <SettingsTabContent value="system">
-            <SettingsGroup
+            <SettingsCard
+                cardId="system.application"
                 title={t('view.settings.general.application.header')}
             >
                 <Field label={startupLabel} description={startupDescription}>
@@ -293,7 +295,7 @@ export function SettingsSystemTabContent({
                         </Button>
                     </div>
                 </Field>
-            </SettingsGroup>
+            </SettingsCard>
         </SettingsTabContent>
     );
 }

@@ -21,7 +21,12 @@ describe('navigation cache', () => {
         fs.readTextFile.mockResolvedValue(
             JSON.stringify({
                 lastRoute: '/settings?tab=appearance',
-                folders: { favorites: false, tools: true, invalid: 'true' }
+                folders: { favorites: false, tools: true, invalid: 'true' },
+                settingsCards: {
+                    'system.application': false,
+                    'advanced.troubleshooting': true,
+                    invalid: 'true'
+                }
             })
         );
         const { useNavigationCacheStore } =
@@ -30,7 +35,11 @@ describe('navigation cache', () => {
         expect(useNavigationCacheStore.getState()).toMatchObject({
             hydrated: true,
             lastRoute: '/settings?tab=appearance',
-            folders: { favorites: false, tools: true }
+            folders: { favorites: false, tools: true },
+            settingsCards: {
+                'system.application': false,
+                'advanced.troubleshooting': true
+            }
         });
         expect(fs.writeTextFile).not.toHaveBeenCalled();
     });
@@ -47,12 +56,24 @@ describe('navigation cache', () => {
         const loading = useNavigationCacheStore.getState().hydrate();
         useNavigationCacheStore.getState().setLastRoute('/feed');
         useNavigationCacheStore.getState().setFolderOpen('tools', false);
+        useNavigationCacheStore
+            .getState()
+            .setSettingsCardOpen('system.application', true);
         finishRead(
-            JSON.stringify({ lastRoute: '/game-log', folders: { tools: true } })
+            JSON.stringify({
+                lastRoute: '/game-log',
+                folders: { tools: true },
+                settingsCards: { 'system.application': false }
+            })
         );
         await loading;
         expect(useNavigationCacheStore.getState().lastRoute).toBe('/game-log');
         expect(useNavigationCacheStore.getState().folders.tools).toBe(true);
+        expect(
+            useNavigationCacheStore.getState().settingsCards[
+                'system.application'
+            ]
+        ).toBe(false);
         expect(fs.writeTextFile).not.toHaveBeenCalled();
     });
 
@@ -69,7 +90,55 @@ describe('navigation cache', () => {
         );
         expect(JSON.parse(fs.writeTextFile.mock.calls[1][1])).toEqual({
             lastRoute: '/friends-locations',
-            folders: { favorites: false }
+            folders: { favorites: false },
+            settingsCards: {}
+        });
+    });
+
+    it('serializes rapid card changes and restores the final states on restart', async () => {
+        fs.readTextFile.mockResolvedValue(
+            JSON.stringify({ lastRoute: '/settings', folders: { tools: true } })
+        );
+        const { useNavigationCacheStore } =
+            await import('./navigationCacheStore');
+        await useNavigationCacheStore.getState().hydrate();
+        expect(useNavigationCacheStore.getState().settingsCards).toEqual({});
+        let finishWrite: () => void = () => {};
+        fs.writeTextFile.mockImplementationOnce(
+            () =>
+                new Promise<void>((resolve) => {
+                    finishWrite = resolve;
+                })
+        );
+        const { setSettingsCardOpen } = useNavigationCacheStore.getState();
+        setSettingsCardOpen('system.application', false);
+        setSettingsCardOpen('advanced.troubleshooting', true);
+        setSettingsCardOpen('system.application', true);
+        setSettingsCardOpen('system.application', false);
+        await vi.waitFor(() =>
+            expect(fs.writeTextFile).toHaveBeenCalledTimes(1)
+        );
+        finishWrite();
+        await vi.waitFor(() =>
+            expect(fs.writeTextFile).toHaveBeenCalledTimes(4)
+        );
+        const saved: string = fs.writeTextFile.mock.calls[3][1];
+        expect(JSON.parse(saved)).toEqual({
+            lastRoute: '/settings',
+            folders: { tools: true },
+            settingsCards: {
+                'system.application': false,
+                'advanced.troubleshooting': true
+            }
+        });
+        fs.readTextFile.mockResolvedValue(saved);
+        vi.resetModules();
+        const restarted = (await import('./navigationCacheStore'))
+            .useNavigationCacheStore;
+        await restarted.getState().hydrate();
+        expect(restarted.getState().settingsCards).toEqual({
+            'system.application': false,
+            'advanced.troubleshooting': true
         });
     });
 });
