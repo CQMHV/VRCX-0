@@ -192,6 +192,7 @@ export function StaticSidebarLocation({
     traveling,
     hint = '',
     link = false,
+    actionMenu = false,
     showGroupLink = false,
     tooltips = true,
     metadata,
@@ -203,6 +204,7 @@ export function StaticSidebarLocation({
     traveling?: string | null;
     hint?: string | null;
     link?: boolean;
+    actionMenu?: boolean;
     showGroupLink?: boolean;
     tooltips?: boolean;
     metadata?: LocationMetadata | null;
@@ -272,8 +274,9 @@ export function StaticSidebarLocation({
         openWorld(event);
     }
 
+    const showActionMenu = isLocationLink && actionMenu;
     const locationInteractionProps: HTMLAttributes<HTMLSpanElement> =
-        isLocationLink && !sidebarWindowMode
+        isLocationLink && !(showActionMenu && sidebarWindowMode)
             ? {
                   role: 'button',
                   tabIndex: 0,
@@ -379,7 +382,7 @@ export function StaticSidebarLocation({
                 content={tooltipContent}
             >
                 <span className="inline-flex max-w-full min-w-0">
-                    {isLocationLink ? (
+                    {showActionMenu ? (
                         <SidebarLocationMenu
                             openOnClick={sidebarWindowMode}
                             location={currentLocation}

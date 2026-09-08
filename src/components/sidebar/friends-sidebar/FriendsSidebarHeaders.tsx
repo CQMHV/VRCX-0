@@ -123,6 +123,7 @@ export function InstanceHeaderRow({
                 className="min-w-0 flex-1 text-xs"
                 location={location}
                 link
+                actionMenu
                 showGroupLink
                 metadata={metadata}
                 showInstanceIdInLocation={showInstanceIdInLocation}

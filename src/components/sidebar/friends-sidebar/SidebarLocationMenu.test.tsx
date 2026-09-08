@@ -43,7 +43,14 @@ afterEach(() => {
 });
 
 function renderLocation() {
-    render(<StaticSidebarLocation location={location} hint="Test room" link />);
+    render(
+        <StaticSidebarLocation
+            location={location}
+            hint="Test room"
+            link
+            actionMenu
+        />
+    );
     return screen.getByRole('button', { name: /^Test room/ });
 }
 
@@ -164,6 +171,31 @@ describe('sidebar location menus', () => {
             expect(useShellStore.getState().windowDisplayMode).toBe(
                 windowDisplayMode
             );
+        }
+    );
+
+    it.each(['normal', 'sidebar'] as const)(
+        'leaves clicks and right clicks alone without an action menu in %s mode',
+        async (windowDisplayMode) => {
+            useShellStore.setState({ windowDisplayMode });
+            const user = userEvent.setup();
+            render(
+                <StaticSidebarLocation
+                    location={location}
+                    hint="Test room"
+                    link
+                />
+            );
+            const target = screen.getByRole('button', { name: /^Test room/ });
+
+            await user.pointer({ keys: '[MouseRight]', target });
+            expect(screen.queryByRole('menu')).toBeNull();
+
+            await user.click(target);
+            expect(openWorldDialog).toHaveBeenCalledWith({
+                worldId: location,
+                title: undefined
+            });
         }
     );
 
