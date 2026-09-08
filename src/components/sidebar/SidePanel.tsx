@@ -32,6 +32,7 @@ import {
     InputGroupInput
 } from '@/ui/shadcn/input-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/shadcn/tabs';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
 import { FriendsSidebar } from './FriendsSidebar';
 import { GroupsSidebar } from './GroupsSidebar';
@@ -465,35 +466,44 @@ export const SidePanel = forwardRef<HTMLElement, SidePanelProps>(
                                           );
                                 return (
                                     <ContextMenu key={item.value}>
-                                        <ContextMenuTrigger
-                                            render={
-                                                <TabsTrigger
-                                                    value={item.value}
-                                                    title={item.title}
-                                                    data-active={
-                                                        activeTab === item.value
-                                                            ? ''
-                                                            : undefined
-                                                    }
-                                                    className="h-auto w-full flex-col justify-center gap-0.5 px-0 py-1.5 data-active:bg-(--vrcx-0-toolbar-item-selected-surface) sm:h-auto"
-                                                >
-                                                    <Icon
-                                                        className="size-4.5"
-                                                        data-icon="icon"
+                                        <Tooltip>
+                                            <TooltipTrigger
+                                                render={
+                                                    <ContextMenuTrigger
+                                                        render={
+                                                            <TabsTrigger
+                                                                value={
+                                                                    item.value
+                                                                }
+                                                                data-active={
+                                                                    activeTab ===
+                                                                    item.value
+                                                                        ? ''
+                                                                        : undefined
+                                                                }
+                                                                className="h-auto w-full flex-col justify-center gap-0.5 px-0 py-1.5 data-active:bg-(--vrcx-0-toolbar-item-selected-surface) sm:h-auto"
+                                                            />
+                                                        }
                                                     />
-                                                    <span className="sr-only">
-                                                        {item.label}
+                                                }
+                                            >
+                                                <Icon
+                                                    className="size-4.5"
+                                                    data-icon="icon"
+                                                />
+                                                <span className="sr-only">
+                                                    {item.label}
+                                                </span>
+                                                {item.railCountLabel ? (
+                                                    <span className="text-[10px] leading-none tabular-nums">
+                                                        {item.railCountLabel}
                                                     </span>
-                                                    {item.railCountLabel ? (
-                                                        <span className="text-[10px] leading-none tabular-nums">
-                                                            {
-                                                                item.railCountLabel
-                                                            }
-                                                        </span>
-                                                    ) : null}
-                                                </TabsTrigger>
-                                            }
-                                        />
+                                                ) : null}
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                {item.title}
+                                            </TooltipContent>
+                                        </Tooltip>
                                         <ContextMenuContent className="w-44">
                                             {canHideTab ? (
                                                 <>

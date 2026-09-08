@@ -47,6 +47,7 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger
 } from '@/ui/shadcn/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
 const STATUS_DESCRIPTION_MAX_LENGTH = 32;
 
@@ -269,29 +270,39 @@ export function SidePanelSelfHeader() {
                                         }}
                                     />
                                 ) : (
-                                    <button
-                                        type="button"
-                                        aria-label={editDescriptionLabel}
-                                        title={
-                                            statusDescription ||
-                                            editDescriptionLabel
-                                        }
-                                        className={cn(
-                                            'focus-visible:ring-ring -mx-1 h-4 min-w-0 cursor-text truncate rounded-md px-1 text-left text-xs leading-4 outline-none focus-visible:ring-2',
-                                            statusDescription
-                                                ? 'text-content-secondary'
-                                                : 'text-content-tertiary'
-                                        )}
-                                        onClick={() => {
-                                            setDescriptionDraft(
-                                                statusDescription
-                                            );
-                                            setIsEditingDescription(true);
-                                        }}
-                                    >
-                                        {statusDescription ||
-                                            editDescriptionLabel}
-                                    </button>
+                                    <Tooltip>
+                                        <TooltipTrigger
+                                            render={
+                                                <button
+                                                    type="button"
+                                                    aria-label={
+                                                        editDescriptionLabel
+                                                    }
+                                                    className={cn(
+                                                        'focus-visible:ring-ring -mx-1 h-4 min-w-0 cursor-text truncate rounded-md px-1 text-left text-xs leading-4 outline-none focus-visible:ring-2',
+                                                        statusDescription
+                                                            ? 'text-content-secondary'
+                                                            : 'text-content-tertiary'
+                                                    )}
+                                                    onClick={() => {
+                                                        setDescriptionDraft(
+                                                            statusDescription
+                                                        );
+                                                        setIsEditingDescription(
+                                                            true
+                                                        );
+                                                    }}
+                                                >
+                                                    {statusDescription ||
+                                                        editDescriptionLabel}
+                                                </button>
+                                            }
+                                        />
+                                        <TooltipContent>
+                                            {statusDescription ||
+                                                editDescriptionLabel}
+                                        </TooltipContent>
+                                    </Tooltip>
                                 )}
                                 <div className="text-content-tertiary flex h-4 min-w-0 items-center text-xs leading-4">
                                     {showLocationSubline ? (

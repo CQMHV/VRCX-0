@@ -9,6 +9,7 @@ import { Button } from '@/ui/shadcn/button';
 import { Calendar } from '@/ui/shadcn/calendar';
 import { InputGroupButton } from '@/ui/shadcn/input-group';
 import { Popover, PopoverContent, PopoverTrigger } from '@/ui/shadcn/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
 export function DateRangeFilter({
     dateFrom,
@@ -63,21 +64,31 @@ export function DateRangeFilter({
                 open={dateFilterOpen}
                 onOpenChange={onDateFilterOpenChange}
             >
-                <PopoverTrigger
-                    render={
-                        <InputGroupButton
-                            variant={hasRange ? 'secondary' : 'ghost'}
-                            size={hasRange ? 'xs' : 'icon-xs'}
-                        />
-                    }
-                    aria-label={hasRange ? `${rangeLabel}: ${label}` : label}
-                    title={label}
-                >
-                    <CalendarRangeIcon data-icon="inline-start" />
-                    {hasRange ? (
-                        <span className="tabular-nums">{label}</span>
-                    ) : null}
-                </PopoverTrigger>
+                <Tooltip>
+                    <TooltipTrigger
+                        render={
+                            <PopoverTrigger
+                                render={
+                                    <InputGroupButton
+                                        variant={
+                                            hasRange ? 'secondary' : 'ghost'
+                                        }
+                                        size={hasRange ? 'xs' : 'icon-xs'}
+                                    />
+                                }
+                                aria-label={
+                                    hasRange ? `${rangeLabel}: ${label}` : label
+                                }
+                            />
+                        }
+                    >
+                        <CalendarRangeIcon data-icon="inline-start" />
+                        {hasRange ? (
+                            <span className="tabular-nums">{label}</span>
+                        ) : null}
+                    </TooltipTrigger>
+                    <TooltipContent>{label}</TooltipContent>
+                </Tooltip>
                 <PopoverContent
                     className="w-auto"
                     align="end"
@@ -119,14 +130,20 @@ export function DateRangeFilter({
                 </PopoverContent>
             </Popover>
             {hasRange ? (
-                <InputGroupButton
-                    size="icon-xs"
-                    aria-label={t('common.actions.clear')}
-                    title={t('common.actions.clear')}
-                    onClick={onClearDateFilter}
-                >
-                    <XIcon />
-                </InputGroupButton>
+                <Tooltip>
+                    <TooltipTrigger
+                        render={
+                            <InputGroupButton
+                                size="icon-xs"
+                                aria-label={t('common.actions.clear')}
+                                onClick={onClearDateFilter}
+                            />
+                        }
+                    >
+                        <XIcon />
+                    </TooltipTrigger>
+                    <TooltipContent>{t('common.actions.clear')}</TooltipContent>
+                </Tooltip>
             ) : null}
         </div>
     );
