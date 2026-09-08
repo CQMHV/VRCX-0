@@ -1449,6 +1449,10 @@
             }
         },
         "friend_log": {
+            "date_range": "日期范围",
+            "latest": "最新",
+            "rows": "行",
+            "load_older_failed": "无法加载更早的历史记录。",
             "filter_placeholder": "筛选好友日志",
             "all_types": "全部类型",
             "groups": {

@@ -1449,6 +1449,10 @@
             }
         },
         "friend_log": {
+            "date_range": "日期範圍",
+            "latest": "最新",
+            "rows": "行",
+            "load_older_failed": "無法載入更早的歷史紀錄。",
             "filter_placeholder": "篩選好友紀錄",
             "all_types": "所有類型",
             "groups": {

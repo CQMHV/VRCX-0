@@ -1449,6 +1449,10 @@
             }
         },
         "friend_log": {
+            "date_range": "Intervalo de datas",
+            "latest": "Mais recente",
+            "rows": "linhas",
+            "load_older_failed": "Não foi possível carregar o histórico anterior.",
             "filter_placeholder": "Filtrar",
             "all_types": "Todos os tipos",
             "groups": {

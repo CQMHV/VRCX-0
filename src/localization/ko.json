@@ -1428,6 +1428,10 @@
             }
         },
         "friend_log": {
+            "date_range": "기간",
+            "latest": "최신",
+            "rows": "행",
+            "load_older_failed": "이전 기록을 불러오지 못했어요.",
             "filter_placeholder": "필터",
             "all_types": "모든 유형",
             "groups": {

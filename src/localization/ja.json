@@ -1445,6 +1445,10 @@
             }
         },
         "friend_log": {
+            "date_range": "期間",
+            "latest": "最新",
+            "rows": "行",
+            "load_older_failed": "過去の履歴を読み込めませんでした。",
             "filter_placeholder": "フィルター",
             "all_types": "すべての種類",
             "groups": {

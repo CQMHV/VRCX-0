@@ -1449,6 +1449,10 @@
             }
         },
         "friend_log": {
+            "date_range": "Date range",
+            "latest": "Latest",
+            "rows": "rows",
+            "load_older_failed": "Could not load older history.",
             "filter_placeholder": "Filter",
             "all_types": "All types",
             "groups": {

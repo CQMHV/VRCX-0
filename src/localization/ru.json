@@ -1451,6 +1451,10 @@
             }
         },
         "friend_log": {
+            "date_range": "Диапазон дат",
+            "latest": "Последние",
+            "rows": "ряды",
+            "load_older_failed": "Не удалось загрузить более ранние записи.",
             "filter_placeholder": "Фильтр",
             "all_types": "Все типы",
             "groups": {

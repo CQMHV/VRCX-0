@@ -4148,6 +4148,7 @@ export type FriendLogCurrentOutput = {
     trustLevel: string;
     friendNumber: number;
 };
+export type FriendLogHistoryCursor = { createdAt: string; rowId: number };
 export type FriendLogHistoryEntryInput = {
     rowId?: JsonValue;
     createdAt?: string;
@@ -4174,6 +4175,11 @@ export type FriendLogHistoryQueryInput = {
     userId: string;
     targetUserId?: string;
     types?: string[];
+    excludedTypes?: string[];
+    dateFrom?: string;
+    dateTo?: string;
+    cursor: FriendLogHistoryCursor | null;
+    limit: number | null;
 };
 export type FriendLogNameResolutionInput = {
     requestId: string;

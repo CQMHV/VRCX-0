@@ -1451,6 +1451,10 @@
             }
         },
         "friend_log": {
+            "date_range": "Časové rozmezí",
+            "latest": "Nejnovější",
+            "rows": "řádků",
+            "load_older_failed": "Starší záznamy se nepodařilo načíst.",
             "filter_placeholder": "Filtrovat",
             "all_types": "Všechny typy",
             "groups": {
