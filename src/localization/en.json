@@ -753,6 +753,28 @@
         }
     },
     "shortcuts": {
+        "tray": {
+            "recording_failed": "Shortcut recording could not start. Close this dialog and try again.",
+            "checking": "Checking shortcut…",
+            "background_hint": "Hiding uses the Background Mode and delay settings.",
+            "global": "Global",
+            "title": "Show / Hide VRCX-0",
+            "description": "Show or hide VRCX-0 from any app. VRCX-0 keeps running when hidden.",
+            "configure": "Set Global Shortcut",
+            "unset": "Not set",
+            "inactive": "Not active",
+            "unsupported": "Global shortcuts are unavailable in this environment.",
+            "record": "Press a key combination",
+            "record_description": "Use Ctrl or Alt with a letter, number or function key. Esc cancels. The current shortcut will not hide the window while you record.",
+            "startup_failed": "The global shortcut could not be enabled. It may be in use by another app.",
+            "error": {
+                "inUse": "This shortcut is already in use. Choose another combination.",
+                "invalid": "Use Ctrl or Alt with a letter, number or function key.",
+                "reserved": "This combination is reserved for a system or app action. Choose another.",
+                "unavailable": "This shortcut is unavailable or already in use. Try another combination.",
+                "unsupported": "Global shortcuts are unavailable in this environment."
+            }
+        },
         "title": "Keyboard Shortcuts",
         "group": {
             "general": "General",

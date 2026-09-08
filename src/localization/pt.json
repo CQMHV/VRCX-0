@@ -753,6 +753,28 @@
         }
     },
     "shortcuts": {
+        "tray": {
+            "recording_failed": "Não foi possível iniciar a captura do atalho. Feche esta caixa de diálogo e tente novamente.",
+            "checking": "Verificando atalho…",
+            "background_hint": "Ao ocultar a janela, são aplicadas as configurações de modo em segundo plano e de atraso.",
+            "global": "Global",
+            "title": "Mostrar / Ocultar VRCX-0",
+            "description": "Mostre ou oculte o VRCX-0 a partir de qualquer aplicativo. O VRCX-0 continua em execução em segundo plano quando oculto.",
+            "configure": "Definir atalho global",
+            "unset": "Não definido",
+            "inactive": "Inativo",
+            "unsupported": "Os atalhos globais não estão disponíveis neste ambiente.",
+            "record": "Pressione uma combinação de teclas",
+            "record_description": "Combine Ctrl ou Alt com uma letra, um número ou uma tecla de função. Esc cancela. Durante a captura, o atalho atual não ocultará a janela.",
+            "startup_failed": "Não foi possível ativar o atalho global. Ele pode estar sendo usado por outro aplicativo.",
+            "error": {
+                "inUse": "Este atalho já está em uso. Escolha outra combinação.",
+                "invalid": "Combine Ctrl ou Alt com uma letra, um número ou uma tecla de função.",
+                "reserved": "Esta combinação está reservada para uma ação do sistema ou do aplicativo. Escolha outra.",
+                "unavailable": "Este atalho está indisponível ou já está em uso. Tente outra combinação.",
+                "unsupported": "Os atalhos globais não estão disponíveis neste ambiente."
+            }
+        },
         "title": "Atalhos de Teclado",
         "group": {
             "general": "Geral",

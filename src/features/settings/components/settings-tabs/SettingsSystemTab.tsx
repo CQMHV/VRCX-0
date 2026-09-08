@@ -8,6 +8,7 @@ import { Switch } from '@/ui/shadcn/switch';
 import { SettingsCard } from '../SettingsCard';
 import { Field } from '../SettingsField';
 import { SettingsTabContent } from '../SettingsViewParts';
+import { TrayShortcutSetting } from '../TrayShortcutSetting';
 import { useSettingsSystemTabState } from '../useSettingsSystemTabState';
 
 type SettingsSystemTabContentProps = {
@@ -89,8 +90,6 @@ export function SettingsSystemTabContent({
               defaultValue:
                   'Creates a desktop autostart entry that launches VRCX-0 with --autostart.'
           });
-    const backgroundModeDelayDisabled =
-        !isCloseToTray || !backgroundModeEnabled;
 
     return (
         <SettingsTabContent value="system">
@@ -121,6 +120,7 @@ export function SettingsSystemTabContent({
                         onCheckedChange={onCloseToTrayChange}
                     />
                 </Field>
+                {isWindows ? <TrayShortcutSetting /> : null}
                 <Field
                     label={t(
                         'view.settings.general.application.background_mode',
@@ -136,11 +136,9 @@ export function SettingsSystemTabContent({
                                 'When closing VRCX-0 to the system tray, switch to Background Mode for ultra-low memory usage, around one-tenth. Some page state may reset after restore.'
                         }
                     )}
-                    disabled={!isCloseToTray}
                 >
                     <Switch
                         checked={backgroundModeEnabled}
-                        disabled={!isCloseToTray}
                         onCheckedChange={onBackgroundModeEnabledChange}
                     />
                 </Field>
@@ -151,11 +149,9 @@ export function SettingsSystemTabContent({
                     description={t(
                         'view.settings.general.application.background_mode_delay_description'
                     )}
-                    disabled={backgroundModeDelayDisabled}
                 >
                     <Switch
                         checked={backgroundModeDelayEnabled}
-                        disabled={backgroundModeDelayDisabled}
                         onCheckedChange={onBackgroundModeDelayEnabledChange}
                     />
                 </Field>
@@ -164,7 +160,6 @@ export function SettingsSystemTabContent({
                         label={t(
                             'view.settings.general.application.background_mode_delay_button'
                         )}
-                        disabled={backgroundModeDelayDisabled}
                     >
                         <div className="flex items-center gap-2">
                             <Badge variant="outline">
@@ -175,7 +170,6 @@ export function SettingsSystemTabContent({
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                disabled={backgroundModeDelayDisabled}
                                 onClick={onPromptBackgroundModeDelayMinutes}
                             >
                                 {t(

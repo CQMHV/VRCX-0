@@ -753,6 +753,28 @@
         }
     },
     "shortcuts": {
+        "tray": {
+            "recording_failed": "无法开始快捷键录制，请关闭此对话框后重试。",
+            "checking": "正在检查快捷键…",
+            "background_hint": "隐藏时沿用后台模式和延迟设置。",
+            "global": "全局",
+            "title": "显示 / 隐藏 VRCX-0",
+            "description": "在其他应用中也可显示或隐藏 VRCX-0。隐藏后继续在后台运行。",
+            "configure": "设置全局快捷键",
+            "unset": "未设置",
+            "inactive": "未生效",
+            "unsupported": "当前环境无法使用全局快捷键。",
+            "record": "按下组合键",
+            "record_description": "请使用 Ctrl 或 Alt 搭配字母、数字或功能键。按 Esc 取消。录制期间，原快捷键不会隐藏窗口。",
+            "startup_failed": "全局快捷键未能启用，可能已被其他应用占用。",
+            "error": {
+                "inUse": "此快捷键已被占用，请换一个组合。",
+                "invalid": "请使用 Ctrl 或 Alt 搭配字母、数字或功能键。",
+                "reserved": "此组合用于系统或应用操作，请换一个组合。",
+                "unavailable": "此快捷键不可用或已被占用，请换一个组合。",
+                "unsupported": "当前环境无法使用全局快捷键。"
+            }
+        },
         "title": "键盘快捷键",
         "group": {
             "general": "常规",

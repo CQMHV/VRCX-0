@@ -15,6 +15,7 @@ import { MacNativeMenuActionHost } from '@/components/layout/MacNativeMenuAction
 import { MacOverlayTitleBar } from '@/components/layout/MacOverlayTitleBar';
 import { useGlobalKeyboardShortcuts } from '@/components/layout/useGlobalKeyboardShortcuts';
 import { useSidebarAutoHide } from '@/components/layout/useSidebarAutoHide';
+import { useTrayShortcut } from '@/components/layout/useTrayShortcut';
 import { WindowResizeHandles } from '@/components/layout/WindowResizeHandles';
 import { cn } from '@/lib/utils';
 import { recordRouteEnter } from '@/services/telemetry/telemetryPageReach';
@@ -130,6 +131,7 @@ function AppRouterContent() {
         }
     }, [pathname, search, hash, sessionReady]);
     useGlobalKeyboardShortcuts();
+    useTrayShortcut();
     useSidebarAutoHide();
     useEffect(() => {
         let disposed = false;

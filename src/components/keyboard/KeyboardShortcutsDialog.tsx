@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
 import { KeyboardShortcut } from '@/components/keyboard/KeyboardShortcut';
+import { trayShortcutKeys } from '@/components/keyboard/trayShortcutKeys';
 import { useRuntimeStore } from '@/state/runtimeStore';
+import { useTrayShortcutStore } from '@/state/trayShortcutStore';
 import {
     Dialog,
     DialogContent,
@@ -36,10 +38,12 @@ export function KeyboardShortcutsDialog({
     onOpenChange(open: boolean): void;
 }) {
     const { t } = useTranslation();
-    const isMacHost = useRuntimeStore(
-        (state) => state.hostCapabilities.platform === 'macos'
+    const platform = useRuntimeStore(
+        (state) => state.hostCapabilities.platform
     );
+    const isMacHost = platform === 'macos';
     const modifier = isMacHost ? 'Meta' : 'Mod';
+    const trayShortcut = useTrayShortcutStore((state) => state.snapshot);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -48,6 +52,23 @@ export function KeyboardShortcutsDialog({
                     <DialogTitle>{t('shortcuts.title')}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-5">
+                    {platform === 'windows' &&
+                    trayShortcut?.status === 'active' &&
+                    trayShortcut.binding ? (
+                        <section>
+                            <h3 className="text-muted-foreground mb-2 text-xs font-medium uppercase">
+                                {t('shortcuts.tray.global')}
+                            </h3>
+                            <div className="flex items-center justify-between gap-4 py-1.5 text-sm">
+                                <span>{t('shortcuts.tray.title')}</span>
+                                <KeyboardShortcut
+                                    keys={trayShortcutKeys(
+                                        trayShortcut.binding
+                                    )}
+                                />
+                            </div>
+                        </section>
+                    ) : null}
                     {SHORTCUT_GROUPS.map((group) => (
                         <section key={group.titleKey}>
                             <h3 className="text-muted-foreground mb-2 text-xs font-medium uppercase">

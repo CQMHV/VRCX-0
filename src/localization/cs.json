@@ -753,6 +753,28 @@
         }
     },
     "shortcuts": {
+        "tray": {
+            "recording_failed": "Záznam klávesové zkratky se nepodařilo spustit. Zavřete tento dialog a zkuste to znovu.",
+            "checking": "Kontrola zkratky…",
+            "background_hint": "Při skrytí se použije nastavení režimu na pozadí a zpoždění.",
+            "global": "Globální",
+            "title": "Zobrazit / Skrýt VRCX-0",
+            "description": "Zobrazte nebo skryjte VRCX-0 z libovolné aplikace. Po skrytí VRCX-0 běží dál na pozadí.",
+            "configure": "Nastavit globální zkratku",
+            "unset": "Nenastaveno",
+            "inactive": "Neaktivní",
+            "unsupported": "Globální zkratky nejsou v tomto prostředí dostupné.",
+            "record": "Stiskněte kombinaci kláves",
+            "record_description": "Použijte Ctrl nebo Alt společně s písmenem, číslicí nebo funkční klávesou. Esc zadávání zruší. Během zadávání původní zkratka okno neskryje.",
+            "startup_failed": "Globální zkratku se nepodařilo aktivovat. Možná ji používá jiná aplikace.",
+            "error": {
+                "inUse": "Tato zkratka se již používá. Zvolte jinou kombinaci.",
+                "invalid": "Použijte Ctrl nebo Alt společně s písmenem, číslicí nebo funkční klávesou.",
+                "reserved": "Tato kombinace je vyhrazena pro systém nebo aplikaci. Zvolte jinou.",
+                "unavailable": "Tato zkratka není dostupná nebo ji již používá jiná aplikace. Zkuste jinou kombinaci.",
+                "unsupported": "Globální zkratky nejsou v tomto prostředí dostupné."
+            }
+        },
         "title": "Klávesové zkratky",
         "group": {
             "general": "Obecné",
