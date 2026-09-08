@@ -26,6 +26,7 @@ import {
     InputGroupInput
 } from '@/ui/shadcn/input-group';
 import { Spinner } from '@/ui/shadcn/spinner';
+import { TabsList, TabsTrigger } from '@/ui/shadcn/tabs';
 import {
     ToggleGroup,
     ToggleGroupItem,
@@ -145,6 +146,31 @@ export type ToolbarSegmentOption<TValue extends string> = {
     count?: number;
     icon?: LucideIcon;
 };
+
+export function ToolbarTabs<TValue extends string>({
+    options
+}: {
+    options: readonly ToolbarSegmentOption<TValue>[];
+}) {
+    return (
+        <TabsList className="max-w-full shrink-0 overflow-x-auto">
+            {options.map((option) => {
+                const Icon = option.icon;
+                return (
+                    <TabsTrigger key={option.value} value={option.value}>
+                        {Icon ? <Icon data-icon="inline-start" /> : null}
+                        {option.label}
+                        {option.count === undefined ? null : (
+                            <span className="text-content-tertiary text-[11px] leading-none font-medium tabular-nums">
+                                {option.count}
+                            </span>
+                        )}
+                    </TabsTrigger>
+                );
+            })}
+        </TabsList>
+    );
+}
 
 export function ToolbarSegmented<TValue extends string>({
     value,

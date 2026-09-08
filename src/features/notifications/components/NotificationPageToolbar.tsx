@@ -7,7 +7,7 @@ import {
     ToolbarIconButton,
     ToolbarRefreshButton,
     ToolbarSearch,
-    ToolbarSegmented,
+    ToolbarTabs,
     ToolbarViews,
     type ToolbarSegmentOption
 } from '@/components/layout/ToolbarControls';
@@ -33,7 +33,6 @@ type NotificationPageToolbarProps = {
     onActiveTypesChange: (types: string[]) => void;
     onClearFilters: () => void;
     onMarkAllSeen: () => void;
-    onQuickFilterChange: (value: NotificationQuickFilter) => void;
     onRefresh: () => void;
     onSearchQueryChange: (value: string) => void;
     quickFilter: NotificationQuickFilter;
@@ -50,7 +49,6 @@ export function NotificationPageToolbar({
     unseenCount,
     onActiveTypesChange,
     onSearchQueryChange,
-    onQuickFilterChange,
     onMarkAllSeen,
     onRefresh,
     onClearFilters
@@ -70,11 +68,7 @@ export function NotificationPageToolbar({
         <PageToolbar>
             <PageToolbarRow>
                 <ToolbarViews>
-                    <ToolbarSegmented
-                        value={quickFilter}
-                        onValueChange={onQuickFilterChange}
-                        options={quickFilterOptions}
-                    />
+                    <ToolbarTabs options={quickFilterOptions} />
                     <NotificationTypeFilterDropdown
                         value={activeTypes}
                         onChange={onActiveTypesChange}

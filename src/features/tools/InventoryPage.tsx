@@ -506,10 +506,7 @@ export function InventoryPage() {
                     onValueChange={inventory.setActiveCategory}
                     className="min-h-0 flex-1"
                 >
-                    <TabsList
-                        variant="underline"
-                        className="flex h-auto w-full flex-wrap justify-start"
-                    >
+                    <TabsList className="max-w-full flex-wrap justify-start">
                         {CATEGORY_ORDER.map((category) => (
                             <TabsTrigger
                                 key={category}
@@ -546,51 +543,36 @@ export function InventoryPage() {
                                 value={category}
                                 className="mt-2 flex min-h-0 flex-1 data-hidden:hidden"
                             >
-                                <div className="flex min-h-0 flex-1 flex-col gap-3">
+                                <Tabs
+                                    value={categorySubTab}
+                                    onValueChange={(value) => {
+                                        if (
+                                            definition.tabs.some(
+                                                (tab) => tab.key === value
+                                            )
+                                        ) {
+                                            inventory.setActiveSubTabs(
+                                                (current) => ({
+                                                    ...current,
+                                                    [category]: value
+                                                })
+                                            );
+                                        }
+                                    }}
+                                    className="flex min-h-0 flex-1 flex-col gap-3"
+                                >
                                     <MediaLibraryToolbar
                                         leading={
-                                            <ToggleGroup
-                                                variant="outline"
-                                                size="sm"
-                                                value={
-                                                    categorySubTab
-                                                        ? [categorySubTab]
-                                                        : []
-                                                }
-                                                onValueChange={(nextValue) => {
-                                                    if (!nextValue[0]) {
-                                                        return;
-                                                    }
-                                                    inventory.setActiveSubTabs(
-                                                        (current) => ({
-                                                            ...current,
-                                                            [category]:
-                                                                nextValue[0]
-                                                        })
-                                                    );
-                                                }}
-                                                className="flex justify-start overflow-x-auto"
-                                            >
-                                                {definition.tabs.map(
-                                                    (tab, index) => (
-                                                        <Fragment key={tab.key}>
-                                                            {index > 0 ? (
-                                                                <ToggleGroupSeparator />
-                                                            ) : null}
-                                                            <ToggleGroupItem
-                                                                value={tab.key}
-                                                                aria-label={t(
-                                                                    tab.labelKey
-                                                                )}
-                                                            >
-                                                                {t(
-                                                                    tab.labelKey
-                                                                )}
-                                                            </ToggleGroupItem>
-                                                        </Fragment>
-                                                    )
-                                                )}
-                                            </ToggleGroup>
+                                            <TabsList className="max-w-full justify-start overflow-x-auto">
+                                                {definition.tabs.map((tab) => (
+                                                    <TabsTrigger
+                                                        key={tab.key}
+                                                        value={tab.key}
+                                                    >
+                                                        {t(tab.labelKey)}
+                                                    </TabsTrigger>
+                                                ))}
+                                            </TabsList>
                                         }
                                         actions={
                                             <>
@@ -705,7 +687,10 @@ export function InventoryPage() {
                                             </>
                                         }
                                     />
-                                    <div className="min-h-0 flex-1 overflow-y-auto p-1">
+                                    <TabsContent
+                                        value={categorySubTab}
+                                        className="min-h-0 flex-1 overflow-y-auto p-1"
+                                    >
                                         <InventoryRows
                                             category={category}
                                             rows={rows}
@@ -747,8 +732,8 @@ export function InventoryPage() {
                                                 inventory.setProfileDecorationEquipped
                                             }
                                         />
-                                    </div>
-                                </div>
+                                    </TabsContent>
+                                </Tabs>
                             </TabsContent>
                         );
                     })}

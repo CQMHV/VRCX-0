@@ -5,7 +5,7 @@ import { PageToolbar, PageToolbarRow } from '@/components/layout/PageScaffold';
 import {
     ToolbarActions,
     ToolbarSearch,
-    ToolbarSegmented,
+    ToolbarTabs,
     ToolbarViewMenu,
     ToolbarViews,
     type ToolbarSegmentOption
@@ -18,10 +18,7 @@ import {
     ToggleGroupSeparator
 } from '@/ui/shadcn/toggle-group';
 
-import {
-    isFriendsLocationsSegment,
-    type FriendsLocationsSegment
-} from '../friendsLocationsConfig';
+import { type FriendsLocationsSegment } from '../friendsLocationsConfig';
 import {
     FRIENDS_LOCATIONS_DENSITY_OPTIONS,
     sanitizeFriendsLocationsDensity,
@@ -35,24 +32,20 @@ type FriendsLocationsSegmentOption = {
 };
 
 type FriendsLocationsToolbarProps = {
-    activeSegment: FriendsLocationsSegment;
     segmentOptions: FriendsLocationsSegmentOption[];
     searchQuery: string;
     showSameInstanceInOnline: boolean;
     density: FriendsLocationsDensity;
-    onActiveSegmentChange: (value: FriendsLocationsSegment) => void;
     onSearchQueryChange: (value: string) => void;
     onShowSameInstanceInOnlineChange: (value: boolean) => void;
     onDensityChange: (value: FriendsLocationsDensity) => void;
 };
 
 export function FriendsLocationsToolbar({
-    activeSegment,
     segmentOptions,
     searchQuery,
     showSameInstanceInOnline,
     density,
-    onActiveSegmentChange,
     onSearchQueryChange,
     onShowSameInstanceInOnlineChange,
     onDensityChange
@@ -69,15 +62,7 @@ export function FriendsLocationsToolbar({
         <PageToolbar>
             <PageToolbarRow>
                 <ToolbarViews>
-                    <ToolbarSegmented
-                        value={activeSegment}
-                        onValueChange={(value) => {
-                            if (isFriendsLocationsSegment(value)) {
-                                onActiveSegmentChange(value);
-                            }
-                        }}
-                        options={options}
-                    />
+                    <ToolbarTabs options={options} />
                 </ToolbarViews>
 
                 <ToolbarSearch

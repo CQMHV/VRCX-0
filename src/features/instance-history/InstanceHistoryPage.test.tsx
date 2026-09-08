@@ -99,7 +99,7 @@ vi.mock('@/components/layout/ToolbarControls', () => ({
     ToolbarDivider: () => null,
     ToolbarRefreshButton: () => null,
     ToolbarSearch: () => null,
-    ToolbarSegmented: () => null,
+    ToolbarTabs: () => null,
     ToolbarStatus: ({ children }: { children?: ReactNode }) => (
         <div data-testid="query-error">{children}</div>
     ),

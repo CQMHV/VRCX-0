@@ -6,9 +6,39 @@ import { GridIcon, TableIcon } from 'lucide-react';
 import { useState } from 'react';
 import { afterEach, expect, it, vi } from 'vitest';
 
-import { ToolbarSegmented } from './ToolbarControls';
+import { Tabs, TabsContent } from '@/ui/shadcn/tabs';
+
+import { ToolbarSegmented, ToolbarTabs } from './ToolbarControls';
 
 afterEach(cleanup);
+
+it('links counted navigation tabs to the selected page without losing its input state', async () => {
+    const user = userEvent.setup();
+    function Harness() {
+        const [value, setValue] = useState('all');
+        return (
+            <Tabs value={value} onValueChange={setValue}>
+                <ToolbarTabs
+                    options={[
+                        { value: 'all', label: 'All', count: 5 },
+                        { value: 'friends', label: 'Friends', count: 2 }
+                    ]}
+                />
+                <input aria-label="Search" />
+                <TabsContent value={value}>{value}</TabsContent>
+            </Tabs>
+        );
+    }
+    render(<Harness />);
+    await user.type(screen.getByRole('textbox', { name: 'Search' }), 'Alice');
+    const friends = screen.getByRole('tab', { name: /Friends\s*2/ });
+    await user.click(friends);
+    expect(friends.getAttribute('aria-selected')).toBe('true');
+    const panel = screen.getByRole('tabpanel', { name: /Friends\s*2/ });
+    expect(panel.textContent).toBe('friends');
+    expect(friends.getAttribute('aria-controls')).toBe(panel.id);
+    expect(screen.getByRole('textbox')).toHaveProperty('value', 'Alice');
+});
 
 it('keeps one view selected and supports keyboard switching with icon tooltips', async () => {
     const user = userEvent.setup();

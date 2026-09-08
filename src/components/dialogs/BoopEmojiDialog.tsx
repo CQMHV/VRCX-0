@@ -265,10 +265,7 @@ export function BoopEmojiDialog({
                         }}
                     >
                         <div className="flex min-h-8 items-center justify-between gap-3">
-                            <TabsList
-                                variant="underline"
-                                className="relative h-8 justify-start p-0"
-                            >
+                            <TabsList className="justify-start">
                                 <TabsTrigger
                                     value="default"
                                     className="min-w-28 flex-none px-3"

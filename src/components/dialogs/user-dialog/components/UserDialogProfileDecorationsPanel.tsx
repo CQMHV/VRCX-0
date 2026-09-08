@@ -1,5 +1,5 @@
 import { BanIcon, PackageIcon } from 'lucide-react';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -19,11 +19,7 @@ import {
     resolveProfileDecorationTypeLabelKey
 } from '@/domain/entities/inventory';
 import { cn } from '@/lib/utils';
-import {
-    ToggleGroup,
-    ToggleGroupItem,
-    ToggleGroupSeparator
-} from '@/ui/shadcn/toggle-group';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/shadcn/tabs';
 
 import {
     PROFILE_DECORATION_SLOTS,
@@ -91,7 +87,13 @@ export function UserDialogProfileDecorationsPanel({
         : 'size-full object-cover';
 
     return (
-        <div className="flex min-h-0 flex-1 flex-col gap-3">
+        <Tabs
+            value={activeSlot}
+            onValueChange={(value) => {
+                if (isProfileDecorationPanel(value)) setActiveSlot(value);
+            }}
+            className="flex min-h-0 flex-1 flex-col gap-3"
+        >
             <PageToolbar>
                 <PageToolbarRow className="items-center">
                     <PageBackButton
@@ -105,43 +107,26 @@ export function UserDialogProfileDecorationsPanel({
                     </PageHeader>
                 </PageToolbarRow>
             </PageToolbar>
-            <ToggleGroup
-                variant="outline"
-                size="sm"
-                value={[activeSlot]}
-                onValueChange={(value) => {
-                    const nextSlot = value[0];
-                    if (nextSlot && isProfileDecorationPanel(nextSlot)) {
-                        setActiveSlot(nextSlot);
-                    }
-                }}
-                className="flex justify-start overflow-x-auto"
+            <TabsList className="max-w-full justify-start overflow-x-auto">
+                {[...PROFILE_DECORATION_SLOTS, 'background'].map((slot) => {
+                    const label =
+                        slot === 'background'
+                            ? t('dialog.inventory.background')
+                            : t(
+                                  resolveProfileDecorationTypeLabelKey(slot) ??
+                                      ''
+                              );
+                    return (
+                        <TabsTrigger key={slot} value={slot} aria-label={label}>
+                            {label}
+                        </TabsTrigger>
+                    );
+                })}
+            </TabsList>
+            <TabsContent
+                value={activeSlot}
+                className="min-h-0 flex-1 overflow-y-auto p-1"
             >
-                {[...PROFILE_DECORATION_SLOTS, 'background'].map(
-                    (slot, index) => {
-                        const label =
-                            slot === 'background'
-                                ? t('dialog.inventory.background')
-                                : t(
-                                      resolveProfileDecorationTypeLabelKey(
-                                          slot
-                                      ) ?? ''
-                                  );
-                        return (
-                            <Fragment key={slot}>
-                                {index > 0 ? <ToggleGroupSeparator /> : null}
-                                <ToggleGroupItem
-                                    value={slot}
-                                    aria-label={label}
-                                >
-                                    {label}
-                                </ToggleGroupItem>
-                            </Fragment>
-                        );
-                    }
-                )}
-            </ToggleGroup>
-            <div className="min-h-0 flex-1 overflow-y-auto p-1">
                 {isBackground ? (
                     <UserDialogProfileBackgroundPicker
                         profile={profile}
@@ -202,7 +187,7 @@ export function UserDialogProfileDecorationsPanel({
                         ) : null}
                     </div>
                 )}
-            </div>
-        </div>
+            </TabsContent>
+        </Tabs>
     );
 }
