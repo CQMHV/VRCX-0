@@ -815,6 +815,7 @@
         "search_direct_access": "Vložte odkaz nebo ID",
         "search_scope_direct_access": "wrld_ · usr_ · vrchat.com/…",
         "search_open_direct": "Otevřít tento odkaz nebo ID",
+        "search_clipboard_detected": "Ve schránce byl rozpoznán odkaz nebo ID. Stisknutím Enter otevřete.",
         "search_joined_groups": "Skupiny, ve kterých jste členem",
         "refresh_tooltip": "Obnovit přátele",
         "refresh_available_in_seconds": "Nedávno synchronizováno. Zkuste to znovu za {count} s.",
@@ -5504,10 +5505,7 @@
         },
         "direct_access_omni": {
             "header": "Přímý přístup",
-            "description": "Zadejte URL nebo ID (UUID) uživatele, světa, instance, avatara nebo skupiny",
             "description_failed": "Přímý přístup se nezdařil. Zkontrolujte URL nebo ID a zkuste to znovu.",
-            "cancel": "Zrušit",
-            "ok": "OK",
             "message": {
                 "opening": "Otevírání..."
             }

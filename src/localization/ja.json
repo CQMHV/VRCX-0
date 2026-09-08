@@ -815,6 +815,7 @@
         "search_direct_access": "リンクやIDを貼り付け",
         "search_scope_direct_access": "wrld_ · usr_ · vrchat.com/…",
         "search_open_direct": "このリンク・IDを開く",
+        "search_clipboard_detected": "クリップボードにリンクまたはIDがあります。Enterで開く",
         "search_joined_groups": "参加したグループ",
         "refresh_tooltip": "フレンドを更新",
         "refresh_available_in_seconds": "同期したばかりです。あと {count} 秒後にもう一度お試しください",
@@ -5528,10 +5529,7 @@
         },
         "direct_access_omni": {
             "header": "ダイレクトアクセス",
-            "description": "ユーザーまたはワールド、インスタンス、アバター、グループURLもしくはID (UUID) を入力してください。",
             "description_failed": "ダイレクトアクセスに失敗しました。URLまたはIDを確認して再試行してください。",
-            "cancel": "キャンセル",
-            "ok": "OK",
             "message": {
                 "opening": "開いています..."
             }

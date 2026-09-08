@@ -815,6 +815,7 @@
         "search_direct_access": "Link oder ID einfügen",
         "search_scope_direct_access": "wrld_ · usr_ · vrchat.com/…",
         "search_open_direct": "Diesen Link bzw. diese ID öffnen",
+        "search_clipboard_detected": "Link oder ID in der Zwischenablage erkannt. Mit Enter öffnen.",
         "search_joined_groups": "Beigetretene Gruppen",
         "refresh_tooltip": "Freunde aktualisieren",
         "refresh_available_in_seconds": "Kürzlich synchronisiert. Bitte in {count} Sek. erneut versuchen.",
@@ -5500,10 +5501,7 @@
         },
         "direct_access_omni": {
             "header": "Direktzugriff",
-            "description": "Gib eine Nutzer-/Welt-/Instanz-/Avatar-/Gruppen-URL oder -ID (UUID) ein",
             "description_failed": "Direktzugriff fehlgeschlagen. Überprüfe die URL oder ID und versuche es erneut.",
-            "cancel": "Abbrechen",
-            "ok": "OK",
             "message": {
                 "opening": "Wird geöffnet..."
             }

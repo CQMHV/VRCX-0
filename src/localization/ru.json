@@ -815,6 +815,7 @@
         "search_direct_access": "Вставьте ссылку или ID",
         "search_scope_direct_access": "wrld_ · usr_ · vrchat.com/…",
         "search_open_direct": "Открыть эту ссылку или ID",
+        "search_clipboard_detected": "В буфере обмена найдена ссылка или ID. Нажмите Enter, чтобы открыть.",
         "search_joined_groups": "Присоединяющиеся группы",
         "refresh_tooltip": "Обновить друзей",
         "refresh_available_in_seconds": "Недавно синхронизировано. Повторите попытку через {count} сек.",
@@ -5505,10 +5506,7 @@
         },
         "direct_access_omni": {
             "header": "Прямой доступ",
-            "description": "Введите URL или ID (UUID) пользователя/мира/инстанса/аватара/группы",
             "description_failed": "Прямой доступ не сработал. Проверьте URL или ID и попробуйте еще раз.",
-            "cancel": "Отмена",
-            "ok": "ОК",
             "message": {
                 "opening": "Открытие..."
             }

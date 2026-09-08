@@ -815,6 +815,7 @@
         "search_direct_access": "粘贴链接或 ID",
         "search_scope_direct_access": "wrld_ · usr_ · vrchat.com/…",
         "search_open_direct": "打开这个链接或 ID",
+        "search_clipboard_detected": "检测到剪贴板链接或 ID，按回车打开",
         "search_joined_groups": "我加入的群组",
         "refresh_tooltip": "刷新好友列表",
         "refresh_available_in_seconds": "你刚刚才同步过，请 {count} 秒后再试",
@@ -5545,10 +5546,7 @@
         },
         "direct_access_omni": {
             "header": "直接打开",
-            "description": "输入玩家 / 世界 / 房间 / 模型链接 或 UUID",
             "description_failed": "打开内容失败，请检查链接或 ID 后重试。",
-            "cancel": "取消",
-            "ok": "确定",
             "message": {
                 "opening": "正在打开..."
             }

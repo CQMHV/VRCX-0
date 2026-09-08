@@ -815,6 +815,7 @@
         "search_direct_access": "Paste a link or ID",
         "search_scope_direct_access": "wrld_ · usr_ · vrchat.com/…",
         "search_open_direct": "Open this link or ID",
+        "search_clipboard_detected": "Link or ID detected in clipboard. Press Enter to open.",
         "search_joined_groups": "Joined Groups",
         "refresh_tooltip": "Refresh friends",
         "refresh_available_in_seconds": "Recently synced. Please try again in {count} sec.",
@@ -5544,10 +5545,7 @@
         },
         "direct_access_omni": {
             "header": "Direct Access",
-            "description": "Enter a User/World/Instance/Avatar/Group URL or ID (UUID)",
             "description_failed": "Direct access failed. Check the URL or ID and try again.",
-            "cancel": "Cancel",
-            "ok": "OK",
             "message": {
                 "opening": "Opening..."
             }

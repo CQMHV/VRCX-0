@@ -815,6 +815,7 @@
         "search_direct_access": "貼上連結或 ID",
         "search_scope_direct_access": "wrld_ · usr_ · vrchat.com/…",
         "search_open_direct": "開啟這個連結或 ID",
+        "search_clipboard_detected": "偵測到剪貼簿連結或 ID，按 Enter 開啟",
         "search_joined_groups": "已加入群組",
         "refresh_tooltip": "重新整理好友",
         "refresh_available_in_seconds": "已同步，請 {count} 秒後再試",
@@ -5536,10 +5537,7 @@
         },
         "direct_access_omni": {
             "header": "直接存取",
-            "description": "輸入用戶 / 世界 / 房間 / 角色連結 或 ID (UUID)",
             "description_failed": "直接存取失敗，請檢查連結或 ID 後再試。",
-            "cancel": "取消",
-            "ok": "確定",
             "message": {
                 "opening": "正在開啟..."
             }

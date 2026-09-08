@@ -13,7 +13,6 @@ import {
     type ComponentProps,
     useCallback,
     useEffect,
-    useState,
     type ReactNode
 } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +20,6 @@ import { useLocation, useNavigate } from 'react-router';
 
 import { KeyboardShortcut } from '@/components/keyboard/KeyboardShortcut';
 import { ShortcutHintPanel } from '@/components/keyboard/ShortcutHintPanel';
-import { QuickSearchDialog } from '@/components/sidebar/QuickSearchDialog';
 import { cn } from '@/lib/utils';
 import { setThemeModePreference } from '@/services/preferencesService';
 import { useResolvedThemeMode } from '@/services/themeService';
@@ -59,8 +57,8 @@ import {
 } from '@/ui/shadcn/context-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
-import { useDirectAccessAction } from './directAccessAction';
 import { TitleBarUpdateButton } from './TitleBarUpdateButton';
+import { useQuickSearchActions } from './useQuickSearchActions';
 import { useRightSidePanelVisibility } from './useRightSidePanelVisibility';
 
 export function TitleBarButton({
@@ -140,7 +138,6 @@ interface TitleBarActionsResult {
     sidebarWindowModeButton: ReactNode;
     notificationAction: ReactNode;
     themeToggleAction: ReactNode;
-    quickSearchDialog: ReactNode;
     openQuickSearch: () => void;
     openDirectAccessFromClipboard: () => void;
     openNotificationCenter: () => void;
@@ -154,11 +151,11 @@ export function useTitleBarActions(
     const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
-    const [quickSearchOpen, setQuickSearchOpen] = useState(false);
-    const { openDirectAccessFromClipboard } = useDirectAccessAction();
     const isSessionReady = useSessionStore(
         (state) => state.sessionPhase === 'ready'
     );
+    const { openQuickSearch, openDirectAccessFromClipboard } =
+        useQuickSearchActions();
     const notificationLayout = usePreferencesStore(
         (state) => state.notificationLayout
     );
@@ -224,16 +221,11 @@ export function useTitleBarActions(
         ? t('app_menu.hide_friends_sidebar')
         : t('app_menu.show_friends_sidebar');
     const quickSearchShortcutLabel = getTitleBarShortcutLabel(isMacHost, 'K');
-    const directAccessShortcutLabel = getTitleBarShortcutLabel(isMacHost, 'D');
     const quickSearchLabel = t('app_menu.quick_search');
     const directAccessLabel = t('prompt.direct_access_omni.header');
     const sidebarWindowModeLabel = sidebarWindowMode
         ? t('app_menu.restore_full_window')
         : t('app_menu.enter_sidebar_mode');
-
-    const openQuickSearch = useCallback(() => {
-        setQuickSearchOpen(true);
-    }, []);
 
     const toggleSidebarWindowMode = useCallback(() => {
         const transition = sidebarWindowMode
@@ -275,7 +267,7 @@ export function useTitleBarActions(
             const key = event.key.toLowerCase();
             if (key === 'k') {
                 event.preventDefault();
-                setQuickSearchOpen(true);
+                openQuickSearch();
                 return;
             }
             if (key === 'd') {
@@ -286,7 +278,12 @@ export function useTitleBarActions(
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isSessionReady, isMacHost, openDirectAccessFromClipboard]);
+    }, [
+        isSessionReady,
+        isMacHost,
+        openDirectAccessFromClipboard,
+        openQuickSearch
+    ]);
 
     async function markAllNotificationsRead() {
         const store = useVrcNotificationStore.getState();
@@ -465,16 +462,6 @@ export function useTitleBarActions(
                         )}
                     </TooltipContent>
                 </Tooltip>
-                <TitleBarButton
-                    label={formatTitleBarShortcutLabel(
-                        directAccessLabel,
-                        directAccessShortcutLabel
-                    )}
-                    className="size-7 min-w-7 rounded-md px-0"
-                    onClick={openDirectAccessFromClipboard}
-                >
-                    <CompassIcon data-icon="icon" />
-                </TitleBarButton>
             </div>
             {notificationAction}
             <TitleBarButton
@@ -537,17 +524,9 @@ export function useTitleBarActions(
         </div>
     ) : null;
 
-    const quickSearchDialog = isSessionReady ? (
-        <QuickSearchDialog
-            open={quickSearchOpen}
-            onOpenChange={setQuickSearchOpen}
-        />
-    ) : null;
-
     return {
         isSessionReady,
         actions,
-        quickSearchDialog,
         openQuickSearch,
         openDirectAccessFromClipboard,
         openNotificationCenter: openVrcNotificationCenter,

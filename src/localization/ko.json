@@ -814,6 +814,7 @@
         "search_direct_access": "링크나 ID 붙여넣기",
         "search_scope_direct_access": "wrld_ · usr_ · vrchat.com/…",
         "search_open_direct": "이 링크나 ID 열기",
+        "search_clipboard_detected": "클립보드에서 링크 또는 ID를 찾았어요. Enter를 눌러 여세요.",
         "search_joined_groups": "가입된 그룹",
         "refresh_tooltip": "새로고침",
         "groups": "그룹",
@@ -5437,9 +5438,6 @@
         },
         "direct_access_omni": {
             "header": "빠른 접근",
-            "description": "유저/월드/인스턴스/아바타/그룹 URL 혹은 ID (UUID) 입력",
-            "cancel": "취소",
-            "ok": "확인",
             "message": {
                 "opening": "여는 중..."
             },
