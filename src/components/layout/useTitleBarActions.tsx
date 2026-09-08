@@ -1,10 +1,9 @@
 import {
+    ArrowLeftFromLineIcon,
+    ArrowRightToLineIcon,
     BellIcon,
     CompassIcon,
     KeyboardIcon,
-    PanelLeftIcon,
-    PanelLeftOpenIcon,
-    PanelRightDashedIcon,
     PanelRightIcon,
     PanelRightOpenIcon,
     SearchIcon,
@@ -24,10 +23,7 @@ import { KeyboardShortcut } from '@/components/keyboard/KeyboardShortcut';
 import { ShortcutHintPanel } from '@/components/keyboard/ShortcutHintPanel';
 import { QuickSearchDialog } from '@/components/sidebar/QuickSearchDialog';
 import { cn } from '@/lib/utils';
-import {
-    setNavbarCollapsedPreference,
-    setThemeModePreference
-} from '@/services/preferencesService';
+import { setThemeModePreference } from '@/services/preferencesService';
 import { useResolvedThemeMode } from '@/services/themeService';
 import { toast } from '@/services/toastService';
 import {
@@ -188,7 +184,6 @@ export function useTitleBarActions(
     const showUpdateUi = useRuntimeStore((state) =>
         shouldShowUpdateUi(state.updateLoop)
     );
-    const navbarOpen = useShellStore((state) => state.sidebarOpen);
     const sidebarWindowMode = useShellStore(
         (state) => state.windowDisplayMode === 'sidebar'
     );
@@ -225,9 +220,6 @@ export function useTitleBarActions(
             localCommunityThemePreview
         );
     const themeToggleLabel = t('nav_tooltip.toggle_theme');
-    const leftSidebarLabel = navbarOpen
-        ? t('nav_tooltip.collapse_nav')
-        : t('nav_tooltip.expand_nav');
     const rightSidebarLabel = rightSidebarOpen
         ? t('app_menu.hide_friends_sidebar')
         : t('app_menu.show_friends_sidebar');
@@ -259,7 +251,11 @@ export function useTitleBarActions(
             className="ml-1 size-7 min-w-7 rounded-md px-0"
             onClick={toggleSidebarWindowMode}
         >
-            <PanelRightDashedIcon data-icon="icon" />
+            {sidebarWindowMode ? (
+                <ArrowLeftFromLineIcon data-icon="icon" />
+            ) : (
+                <ArrowRightToLineIcon data-icon="icon" />
+            )}
         </TitleBarButton>
     );
 
@@ -446,7 +442,8 @@ export function useTitleBarActions(
                                     quickSearchLabel,
                                     quickSearchShortcutLabel
                                 )}
-                                className="bg-muted/30 text-muted-foreground hover:bg-muted/50 hover:text-foreground h-6 min-w-7 justify-start rounded-md border-0 px-2 shadow-none min-[640px]:w-44 min-[960px]:w-56"
+                                data-vrcx-0-control="toolbar"
+                                className="vrcx-0-toolbar-control text-muted-foreground hover:text-foreground h-6 min-w-7 justify-start rounded-md border-0 px-2 shadow-none min-[640px]:w-44 min-[960px]:w-56"
                                 onClick={openQuickSearch}
                             >
                                 <SearchIcon data-icon="inline-start" />
@@ -489,19 +486,6 @@ export function useTitleBarActions(
             </TitleBarButton>
             {themeToggleAction}
             <TitleBarButton
-                label={leftSidebarLabel}
-                className="size-7 min-w-7 rounded-md px-0"
-                onClick={() => {
-                    setNavbarCollapsedPreference(navbarOpen);
-                }}
-            >
-                {navbarOpen ? (
-                    <PanelLeftIcon data-icon="icon" />
-                ) : (
-                    <PanelLeftOpenIcon data-icon="icon" />
-                )}
-            </TitleBarButton>
-            <TitleBarButton
                 label={rightSidebarLabel}
                 className="size-7 min-w-7 rounded-md px-0"
                 onClick={toggleRightSidebar}
@@ -529,16 +513,6 @@ export function useTitleBarActions(
                                 id: 'titlebar-direct-access',
                                 keys: 'D',
                                 label: directAccessLabel
-                            },
-                            {
-                                icon: navbarOpen ? (
-                                    <PanelLeftIcon />
-                                ) : (
-                                    <PanelLeftOpenIcon />
-                                ),
-                                id: 'titlebar-left-sidebar',
-                                keys: 'B',
-                                label: leftSidebarLabel
                             },
                             {
                                 icon: rightSidebarOpen ? (

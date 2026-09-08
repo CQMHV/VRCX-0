@@ -25,7 +25,6 @@ import {
     ToolbarSearch,
     ToolbarSegmented,
     ToolbarStatus,
-    ToolbarToggleButton,
     ToolbarViews,
     type ToolbarSegmentOption
 } from '@/components/layout/ToolbarControls';
@@ -55,15 +54,18 @@ import type {
 function GameLogTypeFilterMenu({
     value,
     options,
-    onValueChange
+    favoritesOnly,
+    onValueChange,
+    onToggleFavoritesOnly
 }: {
     value: readonly GameLogFilterType[];
     options: readonly ToolbarSegmentOption<GameLogFilterType>[];
+    favoritesOnly: boolean;
     onValueChange(value: GameLogFilterType[]): void;
+    onToggleFavoritesOnly(): void;
 }) {
     const { t } = useTranslation();
     const selected = options.filter((option) => value.includes(option.value));
-    const first = selected[0];
     const allLabel = t('view.search.avatar.all');
 
     return (
@@ -71,20 +73,31 @@ function GameLogTypeFilterMenu({
             <DropdownMenuTrigger
                 render={
                     <Button
-                        variant={selected.length ? 'secondary' : 'outline'}
+                        variant={
+                            selected.length || favoritesOnly
+                                ? 'secondary'
+                                : 'outline'
+                        }
                         aria-label={t('table.gameLog.type')}
                     />
                 }
             >
                 <span className="max-w-32 truncate">
-                    {first?.label ?? allLabel}
+                    {t('table.gameLog.type')}
                 </span>
-                {selected.length > 1 ? (
-                    <span className="tabular-nums">+{selected.length - 1}</span>
-                ) : null}
                 <ChevronDownIcon data-icon="inline-end" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
+                <DropdownMenuGroup>
+                    <DropdownMenuCheckboxItem
+                        checked={favoritesOnly}
+                        closeOnClick={false}
+                        onCheckedChange={onToggleFavoritesOnly}
+                    >
+                        {t('view.game_log.label.favorites_only')}
+                    </DropdownMenuCheckboxItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuLabel>
                         {t('table.gameLog.type')}
@@ -279,28 +292,24 @@ export function GameLogToolbar({
                         onValueChange={changeViewMode}
                         options={viewModeOptions}
                     />
-                    <ToolbarToggleButton
-                        icon={StarIcon}
-                        fillWhenActive
-                        active={favoritesOnly}
-                        label={t('view.game_log.label.favorites_only')}
-                        onClick={toggleFavoritesOnly}
+                    <ToolbarFilterChips
+                        value={queryFilterTypes}
+                        options={typeOptions}
+                        leading={{
+                            label: t('view.game_log.label.favorites_only'),
+                            icon: StarIcon,
+                            pressed: favoritesOnly,
+                            onPressedChange: toggleFavoritesOnly
+                        }}
+                        onValueChange={setActiveSelectedTypes}
                     />
-                    <div className="@min-4xl/game-log-toolbar:hidden">
-                        <GameLogTypeFilterMenu
-                            value={queryFilterTypes}
-                            options={typeOptions}
-                            onValueChange={setActiveSelectedTypes}
-                        />
-                    </div>
-                    <div className="hidden min-w-0 flex-1 @min-4xl/game-log-toolbar:block">
-                        <ToolbarFilterChips
-                            value={queryFilterTypes}
-                            allLabel={t('view.search.avatar.all')}
-                            options={typeOptions}
-                            onValueChange={setActiveSelectedTypes}
-                        />
-                    </div>
+                    <GameLogTypeFilterMenu
+                        value={queryFilterTypes}
+                        options={typeOptions}
+                        favoritesOnly={favoritesOnly}
+                        onValueChange={setActiveSelectedTypes}
+                        onToggleFavoritesOnly={toggleFavoritesOnly}
+                    />
                 </ToolbarViews>
 
                 <div

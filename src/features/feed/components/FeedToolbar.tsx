@@ -101,7 +101,7 @@ function FeedTypeFilterMenu({
                     types: summary
                 })}
             >
-                {summary}
+                {t('view.feed.columns.types')}
                 <ChevronDownIcon data-icon="inline-end" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
@@ -185,37 +185,30 @@ export const FeedToolbar = memo(function FeedToolbar({
                         value="table"
                         onValueChange={onViewModeChange}
                     />
-                    <div className="@min-4xl/feed-toolbar:hidden">
-                        <FeedTypeFilterMenu
-                            activeFilters={activeFilters}
-                            favoritesOnly={favoritesOnly}
-                            favoritesOnlyDisabled={scopedUserIds.length > 0}
-                            feedFilterTypes={feedFilterTypes}
-                            onClearFeedFilters={onClearFeedFilters}
-                            onToggleFavoritesOnly={onToggleFavoritesOnly}
-                            onToggleFeedFilter={onToggleFeedFilter}
-                        />
-                    </div>
-                    <div className="hidden max-w-full min-w-0 @min-4xl/feed-toolbar:block">
-                        <ToolbarFilterChips
-                            value={activeFilters}
-                            onValueChange={onFeedFiltersChange}
-                            allLabel={t('view.feed.toolbar.all_types')}
-                            leading={{
-                                label: t(
-                                    'view.feed.toolbar.grouped_friends_only'
-                                ),
-                                icon: StarIcon,
-                                pressed: favoritesOnly,
-                                disabled: scopedUserIds.length > 0,
-                                onPressedChange: onToggleFavoritesOnly
-                            }}
-                            options={feedFilterTypes.map((filter) => ({
-                                value: filter,
-                                label: t(`view.feed.filters.${filter}`)
-                            }))}
-                        />
-                    </div>
+                    <ToolbarFilterChips
+                        value={activeFilters}
+                        onValueChange={onFeedFiltersChange}
+                        leading={{
+                            label: t('view.feed.toolbar.grouped_friends_only'),
+                            icon: StarIcon,
+                            pressed: favoritesOnly,
+                            disabled: scopedUserIds.length > 0,
+                            onPressedChange: onToggleFavoritesOnly
+                        }}
+                        options={feedFilterTypes.map((filter) => ({
+                            value: filter,
+                            label: t(`view.feed.filters.${filter}`)
+                        }))}
+                    />
+                    <FeedTypeFilterMenu
+                        activeFilters={activeFilters}
+                        favoritesOnly={favoritesOnly}
+                        favoritesOnlyDisabled={scopedUserIds.length > 0}
+                        feedFilterTypes={feedFilterTypes}
+                        onClearFeedFilters={onClearFeedFilters}
+                        onToggleFavoritesOnly={onToggleFavoritesOnly}
+                        onToggleFeedFilter={onToggleFeedFilter}
+                    />
                 </ToolbarViews>
                 <div
                     className={cn(

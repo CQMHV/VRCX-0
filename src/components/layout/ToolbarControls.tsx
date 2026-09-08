@@ -243,7 +243,6 @@ export function toolbarDateRangeTrigger({
     );
 }
 
-const ALL_CHIP_VALUE = '__all__';
 const LEADING_CHIP_VALUE = '__leading__';
 
 export type ToolbarFilterChipsLeading = {
@@ -258,20 +257,26 @@ export function ToolbarFilterChips<TValue extends string>({
     value,
     onValueChange,
     options,
-    allLabel,
     leading
 }: {
     value: readonly TValue[];
     onValueChange: (value: TValue[]) => void;
     options: readonly { value: TValue; label: string }[];
-    allLabel: string;
     leading?: ToolbarFilterChipsLeading;
 }) {
-    const typePressed: string[] = value.length ? [...value] : [ALL_CHIP_VALUE];
-    const pressed = leading?.pressed
-        ? [LEADING_CHIP_VALUE, ...typePressed]
-        : typePressed;
+    const visibleOptions = options.filter((option) =>
+        value.includes(option.value)
+    );
+    const leadingPressed = Boolean(leading?.pressed);
     const LeadingIcon = leading?.icon;
+
+    if (!leadingPressed && !visibleOptions.length) {
+        return null;
+    }
+
+    const pressed = leadingPressed
+        ? [LEADING_CHIP_VALUE, ...value]
+        : [...value];
 
     return (
         <ToggleGroup
@@ -280,17 +285,11 @@ export function ToolbarFilterChips<TValue extends string>({
             spacing={0.5}
             value={pressed}
             onValueChange={(next) => {
-                if (leading) {
-                    const nextLeadingPressed =
-                        next.includes(LEADING_CHIP_VALUE);
-                    if (nextLeadingPressed !== leading.pressed) {
-                        leading.onPressedChange(nextLeadingPressed);
+                if (leading && leadingPressed) {
+                    if (!next.includes(LEADING_CHIP_VALUE)) {
+                        leading.onPressedChange(false);
                         return;
                     }
-                }
-                if (next.includes(ALL_CHIP_VALUE) && value.length) {
-                    onValueChange([]);
-                    return;
                 }
                 const picked: TValue[] = [];
                 for (const entry of next) {
@@ -305,7 +304,7 @@ export function ToolbarFilterChips<TValue extends string>({
             }}
             className="vrcx-0-segmented-control vrcx-0-filter-chips max-w-full shrink-0 overflow-x-auto"
         >
-            {leading && LeadingIcon ? (
+            {leadingPressed && leading && LeadingIcon ? (
                 <Tooltip>
                     <TooltipTrigger
                         render={
@@ -316,9 +315,7 @@ export function ToolbarFilterChips<TValue extends string>({
                             >
                                 <LeadingIcon
                                     data-icon="icon"
-                                    className={cn(
-                                        leading.pressed && 'fill-current'
-                                    )}
+                                    className="fill-current"
                                 />
                             </ToggleGroupItem>
                         }
@@ -326,10 +323,7 @@ export function ToolbarFilterChips<TValue extends string>({
                     <TooltipContent>{leading.label}</TooltipContent>
                 </Tooltip>
             ) : null}
-            <ToggleGroupItem value={ALL_CHIP_VALUE} aria-label={allLabel}>
-                {allLabel}
-            </ToggleGroupItem>
-            {options.map((option) => (
+            {visibleOptions.map((option) => (
                 <ToggleGroupItem
                     key={option.value}
                     value={option.value}
@@ -349,7 +343,8 @@ function ToolbarTooltipButton({
     variant,
     disabled,
     loading = false,
-    filled = false
+    filled = false,
+    pressed
 }: {
     icon: LucideIcon;
     label: string;
@@ -358,6 +353,7 @@ function ToolbarTooltipButton({
     disabled: boolean;
     loading?: boolean;
     filled?: boolean;
+    pressed?: boolean;
 }) {
     return (
         <Tooltip>
@@ -368,6 +364,7 @@ function ToolbarTooltipButton({
                         variant={variant}
                         size="icon"
                         aria-label={label}
+                        aria-pressed={pressed}
                         data-vrcx-0-control="toolbar"
                         className={cn(
                             variant === 'ghost'
@@ -418,6 +415,7 @@ export function ToolbarToggleButton({
             variant={active ? 'secondary' : 'outline'}
             disabled={disabled}
             filled={active && fillWhenActive}
+            pressed={active}
         />
     );
 }
