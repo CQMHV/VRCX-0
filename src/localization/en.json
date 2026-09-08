@@ -778,8 +778,16 @@
         "title": "Keyboard Shortcuts",
         "group": {
             "general": "General",
-            "layout": "Layout"
-        }
+            "layout": "Layout",
+            "pagination": "Search and table pagination",
+            "screenshots": "Screenshot details",
+            "image_viewer": "Fullscreen image viewer",
+            "selection": "Selection in screenshots and favorites"
+        },
+        "navigation_items": "Open navigation item 1–9",
+        "hold_for_hints": "Show shortcut hints (hold)",
+        "toggle_details": "Show / hide details",
+        "clear_selection": "Clear selection"
     },
     "side_panel": {
         "search_placeholder": "Quick Search...",

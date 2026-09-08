@@ -45,12 +45,10 @@ const binding: TrayShortcutBinding = {
 beforeEach(() => {
     useTrayShortcutStore.setState({ snapshot: null });
     mocks.get.mockReset().mockResolvedValue({ binding: null, status: 'unset' });
-    mocks.set
-        .mockReset()
-        .mockImplementation(async (binding) => ({
-            kind: 'saved',
-            snapshot: { binding, status: binding ? 'active' : 'unset' }
-        }));
+    mocks.set.mockReset().mockImplementation(async (binding) => ({
+        kind: 'saved',
+        snapshot: { binding, status: binding ? 'active' : 'unset' }
+    }));
     mocks.check.mockReset().mockResolvedValue(null);
     mocks.recording
         .mockReset()

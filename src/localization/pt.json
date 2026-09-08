@@ -778,8 +778,16 @@
         "title": "Atalhos de Teclado",
         "group": {
             "general": "Geral",
-            "layout": "Layout"
-        }
+            "layout": "Layout",
+            "pagination": "Paginação de buscas e tabelas",
+            "screenshots": "Detalhes da captura de tela",
+            "image_viewer": "Visualizador de imagens em tela cheia",
+            "selection": "Seleção em capturas e favoritos"
+        },
+        "navigation_items": "Abrir o item de navegação 1–9",
+        "hold_for_hints": "Mostrar atalhos (manter pressionado)",
+        "toggle_details": "Mostrar / ocultar detalhes",
+        "clear_selection": "Limpar seleção"
     },
     "side_panel": {
         "search_placeholder": "Pesquisa Rápida...",

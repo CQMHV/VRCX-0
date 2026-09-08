@@ -778,8 +778,16 @@
         "title": "Klávesové zkratky",
         "group": {
             "general": "Obecné",
-            "layout": "Rozvržení"
-        }
+            "layout": "Rozvržení",
+            "pagination": "Stránkování vyhledávání a tabulek",
+            "screenshots": "Podrobnosti snímku obrazovky",
+            "image_viewer": "Prohlížeč obrázků na celou obrazovku",
+            "selection": "Výběr ve snímcích a oblíbených"
+        },
+        "navigation_items": "Otevřít položku navigace 1–9",
+        "hold_for_hints": "Zobrazit klávesové zkratky (podržet)",
+        "toggle_details": "Zobrazit / skrýt podrobnosti",
+        "clear_selection": "Zrušit výběr"
     },
     "side_panel": {
         "search_placeholder": "Search",

@@ -777,8 +777,16 @@
         "title": "키보드 단축키",
         "group": {
             "general": "일반",
-            "layout": "레이아웃"
-        }
+            "layout": "레이아웃",
+            "pagination": "검색 및 표 페이지 이동",
+            "screenshots": "스크린샷 상세 정보",
+            "image_viewer": "전체 화면 이미지 뷰어",
+            "selection": "스크린샷 및 즐겨찾기 선택"
+        },
+        "navigation_items": "1~9번째 탐색 항목 열기",
+        "hold_for_hints": "단축키 힌트 표시(길게 누르기)",
+        "toggle_details": "상세 정보 표시/숨기기",
+        "clear_selection": "선택 해제"
     },
     "side_panel": {
         "search_placeholder": "검색",

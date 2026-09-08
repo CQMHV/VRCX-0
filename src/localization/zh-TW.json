@@ -778,8 +778,16 @@
         "title": "鍵盤快捷鍵",
         "group": {
             "general": "通用",
-            "layout": "佈局"
-        }
+            "layout": "佈局",
+            "pagination": "搜尋與表格分頁",
+            "screenshots": "截圖詳情",
+            "image_viewer": "全螢幕圖片檢視",
+            "selection": "截圖與收藏多選"
+        },
+        "navigation_items": "開啟第 1～9 個導覽項目",
+        "hold_for_hints": "顯示快速鍵提示（長按）",
+        "toggle_details": "顯示／隱藏詳情",
+        "clear_selection": "清除選取"
     },
     "side_panel": {
         "search_placeholder": "快速搜尋...",

@@ -778,8 +778,16 @@
         "title": "キーボードショートカット",
         "group": {
             "general": "一般",
-            "layout": "レイアウト"
-        }
+            "layout": "レイアウト",
+            "pagination": "検索・テーブルのページ切り替え",
+            "screenshots": "スクリーンショットの詳細",
+            "image_viewer": "全画面画像ビューアー",
+            "selection": "スクリーンショット・お気に入りの選択"
+        },
+        "navigation_items": "ナビゲーションの1～9番目を開く",
+        "hold_for_hints": "ショートカットのヒントを表示（長押し）",
+        "toggle_details": "詳細の表示／非表示",
+        "clear_selection": "選択を解除"
     },
     "side_panel": {
         "search_placeholder": "検索...",

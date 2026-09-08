@@ -778,8 +778,16 @@
         "title": "键盘快捷键",
         "group": {
             "general": "常规",
-            "layout": "布局"
-        }
+            "layout": "布局",
+            "pagination": "搜索与表格分页",
+            "screenshots": "截图详情",
+            "image_viewer": "全屏图片查看",
+            "selection": "截图与收藏多选"
+        },
+        "navigation_items": "打开第 1～9 个导航项",
+        "hold_for_hints": "显示快捷键提示（长按）",
+        "toggle_details": "显示／隐藏详情",
+        "clear_selection": "清除选择"
     },
     "side_panel": {
         "search_placeholder": "搜索",

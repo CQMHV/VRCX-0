@@ -778,8 +778,16 @@
         "title": "Atajos de teclado",
         "group": {
             "general": "General",
-            "layout": "Diseño"
-        }
+            "layout": "Diseño",
+            "pagination": "Paginación de búsquedas y tablas",
+            "screenshots": "Detalles de capturas",
+            "image_viewer": "Visor de imágenes a pantalla completa",
+            "selection": "Selección en capturas y favoritos"
+        },
+        "navigation_items": "Abrir el elemento de navegación 1–9",
+        "hold_for_hints": "Mostrar atajos (mantener pulsado)",
+        "toggle_details": "Mostrar / ocultar detalles",
+        "clear_selection": "Borrar selección"
     },
     "side_panel": {
         "search_placeholder": "Buscar",
