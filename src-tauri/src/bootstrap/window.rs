@@ -233,6 +233,7 @@ pub(super) fn create_main_window(
 
     let mut builder = WebviewWindowBuilder::from_config(app, window_config)?;
     let state = app.state::<AppState>();
+    super::linux_rendering::resolve(app, &state);
     #[cfg(target_os = "windows")]
     {
         let system_frame = state

@@ -6373,5 +6373,16 @@
             "themes": "主题",
             "themes_description": "主题来源和自定义 CSS 管理。"
         }
+    },
+    "linux_rendering": {
+        "title": "硬件加速（实验性）",
+        "description": "重启 VRCX-0 后生效。开启后请在启动后的 30 秒内确认显示正常，否则将自动关闭硬件加速并重启。",
+        "saved": "已保存，重启 VRCX-0 后生效。",
+        "restart_now": "立即重启",
+        "confirm_title": "界面显示正常吗？",
+        "confirm_description": "启动后 30 秒内未确认，VRCX-0 将关闭硬件加速并重启。",
+        "restore": "恢复兼容模式并重启",
+        "keep": "显示正常，保留",
+        "failed": "无法更改渲染设置，请重试。"
     }
 }

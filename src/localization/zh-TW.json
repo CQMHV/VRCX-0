@@ -6364,5 +6364,16 @@
             "themes": "主題",
             "themes_description": "主題來源和自訂 CSS 管理。"
         }
+    },
+    "linux_rendering": {
+        "title": "硬體加速（實驗性）",
+        "description": "重新啟動 VRCX-0 後生效。開啟後請在啟動後的 30 秒內確認顯示正常，否則將自動關閉硬體加速並重新啟動。",
+        "saved": "已儲存，重新啟動 VRCX-0 後生效。",
+        "restart_now": "立即重新啟動",
+        "confirm_title": "介面顯示正常嗎？",
+        "confirm_description": "啟動後 30 秒內未確認，VRCX-0 將關閉硬體加速並重新啟動。",
+        "restore": "恢復相容模式並重新啟動",
+        "keep": "顯示正常，保留",
+        "failed": "無法變更繪製設定，請重試。"
     }
 }

@@ -6260,5 +6260,16 @@
             "vrchat_log_viewer_for_local_output_logs": "로컬 VRChat 출력 로그 뷰어.",
             "themes_description": "테마 소스 및 사용자 정의 CSS 관리."
         }
+    },
+    "linux_rendering": {
+        "title": "하드웨어 가속 (실험적)",
+        "description": "VRCX-0을 다시 시작하면 적용됩니다. 켠 뒤에는 시작 후 30초 이내에 화면을 확인하세요. 확인하지 않으면 하드웨어 가속을 끄고 다시 시작합니다.",
+        "saved": "저장되었습니다. VRCX-0을 다시 시작하면 적용됩니다.",
+        "restart_now": "지금 다시 시작",
+        "confirm_title": "화면이 정상적으로 표시되나요?",
+        "confirm_description": "시작 후 30초 이내에 확인하지 않으면 VRCX-0이 하드웨어 가속을 끄고 다시 시작합니다.",
+        "restore": "호환 모드로 복원하고 다시 시작",
+        "keep": "정상적으로 표시됨, 유지",
+        "failed": "렌더링 설정을 변경하지 못했습니다. 다시 시도하세요."
     }
 }

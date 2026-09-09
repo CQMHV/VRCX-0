@@ -6325,5 +6325,16 @@
             "themes": "Temas",
             "themes_description": "Gerenciamento de fonte de temas e CSS personalizado."
         }
+    },
+    "linux_rendering": {
+        "title": "Aceleração por hardware (experimental)",
+        "description": "Aplicado após reiniciar o VRCX-0. Depois de ativar, confirme em até 30 segundos após a inicialização; caso contrário, a aceleração é desativada e o VRCX-0 reinicia.",
+        "saved": "Salvo. Reinicie o VRCX-0 para aplicar.",
+        "restart_now": "Reiniciar agora",
+        "confirm_title": "A interface está sendo exibida corretamente?",
+        "confirm_description": "Sem confirmação em até 30 segundos após a inicialização, o VRCX-0 desativa a aceleração de hardware e reinicia.",
+        "restore": "Restaurar e reiniciar",
+        "keep": "Exibição normal, manter",
+        "failed": "Não foi possível alterar a configuração gráfica. Tente novamente."
     }
 }

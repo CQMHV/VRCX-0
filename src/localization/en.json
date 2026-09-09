@@ -6372,5 +6372,16 @@
             "themes": "Themes",
             "themes_description": "Theme source and custom CSS management."
         }
+    },
+    "linux_rendering": {
+        "title": "Hardware acceleration (experimental)",
+        "description": "Applies after restarting VRCX-0. After enabling, confirm within 30 seconds of startup; otherwise acceleration is turned off and VRCX-0 restarts.",
+        "saved": "Saved. Restart VRCX-0 to apply.",
+        "restart_now": "Restart now",
+        "confirm_title": "Is the interface displaying correctly?",
+        "confirm_description": "Without confirmation within 30 seconds of startup, VRCX-0 turns off hardware acceleration and restarts.",
+        "restore": "Restore and restart",
+        "keep": "Display is normal, keep",
+        "failed": "Could not change the rendering setting. Please try again."
     }
 }

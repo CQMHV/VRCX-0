@@ -6328,5 +6328,16 @@
             "themes": "Motivy",
             "themes_description": "Zdroj motivu a správa vlastního CSS."
         }
+    },
+    "linux_rendering": {
+        "title": "Hardwarová akcelerace (experimentální)",
+        "description": "Projeví se po restartu VRCX-0. Po zapnutí potvrďte do 30 sekund od spuštění; jinak se akcelerace vypne a VRCX-0 se restartuje.",
+        "saved": "Uloženo. Restartujte VRCX-0, aby se změna projevila.",
+        "restart_now": "Restartovat nyní",
+        "confirm_title": "Zobrazuje se rozhraní správně?",
+        "confirm_description": "Bez potvrzení do 30 sekund od spuštění VRCX-0 vypne hardwarovou akceleraci a restartuje se.",
+        "restore": "Obnovit a restartovat",
+        "keep": "Zobrazení je správné, ponechat",
+        "failed": "Nepodařilo se změnit nastavení vykreslování. Zkus to znovu."
     }
 }

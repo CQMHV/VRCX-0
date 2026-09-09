@@ -6324,5 +6324,16 @@
             "themes": "Designs",
             "themes_description": "Verwaltung von Design-Quellen und eigenem CSS."
         }
+    },
+    "linux_rendering": {
+        "title": "Hardwarebeschleunigung (experimentell)",
+        "description": "Wird nach einem Neustart von VRCX-0 wirksam. Bestätigen Sie nach dem Aktivieren innerhalb von 30 Sekunden nach dem Start; andernfalls wird die Beschleunigung deaktiviert und VRCX-0 neu gestartet.",
+        "saved": "Gespeichert. Starten Sie VRCX-0 neu, um die Änderung zu übernehmen.",
+        "restart_now": "Jetzt neu starten",
+        "confirm_title": "Wird die Oberfläche korrekt dargestellt?",
+        "confirm_description": "Ohne Bestätigung innerhalb von 30 Sekunden nach dem Start deaktiviert VRCX-0 die Hardwarebeschleunigung und startet neu.",
+        "restore": "Wiederherstellen und neu starten",
+        "keep": "Darstellung korrekt, beibehalten",
+        "failed": "Die Darstellungseinstellung konnte nicht geändert werden. Versuche es erneut."
     }
 }
