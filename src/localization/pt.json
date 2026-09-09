@@ -5280,7 +5280,7 @@
                 "stable": "Estável",
                 "beta": "Beta",
                 "description": "O VRCX-0 verifica atualizações apenas no canal instalado.",
-                "switch_description": "Para mudar para {channel}, baixe e instale a versão mais recente desse canal pelo GitHub.",
+                "switch_description": "Para mudar para {channel}, baixe e instale a versão mais recente desse canal.",
                 "download_stable": "Baixar a versão estável mais recente",
                 "download_beta": "Baixar a versão Beta mais recente",
                 "no_release": "Não há nenhuma versão disponível neste canal."

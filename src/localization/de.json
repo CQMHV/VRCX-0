@@ -5279,7 +5279,7 @@
                 "stable": "Stabil",
                 "beta": "Beta",
                 "description": "VRCX-0 sucht nur im derzeit installierten Kanal nach Updates.",
-                "switch_description": "Um zu {channel} zu wechseln, lade die neueste Version dieses Kanals von GitHub herunter und installiere sie.",
+                "switch_description": "Um zu {channel} zu wechseln, lade die neueste Version dieses Kanals herunter und installiere sie.",
                 "download_stable": "Neueste stabile Version herunterladen",
                 "download_beta": "Neueste Beta herunterladen",
                 "no_release": "In diesem Kanal ist keine Version verfügbar."

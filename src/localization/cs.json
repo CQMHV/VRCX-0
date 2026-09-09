@@ -5283,7 +5283,7 @@
                 "stable": "Stabilní",
                 "beta": "Beta",
                 "description": "VRCX-0 kontroluje aktualizace pouze v nainstalovaném kanálu.",
-                "switch_description": "Chcete-li přejít na kanál {channel}, stáhněte a nainstalujte jeho nejnovější verzi z GitHubu.",
+                "switch_description": "Chcete-li přejít na kanál {channel}, stáhněte a nainstalujte jeho nejnovější verzi.",
                 "download_stable": "Stáhnout nejnovější stabilní verzi",
                 "download_beta": "Stáhnout nejnovější beta verzi",
                 "no_release": "V tomto kanálu není k dispozici žádná verze."

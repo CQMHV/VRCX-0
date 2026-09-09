@@ -5307,7 +5307,7 @@
                 "stable": "安定版",
                 "beta": "ベータ版",
                 "description": "VRCX-0 は、現在インストールされているチャンネルの更新のみ確認します。",
-                "switch_description": "{channel}に切り替えるには、GitHub から最新リリースをダウンロードしてインストールしてください。",
+                "switch_description": "{channel}に切り替えるには、最新リリースをダウンロードしてインストールします。",
                 "download_stable": "最新の安定版をダウンロード",
                 "download_beta": "最新のベータ版をダウンロード",
                 "no_release": "このチャンネルにリリースはありません。"
