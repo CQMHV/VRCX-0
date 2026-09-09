@@ -13,6 +13,7 @@ import {
     ToolbarOverflowMenu,
     ToolbarRefreshButton,
     ToolbarSearch,
+    ToolbarSegmented,
     ToolbarViewMenu,
     ToolbarViews
 } from '@/components/layout/ToolbarControls';
@@ -23,7 +24,6 @@ import {
     DropdownMenuSeparator
 } from '@/ui/shadcn/dropdown-menu';
 import { Field, FieldContent, FieldGroup, FieldLabel } from '@/ui/shadcn/field';
-import { InputGroupButton } from '@/ui/shadcn/input-group';
 import {
     Select,
     SelectContent,
@@ -131,41 +131,32 @@ function FavoritesToolbar({
                             </SelectGroup>
                         </SelectContent>
                     </Select>
+                    {kind === 'world' ? (
+                        <ToolbarSegmented
+                            value={searchMode}
+                            onValueChange={onSearchModeChange}
+                            options={[
+                                {
+                                    value: 'name',
+                                    label: t(
+                                        'view.favorite.worlds.search_mode_name'
+                                    )
+                                },
+                                {
+                                    value: 'tag',
+                                    label: t(
+                                        'view.favorite.worlds.search_mode_tag'
+                                    )
+                                }
+                            ]}
+                        />
+                    ) : null}
                 </ToolbarViews>
 
                 <ToolbarSearch
                     value={searchQuery}
                     onValueChange={onSearchChange}
                     placeholder={searchPlaceholder}
-                    className={kind === 'world' ? 'sm:w-88' : undefined}
-                    trailing={
-                        kind === 'world' ? (
-                            <>
-                                <InputGroupButton
-                                    type="button"
-                                    variant={
-                                        searchMode === 'name'
-                                            ? 'secondary'
-                                            : 'ghost'
-                                    }
-                                    onClick={() => onSearchModeChange('name')}
-                                >
-                                    {t('view.favorite.worlds.search_mode_name')}
-                                </InputGroupButton>
-                                <InputGroupButton
-                                    type="button"
-                                    variant={
-                                        searchMode === 'tag'
-                                            ? 'secondary'
-                                            : 'ghost'
-                                    }
-                                    onClick={() => onSearchModeChange('tag')}
-                                >
-                                    {t('view.favorite.worlds.search_mode_tag')}
-                                </InputGroupButton>
-                            </>
-                        ) : null
-                    }
                 />
 
                 <ToolbarActions>
