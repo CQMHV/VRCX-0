@@ -194,7 +194,7 @@ export function UpdaterDialog({ open, onOpenChange }: UpdaterDialogProps) {
             !canInstallUpdate ||
             !latestRelease ||
             !hasNewerRelease ||
-            downloading
+            showDownloadProgress
         ) {
             return;
         }
@@ -395,7 +395,7 @@ export function UpdaterDialog({ open, onOpenChange }: UpdaterDialogProps) {
                                 !latestRelease ||
                                 !hasNewerRelease ||
                                 loading ||
-                                downloading
+                                showDownloadProgress
                             }
                             onClick={() => {
                                 handleInstallUpdate();

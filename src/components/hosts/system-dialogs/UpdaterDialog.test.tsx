@@ -15,12 +15,11 @@ const mocks = vi.hoisted(() => ({
     updateCheckDisabled: false
 }));
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key: string, values?: Record<string, unknown>) =>
-            values ? `${key}:${JSON.stringify(values)}` : key
-    })
-}));
+vi.mock('react-i18next', () => {
+    const t = (key: string, values?: Record<string, unknown>) =>
+        values ? `${key}:${JSON.stringify(values)}` : key;
+    return { useTranslation: () => ({ t }) };
+});
 
 vi.mock('@/services/updateService', () => ({
     getPreviewStableReleaseUpdateMode: mocks.getPreviewStableReleaseUpdateMode,
@@ -261,7 +260,7 @@ describe('UpdaterDialog', () => {
         expect(screen.queryByText('2.6.0 -> 2.6.0')).toBeNull();
     });
 
-    it('shows matching background download progress when opened mid-download', async () => {
+    it('blocks installation during a matching background download and enables it when ready', async () => {
         const release = {
             displayName: 'VRCX-0 2.7.0',
             tagName: 'v2.7.0',
@@ -295,12 +294,31 @@ describe('UpdaterDialog', () => {
             expect(screen.getByText('42%')).toBeTruthy();
         });
 
+        const installButton = screen.getByRole<HTMLButtonElement>('button', {
+            name: 'dialog.system.action.install_and_restart'
+        });
+        expect(installButton.disabled).toBe(true);
+        act(() => installButton.click());
+        expect(mocks.confirmInstall).not.toHaveBeenCalled();
+
         act(() => {
             useRuntimeStore.getState().setUpdateLoopState({
                 downloadedVersion: '2.8.0'
             });
         });
         expect(screen.queryByText('42%')).toBeNull();
+        await waitFor(() => expect(installButton.disabled).toBe(false));
+
+        act(() => {
+            useRuntimeStore.getState().setUpdateLoopState({
+                autoDownloadState: 'downloaded',
+                downloadedVersion: '2.7.0',
+                downloadProgress: 100
+            });
+        });
+        await waitFor(() => expect(installButton.disabled).toBe(false));
+        await act(async () => installButton.click());
+        expect(mocks.confirmInstall).toHaveBeenCalledExactlyOnceWith('2.7.0');
     });
 
     it('shows the disabled build state without running an update check', async () => {
