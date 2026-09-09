@@ -1,16 +1,14 @@
 import {
     ArchiveIcon,
-    CheckIcon,
     GiftIcon,
     ImageIcon,
     PackageIcon,
-    RefreshCwIcon,
     RotateCcwIcon,
     SlidersHorizontalIcon,
     Trash2Icon,
-    UploadIcon,
-    XIcon
+    UploadIcon
 } from 'lucide-react';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -51,6 +49,11 @@ import {
     PopoverTrigger
 } from '@/ui/shadcn/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/shadcn/tabs';
+import {
+    ToggleGroup,
+    ToggleGroupItem,
+    ToggleGroupSeparator
+} from '@/ui/shadcn/toggle-group';
 
 import { GalleryEmojiImage } from './components/GalleryEmojiImage';
 import { GalleryEmojiUploadSettings } from './components/GalleryEmojiUploadSettings';
@@ -212,7 +215,7 @@ export function InventoryItemCard({
                       ? 'dialog.inventory.unequip'
                       : 'dialog.inventory.equip'
               ),
-              icon: isUnequip ? XIcon : CheckIcon,
+              variant: isUnequip ? ('ghost' as const) : ('outline' as const),
               disabled: isMutating || profileDecorationMutationPending,
               onClick: () => onSetProfileDecorationEquipped(item)
           }
@@ -454,154 +457,151 @@ export function InventoryPage() {
                                 value={category}
                                 className="mt-2 flex min-h-0 flex-1 data-hidden:hidden"
                             >
-                                <Tabs
-                                    value={categorySubTab}
-                                    onValueChange={(value) => {
-                                        if (
-                                            definition.tabs.some(
-                                                (tab) => tab.key === value
-                                            )
-                                        ) {
-                                            inventory.setActiveSubTabs(
-                                                (current) => ({
-                                                    ...current,
-                                                    [category]: value
-                                                })
-                                            );
-                                        }
-                                    }}
-                                    className="flex min-h-0 flex-1 flex-col gap-3"
-                                >
+                                <div className="flex min-h-0 flex-1 flex-col gap-3">
                                     <MediaLibraryToolbar
                                         leading={
-                                            <TabsList className="max-w-full justify-start overflow-x-auto">
-                                                {definition.tabs.map((tab) => (
-                                                    <TabsTrigger
-                                                        key={tab.key}
-                                                        value={tab.key}
-                                                    >
-                                                        {t(tab.labelKey)}
-                                                    </TabsTrigger>
-                                                ))}
-                                            </TabsList>
+                                            <ToggleGroup
+                                                value={[categorySubTab]}
+                                                onValueChange={(next) => {
+                                                    const selected =
+                                                        definition.tabs.find(
+                                                            (tab) =>
+                                                                tab.key ===
+                                                                next[0]
+                                                        );
+                                                    if (selected) {
+                                                        inventory.setActiveSubTabs(
+                                                            (current) => ({
+                                                                ...current,
+                                                                [category]:
+                                                                    selected.key
+                                                            })
+                                                        );
+                                                    }
+                                                }}
+                                                variant="outline"
+                                                size="sm"
+                                            >
+                                                {definition.tabs.map(
+                                                    (tab, index) => (
+                                                        <Fragment key={tab.key}>
+                                                            {index > 0 ? (
+                                                                <ToggleGroupSeparator />
+                                                            ) : null}
+                                                            <ToggleGroupItem
+                                                                value={tab.key}
+                                                            >
+                                                                {t(
+                                                                    tab.labelKey
+                                                                )}
+                                                            </ToggleGroupItem>
+                                                        </Fragment>
+                                                    )
+                                                )}
+                                            </ToggleGroup>
                                         }
                                         actions={
-                                            <>
-                                                {showEmojiUploadOptions ? (
-                                                    <Popover>
-                                                        <PopoverTrigger
-                                                            render={
-                                                                <Button
-                                                                    variant="outline"
-                                                                    size="sm"
-                                                                >
-                                                                    <SlidersHorizontalIcon data-icon="inline-start" />
-                                                                    {t(
-                                                                        'dialog.gallery_icons.upload_options'
-                                                                    )}
-                                                                </Button>
-                                                            }
-                                                        />
-                                                        <PopoverContent
-                                                            align="end"
-                                                            className="w-80"
-                                                        >
-                                                            <PopoverHeader>
-                                                                <PopoverTitle>
-                                                                    {t(
-                                                                        'dialog.gallery_icons.upload_options'
-                                                                    )}
-                                                                </PopoverTitle>
-                                                            </PopoverHeader>
-                                                            <GalleryEmojiUploadSettings
-                                                                compact
-                                                                emojiAnimType={
-                                                                    inventory.emojiAnimType
+                                            showEmojiUploadOptions ||
+                                            selectedCanUpload ? (
+                                                <>
+                                                    {showEmojiUploadOptions ? (
+                                                        <Popover>
+                                                            <PopoverTrigger
+                                                                render={
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                    >
+                                                                        <SlidersHorizontalIcon data-icon="inline-start" />
+                                                                        {t(
+                                                                            'dialog.gallery_icons.upload_options'
+                                                                        )}
+                                                                    </Button>
                                                                 }
-                                                                emojiAnimationStyle={
-                                                                    inventory.emojiAnimationStyle
-                                                                }
-                                                                emojiAnimFps={
-                                                                    inventory.emojiAnimFps
-                                                                }
-                                                                emojiAnimFrameCount={
-                                                                    inventory.emojiAnimFrameCount
-                                                                }
-                                                                emojiAnimLoopPingPong={
-                                                                    inventory.emojiAnimLoopPingPong
-                                                                }
-                                                                onEmojiAnimTypeChange={
-                                                                    inventory.setEmojiAnimType
-                                                                }
-                                                                onEmojiAnimationStyleChange={
-                                                                    inventory.setEmojiAnimationStyle
-                                                                }
-                                                                onEmojiAnimFpsChange={
-                                                                    inventory.setEmojiAnimFps
-                                                                }
-                                                                onEmojiAnimFrameCountChange={
-                                                                    inventory.setEmojiAnimFrameCount
-                                                                }
-                                                                onEmojiAnimLoopPingPongChange={
-                                                                    inventory.setEmojiAnimLoopPingPong
-                                                                }
-                                                                onCreateAnimatedEmoji={() => {
-                                                                    openExternalLink(
-                                                                        'https://vrcemoji.com'
-                                                                    );
-                                                                }}
                                                             />
-                                                        </PopoverContent>
-                                                    </Popover>
-                                                ) : null}
-                                                {selectedCanUpload ? (
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        disabled={
-                                                            !inventory.isVrcPlusSupporter ||
-                                                            Boolean(
-                                                                inventory.uploadingTarget
-                                                            )
-                                                        }
-                                                        onClick={() => {
-                                                            if (
-                                                                selectedUploadTarget
-                                                            ) {
-                                                                inventory.beginUpload(
-                                                                    selectedUploadTarget
-                                                                );
+                                                            <PopoverContent
+                                                                align="end"
+                                                                className="w-80"
+                                                            >
+                                                                <PopoverHeader>
+                                                                    <PopoverTitle>
+                                                                        {t(
+                                                                            'dialog.gallery_icons.upload_options'
+                                                                        )}
+                                                                    </PopoverTitle>
+                                                                </PopoverHeader>
+                                                                <GalleryEmojiUploadSettings
+                                                                    compact
+                                                                    emojiAnimType={
+                                                                        inventory.emojiAnimType
+                                                                    }
+                                                                    emojiAnimationStyle={
+                                                                        inventory.emojiAnimationStyle
+                                                                    }
+                                                                    emojiAnimFps={
+                                                                        inventory.emojiAnimFps
+                                                                    }
+                                                                    emojiAnimFrameCount={
+                                                                        inventory.emojiAnimFrameCount
+                                                                    }
+                                                                    emojiAnimLoopPingPong={
+                                                                        inventory.emojiAnimLoopPingPong
+                                                                    }
+                                                                    onEmojiAnimTypeChange={
+                                                                        inventory.setEmojiAnimType
+                                                                    }
+                                                                    onEmojiAnimationStyleChange={
+                                                                        inventory.setEmojiAnimationStyle
+                                                                    }
+                                                                    onEmojiAnimFpsChange={
+                                                                        inventory.setEmojiAnimFps
+                                                                    }
+                                                                    onEmojiAnimFrameCountChange={
+                                                                        inventory.setEmojiAnimFrameCount
+                                                                    }
+                                                                    onEmojiAnimLoopPingPongChange={
+                                                                        inventory.setEmojiAnimLoopPingPong
+                                                                    }
+                                                                    onCreateAnimatedEmoji={() => {
+                                                                        openExternalLink(
+                                                                            'https://vrcemoji.com'
+                                                                        );
+                                                                    }}
+                                                                />
+                                                            </PopoverContent>
+                                                        </Popover>
+                                                    ) : null}
+                                                    {selectedCanUpload ? (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            disabled={
+                                                                !inventory.isVrcPlusSupporter ||
+                                                                Boolean(
+                                                                    inventory.uploadingTarget
+                                                                )
                                                             }
-                                                        }}
-                                                    >
-                                                        <UploadIcon data-icon="inline-start" />
-                                                        {t(
-                                                            'dialog.gallery_icons.upload'
-                                                        )}
-                                                    </Button>
-                                                ) : null}
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        inventory.refreshScope(
-                                                            category,
-                                                            categorySubTab
-                                                        );
-                                                    }}
-                                                >
-                                                    <RefreshCwIcon data-icon="inline-start" />
-                                                    {t(
-                                                        'dialog.gallery_icons.refresh'
-                                                    )}
-                                                </Button>
-                                            </>
+                                                            onClick={() => {
+                                                                if (
+                                                                    selectedUploadTarget
+                                                                ) {
+                                                                    inventory.beginUpload(
+                                                                        selectedUploadTarget
+                                                                    );
+                                                                }
+                                                            }}
+                                                        >
+                                                            <UploadIcon data-icon="inline-start" />
+                                                            {t(
+                                                                'dialog.gallery_icons.upload'
+                                                            )}
+                                                        </Button>
+                                                    ) : null}
+                                                </>
+                                            ) : null
                                         }
                                     />
-                                    <TabsContent
-                                        value={categorySubTab}
-                                        className="min-h-0 flex-1 overflow-y-auto p-1"
-                                    >
+                                    <div className="min-h-0 flex-1 overflow-y-auto p-1">
                                         <InventoryRows
                                             category={category}
                                             rows={rows}
@@ -643,8 +643,8 @@ export function InventoryPage() {
                                                 inventory.setProfileDecorationEquipped
                                             }
                                         />
-                                    </TabsContent>
-                                </Tabs>
+                                    </div>
+                                </div>
                             </TabsContent>
                         );
                     })}
