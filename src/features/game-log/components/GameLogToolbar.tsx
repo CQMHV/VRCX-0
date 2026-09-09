@@ -29,7 +29,6 @@ import {
     type ToolbarSegmentOption
 } from '@/components/layout/ToolbarControls';
 import { formatCompactDateTime } from '@/lib/dateTime';
-import { cn } from '@/lib/utils';
 import { Button } from '@/ui/shadcn/button';
 import {
     DropdownMenu,
@@ -175,7 +174,7 @@ function GameLogDateRangeFilter({
                             render={
                                 <InputGroupButton
                                     variant={active ? 'secondary' : 'ghost'}
-                                    size={active ? 'xs' : 'icon-xs'}
+                                    size="icon-xs"
                                     aria-label={
                                         active
                                             ? `${dateRangeLabel}: ${label}`
@@ -184,12 +183,7 @@ function GameLogDateRangeFilter({
                                 />
                             }
                         >
-                            <CalendarRangeIcon data-icon="inline-start" />
-                            {active ? (
-                                <span className="hidden max-w-52 truncate tabular-nums @min-5xl/game-log-toolbar:inline">
-                                    {label}
-                                </span>
-                            ) : null}
+                            <CalendarRangeIcon data-icon="icon" />
                             <TooltipContent>{label}</TooltipContent>
                         </TooltipTrigger>
                     )}
@@ -264,7 +258,6 @@ export function GameLogToolbar({
     } = filterModel;
     const { canRefresh, loadStatus, onRefresh } = refreshModel;
     const isTableView = viewMode === 'table';
-    const hasDateRange = Boolean(sessionDateRange.from || sessionDateRange.to);
     const typeOptions = availableFilterTypes.map((type) => ({
         value: type,
         label: t(`view.game_log.filters.${type}`)
@@ -312,14 +305,7 @@ export function GameLogToolbar({
                     />
                 </ToolbarViews>
 
-                <div
-                    className={cn(
-                        'ms-auto flex min-w-0 grow items-center gap-2',
-                        !isTableView && hasDateRange
-                            ? 'max-w-[30rem] basis-80'
-                            : 'max-w-96 basis-64'
-                    )}
-                >
+                <div className="ms-auto flex max-w-96 min-w-0 grow basis-64 items-center gap-2">
                     <ToolbarSearch
                         value={searchDraft}
                         onValueChange={setSearchDraft}

@@ -53,6 +53,7 @@ import { useRuntimeStore } from '@/state/runtimeStore';
 import { Button } from '@/ui/shadcn/button';
 import { Separator } from '@/ui/shadcn/separator';
 import { Tabs, TabsContent } from '@/ui/shadcn/tabs';
+import { Tooltip } from '@/ui/shadcn/tooltip';
 
 import { BrowseHistoryCard } from './BrowseHistoryCard';
 import {
@@ -364,22 +365,26 @@ export function BrowseHistoryPage() {
                     <PageToolbarRow>
                         <ToolbarViews className="flex-wrap">
                             <ToolbarTabs options={filterOptions} />
-                            <DateTimeRangePicker
-                                value={dateRange}
-                                onChange={setDateRange}
-                                align="start"
-                                renderTrigger={toolbarDateRangeTrigger}
-                                placeholder={t('browse_history.date_range')}
-                                startLabel={t(
-                                    'browse_history.date_range_start'
-                                )}
-                                endLabel={t('browse_history.date_range_end')}
-                                clearLabel={t('common.actions.clear')}
-                                confirmLabel={t('common.actions.confirm')}
-                                formatValue={formatCompactDateTime}
-                                minuteStep={15}
-                                disabled={{ after: todayDate }}
-                            />
+                            <Tooltip>
+                                <DateTimeRangePicker
+                                    value={dateRange}
+                                    onChange={setDateRange}
+                                    align="start"
+                                    renderTrigger={toolbarDateRangeTrigger}
+                                    placeholder={t('browse_history.date_range')}
+                                    startLabel={t(
+                                        'browse_history.date_range_start'
+                                    )}
+                                    endLabel={t(
+                                        'browse_history.date_range_end'
+                                    )}
+                                    clearLabel={t('common.actions.clear')}
+                                    confirmLabel={t('common.actions.confirm')}
+                                    formatValue={formatCompactDateTime}
+                                    minuteStep={15}
+                                    disabled={{ after: todayDate }}
+                                />
+                            </Tooltip>
                         </ToolbarViews>
                         <ToolbarSearch
                             value={search}

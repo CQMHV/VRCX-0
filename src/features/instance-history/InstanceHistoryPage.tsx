@@ -1,9 +1,4 @@
-import {
-    CalendarRangeIcon,
-    ChevronsUpDownIcon,
-    ChevronUpIcon,
-    UserRoundIcon
-} from 'lucide-react';
+import { ChevronsUpDownIcon, ChevronUpIcon, UserRoundIcon } from 'lucide-react';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +15,7 @@ import {
     PageToolbarRow
 } from '@/components/layout/PageScaffold';
 import {
+    toolbarDateRangeTrigger,
     ToolbarActions,
     ToolbarRefreshButton,
     ToolbarSearch,
@@ -86,6 +82,7 @@ import { Separator } from '@/ui/shadcn/separator';
 import { Spinner } from '@/ui/shadcn/spinner';
 import { Switch } from '@/ui/shadcn/switch';
 import { Tabs, TabsContent } from '@/ui/shadcn/tabs';
+import { Tooltip } from '@/ui/shadcn/tooltip';
 
 import {
     buildInstanceHistorySearchParams,
@@ -110,26 +107,6 @@ const CHART_LOADING_INDICATOR_DELAY_MS = 150;
 
 function knownUserName(user: Partial<KnownUserOption> | null | undefined) {
     return user?.displayName || user?.username || user?.name || '';
-}
-
-function instanceHistoryDateRangeTrigger({
-    active,
-    label
-}: {
-    active: boolean;
-    label: string;
-}) {
-    return (
-        <Button
-            type="button"
-            variant={active ? 'secondary' : 'outline'}
-            aria-label={label}
-            className="max-w-56 shrink-0"
-        >
-            <CalendarRangeIcon data-icon="inline-start" />
-            <span className="truncate">{label}</span>
-        </Button>
-    );
 }
 
 export function InstanceHistoryPage({
@@ -544,25 +521,27 @@ export function InstanceHistoryPage({
     ];
 
     const dateRangeControl = (
-        <DateTimeRangePicker
-            value={dateRange}
-            onChange={handleDateRangeChange}
-            align="start"
-            renderTrigger={({ label }) =>
-                instanceHistoryDateRangeTrigger({
-                    active: dateRangeUserSet,
-                    label
-                })
-            }
-            placeholder={t('view.instance_history.label.date_range')}
-            startLabel={t('view.instance_history.label.start')}
-            endLabel={t('view.instance_history.label.end')}
-            clearLabel={t('common.actions.clear')}
-            confirmLabel={t('common.actions.confirm')}
-            formatValue={formatCompactDateTime}
-            minuteStep={15}
-            disabled={{ after: new Date() }}
-        />
+        <Tooltip>
+            <DateTimeRangePicker
+                value={dateRange}
+                onChange={handleDateRangeChange}
+                align="start"
+                renderTrigger={({ label }) =>
+                    toolbarDateRangeTrigger({
+                        active: dateRangeUserSet,
+                        label
+                    })
+                }
+                placeholder={t('view.instance_history.label.date_range')}
+                startLabel={t('view.instance_history.label.start')}
+                endLabel={t('view.instance_history.label.end')}
+                clearLabel={t('common.actions.clear')}
+                confirmLabel={t('common.actions.confirm')}
+                formatValue={formatCompactDateTime}
+                minuteStep={15}
+                disabled={{ after: new Date() }}
+            />
+        </Tooltip>
     );
 
     const listVisibleRows = isDayMode ? rawDayRows : filteredRows;

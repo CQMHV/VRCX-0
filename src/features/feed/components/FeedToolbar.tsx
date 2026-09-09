@@ -9,7 +9,6 @@ import {
     ToolbarFilterChips,
     ToolbarViews
 } from '@/components/layout/ToolbarControls';
-import { cn } from '@/lib/utils';
 import type { FeedFilterType } from '@/repositories/feedRepository';
 import { usePreferencesStore } from '@/state/preferencesStore';
 import { Button } from '@/ui/shadcn/button';
@@ -210,14 +209,7 @@ export const FeedToolbar = memo(function FeedToolbar({
                         onToggleFeedFilter={onToggleFeedFilter}
                     />
                 </ToolbarViews>
-                <div
-                    className={cn(
-                        'ml-auto flex min-w-0 grow items-center gap-2',
-                        dateFrom || dateTo
-                            ? 'max-w-96 basis-96'
-                            : 'max-w-80 basis-64'
-                    )}
-                >
+                <div className="ml-auto flex max-w-80 min-w-0 grow basis-64 items-center gap-2">
                     <FeedSearchBox
                         isSearching={isSearching}
                         scopedUserIds={scopedUserIds}

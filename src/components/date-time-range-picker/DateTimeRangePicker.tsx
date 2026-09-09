@@ -1,4 +1,3 @@
-import { CalendarRangeIcon } from 'lucide-react';
 import {
     useEffect,
     useMemo,
@@ -48,8 +47,7 @@ interface DateTimeRangePickerProps {
     minuteStep?: number;
     disabled?: ComponentProps<typeof Calendar>['disabled'];
     align?: 'start' | 'center' | 'end';
-    triggerClassName?: string;
-    renderTrigger?: (state: { active: boolean; label: string }) => ReactElement;
+    renderTrigger: (state: { active: boolean; label: string }) => ReactElement;
 }
 
 function twoDigitOptions(count: number) {
@@ -128,7 +126,6 @@ export function DateTimeRangePicker({
     minuteStep = 1,
     disabled,
     align = 'start',
-    triggerClassName,
     renderTrigger
 }: DateTimeRangePickerProps) {
     const [open, setOpen] = useState(false);
@@ -194,23 +191,10 @@ export function DateTimeRangePicker({
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger
-                render={
-                    renderTrigger ? (
-                        renderTrigger({
-                            active,
-                            label: triggerLabel
-                        })
-                    ) : (
-                        <Button
-                            type="button"
-                            variant={active ? 'secondary' : 'outline'}
-                            className={triggerClassName}
-                        >
-                            <CalendarRangeIcon data-icon="inline-start" />
-                            <span className="truncate">{triggerLabel}</span>
-                        </Button>
-                    )
-                }
+                render={renderTrigger({
+                    active,
+                    label: triggerLabel
+                })}
             />
             <PopoverContent align={align} className="w-auto p-0">
                 <Calendar

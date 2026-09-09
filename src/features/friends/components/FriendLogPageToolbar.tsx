@@ -71,7 +71,7 @@ export function FriendLogPageToolbar({
                         onCommitSearch();
                     }}
                 >
-                    <InputGroup className="h-auto min-h-8 flex-wrap">
+                    <InputGroup>
                         <InputGroupInput
                             value={searchDraft}
                             onChange={(event) =>

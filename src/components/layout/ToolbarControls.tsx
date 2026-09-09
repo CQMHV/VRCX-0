@@ -239,32 +239,25 @@ export function toolbarDateRangeTrigger({
     active: boolean;
     label: string;
 }) {
-    if (!active) {
-        return (
-            <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                aria-label={label}
-                data-vrcx-0-control="toolbar"
-                className="vrcx-0-toolbar-control"
-            >
-                <CalendarRangeIcon data-icon="icon" />
-            </Button>
-        );
-    }
-
     return (
-        <Button
-            type="button"
-            variant="secondary"
-            aria-label={label}
-            data-vrcx-0-control="toolbar"
-            className="vrcx-0-toolbar-control vrcx-0-toolbar-control-active max-w-56 shrink-0"
+        <TooltipTrigger
+            render={
+                <Button
+                    type="button"
+                    variant={active ? 'secondary' : 'outline'}
+                    size="icon"
+                    aria-label={label}
+                    data-vrcx-0-control="toolbar"
+                    className={cn(
+                        'vrcx-0-toolbar-control',
+                        active && 'vrcx-0-toolbar-control-active'
+                    )}
+                />
+            }
         >
-            <CalendarRangeIcon data-icon="inline-start" />
-            <span className="truncate">{label}</span>
-        </Button>
+            <CalendarRangeIcon data-icon="icon" />
+            <TooltipContent>{label}</TooltipContent>
+        </TooltipTrigger>
     );
 }
 

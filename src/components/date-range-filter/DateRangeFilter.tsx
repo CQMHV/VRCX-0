@@ -73,7 +73,7 @@ export function DateRangeFilter({
                                         variant={
                                             hasRange ? 'secondary' : 'ghost'
                                         }
-                                        size={hasRange ? 'xs' : 'icon-xs'}
+                                        size="icon-xs"
                                     />
                                 }
                                 aria-label={
@@ -82,10 +82,7 @@ export function DateRangeFilter({
                             />
                         }
                     >
-                        <CalendarRangeIcon data-icon="inline-start" />
-                        {hasRange ? (
-                            <span className="tabular-nums">{label}</span>
-                        ) : null}
+                        <CalendarRangeIcon data-icon="icon" />
                     </TooltipTrigger>
                     <TooltipContent>{label}</TooltipContent>
                 </Tooltip>
