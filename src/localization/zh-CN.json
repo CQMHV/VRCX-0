@@ -1541,9 +1541,8 @@
                 "moderation_snapshot_failed_to_load": "玩家管理记录加载失败"
             },
             "label": {
-                "showing": "显示",
-                "of": "/",
                 "moderation_row": "玩家管理记录",
+                "back_to_top": "回到顶部",
                 "moderation_rows": "玩家管理记录",
                 "broaden_the_type_filters_or_search_query_to_see_more_results": "放宽类型筛选或搜索词以查看更多结果"
             },

@@ -1543,9 +1543,8 @@
                 "moderation_snapshot_failed_to_load": "Не удалось загрузить историю модерации"
             },
             "label": {
-                "showing": "Показать",
-                "of": "В тыс.",
                 "moderation_row": "Строка модерации",
+                "back_to_top": "Наверх",
                 "moderation_rows": "Строки модерации",
                 "broaden_the_type_filters_or_search_query_to_see_more_results": "Расширить тип фильтров или поисковый запрос, чтобы увидеть больше результатов"
             },

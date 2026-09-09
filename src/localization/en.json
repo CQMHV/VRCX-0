@@ -1541,9 +1541,8 @@
                 "moderation_snapshot_failed_to_load": "Couldn't load moderation history"
             },
             "label": {
-                "showing": "Showing",
-                "of": "of",
                 "moderation_row": "moderation row",
+                "back_to_top": "Back to top",
                 "moderation_rows": "moderation rows",
                 "broaden_the_type_filters_or_search_query_to_see_more_results": "Broaden the type filters or search query to see more results"
             },

@@ -1541,9 +1541,8 @@
                 "moderation_snapshot_failed_to_load": "無法載入管理紀錄"
             },
             "label": {
-                "showing": "顯示",
-                "of": "/",
                 "moderation_row": "用戶管理紀錄",
+                "back_to_top": "回到頂部",
                 "moderation_rows": "用戶管理紀錄",
                 "broaden_the_type_filters_or_search_query_to_see_more_results": "放寬類型篩選或搜尋詞以查看更多結果"
             },

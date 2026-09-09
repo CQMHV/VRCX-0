@@ -1541,9 +1541,8 @@
                 "moderation_snapshot_failed_to_load": "Moderationsverlauf konnte nicht geladen werden"
             },
             "label": {
-                "showing": "Zeige",
-                "of": "von",
                 "moderation_row": "Moderationseintrag",
+                "back_to_top": "Nach oben",
                 "moderation_rows": "Moderationseinträge",
                 "broaden_the_type_filters_or_search_query_to_see_more_results": "Erweitere die Typfilter oder die Suchanfrage, um mehr Ergebnisse zu sehen"
             },

@@ -1537,9 +1537,8 @@
                 "moderation_snapshot_failed_to_load": "モデレーション履歴を読み込めませんでした"
             },
             "label": {
-                "showing": "表示中",
-                "of": "/",
                 "moderation_row": "モデレーション記録",
+                "back_to_top": "先頭に戻る",
                 "moderation_rows": "モデレーション記録",
                 "broaden_the_type_filters_or_search_query_to_see_more_results": "種類フィルターまたは検索条件を広げると、さらに結果を表示できます"
             },

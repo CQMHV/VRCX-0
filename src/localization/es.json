@@ -1541,9 +1541,8 @@
                 "moderation_snapshot_failed_to_load": "No se pudo cargar el historial de moderación"
             },
             "label": {
-                "showing": "Mostrando",
-                "of": "de",
                 "moderation_row": "fila de moderación",
+                "back_to_top": "Volver arriba",
                 "moderation_rows": "filas de moderación",
                 "broaden_the_type_filters_or_search_query_to_see_more_results": "Amplía los filtros de tipo o la búsqueda para ver más resultados"
             },

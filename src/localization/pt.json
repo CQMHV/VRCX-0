@@ -1541,9 +1541,8 @@
                 "moderation_snapshot_failed_to_load": "Não foi possível carregar o histórico de moderação"
             },
             "label": {
-                "showing": "Exibindo",
-                "of": "de",
                 "moderation_row": "registro de moderação",
+                "back_to_top": "Voltar ao topo",
                 "moderation_rows": "registros de moderação",
                 "broaden_the_type_filters_or_search_query_to_see_more_results": "Amplie os filtros de tipo ou a busca para ver mais resultados"
             },

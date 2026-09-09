@@ -1520,9 +1520,8 @@
                 "moderation_snapshot_failed_to_load": "모더레이션 기록을 불러오지 못했습니다."
             },
             "label": {
-                "showing": "표시",
-                "of": "의",
                 "moderation_row": "검토 행",
+                "back_to_top": "맨 위로",
                 "moderation_rows": "검토 행",
                 "broaden_the_type_filters_or_search_query_to_see_more_results": "더 많은 결과를 보려면 유형 필터 또는 검색어를 확장하세요."
             },
