@@ -2209,7 +2209,7 @@
             },
             "feedback": {
                 "title": "Feedback senden",
-                "description": "Feedback wird anonym gesendet. Wir lesen jede Nachricht, können aber nicht direkt antworten.",
+                "description": "Feedback wird standardmäßig anonym gesendet. Wir lesen jede Nachricht. Wenn du eine Antwort möchtest, gib bitte deine E-Mail-Adresse im Feedback an.",
                 "privacy_note": "Es werden keine Kontodaten übermittelt.",
                 "placeholder": "Erzähl uns, was gut läuft, was nicht, oder was du dir wünschst…",
                 "submit": "Senden",

@@ -2209,7 +2209,7 @@
             },
             "feedback": {
                 "title": "Enviar feedback",
-                "description": "O feedback é enviado de forma anónima. Lemos todas as mensagens, mas não podemos responder diretamente.",
+                "description": "O feedback é enviado de forma anónima por predefinição. Lemos todas as mensagens. Se precisares de uma resposta, inclui o teu endereço de e-mail no feedback.",
                 "privacy_note": "Não é incluída nenhuma informação da conta.",
                 "placeholder": "Diga-nos o que funciona, o que não funciona ou o que gostaria de ver…",
                 "submit": "Enviar",
