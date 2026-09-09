@@ -7,6 +7,7 @@ import type {
 } from '@/platform/tauri/webview';
 import { isRecord } from '@/shared/utils/record';
 import { isCriticalTaskActive } from '@/state/criticalTaskStore';
+import { useDialogStore } from '@/state/dialogStore';
 import { useShellStore } from '@/state/shellStore';
 
 import { suspendSidebarAutoHide } from './sidebarAutoHideService';
@@ -350,6 +351,7 @@ export function enterSidebarWindowMode(
     ) {
         return Promise.resolve();
     }
+    useDialogStore.getState().closeDialog();
     useShellStore.getState().setWindowDisplayMode('sidebar');
 
     return queueWindowModeTransition(async () => {
@@ -429,6 +431,7 @@ export function restoreNormalWindowMode(remember = true): Promise<void> {
     if (useShellStore.getState().windowDisplayMode === 'normal') {
         return Promise.resolve();
     }
+    useDialogStore.getState().closeDialog();
     useShellStore.getState().setWindowDisplayMode('normal', remember);
 
     return queueWindowModeTransition(async () => {
