@@ -47,7 +47,11 @@ interface DateTimeRangePickerProps {
     minuteStep?: number;
     disabled?: ComponentProps<typeof Calendar>['disabled'];
     align?: 'start' | 'center' | 'end';
-    renderTrigger: (state: { active: boolean; label: string }) => ReactElement;
+    renderTrigger: (state: {
+        active: boolean;
+        label: string;
+        rangeLabel: string;
+    }) => ReactElement;
 }
 
 function twoDigitOptions(count: number) {
@@ -193,7 +197,8 @@ export function DateTimeRangePicker({
             <PopoverTrigger
                 render={renderTrigger({
                     active,
-                    label: triggerLabel
+                    label: triggerLabel,
+                    rangeLabel: placeholder
                 })}
             />
             <PopoverContent align={align} className="w-auto p-0">

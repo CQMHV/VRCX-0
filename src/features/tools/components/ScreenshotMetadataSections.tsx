@@ -269,6 +269,7 @@ export function ScreenshotSearchToolbar({
                     value={searchQuery}
                     onValueChange={onSearchQueryChange}
                     onCommit={onSearch}
+                    onClear={onClearSearch}
                     commitOnBlur={false}
                     placeholder={t(
                         'dialog.screenshot_metadata.search_placeholder'

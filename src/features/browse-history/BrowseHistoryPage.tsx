@@ -376,14 +376,8 @@ export function BrowseHistoryPage() {
                                         value={dateRange}
                                         onChange={setDateRange}
                                         align="end"
-                                        renderTrigger={({ active, label }) =>
-                                            toolbarSearchDateRangeTrigger({
-                                                active,
-                                                label,
-                                                rangeLabel: t(
-                                                    'browse_history.date_range'
-                                                )
-                                            })
+                                        renderTrigger={
+                                            toolbarSearchDateRangeTrigger
                                         }
                                         placeholder={t(
                                             'browse_history.date_range'

@@ -526,11 +526,11 @@ export function InstanceHistoryPage({
                 value={dateRange}
                 onChange={handleDateRangeChange}
                 align="end"
-                renderTrigger={({ label }) =>
+                renderTrigger={({ label, rangeLabel }) =>
                     toolbarSearchDateRangeTrigger({
                         active: dateRangeUserSet,
                         label,
-                        rangeLabel: t('view.instance_history.label.date_range')
+                        rangeLabel
                     })
                 }
                 placeholder={t('view.instance_history.label.date_range')}

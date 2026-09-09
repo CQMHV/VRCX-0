@@ -165,13 +165,7 @@ function GameLogDateRangeFilter({
                 minuteStep={15}
                 align="end"
                 disabled={{ after: todayDate }}
-                renderTrigger={({ active, label }) =>
-                    toolbarSearchDateRangeTrigger({
-                        active,
-                        label,
-                        rangeLabel: dateRangeLabel
-                    })
-                }
+                renderTrigger={toolbarSearchDateRangeTrigger}
             />
         </Tooltip>
     );
