@@ -65,7 +65,7 @@ export function FriendLogPageToolbar({
                 </ToolbarViews>
 
                 <form
-                    className="ml-auto flex max-w-96 min-w-0 flex-1"
+                    className="flex w-40 shrink-0 sm:w-64"
                     onSubmit={(event) => {
                         event.preventDefault();
                         onCommitSearch();

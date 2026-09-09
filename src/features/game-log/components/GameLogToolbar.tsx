@@ -291,50 +291,47 @@ export function GameLogToolbar({
                     />
                 </ToolbarViews>
 
-                <div className="ms-auto flex max-w-96 min-w-0 grow basis-64 items-center gap-2">
-                    <ToolbarSearch
-                        value={searchDraft}
-                        onValueChange={setSearchDraft}
-                        onCommit={commitSearchDraft}
-                        onClear={clearSearch}
-                        className="w-auto min-w-0 flex-1 shrink sm:w-auto"
-                        trailing={
-                            isTableView ? undefined : (
-                                <GameLogDateRangeFilter
-                                    value={sessionDateRange}
-                                    todayDate={todayDate}
-                                    onChange={setSessionDateTimeRange}
-                                />
-                            )
-                        }
-                    />
-                    <ToolbarActions>
-                        {isTableView ? null : (
-                            <ToolbarIconButton
-                                icon={
-                                    sessionControls.allOpen
-                                        ? ChevronsDownUpIcon
-                                        : ChevronsUpDownIcon
-                                }
-                                label={t(
-                                    sessionControls.allOpen
-                                        ? 'view.game_log.sessions.collapse_all'
-                                        : 'view.game_log.sessions.expand_all'
-                                )}
-                                disabled={!sessionControls.canToggle}
-                                onClick={sessionControls.onToggle}
+                <ToolbarSearch
+                    value={searchDraft}
+                    onValueChange={setSearchDraft}
+                    onCommit={commitSearchDraft}
+                    onClear={clearSearch}
+                    trailing={
+                        isTableView ? undefined : (
+                            <GameLogDateRangeFilter
+                                value={sessionDateRange}
+                                todayDate={todayDate}
+                                onChange={setSessionDateTimeRange}
                             />
-                        )}
-                        <ToolbarRefreshButton
-                            onRefresh={onRefresh}
-                            loading={loadStatus === 'running'}
-                            disabled={!canRefresh}
+                        )
+                    }
+                />
+                <ToolbarActions>
+                    <ToolbarRefreshButton
+                        onRefresh={onRefresh}
+                        loading={loadStatus === 'running'}
+                        disabled={!canRefresh}
+                    />
+                    {isTableView ? null : (
+                        <ToolbarIconButton
+                            icon={
+                                sessionControls.allOpen
+                                    ? ChevronsDownUpIcon
+                                    : ChevronsUpDownIcon
+                            }
+                            label={t(
+                                sessionControls.allOpen
+                                    ? 'view.game_log.sessions.collapse_all'
+                                    : 'view.game_log.sessions.expand_all'
+                            )}
+                            disabled={!sessionControls.canToggle}
+                            onClick={sessionControls.onToggle}
                         />
-                        {isTableView ? (
-                            <TableColumnVisibilityMenu table={table} />
-                        ) : null}
-                    </ToolbarActions>
-                </div>
+                    )}
+                    {isTableView ? (
+                        <TableColumnVisibilityMenu table={table} />
+                    ) : null}
+                </ToolbarActions>
             </PageToolbarRow>
 
             {detail ? <ToolbarStatus>{detail}</ToolbarStatus> : null}

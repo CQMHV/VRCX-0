@@ -684,19 +684,19 @@ export function InstanceHistoryPage({
                                     dataStatus={dayStatus}
                                 />
                             ) : (
-                                <>
-                                    {dateRangeControl}
-                                    <ToolbarSearch
-                                        value={search}
-                                        onValueChange={setSearch}
-                                        className="ml-auto w-48 sm:w-56"
-                                        placeholder={t(
-                                            'dialog.previous_instances.search_placeholder'
-                                        )}
-                                    />
-                                </>
+                                dateRangeControl
                             )}
                         </ToolbarViews>
+
+                        {isDayMode ? null : (
+                            <ToolbarSearch
+                                value={search}
+                                onValueChange={setSearch}
+                                placeholder={t(
+                                    'dialog.previous_instances.search_placeholder'
+                                )}
+                            />
+                        )}
 
                         <ToolbarActions>
                             <ToolbarRefreshButton

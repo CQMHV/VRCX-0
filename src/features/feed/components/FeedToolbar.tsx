@@ -179,7 +179,7 @@ export const FeedToolbar = memo(function FeedToolbar({
     return (
         <PageToolbar className="@container/feed-toolbar">
             <PageToolbarRow>
-                <ToolbarViews className="min-w-0 flex-initial flex-wrap">
+                <ToolbarViews className="min-w-0 flex-wrap">
                     <FeedViewModeToggle
                         value="table"
                         onValueChange={onViewModeChange}
@@ -209,30 +209,28 @@ export const FeedToolbar = memo(function FeedToolbar({
                         onToggleFeedFilter={onToggleFeedFilter}
                     />
                 </ToolbarViews>
-                <div className="ml-auto flex max-w-80 min-w-0 grow basis-64 items-center gap-2">
-                    <FeedSearchBox
-                        isSearching={isSearching}
-                        scopedUserIds={scopedUserIds}
-                        searchDraft={searchDraft}
-                        onClearSearch={onClearSearch}
-                        onCommitSearch={onCommitSearch}
-                        onScopeChange={onScopeChange}
-                        onSearchDraftChange={onSearchDraftChange}
-                        dateFilter={
-                            <DateRangeFilter
-                                label={t('view.feed.date_range')}
-                                onChange={onDateRangeChange}
-                                dateFrom={dateFrom}
-                                dateTo={dateTo}
-                            />
-                        }
-                    />
-                    <ToolbarActions>
-                        {feedPersistenceDisabled ? (
-                            <FeedPersistenceDisabledIndicator />
-                        ) : null}
-                    </ToolbarActions>
-                </div>
+                <FeedSearchBox
+                    isSearching={isSearching}
+                    scopedUserIds={scopedUserIds}
+                    searchDraft={searchDraft}
+                    onClearSearch={onClearSearch}
+                    onCommitSearch={onCommitSearch}
+                    onScopeChange={onScopeChange}
+                    onSearchDraftChange={onSearchDraftChange}
+                    dateFilter={
+                        <DateRangeFilter
+                            label={t('view.feed.date_range')}
+                            onChange={onDateRangeChange}
+                            dateFrom={dateFrom}
+                            dateTo={dateTo}
+                        />
+                    }
+                />
+                <ToolbarActions>
+                    {feedPersistenceDisabled ? (
+                        <FeedPersistenceDisabledIndicator />
+                    ) : null}
+                </ToolbarActions>
             </PageToolbarRow>
         </PageToolbar>
     );

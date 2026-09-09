@@ -91,6 +91,11 @@ export function NotificationPageToolbar({
                 />
 
                 <ToolbarActions>
+                    <ToolbarRefreshButton
+                        onRefresh={onRefresh}
+                        loading={loadStatus === 'running'}
+                        label={t('view.notification.refresh_tooltip')}
+                    />
                     <ToolbarIconButton
                         icon={CheckCheckIcon}
                         label={t(
@@ -98,11 +103,6 @@ export function NotificationPageToolbar({
                         )}
                         disabled={unseenCount <= 0}
                         onClick={onMarkAllSeen}
-                    />
-                    <ToolbarRefreshButton
-                        onRefresh={onRefresh}
-                        loading={loadStatus === 'running'}
-                        label={t('view.notification.refresh_tooltip')}
                     />
                 </ToolbarActions>
             </PageToolbarRow>

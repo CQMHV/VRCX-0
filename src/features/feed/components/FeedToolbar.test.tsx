@@ -359,11 +359,6 @@ describe('Feed compound search', { timeout: 10_000 }, () => {
         expect(
             screen.getByRole('status', { name: 'Applied friends' }).textContent
         ).toBe('usr_scoped');
-        const dates = within(screen.getByRole('group', { name: 'Date range' }));
-        const clearDates = dates.getByRole('button', {
-            name: en.common.actions.clear
-        });
-
         await user.click(search);
         await user.keyboard('{Enter}');
         expect(
@@ -372,7 +367,12 @@ describe('Feed compound search', { timeout: 10_000 }, () => {
         expect(
             screen.getByRole('status', { name: 'Applied dates' }).textContent
         ).toBe('2026-08-10/2026-08-12');
-        await user.click(clearDates);
+        await user.click(screen.getByRole('button', { name: /^Date range/ }));
+        await user.click(
+            within(
+                await screen.findByRole('dialog', { name: 'Date range' })
+            ).getByRole('button', { name: en.common.actions.clear })
+        );
         expect(
             screen.getByRole('status', { name: 'Applied dates' }).textContent
         ).toBe('/');
