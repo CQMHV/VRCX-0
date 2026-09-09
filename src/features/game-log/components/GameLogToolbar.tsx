@@ -5,8 +5,7 @@ import {
     ChevronsUpDownIcon,
     LogsIcon,
     StarIcon,
-    Table2Icon,
-    XIcon
+    Table2Icon
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -151,55 +150,42 @@ function GameLogDateRangeFilter({
 }) {
     const { t } = useTranslation();
     const dateRangeLabel = t('view.game_log.label.session_date_range');
-    const hasRange = Boolean(value.from || value.to);
 
     return (
-        <>
-            <Tooltip>
-                <DateTimeRangePicker
-                    value={value}
-                    onChange={onChange}
-                    placeholder={dateRangeLabel}
-                    startLabel={t('view.game_log.label.start')}
-                    endLabel={t('view.game_log.label.end')}
-                    clearLabel={t('common.actions.clear')}
-                    confirmLabel={t('common.actions.confirm')}
-                    formatValue={formatCompactDateTime}
-                    maxDays={GAME_LOG_SESSION_DATE_RANGE_MAX_DAYS}
-                    minuteStep={15}
-                    align="end"
-                    disabled={{ after: todayDate }}
-                    renderTrigger={({ active, label }) => (
-                        <TooltipTrigger
-                            render={
-                                <InputGroupButton
-                                    variant={active ? 'secondary' : 'ghost'}
-                                    size="icon-xs"
-                                    aria-label={
-                                        active
-                                            ? `${dateRangeLabel}: ${label}`
-                                            : label
-                                    }
-                                />
-                            }
-                        >
-                            <CalendarRangeIcon data-icon="icon" />
-                            <TooltipContent>{label}</TooltipContent>
-                        </TooltipTrigger>
-                    )}
-                />
-            </Tooltip>
-            {hasRange ? (
-                <InputGroupButton
-                    size="icon-xs"
-                    aria-label={`${dateRangeLabel}: ${t('common.actions.clear')}`}
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => onChange({ from: null, to: null })}
-                >
-                    <XIcon data-icon="icon" />
-                </InputGroupButton>
-            ) : null}
-        </>
+        <Tooltip>
+            <DateTimeRangePicker
+                value={value}
+                onChange={onChange}
+                placeholder={dateRangeLabel}
+                startLabel={t('view.game_log.label.start')}
+                endLabel={t('view.game_log.label.end')}
+                clearLabel={t('common.actions.clear')}
+                confirmLabel={t('common.actions.confirm')}
+                formatValue={formatCompactDateTime}
+                maxDays={GAME_LOG_SESSION_DATE_RANGE_MAX_DAYS}
+                minuteStep={15}
+                align="end"
+                disabled={{ after: todayDate }}
+                renderTrigger={({ active, label }) => (
+                    <TooltipTrigger
+                        render={
+                            <InputGroupButton
+                                variant={active ? 'secondary' : 'ghost'}
+                                size="icon-xs"
+                                aria-label={
+                                    active
+                                        ? `${dateRangeLabel}: ${label}`
+                                        : label
+                                }
+                            />
+                        }
+                    >
+                        <CalendarRangeIcon data-icon="icon" />
+                        <TooltipContent>{label}</TooltipContent>
+                    </TooltipTrigger>
+                )}
+            />
+        </Tooltip>
     );
 }
 
