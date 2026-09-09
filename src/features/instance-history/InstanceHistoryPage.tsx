@@ -15,7 +15,7 @@ import {
     PageToolbarRow
 } from '@/components/layout/PageScaffold';
 import {
-    toolbarDateRangeTrigger,
+    toolbarSearchDateRangeTrigger,
     ToolbarActions,
     ToolbarRefreshButton,
     ToolbarSearch,
@@ -525,11 +525,12 @@ export function InstanceHistoryPage({
             <DateTimeRangePicker
                 value={dateRange}
                 onChange={handleDateRangeChange}
-                align="start"
+                align="end"
                 renderTrigger={({ label }) =>
-                    toolbarDateRangeTrigger({
+                    toolbarSearchDateRangeTrigger({
                         active: dateRangeUserSet,
-                        label
+                        label,
+                        rangeLabel: t('view.instance_history.label.date_range')
                     })
                 }
                 placeholder={t('view.instance_history.label.date_range')}
@@ -683,9 +684,7 @@ export function InstanceHistoryPage({
                                     availableDates={availableDays}
                                     dataStatus={dayStatus}
                                 />
-                            ) : (
-                                dateRangeControl
-                            )}
+                            ) : null}
                         </ToolbarViews>
 
                         {isDayMode ? null : (
@@ -695,6 +694,7 @@ export function InstanceHistoryPage({
                                 placeholder={t(
                                     'dialog.previous_instances.search_placeholder'
                                 )}
+                                trailing={dateRangeControl}
                             />
                         )}
 

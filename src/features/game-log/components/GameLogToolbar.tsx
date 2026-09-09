@@ -1,5 +1,4 @@
 import {
-    CalendarRangeIcon,
     ChevronDownIcon,
     ChevronsDownUpIcon,
     ChevronsUpDownIcon,
@@ -17,6 +16,7 @@ import {
 } from '@/components/date-time-range-picker/DateTimeRangePicker';
 import { PageToolbar, PageToolbarRow } from '@/components/layout/PageScaffold';
 import {
+    toolbarSearchDateRangeTrigger,
     ToolbarActions,
     ToolbarFilterChips,
     ToolbarIconButton,
@@ -38,8 +38,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/ui/shadcn/dropdown-menu';
-import { InputGroupButton } from '@/ui/shadcn/input-group';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
+import { Tooltip } from '@/ui/shadcn/tooltip';
 
 import { GAME_LOG_SESSION_DATE_RANGE_MAX_DAYS } from '../gameLogDateRange';
 import type {
@@ -166,24 +165,13 @@ function GameLogDateRangeFilter({
                 minuteStep={15}
                 align="end"
                 disabled={{ after: todayDate }}
-                renderTrigger={({ active, label }) => (
-                    <TooltipTrigger
-                        render={
-                            <InputGroupButton
-                                variant={active ? 'secondary' : 'ghost'}
-                                size="icon-xs"
-                                aria-label={
-                                    active
-                                        ? `${dateRangeLabel}: ${label}`
-                                        : label
-                                }
-                            />
-                        }
-                    >
-                        <CalendarRangeIcon data-icon="icon" />
-                        <TooltipContent>{label}</TooltipContent>
-                    </TooltipTrigger>
-                )}
+                renderTrigger={({ active, label }) =>
+                    toolbarSearchDateRangeTrigger({
+                        active,
+                        label,
+                        rangeLabel: dateRangeLabel
+                    })
+                }
             />
         </Tooltip>
     );

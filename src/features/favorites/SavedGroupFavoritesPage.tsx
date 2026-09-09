@@ -263,6 +263,7 @@ export function SavedGroupFavoritesPage() {
             <PageToolbar>
                 <PageToolbarRow>
                     <ToolbarSearch
+                        className="ms-auto"
                         value={searchQuery}
                         onValueChange={setSearchQuery}
                         placeholder={t('common.actions.search')}

@@ -28,7 +28,7 @@ import {
     PageToolbarRow
 } from '@/components/layout/PageScaffold';
 import {
-    toolbarDateRangeTrigger,
+    toolbarSearchDateRangeTrigger,
     ToolbarActions,
     ToolbarRefreshButton,
     ToolbarSearch,
@@ -365,31 +365,45 @@ export function BrowseHistoryPage() {
                     <PageToolbarRow>
                         <ToolbarViews className="flex-wrap">
                             <ToolbarTabs options={filterOptions} />
-                            <Tooltip>
-                                <DateTimeRangePicker
-                                    value={dateRange}
-                                    onChange={setDateRange}
-                                    align="start"
-                                    renderTrigger={toolbarDateRangeTrigger}
-                                    placeholder={t('browse_history.date_range')}
-                                    startLabel={t(
-                                        'browse_history.date_range_start'
-                                    )}
-                                    endLabel={t(
-                                        'browse_history.date_range_end'
-                                    )}
-                                    clearLabel={t('common.actions.clear')}
-                                    confirmLabel={t('common.actions.confirm')}
-                                    formatValue={formatCompactDateTime}
-                                    minuteStep={15}
-                                    disabled={{ after: todayDate }}
-                                />
-                            </Tooltip>
                         </ToolbarViews>
                         <ToolbarSearch
                             value={search}
                             onValueChange={setSearch}
                             placeholder={t('browse_history.search_placeholder')}
+                            trailing={
+                                <Tooltip>
+                                    <DateTimeRangePicker
+                                        value={dateRange}
+                                        onChange={setDateRange}
+                                        align="end"
+                                        renderTrigger={({ active, label }) =>
+                                            toolbarSearchDateRangeTrigger({
+                                                active,
+                                                label,
+                                                rangeLabel: t(
+                                                    'browse_history.date_range'
+                                                )
+                                            })
+                                        }
+                                        placeholder={t(
+                                            'browse_history.date_range'
+                                        )}
+                                        startLabel={t(
+                                            'browse_history.date_range_start'
+                                        )}
+                                        endLabel={t(
+                                            'browse_history.date_range_end'
+                                        )}
+                                        clearLabel={t('common.actions.clear')}
+                                        confirmLabel={t(
+                                            'common.actions.confirm'
+                                        )}
+                                        formatValue={formatCompactDateTime}
+                                        minuteStep={15}
+                                        disabled={{ after: todayDate }}
+                                    />
+                                </Tooltip>
+                            }
                         />
                         <ToolbarActions>
                             <ToolbarRefreshButton

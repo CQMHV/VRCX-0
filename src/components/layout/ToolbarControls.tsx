@@ -232,26 +232,22 @@ export function ToolbarSegmented<TValue extends string>({
     );
 }
 
-export function toolbarDateRangeTrigger({
+export function toolbarSearchDateRangeTrigger({
     active,
-    label
+    label,
+    rangeLabel
 }: {
     active: boolean;
     label: string;
+    rangeLabel: string;
 }) {
     return (
         <TooltipTrigger
             render={
-                <Button
-                    type="button"
-                    variant={active ? 'secondary' : 'outline'}
-                    size="icon"
-                    aria-label={label}
-                    data-vrcx-0-control="toolbar"
-                    className={cn(
-                        'vrcx-0-toolbar-control',
-                        active && 'vrcx-0-toolbar-control-active'
-                    )}
+                <InputGroupButton
+                    variant={active ? 'secondary' : 'ghost'}
+                    size="icon-xs"
+                    aria-label={active ? `${rangeLabel}: ${label}` : label}
                 />
             }
         >
