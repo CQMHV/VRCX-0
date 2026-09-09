@@ -111,6 +111,9 @@
     --object-surface-hover: var(--state-hover-surface);
     --object-border: var(--stroke-subtle);
     --object-border-hover: var(--stroke-default);
+    --object-radius: var(--radius-xl);
+    --object-selected-border: var(--primary);
+    --object-selected-surface: var(--state-selected-surface);
     --status-online: #2ed319;
     --status-joinme: #00b8ff;
     --status-busy: #c80928;
@@ -392,6 +395,11 @@
     --color-content-disabled: var(--content-disabled);
     --color-object-surface: var(--object-surface);
     --color-object-surface-hover: var(--object-surface-hover);
+    --radius-object: var(--object-radius);
+    --color-object-border: var(--object-border);
+    --color-object-border-hover: var(--object-border-hover);
+    --color-object-selected-border: var(--object-selected-border);
+    --color-object-selected-surface: var(--object-selected-surface);
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
     --color-primary: var(--primary);
