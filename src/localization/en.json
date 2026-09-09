@@ -502,7 +502,7 @@
             "doNotDisturbUntilStopped": "Until turned off",
             "doNotDisturbTurnOff": "Turn off",
             "rebuildUi": "Reload UI",
-            "sidebarMode": "Sidebar mode",
+            "sidebarMode": "Sidebar Mode",
             "disableTheme": "Disable Theme",
             "exit": "Exit"
         },
