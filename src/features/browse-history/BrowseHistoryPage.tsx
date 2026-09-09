@@ -30,6 +30,7 @@ import {
 import {
     toolbarSearchDateRangeTrigger,
     ToolbarActions,
+    ToolbarOverflowMenu,
     ToolbarRefreshButton,
     ToolbarSearch,
     ToolbarTabs,
@@ -51,6 +52,7 @@ import { toast } from '@/services/toastService';
 import { useModalStore } from '@/state/modalStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
 import { Button } from '@/ui/shadcn/button';
+import { DropdownMenuGroup, DropdownMenuItem } from '@/ui/shadcn/dropdown-menu';
 import { Separator } from '@/ui/shadcn/separator';
 import { Tabs, TabsContent } from '@/ui/shadcn/tabs';
 import { Tooltip } from '@/ui/shadcn/tooltip';
@@ -407,20 +409,22 @@ export function BrowseHistoryPage() {
                                 loading={loading || refreshing}
                                 disabled={!ownerUserId}
                             />
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                disabled={!items.length}
-                                onClick={() => void clearHistory()}
-                            >
-                                <Trash2Icon />
-                                {t(
-                                    filter === 'all'
-                                        ? 'browse_history.actions.clear_all'
-                                        : 'browse_history.actions.clear_kind'
-                                )}
-                            </Button>
+                            <ToolbarOverflowMenu>
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem
+                                        variant="destructive"
+                                        disabled={!items.length}
+                                        onClick={() => void clearHistory()}
+                                    >
+                                        <Trash2Icon data-icon="inline-start" />
+                                        {t(
+                                            filter === 'all'
+                                                ? 'browse_history.actions.clear_all'
+                                                : 'browse_history.actions.clear_kind'
+                                        )}
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                            </ToolbarOverflowMenu>
                         </ToolbarActions>
                     </PageToolbarRow>
                 </PageToolbar>

@@ -7,12 +7,10 @@ import {
     RefreshCwIcon,
     RotateCcwIcon,
     SlidersHorizontalIcon,
-    SettingsIcon,
     Trash2Icon,
     UploadIcon,
     XIcon
 } from 'lucide-react';
-import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -21,6 +19,7 @@ import {
     PageBody,
     PageScaffold
 } from '@/components/layout/PageScaffold';
+import { ToolbarRefreshButton } from '@/components/layout/ToolbarControls';
 import { ToolPageHeader } from '@/components/layout/ToolPageHeader';
 import { ImageCropDialog } from '@/components/media/ImageCropDialog';
 import {
@@ -43,12 +42,6 @@ import { openExternalLink } from '@/services/entityMediaService';
 import { IMAGE_UPLOAD_ACCEPT } from '@/shared/constants/imageUpload';
 import { Badge } from '@/ui/shadcn/badge';
 import { Button } from '@/ui/shadcn/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger
-} from '@/ui/shadcn/dropdown-menu';
-import { Field, FieldGroup, FieldLabel } from '@/ui/shadcn/field';
 import { Input } from '@/ui/shadcn/input';
 import {
     Popover,
@@ -58,14 +51,10 @@ import {
     PopoverTrigger
 } from '@/ui/shadcn/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/shadcn/tabs';
-import {
-    ToggleGroup,
-    ToggleGroupItem,
-    ToggleGroupSeparator
-} from '@/ui/shadcn/toggle-group';
 
 import { GalleryEmojiImage } from './components/GalleryEmojiImage';
 import { GalleryEmojiUploadSettings } from './components/GalleryEmojiUploadSettings';
+import { GalleryGridDensityMenu } from './components/GalleryGridDensityMenu';
 import { InventoryItemTile } from './components/InventoryItemTile';
 import { MediaAssetTile, shortAssetId } from './components/MediaAssetTile';
 import type {
@@ -73,12 +62,7 @@ import type {
     MediaPreviewOptions
 } from './components/MediaAssetTile';
 import { MediaLibraryToolbar } from './components/MediaLibraryToolbar';
-import {
-    GALLERY_GRID_DENSITY_OPTIONS,
-    sanitizeGalleryGridDensity,
-    type GalleryGridDensity,
-    type getGalleryGridDensityConfig
-} from './galleryDensity';
+import { type getGalleryGridDensityConfig } from './galleryDensity';
 import {
     CATEGORY_DEFINITIONS,
     CATEGORY_ORDER,
@@ -94,74 +78,6 @@ import {
 } from './useInventoryPageState';
 
 type PreviewHandler = (options: MediaPreviewOptions) => void;
-
-function GridSettingsMenu({
-    gridDensity,
-    onGridDensityChange
-}: {
-    gridDensity: GalleryGridDensity;
-    onGridDensityChange: (value: GalleryGridDensity) => void;
-}) {
-    const { t } = useTranslation();
-
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger
-                render={
-                    <Button
-                        type="button"
-                        size="icon-sm"
-                        variant="ghost"
-                        aria-label={t('common.actions.view_options')}
-                    >
-                        <SettingsIcon data-icon="inline-start" />
-                    </Button>
-                }
-            />
-            <DropdownMenuContent className="w-72 p-3" align="end">
-                <FieldGroup>
-                    <Field>
-                        <FieldLabel>
-                            {t('dialog.gallery_icons.grid_density')}
-                        </FieldLabel>
-                        <ToggleGroup
-                            variant="outline"
-                            size="sm"
-                            value={gridDensity ? [gridDensity] : []}
-                            onValueChange={(nextValue) => {
-                                if (nextValue[0]) {
-                                    onGridDensityChange(
-                                        sanitizeGalleryGridDensity(nextValue[0])
-                                    );
-                                }
-                            }}
-                            className="w-full [&>[data-slot=toggle]]:min-w-0 [&>[data-slot=toggle]]:flex-1"
-                        >
-                            {GALLERY_GRID_DENSITY_OPTIONS.map(
-                                (option, index) => (
-                                    <Fragment key={option.value}>
-                                        {index > 0 ? (
-                                            <ToggleGroupSeparator />
-                                        ) : null}
-                                        <ToggleGroupItem
-                                            value={option.value}
-                                            aria-label={t(option.labelKey)}
-                                            className="w-full min-w-0 justify-center px-2"
-                                        >
-                                            <span className="truncate">
-                                                {t(option.labelKey)}
-                                            </span>
-                                        </ToggleGroupItem>
-                                    </Fragment>
-                                )
-                            )}
-                        </ToggleGroup>
-                    </Field>
-                </FieldGroup>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
-}
 
 function InventoryFileCard({
     category,
@@ -467,23 +383,18 @@ export function InventoryPage() {
                 }
                 actions={
                     <>
-                        <GridSettingsMenu
+                        <GalleryGridDensityMenu
                             gridDensity={inventory.gridDensity}
                             onGridDensityChange={inventory.changeGridDensity}
                         />
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
+                        <ToolbarRefreshButton
+                            onRefresh={() => {
                                 inventory.refreshScope(
                                     inventory.activeCategory,
                                     inventory.activeSubTab
                                 );
                             }}
-                        >
-                            <RefreshCwIcon data-icon="inline-start" />
-                            {t('dialog.gallery_icons.refresh')}
-                        </Button>
+                        />
                         <Button
                             variant="outline"
                             size="sm"
