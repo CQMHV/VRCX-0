@@ -3719,6 +3719,8 @@
                 "last_activity": "Poslední aktivita",
                 "date_joined": "Datum registrace",
                 "friended": "Přátelé od",
+                "unfriended": "Odebrání z přátel",
+                "relationship_history": "Historie přátelství",
                 "avatar_cloning": "Klonování avatara",
                 "booping": "Boopování",
                 "avatar_cloning_allow": "Povoleno",

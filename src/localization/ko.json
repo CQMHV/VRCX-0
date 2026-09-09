@@ -3666,6 +3666,8 @@
                 "last_activity": "마지막 활동",
                 "date_joined": "계정 생성일",
                 "friended": "친구 추가됨",
+                "unfriended": "친구 삭제 일시",
+                "relationship_history": "친구 관계 기록",
                 "avatar_cloning": "아바타 복제",
                 "booping": "부핑",
                 "avatar_cloning_allow": "허용",

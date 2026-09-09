@@ -3718,6 +3718,8 @@
                 "last_activity": "Última Atividade",
                 "date_joined": "Data de Entrada",
                 "friended": "Amizade feita",
+                "unfriended": "Amizade desfeita",
+                "relationship_history": "Histórico de amizade",
                 "avatar_cloning": "Clonagem de Avatar",
                 "booping": "Booping",
                 "avatar_cloning_allow": "Permitido",

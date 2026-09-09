@@ -3718,6 +3718,8 @@
                 "last_activity": "最后活动时间",
                 "date_joined": "账号创建日期",
                 "friended": "添加为好友的时间",
+                "unfriended": "解除好友的时间",
+                "relationship_history": "好友关系记录",
                 "avatar_cloning": "是否允许克隆模型",
                 "booping": "是否允许戳一戳",
                 "avatar_cloning_allow": "允许",

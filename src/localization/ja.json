@@ -3712,6 +3712,8 @@
                 "last_activity": "最終活動時間",
                 "date_joined": "アカウント作成日",
                 "friended": "フレンドになった日",
+                "unfriended": "フレンド解除日時",
+                "relationship_history": "フレンド履歴",
                 "avatar_cloning": "アバタークローン",
                 "booping": "つっつき",
                 "avatar_cloning_allow": "許可",

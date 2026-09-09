@@ -3720,6 +3720,8 @@
                 "last_activity": "Последняя активность",
                 "date_joined": "Дата регистрации",
                 "friended": "Подружились",
+                "unfriended": "Удалён из друзей",
+                "relationship_history": "История дружбы",
                 "avatar_cloning": "Клонирование аватара",
                 "booping": "Буппинг",
                 "avatar_cloning_allow": "Разрешено",

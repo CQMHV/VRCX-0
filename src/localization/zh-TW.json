@@ -3718,6 +3718,8 @@
                 "last_activity": "最後動態",
                 "date_joined": "加入時間",
                 "friended": "好友",
+                "unfriended": "解除好友的時間",
+                "relationship_history": "好友關係記錄",
                 "avatar_cloning": "角色複製",
                 "booping": "戳一戳功能",
                 "avatar_cloning_allow": "允許",

@@ -3717,6 +3717,8 @@
                 "last_activity": "Letzte Aktivität",
                 "date_joined": "Beigetreten am",
                 "friended": "Befreundet seit",
+                "unfriended": "Freundschaft beendet",
+                "relationship_history": "Freundschaftsverlauf",
                 "avatar_cloning": "Avatar-Klonen",
                 "booping": "Boopen",
                 "avatar_cloning_allow": "Erlaubt",
