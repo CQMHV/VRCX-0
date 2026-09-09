@@ -370,12 +370,6 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
                     <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
                         {connections}
                         <StatusSegment
-                            visible={visibility.steamvr}
-                            active={Boolean(isSteamVRRunning)}
-                            dimWhenInactive
-                            label="SteamVR"
-                        />
-                        <StatusSegment
                             visible={visibility.vrchat}
                             active={Boolean(isGameRunning)}
                             dimWhenInactive
@@ -467,6 +461,12 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
                                     )}
                                 </div>
                             }
+                        />
+                        <StatusSegment
+                            visible={visibility.steamvr}
+                            active={Boolean(isSteamVRRunning)}
+                            dimWhenInactive
+                            label="SteamVR"
                         />
                         <StatusSegment
                             visible={
