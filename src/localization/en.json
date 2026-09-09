@@ -5021,8 +5021,8 @@
             "msg_test_failed": "Invalid YouTube API key"
         },
         "translation_api": {
-            "header": "Translation Provider Configuration",
-            "description": "Choose and configure the provider used for content translation.",
+            "header": "Translation Provider",
+            "description": "Configure the provider used for content translation.",
             "guide": "Guide",
             "mode": "Provider",
             "mode_google": "Google Translate",
@@ -5036,7 +5036,7 @@
             "openai": {
                 "model": "Model Name",
                 "prompt_optional": "Prompt (Optional)",
-                "prompt_optional_description": "Optional system prompt. Make sure to include the target language variable {targetLang}.",
+                "prompt_optional_description": "Optional system prompt. Must include the {targetLang} variable.",
                 "connection": "LLM Endpoint",
                 "connection_description": "Only OpenAI-compatible endpoints are supported.",
                 "connection_placeholder": "Select an endpoint",

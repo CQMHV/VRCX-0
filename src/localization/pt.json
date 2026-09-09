@@ -4978,8 +4978,8 @@
             "msg_test_failed": "Chave da API do YouTube inválida"
         },
         "translation_api": {
-            "header": "Configuração do provedor de tradução",
-            "description": "Escolha e configure o provedor usado para tradução de conteúdo.",
+            "header": "Provedor de tradução",
+            "description": "Configure o provedor usado para tradução de conteúdo.",
             "guide": "Guia",
             "mode": "Provedor",
             "mode_google": "Google Tradutor",
@@ -4993,7 +4993,7 @@
             "openai": {
                 "model": "Nome do Modelo",
                 "prompt_optional": "Prompt (Opcional)",
-                "prompt_optional_description": "Prompt de sistema opcional. Certifique-se de incluir a variável de idioma de destino {targetLang}.",
+                "prompt_optional_description": "Prompt de sistema opcional. Deve incluir a variável {targetLang}.",
                 "connection": "Endpoint LLM",
                 "connection_description": "Somente endpoints compatíveis com OpenAI são suportados.",
                 "connection_placeholder": "Selecione um endpoint",

@@ -5022,8 +5022,8 @@
             "msg_test_failed": "无效的 YouTube API 密钥"
         },
         "translation_api": {
-            "header": "翻译提供商配置",
-            "description": "选择并配置用于内容翻译的提供商。",
+            "header": "翻译提供商设置",
+            "description": "设置翻译使用的提供商。",
             "guide": "查看教程（英语）",
             "mode": "提供商",
             "mode_google": "Google 翻译",
@@ -5037,7 +5037,7 @@
             "openai": {
                 "model": "模型名称",
                 "prompt_optional": "提示词（可选）",
-                "prompt_optional_description": "可选的系统提示词。请务必包含目标语言变量 {targetLang}。",
+                "prompt_optional_description": "可选的系统提示词，必须包含变量 {targetLang}。",
                 "connection": "LLM 端点",
                 "connection_description": "仅支持 OpenAI 兼容端点。",
                 "connection_placeholder": "选择一个端点",

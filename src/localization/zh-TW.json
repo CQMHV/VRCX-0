@@ -5013,8 +5013,8 @@
             "msg_test_failed": "無效的 YouTube API 金鑰"
         },
         "translation_api": {
-            "header": "翻譯服務提供者設定",
-            "description": "選擇並設定用於內容翻譯的服務提供者。",
+            "header": "翻譯提供者設定",
+            "description": "設定翻譯使用的提供者。",
             "guide": "使用指南",
             "mode": "服務提供者",
             "mode_google": "Google 翻譯",
@@ -5028,7 +5028,7 @@
             "openai": {
                 "model": "模型名稱",
                 "prompt_optional": "提示詞（選填）",
-                "prompt_optional_description": "選用的系統提示詞。請務必包含目標語言變數 {targetLang}。",
+                "prompt_optional_description": "選填的系統提示詞，必須包含變數 {targetLang}。",
                 "connection": "LLM 端點",
                 "connection_description": "僅支援與 OpenAI 相容的端點。",
                 "connection_placeholder": "選擇一個端點",

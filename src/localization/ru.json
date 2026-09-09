@@ -4982,8 +4982,8 @@
             "msg_test_failed": "Неверно YouTube API ключ"
         },
         "translation_api": {
-            "header": "Конфигурация поставщика перевода",
-            "description": "Выберите и настройте поставщика, используемого для перевода содержимого.",
+            "header": "Поставщик перевода",
+            "description": "Настройте поставщика для перевода содержимого.",
             "guide": "Руководство",
             "mode": "Поставщик",
             "mode_google": "Google",
@@ -4997,7 +4997,7 @@
             "openai": {
                 "model": "Название модели",
                 "prompt_optional": "Промпт (необязательно)",
-                "prompt_optional_description": "Необязательный системный промпт. Обязательно включите переменную целевого языка {targetLang}.",
+                "prompt_optional_description": "Необязательный системный промпт. Должен содержать переменную {targetLang}.",
                 "connection": "LLM Эндпоинт",
                 "connection_description": "Поддерживаются только OpenAI-совместимые эндпоинты.",
                 "connection_placeholder": "Выберите эндпоинт",
