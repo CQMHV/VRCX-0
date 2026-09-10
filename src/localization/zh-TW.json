@@ -753,11 +753,41 @@
         }
     },
     "shortcuts": {
+        "tray": {
+            "recording_failed": "無法開始錄製快捷鍵，請關閉此對話框後重試。",
+            "checking": "正在檢查快捷鍵…",
+            "background_hint": "隱藏時會套用背景模式與延遲設定。",
+            "global": "全域",
+            "title": "顯示 / 隱藏 VRCX-0",
+            "description": "在其他應用程式中也能顯示或隱藏 VRCX-0。隱藏後仍會在背景執行。",
+            "configure": "設定全域快捷鍵",
+            "unset": "未設定",
+            "inactive": "未生效",
+            "unsupported": "目前環境無法使用全域快捷鍵。",
+            "record": "按下組合鍵",
+            "record_description": "請使用 Ctrl 或 Alt 搭配字母、數字或功能鍵。按 Esc 取消。錄製期間，原快捷鍵不會隱藏視窗。",
+            "startup_failed": "無法啟用全域快捷鍵，可能已被其他應用程式使用。",
+            "error": {
+                "inUse": "此快捷鍵已被佔用，請換一個組合。",
+                "invalid": "請使用 Ctrl 或 Alt 搭配字母、數字或功能鍵。",
+                "reserved": "此組合用於系統或應用程式操作，請換一個組合。",
+                "unavailable": "此快捷鍵無法使用或已被佔用，請換一個組合。",
+                "unsupported": "目前環境無法使用全域快捷鍵。"
+            }
+        },
         "title": "鍵盤快捷鍵",
         "group": {
             "general": "通用",
-            "layout": "佈局"
-        }
+            "layout": "佈局",
+            "pagination": "搜尋與表格分頁",
+            "screenshots": "截圖詳情",
+            "image_viewer": "全螢幕圖片檢視",
+            "selection": "截圖與收藏多選"
+        },
+        "navigation_items": "開啟第 1～9 個導覽項目",
+        "hold_for_hints": "顯示快速鍵提示（長按）",
+        "toggle_details": "顯示／隱藏詳情",
+        "clear_selection": "清除選取"
     },
     "side_panel": {
         "search_placeholder": "快速搜尋...",
@@ -785,12 +815,19 @@
         "search_direct_access": "貼上連結或 ID",
         "search_scope_direct_access": "wrld_ · usr_ · vrchat.com/…",
         "search_open_direct": "開啟這個連結或 ID",
+        "search_clipboard_detected": "偵測到剪貼簿連結或 ID，按 Enter 開啟",
         "search_joined_groups": "已加入群組",
         "refresh_tooltip": "重新整理好友",
         "refresh_available_in_seconds": "已同步，請 {count} 秒後再試",
         "groups": "群組",
         "friends": "好友",
         "me": "我",
+        "self_menu": "帳號選單",
+        "filter_friends": "篩選好友",
+        "filter_groups": "篩選群組",
+        "filter_no_results": "沒有符合的項目",
+        "self_more_actions": "更多",
+        "switch_account": "切換帳號",
         "favorite": "收藏",
         "same_instance": "在同個房間",
         "you_are_here": "您在這裡",
@@ -1449,6 +1486,10 @@
             }
         },
         "friend_log": {
+            "date_range": "日期範圍",
+            "latest": "最新",
+            "rows": "行",
+            "load_older_failed": "無法載入更早的歷史紀錄。",
             "filter_placeholder": "篩選好友紀錄",
             "all_types": "所有類型",
             "groups": {
@@ -1500,9 +1541,8 @@
                 "moderation_snapshot_failed_to_load": "無法載入管理紀錄"
             },
             "label": {
-                "showing": "顯示",
-                "of": "/",
                 "moderation_row": "用戶管理紀錄",
+                "back_to_top": "回到頂部",
                 "moderation_rows": "用戶管理紀錄",
                 "broaden_the_type_filters_or_search_query_to_see_more_results": "放寬類型篩選或搜尋詞以查看更多結果"
             },
@@ -2168,7 +2208,7 @@
             },
             "feedback": {
                 "title": "傳送意見回饋",
-                "description": "意見回饋會匿名提交。我們會閱讀每一則訊息，但無法直接回覆。",
+                "description": "意見回饋預設以匿名方式提交。我們會閱讀每一則訊息。如需回覆，請在回饋中附上你的電子郵件地址。",
                 "privacy_note": "不會附帶任何帳號資訊。",
                 "placeholder": "告訴我們哪裡好用、哪裡需要改進，或是你希望看到什麼新功能……",
                 "submit": "傳送",
@@ -2704,8 +2744,6 @@
                     "troubleshooting": {
                         "header": "疑難排解",
                         "description": "用於調查問題的記錄與診斷工具。",
-                        "show": "顯示工具",
-                        "hide": "隱藏工具",
                         "gamelog": "儲存遊戲紀錄歷史",
                         "gamelog_description": "關閉後不會儲存新的遊戲紀錄歷史；房間用戶列表、正在播放、截圖後設資料、房間媒體與其他即時日誌功能仍可使用。",
                         "feed_history": "儲存好友動態歷史",
@@ -3679,6 +3717,8 @@
                 "last_activity": "最後動態",
                 "date_joined": "加入時間",
                 "friended": "好友",
+                "unfriended": "解除好友的時間",
+                "relationship_history": "好友關係記錄",
                 "avatar_cloning": "角色複製",
                 "booping": "戳一戳功能",
                 "avatar_cloning_allow": "允許",
@@ -4972,8 +5012,8 @@
             "msg_test_failed": "無效的 YouTube API 金鑰"
         },
         "translation_api": {
-            "header": "翻譯服務提供者設定",
-            "description": "選擇並設定用於內容翻譯的服務提供者。",
+            "header": "翻譯提供者設定",
+            "description": "設定翻譯使用的提供者。",
             "guide": "使用指南",
             "mode": "服務提供者",
             "mode_google": "Google 翻譯",
@@ -4987,7 +5027,7 @@
             "openai": {
                 "model": "模型名稱",
                 "prompt_optional": "提示詞（選填）",
-                "prompt_optional_description": "選用的系統提示詞。請務必包含目標語言變數 {targetLang}。",
+                "prompt_optional_description": "選填的系統提示詞，必須包含變數 {targetLang}。",
                 "connection": "LLM 端點",
                 "connection_description": "僅支援與 OpenAI 相容的端點。",
                 "connection_placeholder": "選擇一個端點",
@@ -5275,7 +5315,7 @@
                 "stable": "正式版",
                 "beta": "測試版",
                 "description": "VRCX-0 只會檢查目前安裝通道中的更新。",
-                "switch_description": "若要切換至{channel}，請從 GitHub 下載並安裝該通道的最新版本。",
+                "switch_description": "切換至{channel}需要下載並安裝該通道的最新版本。",
                 "download_stable": "下載最新正式版",
                 "download_beta": "下載最新測試版",
                 "no_release": "此通道目前沒有可用版本。"
@@ -5498,10 +5538,7 @@
         },
         "direct_access_omni": {
             "header": "直接存取",
-            "description": "輸入用戶 / 世界 / 房間 / 角色連結 或 ID (UUID)",
             "description_failed": "直接存取失敗，請檢查連結或 ID 後再試。",
-            "cancel": "取消",
-            "ok": "確定",
             "message": {
                 "opening": "正在開啟..."
             }
@@ -6326,5 +6363,16 @@
             "themes": "主題",
             "themes_description": "主題來源和自訂 CSS 管理。"
         }
+    },
+    "linux_rendering": {
+        "title": "硬體加速（實驗性）",
+        "description": "重新啟動 VRCX-0 後生效。開啟後請在啟動後的 30 秒內確認顯示正常，否則將自動關閉硬體加速並重新啟動。",
+        "saved": "已儲存，重新啟動 VRCX-0 後生效。",
+        "restart_now": "立即重新啟動",
+        "confirm_title": "介面顯示正常嗎？",
+        "confirm_description": "啟動後 30 秒內未確認，VRCX-0 將關閉硬體加速並重新啟動。",
+        "restore": "恢復相容模式並重新啟動",
+        "keep": "顯示正常，保留",
+        "failed": "無法變更繪製設定，請重試。"
     }
 }

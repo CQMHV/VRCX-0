@@ -104,6 +104,8 @@ vi.mock('@/ui/shadcn/card', async () => {
     type MockProps = React.PropsWithChildren;
 
     return {
+        CardHeader: ({ children }: MockProps) =>
+            React.createElement('header', null, children),
         Card: ({ children }: MockProps) =>
             React.createElement('section', null, children),
         CardContent: ({ children }: MockProps) =>
@@ -138,6 +140,7 @@ vi.mock('@/ui/shadcn/toggle-group', async () => {
     type MockProps = React.PropsWithChildren;
 
     return {
+        ToggleGroupSeparator: () => null,
         ToggleGroup: ({ children }: MockProps) =>
             React.createElement('div', null, children),
         ToggleGroupItem: ({ children }: MockProps) =>

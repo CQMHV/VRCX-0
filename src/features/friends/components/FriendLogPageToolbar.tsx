@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { AppTable } from '@/components/data-table/appTable';
 import { TableColumnVisibilityMenu } from '@/components/data-table/TableColumnVisibilityMenu';
+import { DateRangeFilter } from '@/components/date-range-filter/DateRangeFilter';
 import { PageToolbar, PageToolbarRow } from '@/components/layout/PageScaffold';
 import {
     ToolbarActions,
@@ -17,8 +18,13 @@ import { FriendLogTypeFilterDropdown } from './FriendLogViewParts';
 export function FriendLogPageToolbar({
     selectedTypes,
     onSelectedTypesChange,
-    searchQuery,
-    onSearchQueryChange,
+    searchDraft,
+    onSearchDraftChange,
+    onCommitSearch,
+    onClearSearch,
+    dateFrom,
+    dateTo,
+    onDateRangeChange,
     detail,
     currentUserId,
     loadStatus,
@@ -27,8 +33,13 @@ export function FriendLogPageToolbar({
 }: {
     selectedTypes: string[];
     onSelectedTypesChange: (value: string[]) => void;
-    searchQuery: string;
-    onSearchQueryChange: (value: string) => void;
+    searchDraft: string;
+    onSearchDraftChange(value: string): void;
+    onCommitSearch(): void;
+    onClearSearch(): void;
+    dateFrom: string;
+    dateTo: string;
+    onDateRangeChange(from: string, to: string): void;
     detail: string;
     currentUserId: string;
     loadStatus: string;
@@ -48,9 +59,19 @@ export function FriendLogPageToolbar({
                 </ToolbarViews>
 
                 <ToolbarSearch
-                    value={searchQuery}
-                    onValueChange={onSearchQueryChange}
+                    value={searchDraft}
+                    onValueChange={onSearchDraftChange}
+                    onCommit={onCommitSearch}
+                    onClear={onClearSearch}
                     placeholder={t('view.friend_log.search_placeholder')}
+                    trailing={
+                        <DateRangeFilter
+                            dateFrom={dateFrom}
+                            dateTo={dateTo}
+                            onChange={onDateRangeChange}
+                            label={t('view.friend_log.date_range')}
+                        />
+                    }
                 />
 
                 <ToolbarActions>

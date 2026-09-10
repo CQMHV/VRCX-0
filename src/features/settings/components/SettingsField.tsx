@@ -1,4 +1,5 @@
 import {
+    Fragment,
     Children,
     cloneElement,
     isValidElement,
@@ -8,7 +9,6 @@ import {
 } from 'react';
 
 import { cn } from '@/lib/utils';
-import { Card, CardContent } from '@/ui/shadcn/card';
 import {
     Field as ShadcnField,
     FieldContent,
@@ -18,7 +18,11 @@ import {
     FieldLabel,
     FieldTitle
 } from '@/ui/shadcn/field';
-import { ToggleGroup, ToggleGroupItem } from '@/ui/shadcn/toggle-group';
+import {
+    ToggleGroup,
+    ToggleGroupItem,
+    ToggleGroupSeparator
+} from '@/ui/shadcn/toggle-group';
 
 type AttachableControlProps = {
     id?: string;
@@ -37,15 +41,6 @@ type FieldProps = {
     error?: ReactNode;
     invalid?: boolean;
     disabled?: boolean;
-};
-
-type SettingsGroupProps = {
-    title?: ReactNode;
-    description?: ReactNode;
-    action?: ReactNode;
-    bodyClassName?: string;
-    className?: string;
-    children?: ReactNode;
 };
 
 type SettingsSectionHeadingProps = {
@@ -156,40 +151,6 @@ export function Field({
     );
 }
 
-export function SettingsGroup({
-    title,
-    description,
-    action,
-    bodyClassName = 'flex flex-col',
-    className = '',
-    children
-}: SettingsGroupProps) {
-    return (
-        <section className={cn('flex flex-col gap-2', className)}>
-            {title || action ? (
-                <div className="flex items-start justify-between gap-3">
-                    <div className="flex flex-col gap-0.5">
-                        {title ? (
-                            <h2 className="font-heading text-base leading-snug font-semibold">
-                                {title}
-                            </h2>
-                        ) : null}
-                        {description ? (
-                            <div className="text-muted-foreground text-sm">
-                                {description}
-                            </div>
-                        ) : null}
-                    </div>
-                    {action}
-                </div>
-            ) : null}
-            <Card className="bg-surface-panel ring-stroke-subtle py-2.5 shadow-none">
-                <CardContent className={bodyClassName}>{children}</CardContent>
-            </Card>
-        </section>
-    );
-}
-
 export function SettingsSectionHeading({
     title,
     description
@@ -222,14 +183,16 @@ export function SegmentedPreference({
                 }
             }}
         >
-            {options.map((option) => (
-                <ToggleGroupItem
-                    key={option.value}
-                    value={option.value}
-                    aria-label={option.label}
-                >
-                    {option.label}
-                </ToggleGroupItem>
+            {options.map((option, index) => (
+                <Fragment key={option.value}>
+                    {index > 0 ? <ToggleGroupSeparator /> : null}
+                    <ToggleGroupItem
+                        value={option.value}
+                        aria-label={option.label}
+                    >
+                        {option.label}
+                    </ToggleGroupItem>
+                </Fragment>
             ))}
         </ToggleGroup>
     );

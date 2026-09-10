@@ -11,10 +11,8 @@ import { UserDetailContent } from '@/components/UserDetailTile';
 import type { InstanceRosterTimestamp } from '@/domain/instances/instanceRoster';
 import type { UserStatus } from '@/platform/tauri/bindings';
 import { getNameColour, userImage } from '@/services/entityMediaService';
-import {
-    TRUST_COLOR_DEFAULTS,
-    type TrustColorMap
-} from '@/shared/utils/trustColors';
+import { TRUST_COLOR_DEFAULTS } from '@/shared/constants/trustColors';
+import { type TrustColorMap } from '@/shared/utils/trustColors';
 import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
 import { useShellStore } from '@/state/shellStore';
 import { buttonVariants } from '@/ui/shadcn/button';
@@ -52,6 +50,7 @@ import {
     resolveTrustNameColour,
     type SidebarFriendRecord
 } from './friendsSidebarModel';
+import { useSidebarMenuDoubleClick } from './useSidebarMenuDoubleClick';
 
 export function resolveFriendRowDisplay(
     friend: SidebarFriendRecord | null | undefined,
@@ -305,9 +304,13 @@ export function FriendRow({
             recentActionVersion={recentActionVersion}
         />
     );
+    const doubleClick = useSidebarMenuDoubleClick(() => onOpen?.());
     const rowButton = sidebarWindowMode ? (
-        <DropdownMenu>
-            <DropdownMenuTrigger render={podButton} />
+        <DropdownMenu {...doubleClick.menuProps}>
+            <DropdownMenuTrigger
+                render={podButton}
+                {...doubleClick.triggerProps}
+            />
             <DropdownMenuContent className="w-max max-w-[calc(100vw-1rem)] min-w-56">
                 {menuItems}
             </DropdownMenuContent>

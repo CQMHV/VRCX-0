@@ -1,11 +1,13 @@
 mod adapters;
 mod autostart;
 mod background_delay;
+pub(crate) mod linux_rendering;
 mod notification;
 mod protocol;
 mod setup;
 mod shared;
 pub(crate) mod sidebar_auto_hide;
+pub(crate) mod tray_shortcut;
 mod window;
 
 pub use adapters::emit_to_main_window_if_visible;
@@ -21,8 +23,8 @@ pub use protocol::{
 };
 pub use setup::{
     app_update_build_badge, app_update_build_label, app_update_check_disabled,
-    apply_linux_webkit_workaround, configure_webview2_environment, init_error_logging,
-    init_tls_crypto_provider, setup_app_with_data_dir, updater_public_key,
+    configure_webview2_environment, init_error_logging, init_tls_crypto_provider,
+    setup_app_with_data_dir, updater_public_key,
 };
 pub(crate) use window::rebuild_main_window;
 pub use window::{

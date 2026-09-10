@@ -41,6 +41,43 @@ fn hide_window_to_tray(window: &tauri::Window) {
     let _ = window.set_skip_taskbar(true);
 }
 
+fn hide_to_tray_with_background_policy(window: &tauri::Window, state: &AppState) {
+    if auto_background_mode_on_tray_enabled(state) {
+        if bootstrap::arm_background_delay(window.app_handle(), state) {
+            hide_window_to_tray(window);
+        } else {
+            start_background_mode_from_shell(window.app_handle().clone());
+        }
+    } else {
+        hide_window_to_tray(window);
+    }
+}
+
+#[cfg(windows)]
+pub(crate) fn toggle_main_window_from_shortcut(app: &tauri::AppHandle) {
+    use vrcx_0_runtime_host_desktop::tray_shortcut::{
+        tray_shortcut_window_action, TrayShortcutWindowAction, TrayShortcutWindowState,
+    };
+    let window = app.get_webview_window("main");
+    let window_state = window.as_ref().map(|window| TrayShortcutWindowState {
+        visible: window.is_visible().unwrap_or(false),
+        minimized: window.is_minimized().unwrap_or(true),
+        focused: window.is_focused().unwrap_or(false),
+        edge_hidden: bootstrap::sidebar_auto_hide::is_edge_hidden(app),
+    });
+    match tray_shortcut_window_action(window_state) {
+        TrayShortcutWindowAction::Show => restore_or_ensure_main_window(
+            app,
+            "failed to show main window from the global shortcut",
+        ),
+        TrayShortcutWindowAction::Hide => {
+            if let (Some(window), Some(state)) = (window, app.try_state::<AppState>()) {
+                hide_to_tray_with_background_policy(&window.as_ref().window(), &state);
+            }
+        }
+    }
+}
+
 fn auto_background_mode_on_tray_enabled(state: &AppState) -> bool {
     state
         .runtime_host()
@@ -159,10 +196,11 @@ pub fn run() {
 
     bootstrap::init_tls_crypto_provider();
     let _async_runtime = install_adaptive_tauri_async_runtime();
-    bootstrap::apply_linux_webkit_workaround();
+    bootstrap::linux_rendering::apply_webkit_workaround();
 
     let setup_app_data_dir = app_data_dir.clone();
     let builder = tauri::Builder::default()
+        .manage(bootstrap::linux_rendering::LinuxRenderingState::default())
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             // Spawn onto a worker thread so run_on_main_thread actually defers the window
             // rebuild; running it inline here would block the second instance and leave two
@@ -259,6 +297,12 @@ pub fn run() {
                 return;
             }
 
+            if matches!(event, WindowEvent::Focused(false) | WindowEvent::Destroyed) {
+                if let Err(error) = bootstrap::tray_shortcut::stop_recording(window.app_handle()) {
+                    tracing::warn!(%error, "failed to stop global shortcut recording");
+                }
+            }
+
             if let WindowEvent::CloseRequested { api, .. } = event {
                 let state = window.state::<AppState>();
                 let snapshot = state.runtime_host().backend_runtime_snapshot();
@@ -273,15 +317,7 @@ pub fn run() {
                     == Some("true")
                 {
                     api.prevent_close();
-                    if auto_background_mode_on_tray_enabled(&state) {
-                        if bootstrap::arm_background_delay(window.app_handle(), &state) {
-                            hide_window_to_tray(window);
-                        } else {
-                            start_background_mode_from_shell(window.app_handle().clone());
-                        }
-                    } else {
-                        hide_window_to_tray(window);
-                    }
+                    hide_to_tray_with_background_policy(window, &state);
                 } else {
                     api.prevent_close();
                     commands::host::window::request_application_exit(window.app_handle());
