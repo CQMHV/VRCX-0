@@ -496,6 +496,7 @@
         "tray": {
             "open": "Open VRCX-0",
             "backgroundMode": "Background Mode",
+            "lock": "Lock",
             "doNotDisturb": "Do Not Disturb",
             "doNotDisturbOneHour": "1 hour",
             "doNotDisturbThreeHours": "3 hours",
@@ -789,6 +790,63 @@
         "hold_for_hints": "Show shortcut hints (hold)",
         "toggle_details": "Show / hide details",
         "clear_selection": "Clear selection"
+    },
+    "privacy_lock": {
+        "locked_title": "Locked",
+        "field": {
+            "password": "Lock password",
+            "current_password": "Current lock password",
+            "new_password": "New lock password",
+            "confirm_password": "Confirm new lock password",
+            "account_password": "VRChat account password"
+        },
+        "action": {
+            "lock": "Lock",
+            "unlock": "Unlock",
+            "forgot": "Forgot the lock password?",
+            "back": "Back",
+            "set": "Set Password",
+            "change": "Change Password",
+            "clear": "Remove Password",
+            "clear_link": "Remove the lock password",
+            "clear_and_unlock": "Remove Lock",
+            "background_mode": "Background Mode",
+            "logout": "Log Out"
+        },
+        "setup": {
+            "create_title": "Set a lock password",
+            "create_description": "The lock hides VRCX-0 behind this 4-digit code while it keeps recording. It is not encryption — it only keeps someone at your PC from browsing around.",
+            "change_title": "Change lock password",
+            "change_description": "Enter your current lock password, then choose a new one.",
+            "clear_title": "Remove lock password",
+            "clear_description": "Enter your VRChat account password to remove the lock code. It is only checked against the password saved locally in VRCX-0; nothing is sent to the VRChat servers."
+        },
+        "recover": {
+            "description": "Enter your VRChat account password to remove the lock. It is only checked against the password saved locally in VRCX-0; nothing is sent to the VRChat servers."
+        },
+        "settings": {
+            "label": "Privacy Lock",
+            "description": "Hide the window behind a lock password while VRCX-0 keeps recording. Lock from the tray menu or the account menu in the sidebar.",
+            "status_set": "Password set",
+            "status_unset": "No password"
+        },
+        "toast": {
+            "set": "Lock password set",
+            "changed": "Lock password changed",
+            "cleared": "Lock password removed"
+        },
+        "error": {
+            "wrong_password": "Incorrect password",
+            "incomplete": "Enter all {count} digits",
+            "mismatch": "Passwords do not match",
+            "current_required": "Enter your current lock password",
+            "account_password_required": "Enter your VRChat account password",
+            "account_password_unavailable": "This account has no saved password, so the lock cannot be removed here. Remove it manually from the app data.",
+            "password_not_set": "No lock password is set",
+            "password_already_set": "A lock password is already set",
+            "no_session": "Sign in before using the lock",
+            "failed": "The lock operation failed"
+        }
     },
     "side_panel": {
         "search_placeholder": "Quick Search...",
