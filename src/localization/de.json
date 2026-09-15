@@ -4523,14 +4523,13 @@
                     "joined_at_asc": "Beigetreten am (aufsteigend)",
                     "joined_at_desc": "Beigetreten am (absteigend)"
                 },
-                "filter": "Filter:",
-                "filters": {
-                    "everyone": "Alle",
-                    "users_with_no_role": "Nutzer ohne Rolle"
-                },
                 "unsubscribed_announcements": "Ankündigungen abbestellt",
                 "representing": "Repräsentiert",
-                "search": "Suchen"
+                "search": "Suchen",
+                "loaded_of_total": "{loaded} von {total} geladen",
+                "search_results": "{count} Treffer",
+                "export_loaded": "Geladene exportieren ({count})",
+                "export_all": "Alle exportieren ({count})"
             },
             "gallery": {
                 "header": "Fotos"
@@ -4583,14 +4582,13 @@
                 "group_refreshed": "Gruppe aktualisiert",
                 "group_invite_sent": "Gruppeneinladung gesendet",
                 "group_post_deleted": "Gruppenbeitrag gelöscht",
-                "joined_newest": "Neueste zuerst beigetreten",
-                "joined_oldest": "Älteste zuerst beigetreten"
+                "joined_newest": "Neueste",
+                "joined_oldest": "Älteste"
             },
             "action": {
                 "refresh_to_load_gallery_images": "Aktualisieren, um Galeriebilder zu laden",
                 "open_group_owner_profile": "Profil des Gruppenbesitzers öffnen",
-                "join_state": "Beitrittsstatus",
-                "load_all": "Alle laden"
+                "join_state": "Beitrittsstatus"
             },
             "toast": {
                 "failed_to_join_group": "Gruppe konnte nicht beigetreten werden",

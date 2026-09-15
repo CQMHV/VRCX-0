@@ -4523,14 +4523,13 @@
                     "joined_at_asc": "Unido el (Ascendente)",
                     "joined_at_desc": "Unido el (Descendente)"
                 },
-                "filter": "Filtrar:",
-                "filters": {
-                    "everyone": "Todos",
-                    "users_with_no_role": "Usuarios Sin Rol"
-                },
                 "unsubscribed_announcements": "Dado de baja de los anuncios",
                 "representing": "Representando",
-                "search": "Buscar"
+                "search": "Buscar",
+                "loaded_of_total": "{loaded} de {total} cargados",
+                "search_results": "{count} resultados",
+                "export_loaded": "Exportar cargados ({count})",
+                "export_all": "Exportar todos ({count})"
             },
             "gallery": {
                 "header": "Fotos"
@@ -4583,14 +4582,13 @@
                 "group_refreshed": "Grupo actualizado",
                 "group_invite_sent": "Invitación al grupo enviada",
                 "group_post_deleted": "Publicación del grupo eliminada",
-                "joined_newest": "Ingreso más reciente",
-                "joined_oldest": "Ingreso más antiguo"
+                "joined_newest": "Más recientes",
+                "joined_oldest": "Más antiguos"
             },
             "action": {
                 "refresh_to_load_gallery_images": "Actualiza para cargar las imágenes de la galería",
                 "open_group_owner_profile": "Abrir el perfil del propietario del grupo",
-                "join_state": "Estado de ingreso",
-                "load_all": "Cargar todo"
+                "join_state": "Estado de ingreso"
             },
             "toast": {
                 "failed_to_join_group": "No se pudo unir al grupo",

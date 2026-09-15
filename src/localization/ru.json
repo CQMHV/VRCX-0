@@ -4528,14 +4528,13 @@
                     "joined_at_asc": "Присоединился (по возрастанию)",
                     "joined_at_desc": "Присоединился (по убыванию)"
                 },
-                "filter": "Фильтр:",
-                "filters": {
-                    "everyone": "Все",
-                    "users_with_no_role": "Пользователи без роли"
-                },
                 "unsubscribed_announcements": "Отписаться от объявлений",
                 "representing": "Представляет",
-                "search": "Поиск"
+                "search": "Поиск",
+                "loaded_of_total": "Загружено {loaded} из {total}",
+                "search_results": "Результатов: {count}",
+                "export_loaded": "Экспорт загруженных ({count})",
+                "export_all": "Экспорт всех ({count})"
             },
             "gallery": {
                 "header": "Фото"
@@ -4588,14 +4587,13 @@
                 "group_refreshed": "Группа обновлена",
                 "group_invite_sent": "Приглашение в группу отправлено",
                 "group_post_deleted": "Публикация группы удалена",
-                "joined_newest": "Сначала недавно вступившие",
-                "joined_oldest": "Сначала давно вступившие"
+                "joined_newest": "Новые",
+                "joined_oldest": "Старые"
             },
             "action": {
                 "refresh_to_load_gallery_images": "Обновить для загрузки изображений галереи",
                 "open_group_owner_profile": "Открыть профиль владельца группы",
-                "join_state": "Статус присоединения",
-                "load_all": "Загрузить все"
+                "join_state": "Статус присоединения"
             },
             "toast": {
                 "failed_to_join_group": "Не удалось присоединиться к группе",

@@ -4473,14 +4473,13 @@
                     "joined_at_asc": "가입일 (오래된 순)",
                     "joined_at_desc": "가입일 (최근 순)"
                 },
-                "filter": "필터:",
-                "filters": {
-                    "everyone": "모두",
-                    "users_with_no_role": "역할이 없는 유저만"
-                },
                 "unsubscribed_announcements": "공지사항 구독 취소됨",
                 "representing": "대표",
-                "search": "검색"
+                "search": "검색",
+                "loaded_of_total": "{total}명 중 {loaded}명 불러옴",
+                "search_results": "결과 {count}개",
+                "export_loaded": "불러온 항목 내보내기({count})",
+                "export_all": "전체 내보내기({count})"
             },
             "gallery": {
                 "header": "갤러리"
@@ -4530,14 +4529,13 @@
                 "group_refreshed": "그룹이 새로고침되었습니다.",
                 "group_invite_sent": "그룹 초대가 전송되었습니다.",
                 "group_post_deleted": "그룹 게시물이 삭제되었습니다.",
-                "joined_newest": "최근에 가입함",
-                "joined_oldest": "가장 오래 가입함"
+                "joined_newest": "최신순",
+                "joined_oldest": "오래된순"
             },
             "action": {
                 "refresh_to_load_gallery_images": "갤러리 이미지를 로드하려면 새로고침하세요.",
                 "open_group_owner_profile": "그룹 소유자 프로필 열기",
-                "join_state": "조인 상태",
-                "load_all": "모두 로드"
+                "join_state": "조인 상태"
             },
             "toast": {
                 "failed_to_join_group": "그룹에 가입하지 못했습니다.",

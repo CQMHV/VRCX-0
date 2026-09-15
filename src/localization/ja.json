@@ -4553,14 +4553,13 @@
                     "joined_at_asc": "参加順 (昇順)",
                     "joined_at_desc": "参加順 (降順)"
                 },
-                "filter": "フィルター:",
-                "filters": {
-                    "everyone": "全員",
-                    "users_with_no_role": "ロールなしユーザー"
-                },
                 "unsubscribed_announcements": "お知らせ受信停止中",
                 "representing": "ネームプレート表示中",
-                "search": "検索"
+                "search": "検索",
+                "loaded_of_total": "{total} 件中 {loaded} 件を読み込み済み",
+                "search_results": "{count} 件",
+                "export_loaded": "読み込み済みを書き出し（{count}）",
+                "export_all": "すべて書き出し（{count}）"
             },
             "gallery": {
                 "header": "写真"
@@ -4613,14 +4612,13 @@
                 "group_refreshed": "グループを更新しました",
                 "group_invite_sent": "グループ招待を送信しました",
                 "group_post_deleted": "グループ投稿を削除しました",
-                "joined_newest": "参加が新しい順",
-                "joined_oldest": "参加が古い順"
+                "joined_newest": "新しい順",
+                "joined_oldest": "古い順"
             },
             "action": {
                 "refresh_to_load_gallery_images": "更新してギャラリー画像を読み込みます",
                 "open_group_owner_profile": "グループ所有者のプロフィールを開く",
-                "join_state": "参加状態",
-                "load_all": "すべて読み込む"
+                "join_state": "参加状態"
             },
             "toast": {
                 "failed_to_join_group": "グループに参加できませんでした",

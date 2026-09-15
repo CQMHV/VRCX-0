@@ -4527,14 +4527,13 @@
                     "joined_at_asc": "Datum vstupu (vzestupně)",
                     "joined_at_desc": "Datum vstupu (sestupně)"
                 },
-                "filter": "Filtr:",
-                "filters": {
-                    "everyone": "Všichni",
-                    "users_with_no_role": "Uživatelé bez role"
-                },
                 "unsubscribed_announcements": "Odhlášeno z odběru oznámení",
                 "representing": "Reprezentuje",
-                "search": "Hledat"
+                "search": "Hledat",
+                "loaded_of_total": "Načteno {loaded} z {total}",
+                "search_results": "{count} výsledků",
+                "export_loaded": "Exportovat načtené ({count})",
+                "export_all": "Exportovat vše ({count})"
             },
             "gallery": {
                 "header": "Fotografie"
@@ -4587,14 +4586,13 @@
                 "group_refreshed": "Skupina obnovena",
                 "group_invite_sent": "Pozvánka do skupiny odeslána",
                 "group_post_deleted": "Příspěvek skupiny smazán",
-                "joined_newest": "Vstoupil(a) nejnovější",
-                "joined_oldest": "Vstoupil(a) nejstarší"
+                "joined_newest": "Nejnovější",
+                "joined_oldest": "Nejstarší"
             },
             "action": {
                 "refresh_to_load_gallery_images": "Obnovte pro načtení obrázků galerie",
                 "open_group_owner_profile": "Otevřít profil vlastníka skupiny",
-                "join_state": "Stav vstupu",
-                "load_all": "Načíst vše"
+                "join_state": "Stav vstupu"
             },
             "toast": {
                 "failed_to_join_group": "Nepodařilo se vstoupit do skupiny",

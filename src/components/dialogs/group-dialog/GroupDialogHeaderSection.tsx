@@ -376,9 +376,6 @@ export function GroupDialogHeaderSection({
                             {canInviteToGroup ? (
                                 <EntityActionItem
                                     icon={MessageSquareIcon}
-                                    disabled={
-                                        remoteStatus.members === 'running'
-                                    }
                                     onClick={() => {
                                         onInviteUserToGroup();
                                     }}

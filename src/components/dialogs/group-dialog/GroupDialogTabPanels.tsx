@@ -2,11 +2,16 @@ import {
     DownloadIcon,
     ExternalLinkIcon,
     EyeIcon,
-    ImageIcon
+    ImageIcon,
+    MoreHorizontalIcon
 } from 'lucide-react';
-import { useEffect, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import {
+    ToolbarRefreshButton,
+    ToolbarSearch
+} from '@/components/layout/ToolbarControls';
 import { FadeInImage } from '@/components/media/FadeInImage';
 import { TranslatableText } from '@/components/translation/TranslatableText';
 import type {
@@ -17,6 +22,12 @@ import { formatDateFilter } from '@/lib/dateTime';
 import { convertFileUrlToImageUrl } from '@/services/entityMediaService';
 import { Badge } from '@/ui/shadcn/badge';
 import { Button } from '@/ui/shadcn/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from '@/ui/shadcn/dropdown-menu';
 import { Input } from '@/ui/shadcn/input';
 import {
     Select,
@@ -27,6 +38,11 @@ import {
     SelectValue
 } from '@/ui/shadcn/select';
 import { Skeleton } from '@/ui/shadcn/skeleton';
+import {
+    ToggleGroup,
+    ToggleGroupItem,
+    ToggleGroupSeparator
+} from '@/ui/shadcn/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
 import {
@@ -229,7 +245,6 @@ export function GroupDialogTabPanels({
         bannerUrl,
         canManagePosts,
         currentUserId,
-        filteredMembers,
         filteredPosts,
         group,
         groupEvents,
@@ -238,8 +253,7 @@ export function GroupDialogTabPanels({
         groupTitle,
         groupUrl,
         joinState,
-        memberRoleId,
-        memberSort,
+        members,
         memberStatus,
         ownerLabel,
         photos,
@@ -253,9 +267,9 @@ export function GroupDialogTabPanels({
     const {
         onChangeTab,
         onDeletePost,
-        onDownloadMembersJson,
         onEditPost,
-        onLoadAllMembers,
+        onExportMembers,
+        onLoadMoreMembers,
         onMemberRoleChange,
         onMemberSortChange,
         onOpenLink,
@@ -269,8 +283,28 @@ export function GroupDialogTabPanels({
         onSearchPostsChange,
         onToggleEventFollow
     } = commands;
-    const members = filteredMembers.source || [];
-    const memberRows = filteredMembers.rows || [];
+    const memberRows = members.rows;
+    const membersBusy = members.status === 'running';
+    const memberTotal = members.totalCount ?? members.loadedCount;
+    const loadMoreRef = useRef<HTMLDivElement | null>(null);
+    const loadMoreMembersRef = useRef(onLoadMoreMembers);
+    loadMoreMembersRef.current = onLoadMoreMembers;
+
+    useEffect(() => {
+        const node = loadMoreRef.current;
+        if (!node || activeTab !== 'members' || !members.hasMore) {
+            return undefined;
+        }
+        const observer = new IntersectionObserver((entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) {
+                loadMoreMembersRef.current();
+            }
+        });
+        observer.observe(node);
+        return () => {
+            observer.disconnect();
+        };
+    }, [activeTab, members.hasMore, members.loadedCount]);
     const languages = Array.isArray(group.languages) ? group.languages : [];
     const links = Array.isArray(group.links) ? group.links : [];
     const tags = Array.isArray(group.tags) ? group.tags : [];
@@ -601,79 +635,17 @@ export function GroupDialogTabPanels({
             </EntityDialogTabContent>
             <EntityDialogTabContent
                 value="members"
-                className="flex flex-col gap-2"
+                className="flex flex-col gap-3"
             >
                 <div className="flex flex-wrap items-center gap-2">
-                    <div className="text-muted-foreground text-sm">
-                        {memberRows.length}/
-                        {group.memberCount || members.length}{' '}
-                        {t('dialog.group.members.header')}
-                    </div>
-                    <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        disabled={remoteStatus.members === 'running'}
-                        onClick={onRefreshMembers}
-                    >
-                        {t('common.actions.refresh')}
-                    </Button>
-                    <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        disabled={remoteStatus.members === 'running'}
-                        onClick={onLoadAllMembers}
-                    >
-                        {t('dialog.group.action.load_all')}
-                    </Button>
-                    <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        disabled={!members.length}
-                        onClick={onDownloadMembersJson}
-                    >
-                        <DownloadIcon data-icon="inline-start" />
-                        JSON
-                    </Button>
+                    <ToolbarSearch
+                        className="w-auto min-w-56 flex-1 shrink sm:w-auto"
+                        value={members.query}
+                        onValueChange={onSearchMembersChange}
+                        placeholder={t('dialog.group.members.search')}
+                    />
                     <Select
-                        value={memberSort}
-                        items={[
-                            {
-                                value: 'joinedAt:desc',
-                                label: t('dialog.group.success.joined_newest')
-                            },
-                            {
-                                value: 'joinedAt:asc',
-                                label: t('dialog.group.success.joined_oldest')
-                            }
-                        ]}
-                        onValueChange={(value) => {
-                            if (value) {
-                                onMemberSortChange(value);
-                            }
-                        }}
-                        disabled={remoteStatus.members === 'running'}
-                    >
-                        <SelectTrigger size="sm" className="w-44">
-                            <SelectValue
-                                placeholder={t('side_panel.settings.sort')}
-                            />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectItem value="joinedAt:desc">
-                                    {t('dialog.group.success.joined_newest')}
-                                </SelectItem>
-                                <SelectItem value="joinedAt:asc">
-                                    {t('dialog.group.success.joined_oldest')}
-                                </SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                    <Select
-                        value={memberRoleId || 'all'}
+                        value={members.roleId || 'all'}
                         items={[
                             {
                                 value: 'all',
@@ -687,9 +659,9 @@ export function GroupDialogTabPanels({
                         onValueChange={(value) =>
                             onMemberRoleChange(value ?? '')
                         }
-                        disabled={remoteStatus.members === 'running'}
+                        disabled={members.isSearching}
                     >
-                        <SelectTrigger size="sm" className="w-48">
+                        <SelectTrigger size="sm" className="w-44">
                             <SelectValue
                                 placeholder={t('dialog.group.label.role')}
                             />
@@ -710,22 +682,121 @@ export function GroupDialogTabPanels({
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <Input
-                        value={search.members}
-                        onChange={(event) =>
-                            onSearchMembersChange(event.target.value)
-                        }
-                        placeholder={t('dialog.group.members.search')}
-                        className="ml-auto h-8 max-w-64"
-                    />
+                    <ToggleGroup
+                        variant="outline"
+                        size="sm"
+                        value={[members.sort]}
+                        disabled={members.isSearching}
+                        onValueChange={(next) => {
+                            const value = next[0];
+                            if (
+                                value === 'joinedAt:desc' ||
+                                value === 'joinedAt:asc'
+                            ) {
+                                onMemberSortChange(value);
+                            }
+                        }}
+                    >
+                        {(
+                            [
+                                ['joinedAt:desc', 'joined_newest'],
+                                ['joinedAt:asc', 'joined_oldest']
+                            ] as const
+                        ).map(([value, labelKey], index) => (
+                            <Fragment key={value}>
+                                {index > 0 ? <ToggleGroupSeparator /> : null}
+                                <ToggleGroupItem value={value}>
+                                    {t(`dialog.group.success.${labelKey}`)}
+                                </ToggleGroupItem>
+                            </Fragment>
+                        ))}
+                    </ToggleGroup>
+                    <div className="ml-auto flex items-center gap-1">
+                        <ToolbarRefreshButton
+                            onRefresh={onRefreshMembers}
+                            loading={membersBusy}
+                        />
+                        <DropdownMenu>
+                            <DropdownMenuTrigger
+                                render={
+                                    <Button
+                                        type="button"
+                                        size="icon-sm"
+                                        variant="ghost"
+                                        aria-label={t('accessibility.more')}
+                                    />
+                                }
+                            >
+                                <MoreHorizontalIcon />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                    disabled={!members.loadedCount}
+                                    onClick={() => onExportMembers('loaded')}
+                                >
+                                    <DownloadIcon />
+                                    {t('dialog.group.members.export_loaded', {
+                                        count: members.loadedCount
+                                    })}
+                                </DropdownMenuItem>
+                                {members.hasMore ? (
+                                    <DropdownMenuItem
+                                        onClick={() => onExportMembers('all')}
+                                    >
+                                        <DownloadIcon />
+                                        {t('dialog.group.members.export_all', {
+                                            count: memberTotal
+                                        })}
+                                    </DropdownMenuItem>
+                                ) : null}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
                 <RowList
                     rows={memberRows}
                     group={group}
                     kind="members"
-                    loading={remoteStatus.members === 'running'}
-                    error={remoteErrors.members}
+                    loading={
+                        members.isSearching
+                            ? members.searchStatus === 'running' &&
+                              !memberRows.length
+                            : membersBusy && !memberRows.length
+                    }
+                    error={members.error}
                 />
+                {members.isSearching ? (
+                    members.searchStatus === 'ready' ? (
+                        <div className="text-muted-foreground px-1 text-xs">
+                            {t('dialog.group.members.search_results', {
+                                count: memberRows.length
+                            })}
+                        </div>
+                    ) : null
+                ) : members.loadedCount ? (
+                    <div
+                        ref={loadMoreRef}
+                        className="text-muted-foreground flex items-center justify-center gap-3 px-1 py-1 text-xs"
+                    >
+                        <span className="tabular-nums">
+                            {t('dialog.group.members.loaded_of_total', {
+                                loaded: members.loadedCount,
+                                total: memberTotal
+                            })}
+                        </span>
+                        {members.hasMore ? (
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                disabled={members.isLoadingMore}
+                                onClick={onLoadMoreMembers}
+                            >
+                                {t('common.load_more')}
+                            </Button>
+                        ) : null}
+                    </div>
+                ) : null}
             </EntityDialogTabContent>
             <EntityDialogTabContent
                 value="photos"

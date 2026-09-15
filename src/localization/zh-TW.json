@@ -4559,14 +4559,13 @@
                     "joined_at_asc": "加入時間（升序）",
                     "joined_at_desc": "加入時間（降序）"
                 },
-                "filter": "過濾器：",
-                "filters": {
-                    "everyone": "所有人",
-                    "users_with_no_role": "沒有身分的用戶"
-                },
                 "unsubscribed_announcements": "取消訂閱公告",
                 "representing": "展示群組",
-                "search": "搜尋"
+                "search": "搜尋",
+                "loaded_of_total": "已載入 {loaded} / {total}",
+                "search_results": "{count} 個結果",
+                "export_loaded": "匯出已載入（{count}）",
+                "export_all": "匯出全部（{count}）"
             },
             "gallery": {
                 "header": "畫廊"
@@ -4625,8 +4624,7 @@
             "action": {
                 "refresh_to_load_gallery_images": "重新整理以載入圖庫圖片",
                 "open_group_owner_profile": "開啟群組所有者資料",
-                "join_state": "加入狀態",
-                "load_all": "全部載入"
+                "join_state": "加入狀態"
             },
             "toast": {
                 "failed_to_join_group": "加入群組失敗",

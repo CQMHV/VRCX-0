@@ -4568,14 +4568,13 @@
                     "joined_at_asc": "加入时间（顺序）",
                     "joined_at_desc": "加入时间（倒序）"
                 },
-                "filter": "按身份组筛选：",
-                "filters": {
-                    "everyone": "所有人",
-                    "users_with_no_role": "没有身份组的成员"
-                },
                 "unsubscribed_announcements": "该玩家不接收群组通知",
                 "representing": "该玩家在其名片上展示该群组",
-                "search": "搜索"
+                "search": "搜索",
+                "loaded_of_total": "已加载 {loaded} / {total}",
+                "search_results": "{count} 个结果",
+                "export_loaded": "导出已加载（{count}）",
+                "export_all": "导出全部（{count}）"
             },
             "gallery": {
                 "header": "相册"
@@ -4634,8 +4633,7 @@
             "action": {
                 "refresh_to_load_gallery_images": "刷新以加载图库图片",
                 "open_group_owner_profile": "打开群组所有者资料",
-                "join_state": "加入方式",
-                "load_all": "全部加载"
+                "join_state": "加入方式"
             },
             "toast": {
                 "failed_to_join_group": "加入群组失败",

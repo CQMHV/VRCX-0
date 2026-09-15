@@ -4567,14 +4567,13 @@
                     "joined_at_asc": "Joined At (Ascending)",
                     "joined_at_desc": "Joined At (Descending)"
                 },
-                "filter": "Filter:",
-                "filters": {
-                    "everyone": "Everyone",
-                    "users_with_no_role": "Users With No Role"
-                },
                 "unsubscribed_announcements": "Unsubscribed from announcements",
                 "representing": "Representing",
-                "search": "Search"
+                "search": "Search",
+                "loaded_of_total": "Loaded {loaded} of {total}",
+                "search_results": "{count} results",
+                "export_loaded": "Export loaded ({count})",
+                "export_all": "Export all ({count})"
             },
             "gallery": {
                 "header": "Photos"
@@ -4627,14 +4626,13 @@
                 "group_refreshed": "Group refreshed",
                 "group_invite_sent": "Group invite sent",
                 "group_post_deleted": "Group post deleted",
-                "joined_newest": "Joined newest",
-                "joined_oldest": "Joined oldest"
+                "joined_newest": "Newest",
+                "joined_oldest": "Oldest"
             },
             "action": {
                 "refresh_to_load_gallery_images": "Refresh to load gallery images",
                 "open_group_owner_profile": "Open group owner profile",
-                "join_state": "Join State",
-                "load_all": "Load All"
+                "join_state": "Join State"
             },
             "toast": {
                 "failed_to_join_group": "Failed to join group",
