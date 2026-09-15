@@ -20,6 +20,7 @@ import { VRCX_OPEN_RELAY_ORIGIN } from '@/shared/constants/vrcxDeepLinks';
 import { parseLocation } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 import { normalizeString } from '@/shared/utils/string';
+import { useLaunchStore } from '@/state/launchStore';
 
 export type DirectAccessMode = 'open' | 'detect';
 
@@ -71,6 +72,35 @@ function openWorldLocation(location: unknown, title: unknown = '') {
         worldId: normalizeString(worldDialogTarget),
         title: normalizeString(title) || undefined
     });
+}
+
+function accessInstanceLocation(
+    location: unknown,
+    mode: DirectAccessMode,
+    shortName = '',
+    title: unknown = ''
+) {
+    const parsed = parseLocation(location);
+    if (!isWorldId(parsed.worldId)) {
+        return false;
+    }
+    if (mode === 'detect') {
+        return true;
+    }
+    openWorldLocation(parsed.worldId, title);
+    if (
+        parsed.isRealInstance &&
+        parsed.instanceName &&
+        !/[\s:/?#&]/.test(parsed.instanceId)
+    ) {
+        useLaunchStore
+            .getState()
+            .showLaunchDialog(
+                `${parsed.worldId}:${parsed.instanceId}`,
+                shortName || parsed.shortName
+            );
+    }
+    return true;
 }
 
 function buildVrcLaunchUrl(location: string, shortName = '') {
@@ -161,30 +191,20 @@ export async function tryOpenLaunchLocation(location: string, shortName = '') {
     );
 }
 
-async function verifyShortName(location: unknown, shortName: string) {
+async function verifyShortName(shortName: string) {
     const response =
         await vrchatSearchRepository.getInstanceFromShortName(shortName);
     const json = response.json;
-    const nextLocation = json?.location || location;
-    if (!nextLocation) {
-        return false;
-    }
-
-    if (
-        await tryOpenLaunchLocation(
-            normalizeString(nextLocation),
-            normalizeString(json?.shortName || shortName)
-        )
-    ) {
-        return true;
-    }
-
-    const world = isRecord(json.world) ? json.world : {};
-    openWorldLocation(
+    const world = isRecord(json?.world) ? json.world : {};
+    const nextLocation = isWorldId(parseLocation(json?.location).worldId)
+        ? json.location
+        : world.id;
+    return accessInstanceLocation(
         nextLocation,
+        'open',
+        normalizeString(json?.shortName || shortName),
         world.name || json?.worldName || nextLocation
     );
-    return true;
 }
 
 async function openGroupByShortCode(shortCode: string) {
@@ -219,34 +239,20 @@ async function directAccessWorld(rawInput: unknown, mode: DirectAccessMode) {
     }
 
     if (input.startsWith('vrchat://launch')) {
-        const parsed = parseLocation(input);
-        if (!parsed.worldId || !parsed.instanceId) {
-            return false;
-        }
-        if (mode === 'detect') {
-            return true;
-        }
-        const location = `${parsed.worldId}:${parsed.instanceId}`;
-        if (await tryOpenLaunchLocation(location, parsed.shortName)) {
-            return true;
-        }
-        openWorldLocation(location);
-        return true;
+        return accessInstanceLocation(input, mode);
     }
 
     if (/^[A-Za-z0-9]{8}$/.test(input)) {
-        return mode === 'detect' ? false : verifyShortName('', input);
+        return mode === 'detect' ? false : verifyShortName(input);
     }
 
     if (input.startsWith('https://vrch.at/')) {
         const url = parseUrlOrNull(input);
-        const shortName = url
-            ? url.pathname.replace(/^\//, '').slice(0, 8)
-            : '';
-        if (!shortName) {
+        const shortName = url ? url.pathname.replace(/^\//, '') : '';
+        if (!/^[A-Za-z0-9]{8}$/.test(shortName)) {
             return false;
         }
-        return mode === 'detect' ? true : verifyShortName('', shortName);
+        return mode === 'detect' ? true : verifyShortName(shortName);
     }
 
     if (input.startsWith('https://vrchat.')) {
@@ -267,36 +273,11 @@ async function directAccessWorld(rawInput: unknown, mode: DirectAccessMode) {
             const worldId = url.searchParams.get('worldId');
             const instanceId = url.searchParams.get('instanceId');
             const shortName = url.searchParams.get('shortName');
-            if (worldId && instanceId) {
-                if (mode === 'detect') {
-                    return true;
-                }
-                const location = `${worldId}:${instanceId}`;
-                if (await tryOpenLaunchLocation(location, shortName || '')) {
-                    return true;
-                }
-                if (shortName) {
-                    try {
-                        if (await verifyShortName(location, shortName)) {
-                            return true;
-                        }
-                    } catch (error) {
-                        console.warn(
-                            'Failed to resolve VRChat launch shortName, falling back to worldId and instanceId:',
-                            error
-                        );
-                    }
-                }
-                openWorldLocation(location);
-                return true;
-            }
-            if (worldId) {
-                if (mode === 'detect') {
-                    return true;
-                }
-                openWorldLocation(worldId);
-                return true;
-            }
+            return accessInstanceLocation(
+                instanceId ? `${worldId}:${instanceId}` : worldId,
+                mode,
+                shortName || ''
+            );
         }
     }
 
@@ -312,6 +293,9 @@ async function directAccessWorld(rawInput: unknown, mode: DirectAccessMode) {
             );
         }
 
+        if (hasWorldIdPrefix(input)) {
+            return accessInstanceLocation(input, mode);
+        }
         if (mode === 'detect') {
             return true;
         }
