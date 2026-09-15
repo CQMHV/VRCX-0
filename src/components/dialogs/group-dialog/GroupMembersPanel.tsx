@@ -1,10 +1,11 @@
 import type { TFunction } from 'i18next';
 import {
     DownloadIcon,
-    EyeIcon,
+    EyeOffIcon,
     MoreHorizontalIcon,
     TagIcon,
-    UserIcon
+    UserIcon,
+    UsersIcon
 } from 'lucide-react';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -158,12 +159,12 @@ function GroupMemberTile({
     row,
     group,
     omitRoleId,
-    showVisibility
+    isFriend
 }: {
     row: GroupMemberRow;
     group: GroupProfileRecord | null;
     omitRoleId: string | null;
-    showVisibility: boolean;
+    isFriend: boolean;
 }) {
     const { t } = useTranslation();
     const label = getGroupRowLabel(row);
@@ -179,7 +180,7 @@ function GroupMemberTile({
     const visibleRoles = notableRoles.slice(0, ROLE_CHIP_LIMIT);
     const hiddenRoles = notableRoles.slice(ROLE_CHIP_LIMIT);
     const hiddenMembership =
-        showVisibility && row.visibility && row.visibility !== 'visible';
+        isFriend && row.visibility && row.visibility !== 'visible';
 
     return (
         <Button
@@ -226,7 +227,11 @@ function GroupMemberTile({
                         <Tooltip>
                             <TooltipTrigger
                                 render={
-                                    <EyeIcon className="text-muted-foreground size-3.5 shrink-0" />
+                                    row.visibility === 'friends' ? (
+                                        <UsersIcon className="text-muted-foreground size-3.5 shrink-0" />
+                                    ) : (
+                                        <EyeOffIcon className="text-muted-foreground size-3.5 shrink-0" />
+                                    )
                                 }
                             />
                             <TooltipContent>
@@ -279,13 +284,13 @@ function GroupMemberTile({
 function MemberTileGrid({
     rows,
     group,
-    omitRoleId = null,
-    showVisibility = false
+    isFriend,
+    omitRoleId = null
 }: {
     rows: GroupMemberRow[];
     group: GroupProfileRecord | null;
+    isFriend: (row: GroupMemberRow) => boolean;
     omitRoleId?: string | null;
-    showVisibility?: boolean;
 }) {
     return (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] items-start gap-1">
@@ -295,7 +300,7 @@ function MemberTileGrid({
                     row={row}
                     group={group}
                     omitRoleId={omitRoleId}
-                    showVisibility={showVisibility}
+                    isFriend={isFriend(row)}
                 />
             ))}
         </div>
@@ -473,7 +478,11 @@ export function GroupMembersPanel({
             ) : members.isSearching ? (
                 members.rows.length ? (
                     <>
-                        <MemberTileGrid rows={members.rows} group={group} />
+                        <MemberTileGrid
+                            rows={members.rows}
+                            group={group}
+                            isFriend={isFriend}
+                        />
                         <div className="text-muted-foreground px-1 text-xs">
                             {t('dialog.group.members.search_results', {
                                 count: members.rows.length
@@ -510,7 +519,7 @@ export function GroupMembersPanel({
                                         rows={bucket.rows}
                                         group={group}
                                         omitRoleId={bucket.roleId}
-                                        showVisibility={viewMode === 'friends'}
+                                        isFriend={isFriend}
                                     />
                                 ) : null}
                             </section>
