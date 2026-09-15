@@ -8,10 +8,7 @@ import type {
     GroupProfileRecord
 } from '@/domain/entities/group';
 import type { LoadStatus, RemoteTabStatus } from '@/domain/shared/types';
-import type {
-    GroupMemberSort,
-    GroupMemberVisibility
-} from '@/platform/tauri/bindings';
+import type { GroupMemberVisibility } from '@/platform/tauri/bindings';
 import type { GroupCalendarEventRecord } from '@/repositories/vrchatToolsRepository';
 
 import type { GroupDialogMembersModel } from './useGroupDialogMembers';
@@ -121,8 +118,6 @@ export type GroupDialogTabCommands = {
     onEditPost: (post: GroupPostRecord) => void;
     onExportMembers: (scope: 'loaded' | 'all') => void;
     onLoadMoreMembers: () => void;
-    onMemberRoleChange: (value: string) => void;
-    onMemberSortChange: (value: GroupMemberSort) => void;
     onOpenLink: (url: string) => void;
     onOpenOwner: () => void;
     onPreviousInstancesChange: Dispatch<

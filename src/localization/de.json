@@ -4517,6 +4517,11 @@
                 "edited_by": "Bearbeitet von:",
                 "search_placeholder": "Suchen"
             },
+            "role_name": {
+                "group_owner": "Gruppenbesitzer",
+                "everyone": "Alle",
+                "member": "Mitglied"
+            },
             "members": {
                 "header": "Mitglieder",
                 "sorting": {
@@ -4525,6 +4530,8 @@
                 },
                 "unsubscribed_announcements": "Ankündigungen abbestellt",
                 "representing": "Repräsentiert",
+                "view_all": "Alle",
+                "friends": "Freunde",
                 "search": "Suchen",
                 "loaded_of_total": "{loaded} von {total} geladen",
                 "search_results": "{count} Treffer",
@@ -4581,9 +4588,7 @@
                 "group_join_request_cancelled": "Beitrittsanfrage abgebrochen",
                 "group_refreshed": "Gruppe aktualisiert",
                 "group_invite_sent": "Gruppeneinladung gesendet",
-                "group_post_deleted": "Gruppenbeitrag gelöscht",
-                "joined_newest": "Neueste",
-                "joined_oldest": "Älteste"
+                "group_post_deleted": "Gruppenbeitrag gelöscht"
             },
             "action": {
                 "refresh_to_load_gallery_images": "Aktualisieren, um Galeriebilder zu laden",

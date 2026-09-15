@@ -4547,6 +4547,11 @@
                 "edited_by": "編集者:",
                 "search_placeholder": "検索..."
             },
+            "role_name": {
+                "group_owner": "グループ所有者",
+                "everyone": "全員",
+                "member": "メンバー"
+            },
             "members": {
                 "header": "メンバー",
                 "sorting": {
@@ -4555,6 +4560,8 @@
                 },
                 "unsubscribed_announcements": "お知らせ受信停止中",
                 "representing": "ネームプレート表示中",
+                "view_all": "すべて",
+                "friends": "フレンド",
                 "search": "検索",
                 "loaded_of_total": "{total} 件中 {loaded} 件を読み込み済み",
                 "search_results": "{count} 件",
@@ -4611,9 +4618,7 @@
                 "group_join_request_cancelled": "グループ参加リクエストをキャンセルしました",
                 "group_refreshed": "グループを更新しました",
                 "group_invite_sent": "グループ招待を送信しました",
-                "group_post_deleted": "グループ投稿を削除しました",
-                "joined_newest": "新しい順",
-                "joined_oldest": "古い順"
+                "group_post_deleted": "グループ投稿を削除しました"
             },
             "action": {
                 "refresh_to_load_gallery_images": "更新してギャラリー画像を読み込みます",

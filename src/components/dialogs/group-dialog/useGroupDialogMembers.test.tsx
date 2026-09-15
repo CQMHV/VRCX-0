@@ -57,6 +57,7 @@ describe('useGroupDialogMembers', () => {
                 groupId: 'grp_1',
                 active: true,
                 totalCount: 103,
+                staffRoleIds: [],
                 seedRows: []
             })
         );
@@ -65,7 +66,7 @@ describe('useGroupDialogMembers', () => {
         expect(result.current.model.loadedCount).toBe(100);
         expect(result.current.model.hasMore).toBe(true);
         expect(mocks.getGroupMembers).toHaveBeenLastCalledWith(
-            expect.objectContaining({ offset: 0, sort: 'joinedAt:desc' })
+            expect.objectContaining({ offset: 0 })
         );
 
         await act(async () => {
@@ -89,6 +90,7 @@ describe('useGroupDialogMembers', () => {
                 groupId: 'grp_1',
                 active: true,
                 totalCount: 5000,
+                staffRoleIds: [],
                 seedRows: []
             })
         );
@@ -119,42 +121,37 @@ describe('useGroupDialogMembers', () => {
         expect(result.current.model.rows).toHaveLength(100);
     });
 
-    it('reloads from the first page when the sort changes without dropping the current rows first', async () => {
-        let resolveSecond: (rows: GroupMemberRow[]) => void = () => undefined;
-        mocks.getGroupMembers
-            .mockResolvedValueOnce(page(0, 2))
-            .mockImplementationOnce(
-                () =>
-                    new Promise<GroupMemberRow[]>((resolve) => {
-                        resolveSecond = resolve;
-                    })
-            );
+    it('loads staff by management role alongside the first page and dedupes across roles', async () => {
+        mocks.getGroupMembers.mockImplementation(
+            async ({ roleId, offset }: { roleId?: string; offset: number }) => {
+                if (roleId === 'grol_owner') {
+                    return [member(1)];
+                }
+                if (roleId === 'grol_mod') {
+                    return [member(1), member(2)];
+                }
+                return offset === 0 ? page(0, 3) : [];
+            }
+        );
 
         const { result } = renderHook(() =>
             useGroupDialogMembers({
                 endpoint: 'api',
                 groupId: 'grp_1',
                 active: true,
-                totalCount: 2,
+                totalCount: 3,
+                staffRoleIds: ['grol_owner', 'grol_mod'],
                 seedRows: []
             })
         );
+
         await waitFor(() => expect(result.current.model.status).toBe('ready'));
-
-        act(() => {
-            result.current.setSort('joinedAt:asc');
-        });
-        expect(result.current.model.status).toBe('running');
-        expect(result.current.model.rows).toHaveLength(2);
-
-        await act(async () => {
-            resolveSecond(page(10, 1));
-        });
-        expect(mocks.getGroupMembers).toHaveBeenLastCalledWith(
-            expect.objectContaining({ offset: 0, sort: 'joinedAt:asc' })
+        await waitFor(() =>
+            expect(
+                result.current.model.staffRows.map((row) => row.userId)
+            ).toEqual(['usr_1', 'usr_2'])
         );
-        expect(result.current.model.rows.map((row) => row.userId)).toEqual([
-            'usr_10'
-        ]);
+        expect(result.current.model.loadedCount).toBe(3);
+        expect(result.current.model.hasMore).toBe(false);
     });
 });

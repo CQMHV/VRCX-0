@@ -4518,6 +4518,11 @@
                 "edited_by": "Editado por:",
                 "search_placeholder": "Pesquisar"
             },
+            "role_name": {
+                "group_owner": "Proprietário do grupo",
+                "everyone": "Todos",
+                "member": "Membro"
+            },
             "members": {
                 "header": "Membros",
                 "sorting": {
@@ -4526,6 +4531,8 @@
                 },
                 "unsubscribed_announcements": "Inscrição de anúncios cancelada",
                 "representing": "Representando",
+                "view_all": "Todos",
+                "friends": "Amigos",
                 "search": "Pesquisar",
                 "loaded_of_total": "{loaded} de {total} carregados",
                 "search_results": "{count} resultados",
@@ -4582,9 +4589,7 @@
                 "group_join_request_cancelled": "Solicitação de entrada no grupo cancelada",
                 "group_refreshed": "Grupo atualizado",
                 "group_invite_sent": "Convite de grupo enviado",
-                "group_post_deleted": "Publicação do grupo excluída",
-                "joined_newest": "Mais recentes",
-                "joined_oldest": "Mais antigos"
+                "group_post_deleted": "Publicação do grupo excluída"
             },
             "action": {
                 "refresh_to_load_gallery_images": "Atualize para carregar as imagens da galeria",

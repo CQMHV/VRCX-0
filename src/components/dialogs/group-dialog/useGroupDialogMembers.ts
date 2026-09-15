@@ -2,22 +2,21 @@ import { useEffect, useEffectEvent, useRef, useState } from 'react';
 
 import type { GroupMemberRow } from '@/domain/entities/group';
 import type { RemoteTabStatus } from '@/domain/shared/types';
-import type { GroupMemberSort } from '@/platform/tauri/bindings';
 import groupProfileRepository from '@/repositories/groupProfileRepository';
 import { VRCHAT_API_DEFAULT_PAGE_SIZE } from '@/shared/constants/pagination';
 
 const SEARCH_DEBOUNCE_MS = 300;
+const STAFF_ROLE_FETCH_LIMIT = 4;
 
 export type GroupDialogMembersModel = {
     rows: GroupMemberRow[];
+    staffRows: GroupMemberRow[];
     status: RemoteTabStatus;
     error: string;
     loadedCount: number;
     totalCount: number | null;
     hasMore: boolean;
     isLoadingMore: boolean;
-    sort: GroupMemberSort;
-    roleId: string;
     query: string;
     isSearching: boolean;
     searchStatus: RemoteTabStatus;
@@ -26,24 +25,21 @@ export type GroupDialogMembersModel = {
 type LoadKey = {
     endpoint: string;
     groupId: string;
-    sort: GroupMemberSort;
-    roleId: string;
 };
 
 function sameKey(left: LoadKey, right: LoadKey) {
-    return (
-        left.endpoint === right.endpoint &&
-        left.groupId === right.groupId &&
-        left.sort === right.sort &&
-        left.roleId === right.roleId
-    );
+    return left.endpoint === right.endpoint && left.groupId === right.groupId;
+}
+
+function memberKey(row: GroupMemberRow) {
+    return row.userId || row.id;
 }
 
 function mergeRows(current: GroupMemberRow[], incoming: GroupMemberRow[]) {
-    const seen = new Set(current.map((row) => row.userId || row.id));
+    const seen = new Set(current.map(memberKey));
     const next = [...current];
     for (const row of incoming) {
-        const key = row.userId || row.id;
+        const key = memberKey(row);
         if (!seen.has(key)) {
             seen.add(key);
             next.push(row);
@@ -61,27 +57,29 @@ export function useGroupDialogMembers({
     groupId,
     active,
     totalCount,
+    staffRoleIds,
     seedRows
 }: {
     endpoint: string;
     groupId: string;
     active: boolean;
     totalCount: number | null;
+    staffRoleIds: readonly string[];
     seedRows: GroupMemberRow[];
 }) {
     const [rows, setRows] = useState<GroupMemberRow[]>([]);
+    const [staffRows, setStaffRows] = useState<GroupMemberRow[]>([]);
     const [status, setStatus] = useState<RemoteTabStatus>('');
     const [error, setError] = useState('');
     const [hasMore, setHasMore] = useState(false);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const [sort, setSort] = useState<GroupMemberSort>('joinedAt:desc');
-    const [roleId, setRoleId] = useState('');
     const [query, setQuery] = useState('');
     const [searchRows, setSearchRows] = useState<GroupMemberRow[]>([]);
     const [searchStatus, setSearchStatus] = useState<RemoteTabStatus>('');
-    const keyRef = useRef<LoadKey>({ endpoint, groupId, sort, roleId });
+    const keyRef = useRef<LoadKey>({ endpoint, groupId });
     const requestRef = useRef(0);
     const searchRequestRef = useRef(0);
+    const staffRoleKey = staffRoleIds.join('\n');
 
     const trimmedQuery = query.trim();
     const isSearching = trimmedQuery.length > 0;
@@ -91,18 +89,46 @@ export function useGroupDialogMembers({
             groupId: key.groupId,
             n: VRCHAT_API_DEFAULT_PAGE_SIZE,
             offset,
-            sort: key.sort,
-            roleId: key.roleId,
             force
         });
     }
 
+    async function loadStaff(key: LoadKey, requestId: number, force: boolean) {
+        const roleIds = staffRoleKey ? staffRoleKey.split('\n') : [];
+        if (!roleIds.length) {
+            setStaffRows([]);
+            return;
+        }
+        const pages = await Promise.allSettled(
+            roleIds.slice(0, STAFF_ROLE_FETCH_LIMIT).map((roleId) =>
+                groupProfileRepository.getGroupMembers({
+                    groupId: key.groupId,
+                    n: VRCHAT_API_DEFAULT_PAGE_SIZE,
+                    offset: 0,
+                    roleId,
+                    force
+                })
+            )
+        );
+        if (requestId !== requestRef.current || !sameKey(key, keyRef.current)) {
+            return;
+        }
+        let merged: GroupMemberRow[] = [];
+        for (const page of pages) {
+            if (page.status === 'fulfilled') {
+                merged = mergeRows(merged, page.value);
+            }
+        }
+        setStaffRows(merged);
+    }
+
     async function loadFirstPage(force: boolean) {
-        const key: LoadKey = { endpoint, groupId, sort, roleId };
+        const key: LoadKey = { endpoint, groupId };
         keyRef.current = key;
         const requestId = ++requestRef.current;
         setStatus('running');
         setError('');
+        void loadStaff(key, requestId, force);
         try {
             const page = await fetchPage(key, 0, force);
             if (
@@ -156,8 +182,6 @@ export function useGroupDialogMembers({
         const key = keyRef.current;
         const all = await groupProfileRepository.getAllGroupMembers({
             groupId: key.groupId,
-            sort: key.sort,
-            roleId: key.roleId,
             force: true
         });
         if (sameKey(key, keyRef.current)) {
@@ -171,12 +195,11 @@ export function useGroupDialogMembers({
         requestRef.current += 1;
         searchRequestRef.current += 1;
         setRows([]);
+        setStaffRows([]);
         setStatus('');
         setError('');
         setHasMore(false);
         setIsLoadingMore(false);
-        setSort('joinedAt:desc');
-        setRoleId('');
         setQuery('');
         setSearchRows([]);
         setSearchStatus('');
@@ -186,7 +209,7 @@ export function useGroupDialogMembers({
         if (!active || !groupId) {
             return;
         }
-        const key: LoadKey = { endpoint, groupId, sort, roleId };
+        const key: LoadKey = { endpoint, groupId };
         if (
             status !== '' &&
             status !== 'error' &&
@@ -199,7 +222,7 @@ export function useGroupDialogMembers({
 
     useEffect(() => {
         loadForActiveKey();
-    }, [active, endpoint, groupId, sort, roleId]);
+    }, [active, endpoint, groupId, staffRoleKey]);
 
     useEffect(() => {
         if (!active || !groupId || !isSearching) {
@@ -247,14 +270,13 @@ export function useGroupDialogMembers({
 
     const model: GroupDialogMembersModel = {
         rows: visibleRows,
+        staffRows,
         status,
         error,
         loadedCount: rows.length,
         totalCount,
         hasMore: !isSearching && hasMore,
         isLoadingMore,
-        sort,
-        roleId,
         query,
         isSearching,
         searchStatus
@@ -262,8 +284,6 @@ export function useGroupDialogMembers({
 
     return {
         model,
-        setSort,
-        setRoleId,
         setQuery,
         refresh: () => loadFirstPage(true),
         loadMore,

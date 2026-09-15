@@ -4521,6 +4521,11 @@
                 "edited_by": "Upravil(a):",
                 "search_placeholder": "Hledat"
             },
+            "role_name": {
+                "group_owner": "Vlastník skupiny",
+                "everyone": "Všichni",
+                "member": "Člen"
+            },
             "members": {
                 "header": "Členové",
                 "sorting": {
@@ -4529,6 +4534,8 @@
                 },
                 "unsubscribed_announcements": "Odhlášeno z odběru oznámení",
                 "representing": "Reprezentuje",
+                "view_all": "Vše",
+                "friends": "Přátelé",
                 "search": "Hledat",
                 "loaded_of_total": "Načteno {loaded} z {total}",
                 "search_results": "{count} výsledků",
@@ -4585,9 +4592,7 @@
                 "group_join_request_cancelled": "Žádost o vstup do skupiny zrušena",
                 "group_refreshed": "Skupina obnovena",
                 "group_invite_sent": "Pozvánka do skupiny odeslána",
-                "group_post_deleted": "Příspěvek skupiny smazán",
-                "joined_newest": "Nejnovější",
-                "joined_oldest": "Nejstarší"
+                "group_post_deleted": "Příspěvek skupiny smazán"
             },
             "action": {
                 "refresh_to_load_gallery_images": "Obnovte pro načtení obrázků galerie",

@@ -53,6 +53,7 @@ import {
     resolveGroupDialogTab
 } from './groupDialogUtils';
 import { shouldShowGroupBadgeValue } from './GroupDialogViewParts';
+import { staffRoleIdsOf } from './GroupMembersPanel';
 import { GroupPostEditorDialog } from './GroupPostEditorDialog';
 import { useGroupDialogLanguageRows } from './useGroupDialogLanguageRows';
 import { useGroupDialogMembers } from './useGroupDialogMembers';
@@ -165,6 +166,7 @@ export function GroupDialogTabbedView({
         active: activeTab === 'members',
         totalCount:
             typeof group.memberCount === 'number' ? group.memberCount : null,
+        staffRoleIds: staffRoleIdsOf(group),
         seedRows: firstArray(group.members)
     });
     const photos =
@@ -713,9 +715,6 @@ export function GroupDialogTabbedView({
         onLoadMoreMembers: () => {
             void groupMembers.loadMore();
         },
-        onMemberRoleChange: (value) =>
-            groupMembers.setRoleId(value === 'all' ? '' : value),
-        onMemberSortChange: groupMembers.setSort,
         onOpenLink: openExternalLink,
         onOpenOwner: openGroupOwner,
         onPreviousInstancesChange,

@@ -4553,6 +4553,11 @@
                 "edited_by": "編輯：",
                 "search_placeholder": "搜尋"
             },
+            "role_name": {
+                "group_owner": "群組所有者",
+                "everyone": "所有人",
+                "member": "成員"
+            },
             "members": {
                 "header": "成員",
                 "sorting": {
@@ -4561,6 +4566,8 @@
                 },
                 "unsubscribed_announcements": "取消訂閱公告",
                 "representing": "展示群組",
+                "view_all": "全部",
+                "friends": "好友",
                 "search": "搜尋",
                 "loaded_of_total": "已載入 {loaded} / {total}",
                 "search_results": "{count} 個結果",
@@ -4617,9 +4624,7 @@
                 "group_join_request_cancelled": "已取消加入群組請求",
                 "group_refreshed": "群組已重新整理",
                 "group_invite_sent": "群組邀請已傳送",
-                "group_post_deleted": "群組帖子已刪除",
-                "joined_newest": "最新加入",
-                "joined_oldest": "最早加入"
+                "group_post_deleted": "群組帖子已刪除"
             },
             "action": {
                 "refresh_to_load_gallery_images": "重新整理以載入圖庫圖片",

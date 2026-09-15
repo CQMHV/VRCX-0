@@ -1,17 +1,7 @@
-import {
-    DownloadIcon,
-    ExternalLinkIcon,
-    EyeIcon,
-    ImageIcon,
-    MoreHorizontalIcon
-} from 'lucide-react';
-import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
+import { ExternalLinkIcon, EyeIcon, ImageIcon } from 'lucide-react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-    ToolbarRefreshButton,
-    ToolbarSearch
-} from '@/components/layout/ToolbarControls';
 import { FadeInImage } from '@/components/media/FadeInImage';
 import { TranslatableText } from '@/components/translation/TranslatableText';
 import type {
@@ -22,27 +12,8 @@ import { formatDateFilter } from '@/lib/dateTime';
 import { convertFileUrlToImageUrl } from '@/services/entityMediaService';
 import { Badge } from '@/ui/shadcn/badge';
 import { Button } from '@/ui/shadcn/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger
-} from '@/ui/shadcn/dropdown-menu';
 import { Input } from '@/ui/shadcn/input';
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from '@/ui/shadcn/select';
 import { Skeleton } from '@/ui/shadcn/skeleton';
-import {
-    ToggleGroup,
-    ToggleGroupItem,
-    ToggleGroupSeparator
-} from '@/ui/shadcn/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
 import {
@@ -65,12 +36,8 @@ import {
     announcementUserLabel
 } from './groupDialogUtils';
 import { GroupInstanceRows } from './GroupInstanceRows';
+import { GroupMembersPanel } from './GroupMembersPanel';
 import { GroupPostUserButton, RowList } from './GroupRowList';
-
-type GroupRoleOption = {
-    id?: string;
-    name?: string;
-};
 
 function GroupBannerFallback() {
     return (
@@ -270,8 +237,6 @@ export function GroupDialogTabPanels({
         onEditPost,
         onExportMembers,
         onLoadMoreMembers,
-        onMemberRoleChange,
-        onMemberSortChange,
         onOpenLink,
         onOpenOwner,
         onPreviousInstancesChange,
@@ -283,28 +248,6 @@ export function GroupDialogTabPanels({
         onSearchPostsChange,
         onToggleEventFollow
     } = commands;
-    const memberRows = members.rows;
-    const membersBusy = members.status === 'running';
-    const memberTotal = members.totalCount ?? members.loadedCount;
-    const loadMoreRef = useRef<HTMLDivElement | null>(null);
-    const loadMoreMembersRef = useRef(onLoadMoreMembers);
-    loadMoreMembersRef.current = onLoadMoreMembers;
-
-    useEffect(() => {
-        const node = loadMoreRef.current;
-        if (!node || activeTab !== 'members' || !members.hasMore) {
-            return undefined;
-        }
-        const observer = new IntersectionObserver((entries) => {
-            if (entries.some((entry) => entry.isIntersecting)) {
-                loadMoreMembersRef.current();
-            }
-        });
-        observer.observe(node);
-        return () => {
-            observer.disconnect();
-        };
-    }, [activeTab, members.hasMore, members.loadedCount]);
     const languages = Array.isArray(group.languages) ? group.languages : [];
     const links = Array.isArray(group.links) ? group.links : [];
     const tags = Array.isArray(group.tags) ? group.tags : [];
@@ -633,170 +576,16 @@ export function GroupDialogTabPanels({
                     onDeletePost={onDeletePost}
                 />
             </EntityDialogTabContent>
-            <EntityDialogTabContent
-                value="members"
-                className="flex flex-col gap-3"
-            >
-                <div className="flex flex-wrap items-center gap-2">
-                    <ToolbarSearch
-                        className="w-auto min-w-56 flex-1 shrink sm:w-auto"
-                        value={members.query}
-                        onValueChange={onSearchMembersChange}
-                        placeholder={t('dialog.group.members.search')}
-                    />
-                    <Select
-                        value={members.roleId || 'all'}
-                        items={[
-                            {
-                                value: 'all',
-                                label: t('dialog.group.label.all_roles')
-                            },
-                            ...roles.map((role: GroupRoleOption) => ({
-                                value: role.id || role.name,
-                                label: role.name || 'Role'
-                            }))
-                        ]}
-                        onValueChange={(value) =>
-                            onMemberRoleChange(value ?? '')
-                        }
-                        disabled={members.isSearching}
-                    >
-                        <SelectTrigger size="sm" className="w-44">
-                            <SelectValue
-                                placeholder={t('dialog.group.label.role')}
-                            />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectItem value="all">
-                                    {t('dialog.group.label.all_roles')}
-                                </SelectItem>
-                                {roles.map((role) => (
-                                    <SelectItem
-                                        key={role.id || role.name}
-                                        value={role.id || role.name}
-                                    >
-                                        {role.name || 'Role'}
-                                    </SelectItem>
-                                ))}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                    <ToggleGroup
-                        variant="outline"
-                        size="sm"
-                        value={[members.sort]}
-                        disabled={members.isSearching}
-                        onValueChange={(next) => {
-                            const value = next[0];
-                            if (
-                                value === 'joinedAt:desc' ||
-                                value === 'joinedAt:asc'
-                            ) {
-                                onMemberSortChange(value);
-                            }
-                        }}
-                    >
-                        {(
-                            [
-                                ['joinedAt:desc', 'joined_newest'],
-                                ['joinedAt:asc', 'joined_oldest']
-                            ] as const
-                        ).map(([value, labelKey], index) => (
-                            <Fragment key={value}>
-                                {index > 0 ? <ToggleGroupSeparator /> : null}
-                                <ToggleGroupItem value={value}>
-                                    {t(`dialog.group.success.${labelKey}`)}
-                                </ToggleGroupItem>
-                            </Fragment>
-                        ))}
-                    </ToggleGroup>
-                    <div className="ml-auto flex items-center gap-1">
-                        <ToolbarRefreshButton
-                            onRefresh={onRefreshMembers}
-                            loading={membersBusy}
-                        />
-                        <DropdownMenu>
-                            <DropdownMenuTrigger
-                                render={
-                                    <Button
-                                        type="button"
-                                        size="icon-sm"
-                                        variant="ghost"
-                                        aria-label={t('accessibility.more')}
-                                    />
-                                }
-                            >
-                                <MoreHorizontalIcon />
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                    disabled={!members.loadedCount}
-                                    onClick={() => onExportMembers('loaded')}
-                                >
-                                    <DownloadIcon />
-                                    {t('dialog.group.members.export_loaded', {
-                                        count: members.loadedCount
-                                    })}
-                                </DropdownMenuItem>
-                                {members.hasMore ? (
-                                    <DropdownMenuItem
-                                        onClick={() => onExportMembers('all')}
-                                    >
-                                        <DownloadIcon />
-                                        {t('dialog.group.members.export_all', {
-                                            count: memberTotal
-                                        })}
-                                    </DropdownMenuItem>
-                                ) : null}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-                </div>
-                <RowList
-                    rows={memberRows}
+            <EntityDialogTabContent value="members">
+                <GroupMembersPanel
+                    active={activeTab === 'members'}
                     group={group}
-                    kind="members"
-                    loading={
-                        members.isSearching
-                            ? members.searchStatus === 'running' &&
-                              !memberRows.length
-                            : membersBusy && !memberRows.length
-                    }
-                    error={members.error}
+                    members={members}
+                    onExport={onExportMembers}
+                    onLoadMore={onLoadMoreMembers}
+                    onQueryChange={onSearchMembersChange}
+                    onRefresh={onRefreshMembers}
                 />
-                {members.isSearching ? (
-                    members.searchStatus === 'ready' ? (
-                        <div className="text-muted-foreground px-1 text-xs">
-                            {t('dialog.group.members.search_results', {
-                                count: memberRows.length
-                            })}
-                        </div>
-                    ) : null
-                ) : members.loadedCount ? (
-                    <div
-                        ref={loadMoreRef}
-                        className="text-muted-foreground flex items-center justify-center gap-3 px-1 py-1 text-xs"
-                    >
-                        <span className="tabular-nums">
-                            {t('dialog.group.members.loaded_of_total', {
-                                loaded: members.loadedCount,
-                                total: memberTotal
-                            })}
-                        </span>
-                        {members.hasMore ? (
-                            <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                disabled={members.isLoadingMore}
-                                onClick={onLoadMoreMembers}
-                            >
-                                {t('common.load_more')}
-                            </Button>
-                        ) : null}
-                    </div>
-                ) : null}
             </EntityDialogTabContent>
             <EntityDialogTabContent
                 value="photos"

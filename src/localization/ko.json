@@ -4467,6 +4467,11 @@
                 "edited_by": "편집자:",
                 "search_placeholder": "검색"
             },
+            "role_name": {
+                "group_owner": "그룹 소유자",
+                "everyone": "전체 인원",
+                "member": "멤버"
+            },
             "members": {
                 "header": "회원",
                 "sorting": {
@@ -4475,6 +4480,8 @@
                 },
                 "unsubscribed_announcements": "공지사항 구독 취소됨",
                 "representing": "대표",
+                "view_all": "전체",
+                "friends": "친구",
                 "search": "검색",
                 "loaded_of_total": "{total}명 중 {loaded}명 불러옴",
                 "search_results": "결과 {count}개",
@@ -4528,9 +4535,7 @@
                 "group_join_request_cancelled": "그룹 가입 요청이 취소되었습니다.",
                 "group_refreshed": "그룹이 새로고침되었습니다.",
                 "group_invite_sent": "그룹 초대가 전송되었습니다.",
-                "group_post_deleted": "그룹 게시물이 삭제되었습니다.",
-                "joined_newest": "최신순",
-                "joined_oldest": "오래된순"
+                "group_post_deleted": "그룹 게시물이 삭제되었습니다."
             },
             "action": {
                 "refresh_to_load_gallery_images": "갤러리 이미지를 로드하려면 새로고침하세요.",

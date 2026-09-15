@@ -4561,6 +4561,11 @@
                 "edited_by": "Edited by:",
                 "search_placeholder": "Search"
             },
+            "role_name": {
+                "group_owner": "Group Owner",
+                "everyone": "Everyone",
+                "member": "Member"
+            },
             "members": {
                 "header": "Members",
                 "sorting": {
@@ -4569,6 +4574,8 @@
                 },
                 "unsubscribed_announcements": "Unsubscribed from announcements",
                 "representing": "Representing",
+                "view_all": "All",
+                "friends": "Friends",
                 "search": "Search",
                 "loaded_of_total": "Loaded {loaded} of {total}",
                 "search_results": "{count} results",
@@ -4625,9 +4632,7 @@
                 "group_join_request_cancelled": "Group join request cancelled",
                 "group_refreshed": "Group refreshed",
                 "group_invite_sent": "Group invite sent",
-                "group_post_deleted": "Group post deleted",
-                "joined_newest": "Newest",
-                "joined_oldest": "Oldest"
+                "group_post_deleted": "Group post deleted"
             },
             "action": {
                 "refresh_to_load_gallery_images": "Refresh to load gallery images",

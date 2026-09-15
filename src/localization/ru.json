@@ -4522,6 +4522,11 @@
                 "edited_by": "Отредактированно:",
                 "search_placeholder": "Поиск"
             },
+            "role_name": {
+                "group_owner": "Владелец группы",
+                "everyone": "Все",
+                "member": "Участник"
+            },
             "members": {
                 "header": "Участники",
                 "sorting": {
@@ -4530,6 +4535,8 @@
                 },
                 "unsubscribed_announcements": "Отписаться от объявлений",
                 "representing": "Представляет",
+                "view_all": "Все",
+                "friends": "Друзья",
                 "search": "Поиск",
                 "loaded_of_total": "Загружено {loaded} из {total}",
                 "search_results": "Результатов: {count}",
@@ -4586,9 +4593,7 @@
                 "group_join_request_cancelled": "Запрос на вступление в группу отменён",
                 "group_refreshed": "Группа обновлена",
                 "group_invite_sent": "Приглашение в группу отправлено",
-                "group_post_deleted": "Публикация группы удалена",
-                "joined_newest": "Новые",
-                "joined_oldest": "Старые"
+                "group_post_deleted": "Публикация группы удалена"
             },
             "action": {
                 "refresh_to_load_gallery_images": "Обновить для загрузки изображений галереи",

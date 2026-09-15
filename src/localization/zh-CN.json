@@ -4562,6 +4562,11 @@
                 "edited_by": "最后编辑者：",
                 "search_placeholder": "搜索帖子"
             },
+            "role_name": {
+                "group_owner": "群组所有者",
+                "everyone": "所有人",
+                "member": "成员"
+            },
             "members": {
                 "header": "成员",
                 "sorting": {
@@ -4570,6 +4575,8 @@
                 },
                 "unsubscribed_announcements": "该玩家不接收群组通知",
                 "representing": "该玩家在其名片上展示该群组",
+                "view_all": "全部",
+                "friends": "好友",
                 "search": "搜索",
                 "loaded_of_total": "已加载 {loaded} / {total}",
                 "search_results": "{count} 个结果",
@@ -4626,9 +4633,7 @@
                 "group_join_request_cancelled": "已取消群组加入申请",
                 "group_refreshed": "已刷新群组",
                 "group_invite_sent": "已发送群组邀请",
-                "group_post_deleted": "已删除群组帖子",
-                "joined_newest": "最新加入",
-                "joined_oldest": "最早加入"
+                "group_post_deleted": "已删除群组帖子"
             },
             "action": {
                 "refresh_to_load_gallery_images": "刷新以加载图库图片",
