@@ -16,7 +16,10 @@ import {
     isWorldId
 } from '@/shared/constants/vrchatIds';
 import { VRCHAT_WEB_BASE } from '@/shared/constants/vrchatWebUrls';
-import { VRCX_OPEN_RELAY_ORIGIN } from '@/shared/constants/vrcxDeepLinks';
+import {
+    VRCX_OPEN_RELAY_ORIGIN,
+    parseVrcxInstanceLink
+} from '@/shared/constants/vrcxDeepLinks';
 import { parseLocation } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 import { normalizeString } from '@/shared/utils/string';
@@ -313,6 +316,15 @@ export async function directAccessParse(
     const value = normalizeString(input).trim();
     if (!value) {
         return false;
+    }
+
+    const instanceLink = parseVrcxInstanceLink(value);
+    if (instanceLink) {
+        return accessInstanceLocation(
+            `${instanceLink.worldId}:${instanceLink.instanceId}`,
+            mode,
+            instanceLink.shortName
+        );
     }
 
     const vrcxShareLink = parseVrcxShareLink(value);

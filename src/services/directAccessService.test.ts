@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { vrcxInstanceDeepLink } from '@/shared/constants/vrcxDeepLinks';
 import { useLaunchStore } from '@/state/launchStore';
 
 const mocks = vi.hoisted(() => ({
@@ -40,6 +41,30 @@ const INSTANCE_ID = '12345~hidden(usr_owner)';
 const LOCATION = `${WORLD_ID}:${INSTANCE_ID}`;
 
 describe('directAccessService', () => {
+    it('routes external instance shares through the same world and launch flow', async () => {
+        useLaunchStore.getState().closeLaunchDialog();
+        const input = vrcxInstanceDeepLink({
+            worldId: WORLD_ID,
+            instanceId: INSTANCE_ID,
+            shortName: 'inviteToken'
+        });
+        await expect(directAccessParse(input, 'detect')).resolves.toBe(true);
+        expect(mocks.openWorldDialog).not.toHaveBeenCalled();
+        expect(useLaunchStore.getState().launchDialog.open).toBe(false);
+        await expect(directAccessParse(input)).resolves.toBe(true);
+        expect(mocks.openWorldDialog).toHaveBeenCalledWith({
+            worldId: WORLD_ID,
+            title: undefined
+        });
+        expect(useLaunchStore.getState().launchDialog).toMatchObject({
+            open: true,
+            tag: LOCATION,
+            shortName: 'inviteToken'
+        });
+        expect(mocks.getInstanceFromShortName).not.toHaveBeenCalled();
+        expect(mocks.openInstanceInGame).not.toHaveBeenCalled();
+    });
+
     beforeEach(() => {
         vi.clearAllMocks();
         useLaunchStore.getState().closeLaunchDialog();
