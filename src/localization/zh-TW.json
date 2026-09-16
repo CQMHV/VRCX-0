@@ -1677,7 +1677,6 @@
                 "mark_seen": "標記已讀",
                 "send_boop": "傳送戳一戳",
                 "search_emoji": "搜尋 Emoji",
-                "clear_selection": "清除選擇",
                 "send": "傳送"
             },
             "success": {
@@ -1693,9 +1692,6 @@
                 "cannot_invite_from_the_current_instance_type": "無法從目前房間類型發出邀請",
                 "cannot_invite_current_location_is_not_a_concrete_instance": "無法邀請：你目前不在可加入的房間",
                 "cannot_send_invite_response_no_current_user_session_is_available": "無法傳送邀請回應：目前沒有可用的用戶工作階段"
-            },
-            "empty": {
-                "no_custom_emoji_selected_the_default_boop_will_be_sent": "未選擇自訂 Emoji，將傳送預設戳一戳"
             },
             "loading": {
                 "loading_emojis": "正在載入Emoji"
@@ -5385,7 +5381,10 @@
             "emoji_manager": "管理表情符號",
             "select_default_emoji": "選擇預設表情符號",
             "default_emojis": "預設表情符號",
-            "send": "傳送"
+            "send": "傳送",
+            "recent": "最近使用",
+            "inventory_emojis": "庫存",
+            "no_inventory_emojis": "庫存裡還沒有可用的戳一下表情符號"
         },
         "vrcx_updater": {
             "latest_version": "VRCX-0 已是最新版本",

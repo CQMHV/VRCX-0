@@ -1677,7 +1677,6 @@
                 "mark_seen": "Als gesehen markieren",
                 "send_boop": "Boop senden",
                 "search_emoji": "Emoji suchen",
-                "clear_selection": "Auswahl aufheben",
                 "send": "Senden"
             },
             "success": {
@@ -1693,9 +1692,6 @@
                 "cannot_invite_from_the_current_instance_type": "Einladen aus diesem Instanztyp nicht möglich",
                 "cannot_invite_current_location_is_not_a_concrete_instance": "Einladen nicht möglich: Du befindest dich derzeit nicht in einer beitretbaren Instanz",
                 "cannot_send_invite_response_no_current_user_session_is_available": "Antwort auf Einladung kann nicht gesendet werden: keine aktuelle Nutzersitzung verfügbar"
-            },
-            "empty": {
-                "no_custom_emoji_selected_the_default_boop_will_be_sent": "Kein eigenes Emoji ausgewählt. Der Standard-Boop wird gesendet"
             },
             "loading": {
                 "loading_emojis": "Emojis werden geladen"
@@ -5349,7 +5345,10 @@
             "emoji_manager": "Emoji-Verwaltung",
             "select_default_emoji": "Standard-Emoji auswählen",
             "default_emojis": "Standard-Emojis",
-            "send": "Senden"
+            "send": "Senden",
+            "recent": "Zuletzt verwendet",
+            "inventory_emojis": "Inventar",
+            "no_inventory_emojis": "Noch keine Boop-Emojis im Inventar"
         },
         "vrcx_updater": {
             "latest_version": "VRCX-0 ist auf dem neuesten Stand",

@@ -1677,7 +1677,6 @@
                 "mark_seen": "Mark seen",
                 "send_boop": "Send boop",
                 "search_emoji": "Search emoji",
-                "clear_selection": "Clear selection",
                 "send": "Send"
             },
             "success": {
@@ -1693,9 +1692,6 @@
                 "cannot_invite_from_the_current_instance_type": "Cannot invite from the current instance type",
                 "cannot_invite_current_location_is_not_a_concrete_instance": "Cannot invite: you're not currently in a joinable instance",
                 "cannot_send_invite_response_no_current_user_session_is_available": "Cannot send invite response: no current user session is available"
-            },
-            "empty": {
-                "no_custom_emoji_selected_the_default_boop_will_be_sent": "No custom emoji selected. The default boop will be sent"
             },
             "loading": {
                 "loading_emojis": "Loading emojis"
@@ -5393,7 +5389,10 @@
             "emoji_manager": "Emoji Manager",
             "select_default_emoji": "Select Default Emoji",
             "default_emojis": "Default Emojis",
-            "send": "Send"
+            "send": "Send",
+            "recent": "Recent",
+            "inventory_emojis": "Inventory",
+            "no_inventory_emojis": "No boop emojis in your inventory yet"
         },
         "vrcx_updater": {
             "latest_version": "VRCX-0 is up to date",

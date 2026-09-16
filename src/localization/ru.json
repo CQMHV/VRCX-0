@@ -1679,7 +1679,6 @@
                 "mark_seen": "Марк видел",
                 "send_boop": "Отправить буп",
                 "search_emoji": "Поиск эмоджи",
-                "clear_selection": "Очистить выбор",
                 "send": "Отправить"
             },
             "success": {
@@ -1695,9 +1694,6 @@
                 "cannot_invite_from_the_current_instance_type": "Невозможно пригласить из текущего типа",
                 "cannot_invite_current_location_is_not_a_concrete_instance": "Невозможно пригласить: вы сейчас не в инстансе, куда можно пригласить.",
                 "cannot_send_invite_response_no_current_user_session_is_available": "Не удалось отправить ответ по запросу: текущий сеанс пользователя не доступен"
-            },
-            "empty": {
-                "no_custom_emoji_selected_the_default_boop_will_be_sent": "Не будет выбрано специальное эмоджи. По умолчанию будет отправлена буп."
             },
             "loading": {
                 "loading_emojis": "Загрузка смайликов"
@@ -5354,7 +5350,10 @@
             "emoji_manager": "Менеджер эмодзи",
             "select_default_emoji": "Выбрать эмодзи по умолчанию",
             "default_emojis": "Стандартные эмодзи",
-            "send": "Отправить"
+            "send": "Отправить",
+            "recent": "Недавние",
+            "inventory_emojis": "Инвентарь",
+            "no_inventory_emojis": "В инвентаре пока нет эмодзи для бупа"
         },
         "vrcx_updater": {
             "latest_version": "У вас установлена актуальная версия VRCX-0.",

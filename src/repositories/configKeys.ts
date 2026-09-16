@@ -271,6 +271,7 @@ export const ConfigKeys = defineConfigKeys({
     InstanceActivityBarWidth: { type: 'int', default: 25 },
     groupCalendarShowFeaturedEvents: { type: 'bool', default: false },
     toolsRecentList: { type: 'string', default: '[]' },
+    boopRecentEmojis: { type: 'string', default: '[]' },
     screenshotGalleryFolder: { type: 'string', default: '' },
     screenshotGalleryScrollPositions: { type: 'string', default: '{}' },
 

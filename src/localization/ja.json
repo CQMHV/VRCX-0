@@ -1673,7 +1673,6 @@
                 "mark_seen": "既読にする",
                 "send_boop": "つっつく",
                 "search_emoji": "Emoji を検索",
-                "clear_selection": "選択をクリア",
                 "send": "送信"
             },
             "success": {
@@ -1689,9 +1688,6 @@
                 "cannot_invite_from_the_current_instance_type": "現在のインスタンスタイプからは招待できません",
                 "cannot_invite_current_location_is_not_a_concrete_instance": "招待できません: 現在の位置は具体的なインスタンスではありません",
                 "cannot_send_invite_response_no_current_user_session_is_available": "招待への返信を送信できません: 現在のユーザーセッションがありません"
-            },
-            "empty": {
-                "no_custom_emoji_selected_the_default_boop_will_be_sent": "カスタム絵文字が選択されていません。既定のつっつきを送信します"
             },
             "loading": {
                 "loading_emojis": "Emojiを読み込み中"
@@ -5377,7 +5373,10 @@
             "emoji_manager": "絵文字を管理",
             "select_default_emoji": "デフォルトの絵文字を選択",
             "default_emojis": "デフォルトの絵文字",
-            "send": "送信"
+            "send": "送信",
+            "recent": "最近使った項目",
+            "inventory_emojis": "インベントリ",
+            "no_inventory_emojis": "インベントリにつっつき用の絵文字はまだありません"
         },
         "vrcx_updater": {
             "latest_version": "VRCX-0は最新版です。",

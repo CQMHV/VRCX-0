@@ -1677,7 +1677,6 @@
                 "mark_seen": "Marcar como vista",
                 "send_boop": "Enviar boop",
                 "search_emoji": "Buscar emoji",
-                "clear_selection": "Borrar selección",
                 "send": "Enviar"
             },
             "success": {
@@ -1693,9 +1692,6 @@
                 "cannot_invite_from_the_current_instance_type": "No se puede invitar desde el tipo de instancia actual",
                 "cannot_invite_current_location_is_not_a_concrete_instance": "No se puede invitar: la ubicación actual no es una instancia concreta",
                 "cannot_send_invite_response_no_current_user_session_is_available": "No se puede enviar la respuesta a la invitación: no hay ninguna sesión de usuario disponible"
-            },
-            "empty": {
-                "no_custom_emoji_selected_the_default_boop_will_be_sent": "No se seleccionó ningún emoji personalizado. Se enviará el boop predeterminado"
             },
             "loading": {
                 "loading_emojis": "Cargando emojis"
@@ -5349,7 +5345,10 @@
             "emoji_manager": "Gestor de emojis",
             "select_default_emoji": "Seleccionar emoji predeterminado",
             "default_emojis": "Emojis Predeterminados",
-            "send": "Enviar"
+            "send": "Enviar",
+            "recent": "Recientes",
+            "inventory_emojis": "Inventario",
+            "no_inventory_emojis": "Aún no hay emojis de boop en tu inventario"
         },
         "vrcx_updater": {
             "latest_version": "VRCX-0 está actualizado.",

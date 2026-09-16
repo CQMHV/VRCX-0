@@ -5379,6 +5379,7 @@ export type NotificationBoopReplyInput = {
     endpoint?: string;
     target: NotificationTarget;
     emojiId?: string;
+    inventoryItemId?: string;
 };
 export type NotificationDoNotDisturbMode =
     | 'off'
@@ -6454,7 +6455,11 @@ export type VrchatAvatarSaveInput = {
     avatarId?: string;
     params: AvatarUpdateRequest;
 };
-export type VrchatBoopInput = { userId?: string; emojiId?: string };
+export type VrchatBoopInput = {
+    userId?: string;
+    emojiId?: string;
+    inventoryItemId?: string;
+};
 export type VrchatConfigWriteResult = { oldCacheCleanupError: string | null };
 export type VrchatCurrentUserBadgeInput = {
     badgeId?: string;

@@ -127,6 +127,12 @@ export const entityQueryPolicies = Object.freeze({
         gcTime: 5 * MINUTE_MS,
         retry: 0,
         refetchOnWindowFocus: false
+    }),
+    boopEmojiLookup: Object.freeze({
+        staleTime: 30 * MINUTE_MS,
+        gcTime: 30 * MINUTE_MS,
+        retry: 0,
+        refetchOnWindowFocus: false
     })
 });
 
@@ -226,6 +232,8 @@ export const queryKeys = Object.freeze({
     ) => withEndpoint(['inventory', 'item', userId, inventoryId], endpoint),
     inventoryTemplate: (inventoryTemplateId: string, endpoint: string = '') =>
         withEndpoint(['inventory', 'template', inventoryTemplateId], endpoint),
+    boopEmoji: (userId: string, inventoryId: string, endpoint: string = '') =>
+        withEndpoint(['boopEmoji', userId, inventoryId], endpoint),
     fileAnalysis: (
         {
             fileId = '',
