@@ -11,6 +11,8 @@ import type {
 } from './userDialogProfileTypes';
 
 const PROFILE_ENDPOINT_FIELDS = [
+    'ageVerificationStatus',
+    'ageVerified',
     'backgroundGradientBottom',
     'backgroundGradientTop',
     'backgroundTemplateId',
