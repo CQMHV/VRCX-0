@@ -397,16 +397,6 @@ export function resolvePresenceLocation(
     return resolveFriendPresenceLocation(profile, options);
 }
 
-export function userHasExplicitSameInstance(
-    user: unknown,
-    location: unknown
-): boolean {
-    const explicitLocation = resolvePresenceLocation(user, {
-        requireInstance: true
-    });
-    return isSameInstanceLocation(explicitLocation, location);
-}
-
 export function buildInstanceRosterRows({
     includeProfileFallback = false,
     instanceCreatorLabel = 'Instance creator',

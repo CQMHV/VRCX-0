@@ -1044,9 +1044,6 @@ const generatedCommands = {
     ): Promise<MutualGraphSnapshotOutput> {
         return await TAURI_INVOKE('app__mutual_graph_snapshot_get', { userId });
     },
-    async appMutualGraphFetchStatusGet(): Promise<MutualGraphFetchStatus> {
-        return await TAURI_INVOKE('app__mutual_graph_fetch_status_get');
-    },
     async appMutualGraphFetchCancel(
         input: MutualGraphFetchCancelInput
     ): Promise<MutualGraphFetchStatus> {

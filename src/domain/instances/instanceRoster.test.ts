@@ -4,8 +4,7 @@ import {
     buildInstanceRosterRows,
     mergeInstanceUser,
     mergeInstanceUsers,
-    type InstanceRosterRow,
-    userHasExplicitSameInstance
+    type InstanceRosterRow
 } from './instanceRoster';
 
 describe('instanceRoster', () => {
@@ -127,40 +126,5 @@ describe('instanceRoster', () => {
             status: 'join me',
             statusDescription: ''
         });
-    });
-
-    it('recognizes ask me and busy users only when their real instance is explicit', () => {
-        const location = 'wrld_test:12345~hidden(usr_owner)';
-
-        expect(
-            userHasExplicitSameInstance(
-                {
-                    id: 'usr_ask',
-                    status: 'ask me',
-                    location
-                },
-                location
-            )
-        ).toBe(true);
-        expect(
-            userHasExplicitSameInstance(
-                {
-                    id: 'usr_busy',
-                    status: 'busy',
-                    location
-                },
-                location
-            )
-        ).toBe(true);
-        expect(
-            userHasExplicitSameInstance(
-                {
-                    id: 'usr_private',
-                    status: 'busy',
-                    location: 'private'
-                },
-                location
-            )
-        ).toBe(false);
     });
 });
