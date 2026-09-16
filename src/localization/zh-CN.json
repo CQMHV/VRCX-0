@@ -4162,7 +4162,6 @@
                 "role_ids": "角色 ID",
                 "queue_enabled": "队列已启用",
                 "age_gate": "年龄限制",
-                "display_name": "昵称",
                 "user_id": "玩家 ID",
                 "strict": "严格",
                 "location": "位置变动",
@@ -4728,7 +4727,8 @@
             "ageGate": "具有年龄限制",
             "normal": "普通",
             "group": "群组",
-            "legacy": "传统"
+            "legacy": "传统",
+            "display_name": "房间名称"
         },
         "launch": {
             "header": "启动",

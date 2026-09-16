@@ -4161,7 +4161,6 @@
                 "role_ids": "Rollen-IDs",
                 "queue_enabled": "Warteschlange aktiviert",
                 "age_gate": "Altersbeschränkung",
-                "display_name": "Anzeigename",
                 "user_id": "Benutzer-ID",
                 "strict": "Strikt",
                 "location": "Standort",
@@ -4683,7 +4682,8 @@
             "ageGate": "Altersgrenze",
             "normal": "Normal",
             "group": "Gruppe",
-            "legacy": "Legacy"
+            "legacy": "Legacy",
+            "display_name": "Instanzname"
         },
         "launch": {
             "header": "Starten",

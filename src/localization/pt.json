@@ -4162,7 +4162,6 @@
                 "role_ids": "IDs de Função",
                 "queue_enabled": "Fila ativada",
                 "age_gate": "Restrição de idade",
-                "display_name": "Nome de Exibição",
                 "user_id": "ID do Usuário",
                 "strict": "Estrito",
                 "location": "Localização",
@@ -4684,7 +4683,8 @@
             "ageGate": "Restrição de Idade",
             "normal": "Normal",
             "group": "Grupo",
-            "legacy": "Legado"
+            "legacy": "Legado",
+            "display_name": "Nome da instância"
         },
         "launch": {
             "header": "Iniciar",

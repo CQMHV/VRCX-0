@@ -4162,7 +4162,6 @@
                 "role_ids": "角色 ID",
                 "queue_enabled": "佇列已啟用",
                 "age_gate": "年齡限制",
-                "display_name": "顯示名稱",
                 "user_id": "用戶 ID",
                 "strict": "嚴格",
                 "location": "位置變動",
@@ -4719,7 +4718,8 @@
             "ageGate": "年齡限制",
             "normal": "一般",
             "group": "群組",
-            "legacy": "舊版"
+            "legacy": "舊版",
+            "display_name": "房間名稱"
         },
         "launch": {
             "header": "啟動",

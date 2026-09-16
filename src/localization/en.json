@@ -4161,7 +4161,6 @@
                 "role_ids": "Role IDs",
                 "queue_enabled": "Queue enabled",
                 "age_gate": "Age gate",
-                "display_name": "Display Name",
                 "user_id": "User ID",
                 "strict": "Strict",
                 "location": "Location",
@@ -4727,7 +4726,8 @@
             "ageGate": "Age Gate",
             "normal": "Normal",
             "group": "Group",
-            "legacy": "Legacy"
+            "legacy": "Legacy",
+            "display_name": "Instance name"
         },
         "launch": {
             "header": "Launch",

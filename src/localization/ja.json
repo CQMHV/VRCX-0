@@ -4156,7 +4156,6 @@
                 "role_ids": "ロール ID",
                 "queue_enabled": "キュー有効",
                 "age_gate": "年齢制限",
-                "display_name": "表示名",
                 "user_id": "ユーザーID",
                 "strict": "厳格",
                 "location": "場所",
@@ -4713,7 +4712,8 @@
             "ageGate": "年齢制限あり",
             "normal": "通常",
             "group": "グループ",
-            "legacy": "レガシー"
+            "legacy": "レガシー",
+            "display_name": "インスタンス名"
         },
         "launch": {
             "header": "起動",

@@ -4165,7 +4165,6 @@
                 "role_ids": "ID rolí",
                 "queue_enabled": "Fronta povolena",
                 "age_gate": "Ověření věku",
-                "display_name": "Zobrazované jméno",
                 "user_id": "ID uživatele",
                 "strict": "Přísný režim",
                 "location": "Lokace",
@@ -4687,7 +4686,8 @@
             "ageGate": "Věkové omezení",
             "normal": "Normální",
             "group": "Skupina",
-            "legacy": "Zastaralé"
+            "legacy": "Zastaralé",
+            "display_name": "Název instance"
         },
         "launch": {
             "header": "Spustit",

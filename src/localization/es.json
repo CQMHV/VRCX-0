@@ -4161,7 +4161,6 @@
                 "role_ids": "ID de roles",
                 "queue_enabled": "Cola activada",
                 "age_gate": "Restricción por edad",
-                "display_name": "Nombre visible",
                 "user_id": "ID de usuario",
                 "strict": "Estricto",
                 "location": "Ubicación",
@@ -4683,7 +4682,8 @@
             "ageGate": "Restricción de Edad",
             "normal": "Normal",
             "group": "Grupo",
-            "legacy": "Legado"
+            "legacy": "Legado",
+            "display_name": "Nombre de la instancia"
         },
         "launch": {
             "header": "Lanzar",
