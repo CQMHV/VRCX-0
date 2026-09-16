@@ -53,6 +53,7 @@ import {
     DropdownMenuTrigger
 } from '@/ui/shadcn/dropdown-menu';
 import { Switch } from '@/ui/shadcn/switch';
+import { Tabs, TabsList, TabsTrigger } from '@/ui/shadcn/tabs';
 
 import {
     getCatalogDragId,
@@ -813,39 +814,33 @@ export function ToolsPageContent({ embedded = false }: { embedded?: boolean }) {
                 className="relative mt-4 min-h-0 flex-1 overflow-y-auto"
             >
                 <div className="mx-auto grid w-full max-w-5xl grid-cols-[11rem_minmax(0,1fr)] gap-6 pb-6">
-                    <nav
-                        aria-label={label('view.tools.sections')}
-                        className="sticky top-0 flex flex-col gap-0.5 self-start"
+                    <Tabs
+                        orientation="vertical"
+                        value={activeSectionId}
+                        onValueChange={scrollToSection}
+                        className="sticky top-0 self-start"
                     >
-                        {railItems.map((item) => {
-                            const RailIcon = item.icon;
-                            const active = item.id === activeSectionId;
-                            return (
-                                <button
-                                    key={item.id}
-                                    type="button"
-                                    className={cn(
-                                        'focus-visible:ring-ring flex h-7 w-full items-center gap-2 rounded-md px-2.5 text-left text-sm outline-none focus-visible:ring-2',
-                                        active
-                                            ? 'text-foreground bg-(--state-selected-surface)'
-                                            : 'text-muted-foreground hover:text-foreground'
-                                    )}
-                                    aria-current={active ? 'true' : undefined}
-                                    onClick={() => scrollToSection(item.id)}
-                                >
-                                    {RailIcon ? (
-                                        <RailIcon
-                                            aria-hidden="true"
-                                            className="size-4 shrink-0"
-                                        />
-                                    ) : null}
-                                    <span className="truncate">
-                                        {item.title}
-                                    </span>
-                                </button>
-                            );
-                        })}
-                    </nav>
+                        <TabsList
+                            aria-label={label('view.tools.sections')}
+                            className="h-fit w-full gap-0.5"
+                        >
+                            {railItems.map((item) => {
+                                const RailIcon = item.icon;
+                                return (
+                                    <TabsTrigger
+                                        key={item.id}
+                                        value={item.id}
+                                        className="justify-start gap-2 px-2.5"
+                                    >
+                                        {RailIcon ? <RailIcon /> : null}
+                                        <span className="truncate">
+                                            {item.title}
+                                        </span>
+                                    </TabsTrigger>
+                                );
+                            })}
+                        </TabsList>
+                    </Tabs>
 
                     <div className="flex min-w-0 flex-col gap-4">
                         <DndContext
