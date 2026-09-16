@@ -108,6 +108,7 @@ const FRIEND_NAMED_FIELD_KEYS: &[&str] = &[
     "status",
     "statusDescription",
     "bio",
+    "iconUrl",
     "currentAvatarImageUrl",
     "currentAvatarThumbnailImageUrl",
     "currentAvatarAuthorId",
@@ -155,6 +156,7 @@ fn apply_fields(record: &mut FriendRecord, patch: &Map<String, Value>) {
         (&mut record.traveling_to_location, &["travelingToLocation"]),
         (&mut record.world_id, &["worldId"]),
         (&mut record.bio, &["bio"]),
+        (&mut record.icon_url, &["iconUrl"]),
         (
             &mut record.current_avatar_image_url,
             &["currentAvatarImageUrl"],
@@ -220,6 +222,7 @@ pub(in crate::realtime::friends::runtime) fn record_string(
         "status" => record.status.to_string(),
         "statusDescription" => record.status_description.to_string(),
         "bio" => record.bio.clone(),
+        "iconUrl" => record.icon_url.clone(),
         "currentAvatarImageUrl" => record.current_avatar_image_url.clone(),
         "currentAvatarThumbnailImageUrl" => record.current_avatar_thumbnail_image_url.clone(),
         "currentAvatarAuthorId" => record.current_avatar_author_id.clone(),

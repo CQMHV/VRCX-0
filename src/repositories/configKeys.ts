@@ -76,7 +76,6 @@ export const ConfigKeys = defineConfigKeys({
     hideNicknames: { type: 'bool', default: false },
     showInstanceIdInLocation: { type: 'bool', default: false },
     isAgeGatedInstancesVisible: { type: 'bool', default: true },
-    displayVRCPlusIconsAsAvatar: { type: 'bool', default: true },
     showUserDialogProfileBackground: { type: 'bool', default: true },
     showUserDialogAvatarFrame: { type: 'bool', default: true },
     showUserDialogProfileEffect: { type: 'bool', default: true },

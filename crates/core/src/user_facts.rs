@@ -191,10 +191,7 @@ fn is_profile_field(field: &str) -> bool {
         field,
         "username"
             | "displayName"
-            | "userIcon"
-            | "profilePicOverride"
-            | "profilePicOverrideThumbnail"
-            | "thumbnailUrl"
+            | "iconUrl"
             | "currentAvatar"
             | "currentAvatarImageUrl"
             | "currentAvatarThumbnailImageUrl"
@@ -232,10 +229,7 @@ fn user_fact_field_name(field: &str) -> Option<&'static str> {
         "id" => "id",
         "username" => "username",
         "displayName" => "displayName",
-        "userIcon" => "userIcon",
-        "profilePicOverride" => "profilePicOverride",
-        "profilePicOverrideThumbnail" => "profilePicOverrideThumbnail",
-        "thumbnailUrl" => "thumbnailUrl",
+        "iconUrl" => "iconUrl",
         "currentAvatar" => "currentAvatar",
         "currentAvatarImageUrl" => "currentAvatarImageUrl",
         "currentAvatarThumbnailImageUrl" => "currentAvatarThumbnailImageUrl",

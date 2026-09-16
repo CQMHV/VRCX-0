@@ -129,6 +129,36 @@ fn aliases_and_whitelist_normalize_input() {
 }
 
 #[test]
+fn icon_url_is_a_profile_field() {
+    let result = merge_user_fact(
+        None,
+        &json!({
+            "id": "usr_1",
+            "iconUrl": "https://api.vrchat.cloud/api/1/image/file_1/1/256"
+        }),
+        &opts("profile"),
+    );
+    assert_eq!(
+        result.fact.fields.get("iconUrl").and_then(Value::as_str),
+        Some("https://api.vrchat.cloud/api/1/image/file_1/1/256")
+    );
+
+    let downgraded = merge_user_fact(
+        Some(&result.fact),
+        &json!({ "id": "usr_1", "iconUrl": "https://api.vrchat.cloud/api/1/image/file_2/1/256" }),
+        &opts("friend"),
+    );
+    assert_eq!(
+        downgraded
+            .fact
+            .fields
+            .get("iconUrl")
+            .and_then(Value::as_str),
+        Some("https://api.vrchat.cloud/api/1/image/file_1/1/256")
+    );
+}
+
+#[test]
 fn presence_realtime_beats_profile_but_profile_beats_friend_for_profile_fields() {
     let first = merge_user_fact(
         None,

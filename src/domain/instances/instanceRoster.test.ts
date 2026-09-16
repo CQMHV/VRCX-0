@@ -70,7 +70,7 @@ describe('instanceRoster', () => {
                 {
                     id: 'usr_friend',
                     displayName: 'Friend',
-                    profilePicOverrideThumbnail: 'avatar.webp',
+                    iconUrl: 'avatar.webp',
                     status: 'ask me'
                 }
             ],
@@ -85,7 +85,7 @@ describe('instanceRoster', () => {
 
         expect(users).toHaveLength(1);
         expect(users[0].displayName).toBe('Friend');
-        expect(users[0].profilePicOverrideThumbnail).toBe('avatar.webp');
+        expect(users[0].iconUrl).toBe('avatar.webp');
         expect(users[0].status).toBe('ask me');
         expect(users[0].$location_at).toBeUndefined();
     });
@@ -95,7 +95,7 @@ describe('instanceRoster', () => {
         mergeInstanceUser(rows, {
             id: 'usr_self',
             displayName: 'Full profile name',
-            profilePicOverrideThumbnail: 'profile.webp',
+            iconUrl: 'profile.webp',
             location: 'wrld_old:11111',
             state: 'offline',
             stateBucket: 'offline',
@@ -119,7 +119,7 @@ describe('instanceRoster', () => {
 
         expect(rows.get('usr_self')).toMatchObject({
             displayName: 'Full profile name',
-            profilePicOverrideThumbnail: 'profile.webp',
+            iconUrl: 'profile.webp',
             location: 'wrld_live:22222',
             state: 'online',
             stateBucket: 'online',

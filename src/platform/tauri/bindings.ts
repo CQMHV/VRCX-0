@@ -6024,12 +6024,7 @@ export type SavedCredentialUser = {
     id: string;
     displayName?: string | null;
     username?: string | null;
-    userIcon?: string | null;
-    profilePicOverrideThumbnail?: string | null;
-    profilePicOverride?: string | null;
-    thumbnailUrl?: string | null;
-    currentAvatarThumbnailImageUrl?: string | null;
-    currentAvatarImageUrl?: string | null;
+    iconUrl?: string | null;
 };
 export type SavedGroupCollection = {
     id: string;

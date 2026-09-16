@@ -252,33 +252,7 @@ export function createLocationUserRow(
         id: userId,
         userId,
         displayName,
-        userIcon:
-            source.userIcon || nestedUser.userIcon || fallback.userIcon || '',
-        profilePicOverrideThumbnail:
-            source.profilePicOverrideThumbnail ||
-            nestedUser.profilePicOverrideThumbnail ||
-            fallback.profilePicOverrideThumbnail ||
-            '',
-        profilePicOverride:
-            source.profilePicOverride ||
-            nestedUser.profilePicOverride ||
-            fallback.profilePicOverride ||
-            '',
-        thumbnailUrl:
-            source.thumbnailUrl ||
-            nestedUser.thumbnailUrl ||
-            fallback.thumbnailUrl ||
-            '',
-        currentAvatarThumbnailImageUrl:
-            source.currentAvatarThumbnailImageUrl ||
-            nestedUser.currentAvatarThumbnailImageUrl ||
-            fallback.currentAvatarThumbnailImageUrl ||
-            '',
-        currentAvatarImageUrl:
-            source.currentAvatarImageUrl ||
-            nestedUser.currentAvatarImageUrl ||
-            fallback.currentAvatarImageUrl ||
-            '',
+        iconUrl: source.iconUrl || nestedUser.iconUrl || fallback.iconUrl || '',
         $subtitle: fallback.subtitle || '',
         $location_at:
             source?.$location_at ||

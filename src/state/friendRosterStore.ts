@@ -209,18 +209,6 @@ function normalizeFriendProfileFields(
     if (iconUrl !== undefined) {
         profile.iconUrl = iconUrl;
     }
-    const profilePicOverride = normalizeOptionalString(
-        source.profilePicOverride
-    );
-    if (profilePicOverride !== undefined) {
-        profile.profilePicOverride = profilePicOverride;
-    }
-    const profilePicOverrideThumbnail = normalizeOptionalString(
-        source.profilePicOverrideThumbnail
-    );
-    if (profilePicOverrideThumbnail !== undefined) {
-        profile.profilePicOverrideThumbnail = profilePicOverrideThumbnail;
-    }
     const status = normalizeOptionalString(source.status);
     if (status !== undefined) {
         profile.status = status;
@@ -228,10 +216,6 @@ function normalizeFriendProfileFields(
     const statusDescription = normalizeOptionalString(source.statusDescription);
     if (statusDescription !== undefined) {
         profile.statusDescription = statusDescription;
-    }
-    const userIcon = normalizeOptionalString(source.userIcon);
-    if (userIcon !== undefined) {
-        profile.userIcon = userIcon;
     }
 
     return profile;
