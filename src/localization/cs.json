@@ -3126,6 +3126,12 @@
             }
         },
         "player_list": {
+            "group_roles": {
+                "automatic": "Skupina instance (automaticky)",
+                "group": "Skupina pro role",
+                "placeholder": "Hledat skupiny nebo zadat ID skupiny",
+                "refresh": "Obnovit role ve skupině"
+            },
             "success": {
                 "last_updated": "Naposledy aktualizováno",
                 "created": "Vytvořeno"
@@ -5884,6 +5890,7 @@
             "action": "Akce"
         },
         "playerList": {
+            "groupRoles": "Role ve skupině",
             "avatar": "Avatar",
             "timer": "Časovač",
             "icon": "Ikony",

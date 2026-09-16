@@ -3124,6 +3124,12 @@
             }
         },
         "player_list": {
+            "group_roles": {
+                "automatic": "Instance group (automatic)",
+                "group": "Group for roles",
+                "placeholder": "Search groups or enter a group ID",
+                "refresh": "Refresh group roles"
+            },
             "success": {
                 "last_updated": "Last updated",
                 "created": "Created"
@@ -5928,6 +5934,7 @@
             "action": "Action"
         },
         "playerList": {
+            "groupRoles": "Group roles",
             "avatar": "Avatar",
             "timer": "Timer",
             "icon": "Icons",

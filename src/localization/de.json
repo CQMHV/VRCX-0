@@ -3124,6 +3124,12 @@
             }
         },
         "player_list": {
+            "group_roles": {
+                "automatic": "Instanzgruppe (automatisch)",
+                "group": "Gruppe für Rollen",
+                "placeholder": "Gruppen suchen oder Gruppen-ID eingeben",
+                "refresh": "Gruppenrollen aktualisieren"
+            },
             "success": {
                 "last_updated": "Zuletzt aktualisiert",
                 "created": "Erstellt"
@@ -5880,6 +5886,7 @@
             "action": "Aktion"
         },
         "playerList": {
+            "groupRoles": "Gruppenrollen",
             "avatar": "Avatar",
             "timer": "Timer",
             "icon": "Symbole",

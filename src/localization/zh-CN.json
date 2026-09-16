@@ -3124,6 +3124,12 @@
             }
         },
         "player_list": {
+            "group_roles": {
+                "automatic": "当前实例群组（自动）",
+                "group": "角色所属群组",
+                "placeholder": "搜索群组或输入群组 ID",
+                "refresh": "刷新群组角色"
+            },
             "success": {
                 "last_updated": "上次更新",
                 "created": "创建时间"
@@ -5929,6 +5935,7 @@
             "action": "操作"
         },
         "playerList": {
+            "groupRoles": "群组角色",
             "avatar": "模型",
             "timer": "时长",
             "icon": "图标",

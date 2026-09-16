@@ -22,6 +22,7 @@ export const PLAYER_LIST_COLUMN_IDS = [
     'timer',
     'displayName',
     'rank',
+    'groupRoles',
     'status',
     'icon',
     'platform',
@@ -31,6 +32,7 @@ export const PLAYER_LIST_COLUMN_IDS = [
 ];
 
 const PLAYER_LIST_SORTABLE_COLUMN_IDS = [
+    'groupRoles',
     'timer',
     'displayName',
     'rank',

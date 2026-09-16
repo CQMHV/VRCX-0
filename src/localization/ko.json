@@ -3067,6 +3067,12 @@
             }
         },
         "player_list": {
+            "group_roles": {
+                "automatic": "현재 인스턴스 그룹 (자동)",
+                "group": "역할을 표시할 그룹",
+                "placeholder": "그룹 검색 또는 그룹 ID 입력",
+                "refresh": "그룹 역할 새로고침"
+            },
             "success": {
                 "last_updated": "마지막 업데이트",
                 "created": "생성됨"
@@ -5872,6 +5878,7 @@
             "action": "작업"
         },
         "playerList": {
+            "groupRoles": "그룹 역할",
             "avatar": "아바타",
             "timer": "타이머",
             "icon": "아이콘",

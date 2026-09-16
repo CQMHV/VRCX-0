@@ -3124,6 +3124,12 @@
             }
         },
         "player_list": {
+            "group_roles": {
+                "automatic": "Grupo da instância (automático)",
+                "group": "Grupo dos cargos",
+                "placeholder": "Pesquisar grupos ou inserir um ID de grupo",
+                "refresh": "Atualizar cargos do grupo"
+            },
             "success": {
                 "last_updated": "Última atualização",
                 "created": "Criado"
@@ -5881,6 +5887,7 @@
             "action": "Ação"
         },
         "playerList": {
+            "groupRoles": "Cargos do grupo",
             "avatar": "Avatar",
             "timer": "Temporizador",
             "icon": "Ícones",

@@ -3120,6 +3120,12 @@
             }
         },
         "player_list": {
+            "group_roles": {
+                "automatic": "現在のインスタンスのグループ（自動）",
+                "group": "ロールを表示するグループ",
+                "placeholder": "グループを検索、またはグループ ID を入力",
+                "refresh": "グループロールを更新"
+            },
             "success": {
                 "last_updated": "最終更新",
                 "created": "作成日"
@@ -5912,6 +5918,7 @@
             "action": "アクション"
         },
         "playerList": {
+            "groupRoles": "グループロール",
             "avatar": "アバター",
             "timer": "時間",
             "icon": "アイコン",

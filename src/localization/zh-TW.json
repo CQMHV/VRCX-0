@@ -3124,6 +3124,12 @@
             }
         },
         "player_list": {
+            "group_roles": {
+                "automatic": "目前實例群組（自動）",
+                "group": "身分組所屬群組",
+                "placeholder": "搜尋群組或輸入群組 ID",
+                "refresh": "重新整理群組身分組"
+            },
             "success": {
                 "last_updated": "上次更新",
                 "created": "建立時間"
@@ -5920,6 +5926,7 @@
             "action": "動作"
         },
         "playerList": {
+            "groupRoles": "群組身分組",
             "avatar": "角色",
             "timer": "時長",
             "icon": "圖示",
