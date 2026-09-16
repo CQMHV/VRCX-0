@@ -74,6 +74,32 @@ afterEach(() => {
 });
 
 describe('LaunchDialogHost instance sharing', () => {
+    it('shares a secure-only token without inventing a short name', async () => {
+        mocks.resolve.mockResolvedValue({
+            tag: location,
+            location,
+            url: '',
+            vrcUrl: '',
+            shortName: '',
+            shortUrl: '',
+            launchToken: 'secureToken',
+            secureOrShortName: 'secureToken',
+            worldName: '',
+            parsed: parseLocation(location)
+        });
+        useLaunchStore.getState().showLaunchDialog(location, '', 'secureToken');
+        render(<LaunchDialogHost />);
+        const button = screen.getByRole('button', {
+            name: 'dialog.world.info.copy_vrcx_url'
+        });
+        await waitFor(() =>
+            expect((button as HTMLButtonElement).disabled).toBe(false)
+        );
+        await userEvent.setup().click(button);
+        const copied = mocks.copy.mock.calls[0][0] as string;
+        expect(copied).toContain('launchToken=secureToken');
+        expect(copied).not.toContain('shortName=');
+    });
     it('copies the displayed name even when the launch store has no world name', async () => {
         const user = userEvent.setup();
         render(<LaunchDialogHost />);
@@ -91,7 +117,8 @@ describe('LaunchDialogHost instance sharing', () => {
         const link = vrcxInstanceDeepLink({
             worldId,
             instanceId,
-            shortName: 'token'
+            shortName: 'token',
+            launchToken: 'token'
         });
         expect(text).toBe(
             `在 VRCX-0 中打开世界“${displayedName} #82121”：${link}`

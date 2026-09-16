@@ -454,7 +454,8 @@ describe('deepLinkService', () => {
                 type: 'openInstance',
                 worldId: WORLD_ID,
                 instanceId,
-                shortName: 'inviteToken'
+                shortName: 'inviteToken',
+                launchToken: 'inviteToken'
             }
         ]);
         await drainPendingDeepLinks();
@@ -474,10 +475,26 @@ describe('deepLinkService', () => {
             type: 'openInstance',
             worldId: WORLD_ID,
             instanceId: '123&shortName=other',
-            shortName: ''
+            shortName: '',
+            launchToken: ''
         });
         expect(useLaunchStore.getState().launchDialog.open).toBe(false);
         expect(mocks.openWorldDialog).not.toHaveBeenCalled();
+    });
+
+    it('keeps a secure-only token separate from the short name', () => {
+        handleDeepLinkAction({
+            type: 'openInstance',
+            worldId: WORLD_ID,
+            instanceId: '12345~private(usr_owner)',
+            shortName: '',
+            launchToken: 'secureToken'
+        });
+        expect(useLaunchStore.getState().launchDialog).toMatchObject({
+            shortName: '',
+            launchToken: 'secureToken',
+            open: true
+        });
     });
 
     it('opens avatars from actions', () => {

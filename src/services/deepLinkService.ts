@@ -81,7 +81,7 @@ export function handleDeepLinkAction(action: DeepLinkAction): void {
                     .showLaunchDialog(
                         `${action.worldId}:${action.instanceId}`,
                         action.shortName,
-                        action.shortName
+                        action.launchToken
                     );
             } else {
                 console.warn(

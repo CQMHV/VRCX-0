@@ -81,7 +81,8 @@ function accessInstanceLocation(
     location: unknown,
     mode: DirectAccessMode,
     shortName = '',
-    title: unknown = ''
+    title: unknown = '',
+    launchToken = ''
 ) {
     const parsed = parseLocation(location);
     if (!isWorldId(parsed.worldId)) {
@@ -100,7 +101,8 @@ function accessInstanceLocation(
             .getState()
             .showLaunchDialog(
                 `${parsed.worldId}:${parsed.instanceId}`,
-                shortName || parsed.shortName
+                shortName || parsed.shortName,
+                launchToken
             );
     }
     return true;
@@ -323,7 +325,9 @@ export async function directAccessParse(
         return accessInstanceLocation(
             `${instanceLink.worldId}:${instanceLink.instanceId}`,
             mode,
-            instanceLink.shortName
+            instanceLink.shortName,
+            undefined,
+            instanceLink.launchToken
         );
     }
 

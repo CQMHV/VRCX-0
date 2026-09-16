@@ -41,6 +41,20 @@ const INSTANCE_ID = '12345~hidden(usr_owner)';
 const LOCATION = `${WORLD_ID}:${INSTANCE_ID}`;
 
 describe('directAccessService', () => {
+    it('preserves a secure-only token when opening a shared invitation', async () => {
+        const input = vrcxInstanceDeepLink({
+            worldId: WORLD_ID,
+            instanceId: INSTANCE_ID,
+            shortName: '',
+            launchToken: 'secureToken'
+        });
+        await expect(directAccessParse(input)).resolves.toBe(true);
+        expect(useLaunchStore.getState().launchDialog).toMatchObject({
+            tag: LOCATION,
+            shortName: '',
+            launchToken: 'secureToken'
+        });
+    });
     it('routes external instance shares through the same world and launch flow', async () => {
         useLaunchStore.getState().closeLaunchDialog();
         const input = vrcxInstanceDeepLink({

@@ -6,6 +6,7 @@ export interface VrcxInstanceLink {
     worldId: string;
     instanceId: string;
     shortName: string;
+    launchToken?: string;
 }
 
 export function isVrcxInstanceLink(input: VrcxInstanceLink): boolean {
@@ -14,8 +15,10 @@ export function isVrcxInstanceLink(input: VrcxInstanceLink): boolean {
         input.worldId === input.worldId.trim() &&
         Boolean(input.instanceId) &&
         !/[\s:/?#&]/.test(input.instanceId) &&
-        !/\s/.test(input.shortName) &&
-        !Array.from(input.instanceId + input.shortName).some((character) => {
+        !/\s/.test(input.shortName + (input.launchToken || '')) &&
+        !Array.from(
+            input.instanceId + input.shortName + (input.launchToken || '')
+        ).some((character) => {
             const code = character.charCodeAt(0);
             return code < 32 || (code >= 127 && code <= 159);
         })
@@ -30,6 +33,7 @@ export function vrcxInstanceDeepLink(input: VrcxInstanceLink): string {
     if (input.shortName) {
         params.set('shortName', input.shortName);
     }
+    if (input.launchToken) params.set('launchToken', input.launchToken);
     return `${VRCX_OPEN_RELAY_ORIGIN}/instance/${input.worldId}?${params}`;
 }
 
@@ -54,14 +58,16 @@ export function parseVrcxInstanceLink(input: string): VrcxInstanceLink | null {
     }
     if (
         url.searchParams.getAll('instanceId').length !== 1 ||
-        url.searchParams.getAll('shortName').length > 1
+        url.searchParams.getAll('shortName').length > 1 ||
+        url.searchParams.getAll('launchToken').length > 1
     ) {
         return null;
     }
     const link = {
         worldId: parts[2],
         instanceId: url.searchParams.get('instanceId') || '',
-        shortName: url.searchParams.get('shortName') || ''
+        shortName: url.searchParams.get('shortName') || '',
+        launchToken: url.searchParams.get('launchToken') || ''
     };
     return isVrcxInstanceLink(link) ? link : null;
 }

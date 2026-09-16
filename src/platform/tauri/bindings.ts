@@ -3728,6 +3728,7 @@ export type DeepLinkAction =
           worldId: string;
           instanceId: string;
           shortName: string;
+          launchToken: string;
       }
     | { type: 'openAvatar'; avatarId: string }
     | { type: 'importCollection'; collectionId: string };

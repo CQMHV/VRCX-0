@@ -416,7 +416,8 @@ export function LaunchDialogHost() {
     const vrcxInstanceUrl = vrcxInstanceDeepLink({
         worldId: shareLocation.worldId,
         instanceId: shareLocation.instanceId,
-        shortName: actionLaunchToken
+        shortName: details.shortName,
+        launchToken: actionLaunchToken
     });
     const canInviteResolvedInstance =
         Boolean(actionTag) &&

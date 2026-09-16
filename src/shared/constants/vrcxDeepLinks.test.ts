@@ -15,7 +15,8 @@ describe('vrcxDeepLinks', () => {
         const input = {
             worldId: `wrld_${UUID}`,
             instanceId: `12345~private(usr_${UUID})~canRequestInvite~region(jp)~nonce(abc)`,
-            shortName: 'token+with/symbols='
+            shortName: 'token+with/symbols=',
+            launchToken: 'secure/token+value='
         };
         const link = vrcxInstanceDeepLink(input);
         expect(link).toContain(
@@ -39,6 +40,8 @@ describe('vrcxDeepLinks', () => {
             `${base}?instanceId=`,
             `${base}?instanceId=123&instanceId=456`,
             `${base}?instanceId=123&shortName=a&shortName=b`,
+            `${base}?instanceId=123&launchToken=a&launchToken=b`,
+            `${base}?instanceId=123&launchToken=token%00`,
             `${base}?instanceId=123%26shortName%3Devil`,
             `${base}?instanceId=123%0a`,
             `${base}?instanceId=123#fragment`,
