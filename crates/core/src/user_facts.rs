@@ -367,6 +367,7 @@ fn normalize_fact_patch(input: &Value) -> Map<String, Value> {
     patch
 }
 
+#[cfg(test)]
 pub fn merge_user_fact(
     existing: Option<&UserFact>,
     input: &Value,

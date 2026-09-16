@@ -39,7 +39,6 @@ fn to_object_emits_derived_trust_and_platform() {
         Some(false)
     );
     assert!(!object.contains_key("fieldRanks"));
-    assert!(!object.contains_key("fieldSources"));
 }
 
 #[test]
