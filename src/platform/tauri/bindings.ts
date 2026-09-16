@@ -4311,6 +4311,7 @@ export type FriendRecord = Partial<{
     status?: string;
     statusDescription?: string;
     bio?: string;
+    iconUrl?: string;
     currentAvatarImageUrl?: string;
     currentAvatarThumbnailImageUrl?: string;
     currentAvatarAuthorId?: string;
