@@ -1,3 +1,4 @@
+import type { UserProfileEntity } from '@/domain/entities/user';
 import type { InventoryItemRecord } from '@/repositories/vrchatMediaRepository';
 import {
     profileBackgroundAssetUrl,
@@ -36,7 +37,7 @@ const PROFILE_ENDPOINT_FIELDS = [
     'themeId',
     'themes',
     'userIcon'
-] as const;
+] as const satisfies readonly (keyof UserProfileEntity)[];
 
 type ProfileEndpointField = (typeof PROFILE_ENDPOINT_FIELDS)[number];
 
