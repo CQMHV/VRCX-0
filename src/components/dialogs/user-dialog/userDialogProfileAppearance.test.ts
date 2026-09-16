@@ -131,6 +131,7 @@ describe('mergeUserDialogProfileAppearance', () => {
                     bioLinks: ['https://example.test'],
                     pronouns: 'they/them',
                     badges,
+                    userIcon: 'https://example.test/custom-icon.png',
                     iconUrl:
                         'https://api.vrchat.cloud/api/1/image/file_icon/1/256',
                     trustTags: ['system_trust_veteran']
@@ -143,6 +144,7 @@ describe('mergeUserDialogProfileAppearance', () => {
             bioLinks: ['https://example.test'],
             pronouns: 'they/them',
             badges,
+            userIcon: 'https://example.test/custom-icon.png',
             iconUrl: 'https://api.vrchat.cloud/api/1/image/file_icon/1/256'
         });
     });

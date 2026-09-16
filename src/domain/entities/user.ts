@@ -151,6 +151,7 @@ export type UserProfileEntity = EntityRecord & {
     twoFactorAuthEnabled?: boolean;
     twoFactorAuthEnabledDate?: string | null;
     unsubscribe?: boolean;
+    userIcon?: string;
     updated_at?: string;
     userLanguage?: string | null;
     userLanguageCode?: string;

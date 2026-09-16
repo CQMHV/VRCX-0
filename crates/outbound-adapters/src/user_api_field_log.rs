@@ -83,6 +83,10 @@ fn user_shape(user: &Value) -> Value {
     .collect();
     json!({
         "userKey": user_key,
+        "mediaTypes": {
+            "iconType": user.get("iconType").and_then(Value::as_str),
+            "bannerType": user.get("bannerType").and_then(Value::as_str),
+        },
         "shape": field_shape(Some(user)),
         "keys": user.as_object().map(|object| object.keys().collect::<Vec<_>>()),
         "fields": fields,
@@ -143,7 +147,7 @@ mod tests {
         let shape = user_shape(&json!({
             "id": "usr_private", "displayName": "Private name", "bio": "private bio",
             "iconUrl": "https://private.example/icon", "bioLinks": [], "pronouns": null,
-            "authToken": "secret"
+            "authToken": "secret", "iconType": "userIcon", "bannerType": "customImage"
         }));
         assert_eq!(
             shape["fields"]["bio"],
@@ -155,6 +159,8 @@ mod tests {
         );
         assert_eq!(shape["fields"]["pronouns"]["type"], "null");
         assert_eq!(shape["fields"]["badges"]["type"], "missing");
+        assert_eq!(shape["mediaTypes"]["iconType"], "userIcon");
+        assert_eq!(shape["mediaTypes"]["bannerType"], "customImage");
         let output = shape.to_string();
         for secret in [
             "usr_private",

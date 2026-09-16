@@ -32,7 +32,8 @@ const PROFILE_ENDPOINT_FIELDS = [
     'profileEffect',
     'pronouns',
     'themeId',
-    'themes'
+    'themes',
+    'userIcon'
 ] as const;
 
 type ProfileEndpointField = (typeof PROFILE_ENDPOINT_FIELDS)[number];
