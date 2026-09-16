@@ -4724,7 +4724,9 @@
         "launch": {
             "header": "啟動",
             "short_url": "短連結",
-            "location": "地點",
+            "share": "分享",
+            "share_description": "複製 VRCX-0 分享連結，對方開啟即可預覽並在用戶端中開啟",
+            "more_copy_options": "更多複製選項",
             "invite": "邀請",
             "open_ingame": "於遊戲中開啟",
             "self_invite": "自我邀請",
@@ -4739,7 +4741,8 @@
                 "game_not_running": "VRChat 未執行"
             },
             "copy": {
-                "link": "連結",
+                "vrchat_link": "VRChat 連結",
+                "instance_id": "房間 ID",
                 "failed": "複製失敗"
             }
         },

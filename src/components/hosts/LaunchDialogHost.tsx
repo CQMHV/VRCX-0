@@ -1,11 +1,8 @@
 import {
-    CheckIcon,
     Gamepad2Icon,
-    Link2Icon,
-    LinkIcon,
     MailIcon,
-    MapPinIcon,
     MonitorIcon,
+    MoreHorizontalIcon,
     RectangleGogglesIcon,
     Share2Icon,
     UserPlusIcon
@@ -46,6 +43,13 @@ import {
     DialogHeader,
     DialogTitle
 } from '@/ui/shadcn/dialog';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from '@/ui/shadcn/dropdown-menu';
 import { Spinner } from '@/ui/shadcn/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
@@ -175,72 +179,6 @@ function LaunchTile({
     );
 }
 
-const copyIconClass =
-    'absolute size-4 transition-[opacity,filter,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]';
-const copyIconHiddenClass = 'scale-90 opacity-0 blur-[2px]';
-
-function CopyButton({
-    icon: Icon,
-    label,
-    value,
-    onCopy
-}: {
-    icon: LucideIcon;
-    label: string;
-    value: string;
-    onCopy(): Promise<boolean>;
-}) {
-    const [copyCount, setCopyCount] = useState(0);
-    const copied = copyCount > 0;
-
-    useEffect(() => {
-        if (!copyCount) {
-            return;
-        }
-        const timer = window.setTimeout(() => setCopyCount(0), 1600);
-        return () => window.clearTimeout(timer);
-    }, [copyCount]);
-
-    return (
-        <Tooltip>
-            <TooltipTrigger
-                render={
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label={label}
-                        disabled={!value}
-                        onClick={() => {
-                            onCopy().then((ok) => {
-                                if (ok) {
-                                    setCopyCount((count) => count + 1);
-                                }
-                            });
-                        }}
-                    >
-                        <span className="relative inline-flex size-4 items-center justify-center">
-                            <Icon
-                                className={cn(
-                                    copyIconClass,
-                                    copied && copyIconHiddenClass
-                                )}
-                            />
-                            <CheckIcon
-                                className={cn(
-                                    copyIconClass,
-                                    !copied && copyIconHiddenClass
-                                )}
-                            />
-                        </span>
-                    </Button>
-                }
-            />
-            <TooltipContent>{label}</TooltipContent>
-        </Tooltip>
-    );
-}
-
 export function LaunchDialogHost() {
     const { t } = useTranslation();
 
@@ -348,6 +286,17 @@ export function LaunchDialogHost() {
             errorMessage: t('dialog.launch.copy.failed')
         });
     }
+
+    const copyMenuItem = (value: string, label: string) => (
+        <DropdownMenuItem
+            disabled={!value}
+            onClick={() => {
+                void copyField(value, label);
+            }}
+        >
+            {t('accessibility.copy_value', { value: label })}
+        </DropdownMenuItem>
+    );
 
     async function runAction(key: LaunchActionKey, action: LaunchAction) {
         if (busy || loading) {
@@ -543,61 +492,71 @@ export function LaunchDialogHost() {
                             </Button>
                         </div>
                         <div className="flex gap-0.5">
-                            <CopyButton
-                                icon={Share2Icon}
-                                label={t('dialog.world.info.copy_vrcx_url')}
-                                value={vrcxInstanceUrl}
-                                onCopy={() =>
-                                    copyField(
-                                        t('dialog.world.info.vrcx_share_text', {
-                                            name: `${subtitle} #${instanceName}`,
-                                            url: vrcxInstanceUrl
-                                        }),
-                                        t('dialog.world.info.vrcx_url')
-                                    )
-                                }
-                            />
-                            <CopyButton
-                                icon={LinkIcon}
-                                label={t('accessibility.copy_value', {
-                                    value: t('dialog.launch.copy.link')
-                                })}
-                                value={details.url}
-                                onCopy={() =>
-                                    copyField(
-                                        details.url,
-                                        t('dialog.launch.copy.link')
-                                    )
-                                }
-                            />
-                            <CopyButton
-                                icon={MapPinIcon}
-                                label={t('accessibility.copy_value', {
-                                    value: t('dialog.launch.location')
-                                })}
-                                value={details.location}
-                                onCopy={() =>
-                                    copyField(
-                                        details.location,
-                                        t('dialog.launch.location')
-                                    )
-                                }
-                            />
-                            {details.shortUrl ? (
-                                <CopyButton
-                                    icon={Link2Icon}
-                                    label={t('accessibility.copy_value', {
-                                        value: t('dialog.launch.short_url')
-                                    })}
-                                    value={details.shortUrl}
-                                    onCopy={() =>
-                                        copyField(
-                                            details.shortUrl,
-                                            t('dialog.launch.short_url')
-                                        )
+                            <Tooltip>
+                                <TooltipTrigger
+                                    render={
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            disabled={!vrcxInstanceUrl}
+                                            onClick={() => {
+                                                void copyField(
+                                                    t(
+                                                        'dialog.world.info.vrcx_share_text',
+                                                        {
+                                                            name: `${subtitle} #${instanceName}`,
+                                                            url: vrcxInstanceUrl
+                                                        }
+                                                    ),
+                                                    t(
+                                                        'dialog.world.info.vrcx_url'
+                                                    )
+                                                );
+                                            }}
+                                        >
+                                            <Share2Icon data-icon="inline-start" />
+                                            {t('dialog.launch.share')}
+                                        </Button>
                                     }
                                 />
-                            ) : null}
+                                <TooltipContent>
+                                    {t('dialog.launch.share_description')}
+                                </TooltipContent>
+                            </Tooltip>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger
+                                    render={
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon-sm"
+                                            aria-label={t(
+                                                'dialog.launch.more_copy_options'
+                                            )}
+                                        >
+                                            <MoreHorizontalIcon data-icon="inline-start" />
+                                        </Button>
+                                    }
+                                />
+                                <DropdownMenuContent align="end">
+                                    {copyMenuItem(
+                                        details.url,
+                                        t('dialog.launch.copy.vrchat_link')
+                                    )}
+                                    {details.shortUrl
+                                        ? copyMenuItem(
+                                              details.shortUrl,
+                                              t('dialog.launch.short_url')
+                                          )
+                                        : null}
+                                    <DropdownMenuSeparator />
+                                    {copyMenuItem(
+                                        details.location,
+                                        t('dialog.launch.copy.instance_id')
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     </DialogFooter>
                 </DialogContent>

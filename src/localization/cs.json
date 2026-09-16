@@ -4692,7 +4692,9 @@
         "launch": {
             "header": "Spustit",
             "short_url": "Krátká URL",
-            "location": "Lokace",
+            "share": "Sdílet",
+            "share_description": "Zkopíruje odkaz VRCX-0. Kdo ho otevře, uvidí náhled a může instanci otevřít v klientu.",
+            "more_copy_options": "Další možnosti kopírování",
             "invite": "Pozvat",
             "open_ingame": "Otevřít ve hře",
             "self_invite": "Pozvat sám sebe",
@@ -4707,7 +4709,8 @@
                 "game_not_running": "VRChat neběží"
             },
             "copy": {
-                "link": "Odkaz",
+                "vrchat_link": "Odkaz VRChat",
+                "instance_id": "ID instance",
                 "failed": "Kopírování se nezdařilo"
             }
         },

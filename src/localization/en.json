@@ -4732,7 +4732,9 @@
         "launch": {
             "header": "Launch",
             "short_url": "Short URL",
-            "location": "Location",
+            "share": "Share",
+            "share_description": "Copy the VRCX-0 share link. Anyone who opens it gets a preview and can open the instance in the client.",
+            "more_copy_options": "More copy options",
             "invite": "Invite",
             "open_ingame": "Open in-game",
             "self_invite": "Self invite",
@@ -4747,7 +4749,8 @@
                 "game_not_running": "VRChat not running"
             },
             "copy": {
-                "link": "Link",
+                "vrchat_link": "VRChat link",
+                "instance_id": "Instance ID",
                 "failed": "Failed to copy"
             }
         },

@@ -4688,7 +4688,9 @@
         "launch": {
             "header": "Lanzar",
             "short_url": "URL Corta",
-            "location": "Ubicación",
+            "share": "Compartir",
+            "share_description": "Copia el enlace de VRCX-0. Quien lo abra verá una vista previa y podrá abrir la instancia en el cliente.",
+            "more_copy_options": "Más opciones de copia",
             "invite": "Invitar",
             "open_ingame": "Abrir en el juego",
             "self_invite": "Autoinvitación",
@@ -4703,7 +4705,8 @@
                 "game_not_running": "VRChat no está abierto"
             },
             "copy": {
-                "link": "Enlace",
+                "vrchat_link": "Enlace de VRChat",
+                "instance_id": "ID de instancia",
                 "failed": "No se pudo copiar"
             }
         },

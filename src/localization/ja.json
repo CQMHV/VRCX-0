@@ -4718,7 +4718,9 @@
         "launch": {
             "header": "起動",
             "short_url": "短縮 URL",
-            "location": "場所",
+            "share": "共有",
+            "share_description": "VRCX-0 の共有リンクをコピーします。開いた相手はプレビューを確認してクライアントで開けます",
+            "more_copy_options": "その他のコピー",
             "invite": "招待",
             "open_ingame": "ゲーム内で開く",
             "self_invite": "自分を招待",
@@ -4733,7 +4735,8 @@
                 "game_not_running": "VRChat 未起動"
             },
             "copy": {
-                "link": "リンク",
+                "vrchat_link": "VRChat リンク",
+                "instance_id": "インスタンス ID",
                 "failed": "コピーできませんでした"
             }
         },

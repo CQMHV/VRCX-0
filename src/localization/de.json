@@ -4688,7 +4688,9 @@
         "launch": {
             "header": "Starten",
             "short_url": "Kurz-URL",
-            "location": "Standort",
+            "share": "Teilen",
+            "share_description": "VRCX-0-Freigabelink kopieren. Wer ihn öffnet, sieht eine Vorschau und kann die Instanz im Client öffnen.",
+            "more_copy_options": "Weitere Kopieroptionen",
             "invite": "Einladen",
             "open_ingame": "Im Spiel öffnen",
             "self_invite": "Selbsteinladung",
@@ -4703,7 +4705,8 @@
                 "game_not_running": "VRChat läuft nicht"
             },
             "copy": {
-                "link": "Link",
+                "vrchat_link": "VRChat-Link",
+                "instance_id": "Instanz-ID",
                 "failed": "Kopieren fehlgeschlagen"
             }
         },

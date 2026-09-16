@@ -43,6 +43,9 @@ function translate(key: string, values?: Record<string, string>) {
     if (key === 'dialog.world.info.vrcx_share_text') {
         return `在 VRCX-0 中打开世界“${values?.name}”：${values?.url}`;
     }
+    if (key === 'accessibility.copy_value') {
+        return `Copy ${values?.value}`;
+    }
     return key;
 }
 
@@ -90,7 +93,7 @@ describe('LaunchDialogHost instance sharing', () => {
         useLaunchStore.getState().showLaunchDialog(location, '', 'secureToken');
         render(<LaunchDialogHost />);
         const button = screen.getByRole('button', {
-            name: 'dialog.world.info.copy_vrcx_url'
+            name: 'dialog.launch.share'
         });
         await waitFor(() =>
             expect((button as HTMLButtonElement).disabled).toBe(false)
@@ -104,7 +107,7 @@ describe('LaunchDialogHost instance sharing', () => {
         const user = userEvent.setup();
         render(<LaunchDialogHost />);
         const button = screen.getByRole('button', {
-            name: 'dialog.world.info.copy_vrcx_url'
+            name: 'dialog.launch.share'
         });
         await waitFor(() =>
             expect((button as HTMLButtonElement).disabled).toBe(false)
@@ -130,10 +133,37 @@ describe('LaunchDialogHost instance sharing', () => {
         mocks.worldName = '';
         render(<LaunchDialogHost />);
         const button = screen.getByRole('button', {
-            name: 'dialog.world.info.copy_vrcx_url'
+            name: 'dialog.launch.share'
         });
         await waitFor(() =>
             expect((button as HTMLButtonElement).disabled).toBe(false)
         );
+    });
+});
+
+describe('LaunchDialogHost copy menu', () => {
+    it('copies the raw instance id from the overflow menu', async () => {
+        const user = userEvent.setup();
+        render(<LaunchDialogHost />);
+        await waitFor(() =>
+            expect(
+                (
+                    screen.getByRole('button', {
+                        name: 'dialog.launch.share'
+                    }) as HTMLButtonElement
+                ).disabled
+            ).toBe(false)
+        );
+        await user.click(
+            screen.getByRole('button', {
+                name: 'dialog.launch.more_copy_options'
+            })
+        );
+        await user.click(
+            await screen.findByRole('menuitem', {
+                name: 'Copy dialog.launch.copy.instance_id'
+            })
+        );
+        expect(mocks.copy.mock.calls[0][0]).toBe(location);
     });
 });
