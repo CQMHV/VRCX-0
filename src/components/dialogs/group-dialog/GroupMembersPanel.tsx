@@ -215,9 +215,11 @@ function GroupMemberTile({
                         <Tooltip>
                             <TooltipTrigger
                                 render={
-                                    <TagIcon className="text-muted-foreground size-3.5 shrink-0" />
+                                    <span className="inline-flex shrink-0" />
                                 }
-                            />
+                            >
+                                <TagIcon className="text-muted-foreground size-3.5" />
+                            </TooltipTrigger>
                             <TooltipContent>
                                 {t('dialog.group.members.representing')}
                             </TooltipContent>
@@ -227,13 +229,15 @@ function GroupMemberTile({
                         <Tooltip>
                             <TooltipTrigger
                                 render={
-                                    row.visibility === 'friends' ? (
-                                        <UsersIcon className="text-muted-foreground size-3.5 shrink-0" />
-                                    ) : (
-                                        <EyeOffIcon className="text-muted-foreground size-3.5 shrink-0" />
-                                    )
+                                    <span className="inline-flex shrink-0" />
                                 }
-                            />
+                            >
+                                {row.visibility === 'friends' ? (
+                                    <UsersIcon className="text-muted-foreground size-3.5" />
+                                ) : (
+                                    <EyeOffIcon className="text-muted-foreground size-3.5" />
+                                )}
+                            </TooltipTrigger>
                             <TooltipContent>
                                 {row.visibility === 'friends'
                                     ? t('dialog.user.label.visibility_friends')
