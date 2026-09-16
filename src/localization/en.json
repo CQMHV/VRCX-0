@@ -1915,7 +1915,8 @@
                 "last_backup": "Backed up {date}",
                 "connections_configured": "{count} connections",
                 "apps_count": "{count} apps",
-                "automatic_backup": "Auto backup"
+                "automatic_backup": "Auto backup",
+                "show_details": "Show details"
             },
             "quick_access": {
                 "header": "Quick access",

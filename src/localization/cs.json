@@ -1917,7 +1917,8 @@
                 "last_backup": "Záloha {date}",
                 "connections_configured": "{count} připojení",
                 "apps_count": "{count} aplikací",
-                "automatic_backup": "Auto záloha"
+                "automatic_backup": "Auto záloha",
+                "show_details": "Zobrazit podrobnosti"
             },
             "quick_access": {
                 "header": "Rychlý přístup",

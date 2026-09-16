@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import {
     useEffect,
+    useId,
     useRef,
     useState,
     type ComponentProps,
@@ -43,6 +44,7 @@ import { ToolbarSearch } from '@/components/layout/ToolbarControls';
 import { SettingsCard } from '@/features/settings/components/SettingsCard';
 import { cn } from '@/lib/utils';
 import type { ToolDefinition } from '@/shared/constants/tools';
+import { useNavigationCacheStore } from '@/state/navigationCacheStore';
 import { Button } from '@/ui/shadcn/button';
 import {
     DropdownMenu,
@@ -91,11 +93,13 @@ function useToolsLabel() {
 }
 
 function ToolRow({
+    toolKey,
     icon: Icon,
     title,
     description,
     status,
     actionsLabel,
+    showDetailsLabel,
     toolsPageShortcutLabel,
     sidebarShortcutLabel,
     addQuickAccessLabel,
@@ -115,11 +119,13 @@ function ToolRow({
     onAddQuickAccess,
     onRemoveQuickAccess
 }: {
+    toolKey: string;
     icon: LucideIcon;
     title: string;
     description: string;
     status?: ToolStatusSummary;
     actionsLabel: string;
+    showDetailsLabel: string;
     toolsPageShortcutLabel: string;
     sidebarShortcutLabel: string;
     addQuickAccessLabel: string;
@@ -144,11 +150,16 @@ function ToolRow({
     const editQuickAccessLabel = isEditRemoveAction
         ? removeQuickAccessLabel
         : addQuickAccessLabel;
-    const [expanded, setExpanded] = useState(false);
+    const expanded = useNavigationCacheStore(
+        (state) => state.toolRows[toolKey] ?? true
+    );
+    const setToolRowOpen = useNavigationCacheStore(
+        (state) => state.setToolRowOpen
+    );
+    const itemsPanelId = useId();
     const items = editMode ? [] : (status?.items ?? []);
     const expandable = items.length > 0;
     const showItems = expandable && expanded;
-    const RowChevronIcon = expandable ? ChevronDownIcon : ChevronRightIcon;
 
     return (
         <div
@@ -163,7 +174,7 @@ function ToolRow({
         >
             <div
                 className={cn(
-                    'group/tool grid h-9 grid-cols-[1.25rem_16rem_minmax(0,1fr)_auto_1.5rem] items-center gap-3 px-4 text-sm',
+                    'group/tool grid h-9 grid-cols-[1.25rem_16rem_minmax(0,1fr)_auto_1.5rem_1.5rem] items-center gap-3 px-4 text-sm',
                     '[&:has([data-slot=dropdown-menu-trigger][aria-expanded=true])]:bg-[var(--vrcx-0-table-row-hover-surface)]',
                     'has-[>button:focus-visible]:bg-[var(--vrcx-0-table-row-hover-surface)]',
                     !editMode &&
@@ -174,14 +185,7 @@ function ToolRow({
                     type="button"
                     className="col-span-3 grid h-full grid-cols-subgrid items-center gap-3 text-left outline-none"
                     aria-disabled={editMode ? true : undefined}
-                    aria-expanded={expandable ? expanded : undefined}
-                    onClick={
-                        editMode
-                            ? undefined
-                            : expandable
-                              ? () => setExpanded((current) => !current)
-                              : onClick
-                    }
+                    onClick={editMode ? undefined : onClick}
                 >
                     <Icon
                         aria-hidden="true"
@@ -264,7 +268,7 @@ function ToolRow({
                                     <Button
                                         type="button"
                                         size="icon-xs"
-                                        className="text-muted-foreground hidden size-6 group-hover/tool:flex group-has-[:focus-visible]/tool:flex aria-expanded:flex"
+                                        className="text-muted-foreground invisible size-6 group-hover/tool:visible group-has-[:focus-visible]/tool:visible aria-expanded:visible"
                                         variant="ghost"
                                         aria-label={actionsLabel}
                                         onClick={(event) => {
@@ -308,21 +312,41 @@ function ToolRow({
                             </DropdownMenuContent>
                         </DropdownMenu>
                     )}
-                    {editMode ? null : (
-                        <RowChevronIcon
+                </div>
+                <div className="flex size-6 items-center justify-center">
+                    {editMode ? null : expandable ? (
+                        <Button
+                            type="button"
+                            size="icon-xs"
+                            variant="ghost"
+                            className="text-muted-foreground/50 hover:text-foreground aria-expanded:text-muted-foreground/50 aria-expanded:hover:text-foreground size-6 aria-expanded:bg-transparent aria-expanded:hover:bg-(--state-hover-surface)"
+                            aria-label={showDetailsLabel}
+                            aria-expanded={expanded}
+                            aria-controls={itemsPanelId}
+                            onClick={() => setToolRowOpen(toolKey, !expanded)}
+                        >
+                            <ChevronDownIcon
+                                data-expanded={expanded}
+                                className="size-4 transition-transform duration-150 data-[expanded=true]:rotate-180 motion-reduce:transition-none"
+                            />
+                        </Button>
+                    ) : (
+                        <ChevronRightIcon
                             aria-hidden="true"
-                            data-expanded={showItems}
-                            className="text-muted-foreground/50 size-4 transition-transform duration-150 group-hover/tool:hidden group-has-[:focus-visible]/tool:hidden data-[expanded=true]:rotate-180 motion-reduce:transition-none [.group\/tool:has([data-slot=dropdown-menu-trigger][aria-expanded=true])_&]:hidden"
+                            className="text-muted-foreground/50 size-4"
                         />
                     )}
                 </div>
             </div>
             {showItems ? (
-                <div className="divide-stroke-subtle border-stroke-subtle divide-y border-t">
+                <div
+                    id={itemsPanelId}
+                    className="divide-stroke-subtle border-stroke-subtle divide-y border-t"
+                >
                     {items.map((item) => (
                         <div
                             key={item.id}
-                            className="group/tool-item grid h-8 grid-cols-[1.25rem_16rem_minmax(0,1fr)_auto_1.5rem] items-center gap-3 px-4 text-sm hover:bg-[var(--vrcx-0-table-row-hover-surface)] has-[>button:focus-visible]:bg-[var(--vrcx-0-table-row-hover-surface)]"
+                            className="group/tool-item grid h-8 grid-cols-[1.25rem_16rem_minmax(0,1fr)_auto_1.5rem_1.5rem] items-center gap-3 px-4 text-sm hover:bg-[var(--vrcx-0-table-row-hover-surface)] has-[>button:focus-visible]:bg-[var(--vrcx-0-table-row-hover-surface)]"
                         >
                             <button
                                 type="button"
@@ -352,6 +376,7 @@ function ToolRow({
                                     }}
                                 />
                             </div>
+                            <span aria-hidden="true" />
                             <ChevronRightIcon
                                 aria-hidden="true"
                                 className="text-muted-foreground/50 size-4 justify-self-center opacity-0 group-hover/tool-item:opacity-100 group-has-[:focus-visible]/tool-item:opacity-100"
@@ -686,11 +711,13 @@ export function ToolsPageContent({ embedded = false }: { embedded?: boolean }) {
         const normalizedToolKey = normalizePinnedToolKey(tool.key);
         return (
             <ToolRow
+                toolKey={tool.key}
                 icon={getNavIconComponent(tool.navIcon, 'lucide:Wrench')}
                 title={label(tool.titleKey)}
                 description={label(tool.descriptionKey)}
                 status={statusByToolKey.get(tool.key)}
                 actionsLabel={label('view.tools.quick_access.actions')}
+                showDetailsLabel={label('view.tools.status.show_details')}
                 navEligible={tool.navEligible}
                 isPinned={pinnedToolKeys.has(normalizedToolKey)}
                 isQuickAccess={quickAccessKeySet.has(normalizedToolKey)}

@@ -1858,7 +1858,8 @@
                 "last_backup": "마지막 백업 {date}",
                 "connections_configured": "연결 {count}개",
                 "apps_count": "앱 {count}개",
-                "automatic_backup": "자동 백업"
+                "automatic_backup": "자동 백업",
+                "show_details": "세부 항목 표시"
             },
             "quick_access": {
                 "header": "빠른 액세스",

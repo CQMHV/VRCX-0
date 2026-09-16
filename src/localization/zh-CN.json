@@ -1915,7 +1915,8 @@
                 "last_backup": "上次备份 {date}",
                 "connections_configured": "{count} 个连接",
                 "apps_count": "{count} 个应用",
-                "automatic_backup": "自动备份"
+                "automatic_backup": "自动备份",
+                "show_details": "展开详情"
             },
             "quick_access": {
                 "header": "常用工具",

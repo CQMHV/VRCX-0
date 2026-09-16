@@ -1917,7 +1917,8 @@
                 "last_backup": "Копия {date}",
                 "connections_configured": "Подключений: {count}",
                 "apps_count": "Приложений: {count}",
-                "automatic_backup": "Автокопия"
+                "automatic_backup": "Автокопия",
+                "show_details": "Показать подробности"
             },
             "quick_access": {
                 "header": "Быстрый доступ",

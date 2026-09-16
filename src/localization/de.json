@@ -1915,7 +1915,8 @@
                 "last_backup": "Gesichert {date}",
                 "connections_configured": "{count} Verbindungen",
                 "apps_count": "{count} Apps",
-                "automatic_backup": "Auto-Backup"
+                "automatic_backup": "Auto-Backup",
+                "show_details": "Details anzeigen"
             },
             "quick_access": {
                 "header": "Schnellzugriff",
