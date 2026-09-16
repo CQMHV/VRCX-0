@@ -404,7 +404,7 @@ function UserDialogHeaderFacts({
         typeof profile.discordId === 'string' ? profile.discordId : '';
 
     return (
-        <EntityFactList className="bg-card border-stroke-subtle -mx-(--card-spacing) -mb-(--card-spacing) border-t px-(--card-spacing) pt-3 pb-(--card-spacing)">
+        <EntityFactList className="border-stroke-subtle border-t pt-3">
             <HeaderPreferenceRow
                 label={t('dialog.user.info.avatar_cloning')}
                 checked={Boolean(profile.allowAvatarCopying)}
