@@ -2279,9 +2279,9 @@
             },
             "feedback": {
                 "title": "发送反馈",
-                "description": "反馈默认匿名提交。我们会阅读每一条消息。",
+                "description": "默认匿名提交。Bug 反馈和功能建议都欢迎。",
                 "privacy_note": "不会附带任何账号信息。",
-                "placeholder": "告诉我们哪些好用、哪些不好用，或者你希望看到什么新功能……",
+                "placeholder": "描述一下发生了什么、你期望的结果，以及怎么复现……",
                 "submit": "发送",
                 "submitting": "发送中…",
                 "thanks": "感谢你的反馈！",
@@ -2310,16 +2310,16 @@
                 "friend_bios": {
                     "header": "好友简介",
                     "keep_up_to_date": "自动更新好友简介",
-                    "description": "定期获取好友的公开简介，变化会显示在好友动态中。更新可能延迟，也不保证完整。"
+                    "description": "定期获取好友的公开简介，变化会显示在好友动态中。更新可能延迟，部分变化可能漏记。"
                 },
                 "hidden_feed": {
-                    "header": "Feed 隐藏用户",
-                    "description": "从 Feed 视图隐藏所选用户，但不会删除已保存数据。",
-                    "add": "添加用户",
-                    "search_placeholder": "搜索用户",
-                    "empty": "Feed 中没有隐藏用户。",
-                    "remove": "移除隐藏用户",
-                    "unknown_user": "未知用户"
+                    "header": "已隐藏动态的好友",
+                    "description": "隐藏所选好友的动态，不会删除已保存的数据。",
+                    "add": "添加好友",
+                    "search_placeholder": "搜索好友",
+                    "empty": "还没有隐藏任何人。",
+                    "remove": "移除已隐藏的好友",
+                    "unknown_friend": "未知好友"
                 }
             },
             "vr": {

@@ -140,7 +140,7 @@ export function SettingsSocialTab() {
                 value: normalizeUserId(user.id),
                 label:
                     knownUserName(user) ||
-                    t('view.settings.social.hidden_feed.unknown_user'),
+                    t('view.settings.social.hidden_feed.unknown_friend'),
                 user
             }))
             .filter((option) => {

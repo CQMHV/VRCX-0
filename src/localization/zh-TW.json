@@ -2279,9 +2279,9 @@
             },
             "feedback": {
                 "title": "傳送意見回饋",
-                "description": "意見回饋預設以匿名方式提交。我們會閱讀每一則訊息。",
+                "description": "預設匿名提交。Bug 回報和功能建議都歡迎。",
                 "privacy_note": "不會附帶任何帳號資訊。",
-                "placeholder": "告訴我們哪裡好用、哪裡需要改進，或是你希望看到什麼新功能……",
+                "placeholder": "描述一下發生了什麼、你預期的結果，以及如何重現……",
                 "submit": "傳送",
                 "submitting": "傳送中…",
                 "thanks": "感謝你的回饋！",
@@ -2310,16 +2310,16 @@
                 "friend_bios": {
                     "header": "好友自我介紹",
                     "keep_up_to_date": "自動更新好友自我介紹",
-                    "description": "定期取得好友的公開自我介紹，變更會顯示在好友動態中。更新可能延遲，也不保證完整。"
+                    "description": "定期取得好友的公開自我介紹，變更會顯示在好友動態中。更新可能延遲，部分變更可能漏記。"
                 },
                 "hidden_feed": {
-                    "header": "已隱藏動態的用戶",
-                    "description": "隱藏所選用戶的動態，但不會刪除已儲存的資料。",
-                    "add": "新增用戶",
-                    "search_placeholder": "搜尋用戶",
-                    "empty": "目前沒有已隱藏動態的用戶。",
-                    "remove": "移除已隱藏的用戶",
-                    "unknown_user": "未知用戶"
+                    "header": "已隱藏動態的好友",
+                    "description": "隱藏所選好友的動態，但不會刪除已儲存的資料。",
+                    "add": "新增好友",
+                    "search_placeholder": "搜尋好友",
+                    "empty": "還沒有隱藏任何人。",
+                    "remove": "移除已隱藏的好友",
+                    "unknown_friend": "未知好友"
                 }
             },
             "vr": {

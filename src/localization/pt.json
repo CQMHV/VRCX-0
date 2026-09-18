@@ -2279,9 +2279,9 @@
             },
             "feedback": {
                 "title": "Enviar feedback",
-                "description": "O feedback é enviado de forma anónima por predefinição. Lemos todas as mensagens.",
+                "description": "Anónimo por predefinição. Relatórios de erros e sugestões são bem-vindos.",
                 "privacy_note": "Não é incluída nenhuma informação da conta.",
-                "placeholder": "Diga-nos o que funciona, o que não funciona ou o que gostaria de ver…",
+                "placeholder": "Descreva o que aconteceu, o que esperava e como reproduzir…",
                 "submit": "Enviar",
                 "submitting": "A enviar…",
                 "thanks": "Obrigado pelo seu feedback!",
@@ -2310,16 +2310,16 @@
                 "friend_bios": {
                     "header": "Biografias de amigos",
                     "keep_up_to_date": "Manter biografias de amigos atualizadas",
-                    "description": "Obtém periodicamente as biografias públicas dos amigos e mostra as alterações no Feed. As atualizações podem atrasar ou ficar incompletas."
+                    "description": "Obtém periodicamente as biografias públicas dos amigos e mostra as alterações no Feed. As atualizações podem atrasar e algumas alterações podem não ser registadas."
                 },
                 "hidden_feed": {
-                    "header": "Usuários ocultos no Feed",
-                    "description": "Oculta usuários selecionados no Feed sem excluir dados salvos.",
-                    "add": "Adicionar usuário",
-                    "search_placeholder": "Pesquisar usuários",
-                    "empty": "Nenhum usuário oculto no Feed.",
-                    "remove": "Remover usuário oculto",
-                    "unknown_user": "Usuário desconhecido"
+                    "header": "Amigos ocultos no Feed",
+                    "description": "Oculta amigos selecionados no Feed sem excluir dados guardados.",
+                    "add": "Adicionar amigo",
+                    "search_placeholder": "Pesquisar amigos",
+                    "empty": "Ainda não ocultou ninguém.",
+                    "remove": "Remover amigo oculto",
+                    "unknown_friend": "Amigo desconhecido"
                 }
             },
             "vr": {

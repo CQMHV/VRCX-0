@@ -2279,9 +2279,9 @@
             },
             "feedback": {
                 "title": "Send feedback",
-                "description": "Feedback is anonymous by default. We read every message.",
+                "description": "Anonymous by default. Bug reports and suggestions both welcome.",
                 "privacy_note": "No account info is attached.",
-                "placeholder": "Tell us what's working, what's not, or what you'd like to see...",
+                "placeholder": "Describe what happened, what you expected, and how to reproduce it...",
                 "submit": "Send",
                 "submitting": "Sending…",
                 "thanks": "Thanks for your feedback!",
@@ -2310,16 +2310,16 @@
                 "friend_bios": {
                     "header": "Friend bios",
                     "keep_up_to_date": "Keep friend bios up to date",
-                    "description": "Periodically fetches friends' public bios and shows changes in the feed. Updates may be delayed or incomplete."
+                    "description": "Periodically fetches friends' public bios and shows changes in the feed. Updates may be delayed, and some changes may go unrecorded."
                 },
                 "hidden_feed": {
-                    "header": "Hidden Feed Users",
-                    "description": "Hide selected users from Feed without deleting saved data.",
-                    "add": "Add user",
-                    "search_placeholder": "Search users",
-                    "empty": "No hidden Feed users.",
-                    "remove": "Remove hidden user",
-                    "unknown_user": "Unknown user"
+                    "header": "Hidden Feed Friends",
+                    "description": "Hide selected friends from the feed without deleting saved data.",
+                    "add": "Add friend",
+                    "search_placeholder": "Search friends",
+                    "empty": "You haven't hidden anyone yet.",
+                    "remove": "Remove hidden friend",
+                    "unknown_friend": "Unknown friend"
                 }
             },
             "vr": {

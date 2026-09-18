@@ -2279,9 +2279,9 @@
             },
             "feedback": {
                 "title": "Feedback senden",
-                "description": "Feedback wird standardmäßig anonym gesendet. Wir lesen jede Nachricht.",
+                "description": "Standardmäßig anonym. Fehlerberichte und Vorschläge sind gleichermaßen willkommen.",
                 "privacy_note": "Es werden keine Kontodaten übermittelt.",
-                "placeholder": "Erzähl uns, was gut läuft, was nicht, oder was du dir wünschst…",
+                "placeholder": "Beschreibe, was passiert ist, was du erwartet hast und wie man es nachstellen kann…",
                 "submit": "Senden",
                 "submitting": "Wird gesendet…",
                 "thanks": "Danke für dein Feedback!",
@@ -2310,16 +2310,16 @@
                 "friend_bios": {
                     "header": "Bios von Freunden",
                     "keep_up_to_date": "Bios von Freunden aktuell halten",
-                    "description": "Ruft regelmäßig die öffentlichen Bios von Freunden ab und zeigt Änderungen im Feed. Aktualisierungen können verzögert oder unvollständig sein."
+                    "description": "Ruft regelmäßig die öffentlichen Bios von Freunden ab und zeigt Änderungen im Feed. Aktualisierungen können sich verzögern, und einzelne Änderungen können unbemerkt bleiben."
                 },
                 "hidden_feed": {
-                    "header": "Ausgeblendete Feed-Nutzer",
-                    "description": "Blende ausgewählte Nutzer im Feed aus, ohne gespeicherte Daten zu löschen.",
-                    "add": "Nutzer hinzufügen",
-                    "search_placeholder": "Nutzer suchen",
-                    "empty": "Keine ausgeblendeten Feed-Nutzer.",
-                    "remove": "Ausgeblendeten Nutzer entfernen",
-                    "unknown_user": "Unbekannter Nutzer"
+                    "header": "Ausgeblendete Feed-Freunde",
+                    "description": "Blende ausgewählte Freunde im Feed aus, ohne gespeicherte Daten zu löschen.",
+                    "add": "Freund hinzufügen",
+                    "search_placeholder": "Freunde suchen",
+                    "empty": "Du hast noch niemanden ausgeblendet.",
+                    "remove": "Ausgeblendeten Freund entfernen",
+                    "unknown_friend": "Unbekannter Freund"
                 }
             },
             "vr": {

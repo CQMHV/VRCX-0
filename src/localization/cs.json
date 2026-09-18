@@ -2285,9 +2285,9 @@
             },
             "feedback": {
                 "title": "Odeslat zpětnou vazbu",
-                "description": "Zpětná vazba se ve výchozím nastavení odesílá anonymně. Každou zprávu čteme.",
+                "description": "Ve výchozím nastavení anonymní. Hlášení chyb i návrhy jsou vítány.",
                 "privacy_note": "Nepřipojují se žádné údaje o účtu.",
-                "placeholder": "Řekněte nám, co funguje, co ne, nebo co byste chtěli vidět…",
+                "placeholder": "Popište, co se stalo, co jste očekávali a jak to reprodukovat…",
                 "submit": "Odeslat",
                 "submitting": "Odesílání…",
                 "thanks": "Děkujeme za zpětnou vazbu!",
@@ -2316,16 +2316,16 @@
                 "friend_bios": {
                     "header": "Bio přátel",
                     "keep_up_to_date": "Udržovat bio přátel aktuální",
-                    "description": "Pravidelně načítá veřejná bio přátel a změny zobrazuje ve Feedu. Aktualizace mohou být opožděné nebo neúplné."
+                    "description": "Pravidelně načítá veřejná bio přátel a změny zobrazuje ve Feedu. Aktualizace se mohou zpozdit a některé změny mohou být vynechány."
                 },
                 "hidden_feed": {
-                    "header": "Skrytí uživatelé ve Feedu",
-                    "description": "Skryje vybrané uživatele ve Feedu bez odstranění uložených dat.",
-                    "add": "Přidat uživatele",
-                    "search_placeholder": "Hledat uživatele",
-                    "empty": "Ve Feedu nejsou skryti žádní uživatelé.",
-                    "remove": "Odebrat skrytého uživatele",
-                    "unknown_user": "Neznámý uživatel"
+                    "header": "Skrytí přátelé ve Feedu",
+                    "description": "Skryje vybrané přátele ve Feedu bez odstranění uložených dat.",
+                    "add": "Přidat přítele",
+                    "search_placeholder": "Hledat přátele",
+                    "empty": "Zatím jste nikoho neskryli.",
+                    "remove": "Odebrat skrytého přítele",
+                    "unknown_friend": "Neznámý přítel"
                 }
             },
             "vr": {
