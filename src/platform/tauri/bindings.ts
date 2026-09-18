@@ -4069,6 +4069,15 @@ export type FeedLiveEntry =
           ownerUserId: string;
       }
     | {
+          type: 'Bio';
+          created_at: string;
+          userId: string;
+          displayName: string;
+          bio: string;
+          previousBio: string;
+          ownerUserId: string;
+      }
+    | {
           type: 'Avatar';
           created_at: string;
           userId: string;

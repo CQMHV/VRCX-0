@@ -2298,6 +2298,11 @@
                 "favorites": {
                     "header": "Favoritos"
                 },
+                "friend_bios": {
+                    "header": "Biografias de amigos",
+                    "keep_up_to_date": "Manter biografias de amigos atualizadas",
+                    "description": "Obtém periodicamente as biografias públicas dos amigos e mostra as alterações no Feed. As atualizações podem atrasar ou ficar incompletas."
+                },
                 "hidden_feed": {
                     "header": "Usuários ocultos no Feed",
                     "description": "Oculta usuários selecionados no Feed sem excluir dados salvos.",

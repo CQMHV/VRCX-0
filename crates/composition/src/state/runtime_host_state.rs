@@ -23,7 +23,7 @@ use vrcx_0_application::social::{
     favorite_group_membership_from_baseline, AuthenticatedRuntimeDeps,
     AuthenticatedRuntimeFavoritesSink, AuthenticatedRuntimeOrchestrator, GroupApiDeps,
     GroupBanImportRuntime, NoteExportRuntime, PrintCleanupDeps, PrintCleanupQueueSink,
-    SocialMaintenanceRuntime,
+    ProfileBioScanPacer, SocialMaintenanceRuntime,
 };
 use vrcx_0_application_activity::ActivityWarmupRuntime;
 use vrcx_0_application_core::{
@@ -628,6 +628,7 @@ impl RuntimeHostStateBuilder {
                 ),
                 group_order_source: Arc::clone(&group_order_source),
                 group_notification_group_ids: Mutex::new(None),
+                profile_bio_pacer: ProfileBioScanPacer::default(),
             }),
             self.runtime_context.background_jobs.clone(),
             self.runtime_context.tasks.clone(),

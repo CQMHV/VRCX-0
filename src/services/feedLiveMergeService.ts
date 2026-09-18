@@ -89,6 +89,10 @@ function liveEntryRow(entry: FeedLiveEntryPayload): FeedRow {
                 entry.previousStatusDescription
             );
             break;
+        case 'Bio':
+            row.bio = optionalText(entry.bio);
+            row.previousBio = optionalText(entry.previousBio);
+            break;
         case 'Avatar':
             row.ownerId = optionalText(entry.ownerId);
             row.previousOwnerId = optionalText(entry.previousOwnerId);

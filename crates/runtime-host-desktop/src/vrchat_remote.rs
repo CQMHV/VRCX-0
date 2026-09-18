@@ -72,17 +72,27 @@ use vrcx_0_vrchat_client::tools::{
 };
 use vrcx_0_vrchat_client::users::{profile_get_input, user_represented_group_get_input};
 
+use crate::profile_bio::ProfileBioObserver;
 use crate::DesktopMediaRuntime;
 
 #[derive(Clone)]
 pub struct DesktopVrchatRemoteFacade {
     api: VrchatApiRuntime,
     media: DesktopMediaRuntime,
+    profile_bio: ProfileBioObserver,
 }
 
 impl DesktopVrchatRemoteFacade {
-    pub(crate) fn new(api: VrchatApiRuntime, media: DesktopMediaRuntime) -> Self {
-        Self { api, media }
+    pub(crate) fn new(
+        api: VrchatApiRuntime,
+        media: DesktopMediaRuntime,
+        profile_bio: ProfileBioObserver,
+    ) -> Self {
+        Self {
+            api,
+            media,
+            profile_bio,
+        }
     }
 
     pub async fn current_user(&self) -> Result<VrchatApiResponse> {
@@ -129,13 +139,16 @@ impl DesktopVrchatRemoteFacade {
     pub async fn user_profile(&self, user_id: String, as_self: bool) -> Result<VrchatApiResponse> {
         let (user_id, request) =
             profile_get_input(VRCHAT_API_DEFAULT_ENDPOINT.into(), user_id, as_self)?;
-        self.execute(
-            "app__vrchat_user_profile_get",
-            format!("Getting profile for user {user_id}."),
-            request,
-            VrchatScope::Vrchat,
-        )
-        .await
+        let response = self
+            .execute(
+                "app__vrchat_user_profile_get",
+                format!("Getting profile for user {user_id}."),
+                request,
+                VrchatScope::Vrchat,
+            )
+            .await?;
+        self.profile_bio.observe(&response);
+        Ok(response)
     }
 
     pub async fn user_represented_group(&self, user_id: String) -> Result<VrchatApiResponse> {

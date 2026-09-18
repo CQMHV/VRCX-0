@@ -2298,6 +2298,11 @@
                 "favorites": {
                     "header": "Favorites"
                 },
+                "friend_bios": {
+                    "header": "Friend bios",
+                    "keep_up_to_date": "Keep friend bios up to date",
+                    "description": "Periodically fetches friends' public bios and shows changes in the feed. Updates may be delayed or incomplete."
+                },
                 "hidden_feed": {
                     "header": "Hidden Feed Users",
                     "description": "Hide selected users from Feed without deleting saved data.",

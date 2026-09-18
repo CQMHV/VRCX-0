@@ -6,11 +6,10 @@ use vrcx_0_contracts::FileMetadataOutput;
 use vrcx_0_core::OwnerId;
 
 use super::test_support::{
-    feed_lookup_input, feed_rows_query, runtime_with_active_session, TestRealtimeHostRuntime,
+    feed_lookup_input, feed_rows_query, runtime_with_active_session, seed_friend_baseline,
+    TestRealtimeHostRuntime,
 };
-use crate::realtime::{
-    FriendIconChange, FriendProjection, RealtimeFriendOutput, RealtimeSessionContext,
-};
+use crate::realtime::{FriendIconChange, FriendProjection, RealtimeFriendOutput};
 
 fn icon_url(file_id: &str) -> String {
     format!("https://api.vrchat.cloud/api/1/image/{file_id}/1/256")
@@ -75,32 +74,6 @@ async fn wait_for_avatar_rows(
         tokio::time::sleep(Duration::from_millis(10)).await;
     }
     persisted_avatar_rows(runtime, user_id)
-}
-
-fn seed_friend_baseline(
-    runtime: &TestRealtimeHostRuntime,
-    active_session: &RealtimeSessionContext,
-) {
-    runtime.runtime().friends.set_baseline(
-        vrcx_0_core::friends::FriendRosterBaseline {
-            current_user_id: active_session.user_id.clone(),
-            endpoint: active_session.endpoint.clone(),
-            websocket: active_session.websocket.clone(),
-            friends_by_id: [(
-                "usr_friend".to_string(),
-                vrcx_0_core::friends::FriendRecord {
-                    id: "usr_friend".into(),
-                    display_name: "Friend".into(),
-                    state: "online".into(),
-                    ..vrcx_0_core::friends::FriendRecord::default()
-                },
-            )]
-            .into_iter()
-            .collect(),
-        },
-        7,
-        0,
-    );
 }
 
 #[tokio::test]

@@ -2300,6 +2300,11 @@
                 "favorites": {
                     "header": "Oblíbené"
                 },
+                "friend_bios": {
+                    "header": "Bio přátel",
+                    "keep_up_to_date": "Udržovat bio přátel aktuální",
+                    "description": "Pravidelně načítá veřejná bio přátel a změny zobrazuje ve Feedu. Aktualizace mohou být opožděné nebo neúplné."
+                },
                 "hidden_feed": {
                     "header": "Skrytí uživatelé ve Feedu",
                     "description": "Skryje vybrané uživatele ve Feedu bez odstranění uložených dat.",

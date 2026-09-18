@@ -74,6 +74,17 @@ pub enum FeedLiveEntry {
         owner_user_id: String,
     },
     #[serde(rename_all = "camelCase")]
+    Bio {
+        #[serde(rename = "created_at")]
+        created_at: String,
+        user_id: String,
+        display_name: String,
+        bio: String,
+        previous_bio: String,
+        #[serde(default, skip_serializing_if = "String::is_empty")]
+        owner_user_id: String,
+    },
+    #[serde(rename_all = "camelCase")]
     Avatar {
         #[serde(rename = "created_at")]
         created_at: String,
@@ -160,6 +171,7 @@ macro_rules! common_field {
             | FeedLiveEntry::Offline { $field, .. }
             | FeedLiveEntry::Gps { $field, .. }
             | FeedLiveEntry::Status { $field, .. }
+            | FeedLiveEntry::Bio { $field, .. }
             | FeedLiveEntry::Avatar { $field, .. }
             | FeedLiveEntry::TrustLevel { $field, .. }
             | FeedLiveEntry::Friend { $field, .. }
@@ -177,6 +189,7 @@ impl FeedLiveEntry {
             Self::Offline { .. } => "Offline",
             Self::Gps { .. } => "GPS",
             Self::Status { .. } => "Status",
+            Self::Bio { .. } => "Bio",
             Self::Avatar { .. } => "Avatar",
             Self::TrustLevel { .. } => "TrustLevel",
             Self::Friend { .. } => "Friend",
@@ -192,6 +205,7 @@ impl FeedLiveEntry {
             Self::Offline { .. } => Some(FeedFilter::Offline),
             Self::Gps { .. } => Some(FeedFilter::Gps),
             Self::Status { .. } => Some(FeedFilter::Status),
+            Self::Bio { .. } => Some(FeedFilter::Bio),
             Self::Avatar { .. } => Some(FeedFilter::Avatar),
             Self::TrustLevel { .. }
             | Self::Friend { .. }
@@ -219,6 +233,7 @@ impl FeedLiveEntry {
             | Self::Offline { user_id, .. }
             | Self::Gps { user_id, .. }
             | Self::Status { user_id, .. }
+            | Self::Bio { user_id, .. }
             | Self::Avatar { user_id, .. }
             | Self::TrustLevel { user_id, .. }
             | Self::Friend { user_id, .. }
@@ -234,6 +249,7 @@ impl FeedLiveEntry {
             | Self::Offline { display_name, .. }
             | Self::Gps { display_name, .. }
             | Self::Status { display_name, .. }
+            | Self::Bio { display_name, .. }
             | Self::Avatar { display_name, .. }
             | Self::TrustLevel { display_name, .. }
             | Self::Friend { display_name, .. }
@@ -249,6 +265,7 @@ impl FeedLiveEntry {
             | Self::Offline { display_name, .. }
             | Self::Gps { display_name, .. }
             | Self::Status { display_name, .. }
+            | Self::Bio { display_name, .. }
             | Self::Avatar { display_name, .. }
             | Self::TrustLevel { display_name, .. }
             | Self::Friend { display_name, .. }
@@ -266,6 +283,7 @@ impl FeedLiveEntry {
             | Self::OnPlayerJoining { location, .. }
             | Self::InstanceClosed { location, .. } => location,
             Self::Status { .. }
+            | Self::Bio { .. }
             | Self::Avatar { .. }
             | Self::TrustLevel { .. }
             | Self::Friend { .. }
@@ -279,6 +297,7 @@ impl FeedLiveEntry {
             | Self::Offline { group_name, .. }
             | Self::Gps { group_name, .. } => group_name,
             Self::Status { .. }
+            | Self::Bio { .. }
             | Self::Avatar { .. }
             | Self::TrustLevel { .. }
             | Self::Friend { .. }
@@ -297,6 +316,7 @@ impl FeedLiveEntry {
                 world_name.as_deref().unwrap_or_default()
             }
             Self::Status { .. }
+            | Self::Bio { .. }
             | Self::Avatar { .. }
             | Self::TrustLevel { .. }
             | Self::Friend { .. }
@@ -313,6 +333,7 @@ impl FeedLiveEntry {
                 *world_name = Some(value)
             }
             Self::Status { .. }
+            | Self::Bio { .. }
             | Self::Avatar { .. }
             | Self::TrustLevel { .. }
             | Self::Friend { .. }
@@ -328,6 +349,7 @@ impl FeedLiveEntry {
             | Self::OnPlayerJoining { world_id, .. }
             | Self::InstanceClosed { world_id, .. } => world_id.as_deref().unwrap_or_default(),
             Self::Status { .. }
+            | Self::Bio { .. }
             | Self::Avatar { .. }
             | Self::TrustLevel { .. }
             | Self::Friend { .. }
@@ -343,6 +365,7 @@ impl FeedLiveEntry {
             | Self::OnPlayerJoining { world_id, .. }
             | Self::InstanceClosed { world_id, .. } => *world_id = Some(value),
             Self::Status { .. }
+            | Self::Bio { .. }
             | Self::Avatar { .. }
             | Self::TrustLevel { .. }
             | Self::Friend { .. }
@@ -368,6 +391,7 @@ impl FeedLiveEntry {
                 display_location, ..
             } => display_location.as_deref(),
             Self::Status { .. }
+            | Self::Bio { .. }
             | Self::Avatar { .. }
             | Self::TrustLevel { .. }
             | Self::Friend { .. }
@@ -393,6 +417,7 @@ impl FeedLiveEntry {
                 display_location, ..
             } => *display_location = Some(value),
             Self::Status { .. }
+            | Self::Bio { .. }
             | Self::Avatar { .. }
             | Self::TrustLevel { .. }
             | Self::Friend { .. }
@@ -447,6 +472,12 @@ impl FeedLiveEntry {
                 previous_status,
                 previous_status_description,
             ],
+            Self::Bio {
+                display_name,
+                bio,
+                previous_bio,
+                ..
+            } => vec![display_name, bio, previous_bio],
             Self::Avatar {
                 display_name,
                 avatar_name,
@@ -517,6 +548,13 @@ impl From<&FeedLiveEntry> for FeedRowOutput {
                 status_description: optional_text(status_description),
                 previous_status: optional_text(previous_status),
                 previous_status_description: optional_text(previous_status_description),
+                ..row
+            },
+            FeedLiveEntry::Bio {
+                bio, previous_bio, ..
+            } => FeedRowOutput {
+                bio: optional_text(bio),
+                previous_bio: optional_text(previous_bio),
                 ..row
             },
             FeedLiveEntry::Avatar {

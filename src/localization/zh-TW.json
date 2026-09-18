@@ -2298,6 +2298,11 @@
                 "favorites": {
                     "header": "收藏"
                 },
+                "friend_bios": {
+                    "header": "好友自我介紹",
+                    "keep_up_to_date": "自動更新好友自我介紹",
+                    "description": "定期取得好友的公開自我介紹，變更會顯示在好友動態中。更新可能延遲，也不保證完整。"
+                },
                 "hidden_feed": {
                     "header": "已隱藏動態的用戶",
                     "description": "隱藏所選用戶的動態，但不會刪除已儲存的資料。",

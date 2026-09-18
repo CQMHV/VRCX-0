@@ -19,6 +19,7 @@ mod media;
 pub mod notifications;
 mod persistence;
 mod profile_backup;
+pub mod profile_bio;
 mod profile_config;
 pub mod realtime;
 pub mod social_aggregates;

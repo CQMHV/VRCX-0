@@ -428,6 +428,23 @@ fn insert_feed_entry(
                 .set("previous_status_description", previous_status_description.clone())
                 .build(),
         )?,
+        FeedLiveEntry::Bio {
+            created_at,
+            user_id,
+            display_name,
+            bio,
+            previous_bio,
+            ..
+        } => tx.execute_non_query(
+            &format!("INSERT OR IGNORE INTO {user_prefix}_feed_bio (created_at, user_id, display_name, bio, previous_bio) VALUES (@created_at, @user_id, @display_name, @bio, @previous_bio)"),
+            &ParamsBuilder::new()
+                .set("created_at", created_at.clone())
+                .set("user_id", user_id.clone())
+                .set("display_name", display_name.clone())
+                .set("bio", bio.clone())
+                .set("previous_bio", previous_bio.clone())
+                .build(),
+        )?,
         FeedLiveEntry::Avatar {
             created_at,
             user_id,

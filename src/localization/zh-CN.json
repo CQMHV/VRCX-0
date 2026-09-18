@@ -2298,6 +2298,11 @@
                 "favorites": {
                     "header": "收藏"
                 },
+                "friend_bios": {
+                    "header": "好友简介",
+                    "keep_up_to_date": "自动更新好友简介",
+                    "description": "定期获取好友的公开简介，变化会显示在好友动态中。更新可能延迟，也不保证完整。"
+                },
                 "hidden_feed": {
                     "header": "Feed 隐藏用户",
                     "description": "从 Feed 视图隐藏所选用户，但不会删除已保存数据。",

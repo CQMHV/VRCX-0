@@ -47,14 +47,10 @@ impl RealtimeHostRuntime {
         let previous = self
             .resolve_avatar_image_file(endpoint, &change.previous_icon_url)
             .await;
-        let Some(output) = self.friends.feed_entry_output(
-            active.generation,
+        self.publish_friend_feed_entry_for(
+            &active,
             avatar_feed_entry(&change, previous.as_ref(), &next),
-        ) else {
-            return;
-        };
-        let owner = self.lock_friend_owner();
-        self.apply_friend_output_owned(&owner, output);
+        );
     }
 
     async fn resolve_avatar_image_file(

@@ -9,6 +9,7 @@ mod moderation_sync;
 mod mutual_graph_fetch;
 mod note_export;
 mod prints;
+mod profile_bio;
 mod quick_search_catalog;
 mod saved_group_favorites;
 mod social_baseline_refresh;
@@ -139,6 +140,12 @@ pub use prints::{
     PrintCleanupTrigger, PrintFavoriteBulkResult, PrintFavoriteState, PrintFavoritesStore,
     PrintRemote, PrintRemoteFuture, DEFAULT_AUTO_DELETE_PRINTS_LIMIT,
 };
+pub use profile_bio::{
+    observe_profile_bio, observe_profile_response, scan_next_profile_bio, ProfileBioObservation,
+    ProfileBioOutcome, ProfileBioRecord, ProfileBioRemoteRequests, ProfileBioScanDeps,
+    ProfileBioScanOutcome, ProfileBioScanPacer, ProfileBioStore, PROFILE_BIO_SCAN_CONFIG_KEY,
+    PROFILE_BIO_SCAN_INTERVAL, PROFILE_BIO_SCAN_MIN_AGE, PROFILE_BIO_SCAN_PAUSE,
+};
 pub use quick_search_catalog::{
     QuickSearchDetailStore, QuickSearchEntityType, QuickSearchMatchedField, QuickSearchQueryInput,
     QuickSearchQueryOutput, QuickSearchQueryStatus, QuickSearchRemoteRequests,
@@ -156,7 +163,8 @@ pub use social_maintenance::{
     BACKGROUND_GROUP_INSTANCE_NOTIFICATION_REFRESH_JOB, BACKGROUND_GROUP_INSTANCE_REFRESH_JOB,
     BACKGROUND_MODERATION_CADENCE_SECONDS, BACKGROUND_MODERATION_REFRESH_JOB,
     BACKGROUND_PRINT_CLEANUP_CADENCE_SECONDS, BACKGROUND_PRINT_CLEANUP_JOB,
-    BACKGROUND_SOCIAL_BASELINE_CADENCE_SECONDS, BACKGROUND_SOCIAL_BASELINE_REFRESH_JOB,
+    BACKGROUND_PROFILE_BIO_SCAN_JOB, BACKGROUND_SOCIAL_BASELINE_CADENCE_SECONDS,
+    BACKGROUND_SOCIAL_BASELINE_REFRESH_JOB,
 };
 #[cfg(any(test, feature = "test-utils"))]
 pub use social_mutation::TestSocialMutationRemoteRequests;

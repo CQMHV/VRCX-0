@@ -6,7 +6,7 @@ pub(super) use serde_json::json;
 pub(super) use std::sync::Arc;
 #[cfg(test)]
 pub(super) use std::sync::Mutex;
-#[cfg(test)]
+#[cfg(any(test, feature = "test-utils"))]
 pub(super) use vrcx_0_contracts::feed::{FeedQueryMode, FeedRowsQueryInput};
 #[cfg(test)]
 pub(super) use vrcx_0_contracts::feed_live::FeedLiveEntry;
@@ -252,8 +252,8 @@ pub(super) fn friend_log_history_query(
     store.friend_log_history(input)
 }
 
-#[cfg(test)]
-pub(super) fn feed_lookup_input(user_id: String) -> FeedRowsQueryInput {
+#[cfg(any(test, feature = "test-utils"))]
+pub fn feed_lookup_input(user_id: String) -> FeedRowsQueryInput {
     FeedRowsQueryInput {
         user_id,
         mode: FeedQueryMode::Lookup,
@@ -267,6 +267,33 @@ pub(super) fn feed_lookup_input(user_id: String) -> FeedRowsQueryInput {
         date_to: String::new(),
         cursor: None,
     }
+}
+
+#[cfg(any(test, feature = "test-utils"))]
+pub fn seed_friend_baseline(
+    runtime: &TestRealtimeHostRuntime,
+    active_session: &crate::realtime::RealtimeSessionContext,
+) {
+    runtime.runtime().friends.set_baseline(
+        vrcx_0_core::friends::FriendRosterBaseline {
+            current_user_id: active_session.user_id.clone(),
+            endpoint: active_session.endpoint.clone(),
+            websocket: active_session.websocket.clone(),
+            friends_by_id: [(
+                "usr_friend".to_string(),
+                vrcx_0_core::friends::FriendRecord {
+                    id: "usr_friend".into(),
+                    display_name: "Friend".into(),
+                    state: "online".into(),
+                    ..vrcx_0_core::friends::FriendRecord::default()
+                },
+            )]
+            .into_iter()
+            .collect(),
+        },
+        7,
+        0,
+    );
 }
 
 #[cfg(test)]
