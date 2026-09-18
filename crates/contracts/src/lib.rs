@@ -39,7 +39,9 @@ pub use data_dir_migration::{
     DATA_DIR_MIGRATION_SPACE_MARGIN_BYTES,
 };
 pub use database_upgrade::DatabaseUpgradeStatus;
-pub use entity_cache::{AvatarCacheOutput, CacheEntityInput, WorldSummaryOutput};
+pub use entity_cache::{
+    AvatarCacheOutput, CacheEntityInput, FileMetadataOutput, WorldSummaryOutput,
+};
 pub use favorites::{
     FavoriteRow, SavedGroupCollection, SavedGroupCollectionCreateInput,
     SavedGroupCollectionDeleteInput, SavedGroupFavoriteAddInput, SavedGroupFavoriteRemoveInput,

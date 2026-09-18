@@ -69,9 +69,7 @@ export function avatarFeedEntry(
         avatarName: '',
         previousAvatarName: '',
         currentAvatarImageUrl: '',
-        currentAvatarThumbnailImageUrl: '',
         previousCurrentAvatarImageUrl: '',
-        previousCurrentAvatarThumbnailImageUrl: '',
         ownerUserId: '',
         ...overrides
     };

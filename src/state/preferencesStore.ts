@@ -375,7 +375,6 @@ export const DEFAULT_PREFERENCES = Object.freeze({
     autoSweepVRChatCache: false,
     gameLogDisabled: false,
     feedPersistenceDisabled: false,
-    avatarFeedPersistenceDisabled: false,
     avatarAutoCleanup: 'Off',
     anonymousUsageTelemetry: true,
     udonExceptionLogging: false,
@@ -599,9 +598,6 @@ export function normalizePreferenceSnapshot(snapshot: unknown = {}) {
         autoSweepVRChatCache: normalizeBool(next.autoSweepVRChatCache),
         gameLogDisabled: normalizeBool(next.gameLogDisabled),
         feedPersistenceDisabled: normalizeBool(next.feedPersistenceDisabled),
-        avatarFeedPersistenceDisabled: normalizeBool(
-            next.avatarFeedPersistenceDisabled
-        ),
         avatarAutoCleanup: normalizeAvatarAutoCleanupPreference(
             next.avatarAutoCleanup
         ),

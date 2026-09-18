@@ -164,7 +164,6 @@ export async function loadPreferenceSnapshot() {
         autoSweepVRChatCache,
         gameLogDisabled,
         feedPersistenceDisabled,
-        avatarFeedPersistenceDisabled,
         avatarAutoCleanup,
         anonymousUsageTelemetry,
         udonExceptionLogging,
@@ -309,7 +308,6 @@ export async function loadPreferenceSnapshot() {
         configRepository.getBool('autoSweepVRChatCache', false),
         configRepository.getBool('gameLogDisabled', false),
         configRepository.getBool('feedPersistenceDisabled', false),
-        configRepository.getBool('avatarFeedPersistenceDisabled', false),
         configRepository.getString('avatarAutoCleanup', 'Off'),
         configRepository.getBool('anonymousUsageTelemetry', true),
         configRepository.getBool('udonExceptionLogging', false),
@@ -535,7 +533,6 @@ export async function loadPreferenceSnapshot() {
         autoSweepVRChatCache: Boolean(autoSweepVRChatCache),
         gameLogDisabled: Boolean(gameLogDisabled),
         feedPersistenceDisabled: Boolean(feedPersistenceDisabled),
-        avatarFeedPersistenceDisabled: Boolean(avatarFeedPersistenceDisabled),
         avatarAutoCleanup:
             normalizeAvatarAutoCleanupPreference(avatarAutoCleanup),
         anonymousUsageTelemetry: Boolean(anonymousUsageTelemetry),

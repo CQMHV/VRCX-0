@@ -489,6 +489,7 @@ impl RuntimeHostStateBuilder {
                     .realtime_notification_projection_observer_registry(),
             )),
             Arc::clone(&self.runtime_context.world_cache),
+            self.runtime_context.file_cache.clone(),
             Arc::clone(&self.runtime_context.instance_dwell),
             Arc::new(PrintCleanupQueueSink::new(
                 self.runtime_context.print_cleanup.clone(),

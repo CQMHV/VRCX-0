@@ -12,6 +12,7 @@ mod database;
 mod error;
 pub mod favorites;
 pub mod feed;
+pub mod files;
 pub mod friends;
 pub mod game_log;
 pub mod legacy_migration;

@@ -550,6 +550,7 @@ impl DesktopRuntimeHostState {
             runtime.desktop_assembly().tasks().clone(),
             Arc::clone(runtime.desktop_assembly().avatar_cache()),
             Arc::clone(runtime.desktop_assembly().world_cache()),
+            runtime.desktop_assembly().file_cache().clone(),
             Arc::clone(runtime.realtime_runtime()),
             desktop_services.overlay_activity(),
             runtime.desktop_assembly().favorite_mutations().clone(),

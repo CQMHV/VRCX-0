@@ -901,13 +901,6 @@ const generatedCommands = {
             disabled
         });
     },
-    async appAvatarFeedPersistenceSetDisabled(
-        disabled: boolean
-    ): Promise<null> {
-        return await TAURI_INVOKE('app__avatar_feed_persistence_set_disabled', {
-            disabled
-        });
-    },
     async appAvatarFeedHistoryCleanup(
         cutoffDate: string | null
     ): Promise<AvatarFeedCleanupOutcome> {
@@ -1070,6 +1063,11 @@ const generatedCommands = {
     },
     async appWorldGet(input: WorldGetInput): Promise<HttpApiExecuteResponse> {
         return await TAURI_INVOKE('app__world_get', { input });
+    },
+    async appFileMetadataGet(
+        fileUrlOrId: string
+    ): Promise<FileMetadataOutput | null> {
+        return await TAURI_INVOKE('app__file_metadata_get', { fileUrlOrId });
     },
     async appWorldFriendVisits(
         worldId: string
@@ -1394,11 +1392,6 @@ const generatedCommands = {
         input: VrchatAvatarIdInput
     ): Promise<HttpApiExecuteResponse> {
         return await TAURI_INVOKE('app__vrchat_avatar_delete', { input });
-    },
-    async appVrchatAvatarFileGet(
-        input: VrchatAvatarFileInput
-    ): Promise<HttpApiExecuteResponse> {
-        return await TAURI_INVOKE('app__vrchat_avatar_file_get', { input });
     },
     async appVrchatAvatarGalleryGet(
         input: VrchatAvatarIdInput
@@ -4076,15 +4069,6 @@ export type FeedLiveEntry =
           ownerUserId: string;
       }
     | {
-          type: 'Bio';
-          created_at: string;
-          userId: string;
-          displayName: string;
-          bio: string;
-          previousBio: string;
-          ownerUserId: string;
-      }
-    | {
           type: 'Avatar';
           created_at: string;
           userId: string;
@@ -4094,11 +4078,7 @@ export type FeedLiveEntry =
           avatarName: string;
           previousAvatarName: string;
           currentAvatarImageUrl: string;
-          currentAvatarThumbnailImageUrl: string;
           previousCurrentAvatarImageUrl: string;
-          previousCurrentAvatarThumbnailImageUrl: string;
-          currentAvatarTags?: string[] | null;
-          previousCurrentAvatarTags?: string[] | null;
           ownerUserId: string;
       }
     | {
@@ -4210,6 +4190,12 @@ export type FeedSearchQueryInput = {
     dateTo?: string;
     maxRows: number;
 };
+export type FileMetadataOutput = {
+    id: string;
+    name: string;
+    ownerId: string;
+    avatarName: string | null;
+};
 export type FriendLocationTime = {
     userId: string;
     location: string;
@@ -4310,12 +4296,7 @@ export type FriendRecord = Partial<{
     lastPlatform?: string;
     status?: string;
     statusDescription?: string;
-    bio?: string;
     iconUrl?: string;
-    currentAvatarImageUrl?: string;
-    currentAvatarThumbnailImageUrl?: string;
-    currentAvatarAuthorId?: string;
-    currentAvatarName?: string;
     date_joined?: string | null;
     last_activity?: string | null;
     last_login?: string | null;
@@ -6439,7 +6420,6 @@ export type VrchatAuthFileAnalysisInput = {
     variant?: string;
 };
 export type VrchatAuthSavedCredentialDeleteInput = { userId?: string };
-export type VrchatAvatarFileInput = { fileId?: string };
 export type VrchatAvatarIdInput = { avatarId?: string };
 export type VrchatAvatarListByUserInput = {
     userId?: string;

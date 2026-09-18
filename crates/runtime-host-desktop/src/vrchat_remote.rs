@@ -31,8 +31,8 @@ use vrcx_0_vrchat_client::auth::{
     current_user_get_input, file_analysis_get_input, visits_get_input,
 };
 use vrcx_0_vrchat_client::avatars::{
-    avatar_file_get_input, avatar_gallery_get_input, avatar_list_by_user_get_input,
-    avatar_styles_get_input, AvatarListByUserGetInput,
+    avatar_gallery_get_input, avatar_list_by_user_get_input, avatar_styles_get_input,
+    AvatarListByUserGetInput,
 };
 use vrcx_0_vrchat_client::favorites::{favorite_groups_get_input, favorite_worlds_get_input};
 use vrcx_0_vrchat_client::friends::friend_status_get_input;
@@ -249,18 +249,6 @@ impl DesktopVrchatRemoteFacade {
             "app__vrchat_avatar_styles_get",
             "Getting avatar styles.",
             avatar_styles_get_input(VRCHAT_API_DEFAULT_ENDPOINT.into()),
-            VrchatScope::Vrchat,
-        )
-        .await
-    }
-
-    pub async fn avatar_file(&self, file_id: String) -> Result<VrchatApiResponse> {
-        let (file_id, request) =
-            avatar_file_get_input(VRCHAT_API_DEFAULT_ENDPOINT.into(), file_id)?;
-        self.execute(
-            "app__vrchat_avatar_file_get",
-            format!("Getting file {file_id}."),
-            request,
             VrchatScope::Vrchat,
         )
         .await
