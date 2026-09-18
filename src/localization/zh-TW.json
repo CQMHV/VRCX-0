@@ -463,6 +463,9 @@
             "failed_open_instance_in_vrchat_falling_back_to_self_invite": "無法在 VRChat 中開啟房間，改用自我邀請",
             "failed_to_save_memo": "無法儲存本機筆記"
         },
+        "picker": {
+            "more_not_shown": "還有 {count} 位未顯示，縮小搜尋範圍即可找到。"
+        },
         "affinity": {
             "friend": "好友",
             "favorite": "收藏"

@@ -463,6 +463,9 @@
             "failed_open_instance_in_vrchat_falling_back_to_self_invite": "Не удалось открыть инстанс в VRChat, отправляется самоприглашение",
             "failed_to_save_memo": "Не удалось сохранить локальную заметку"
         },
+        "picker": {
+            "more_not_shown": "Ещё {count} не показаны. Уточните запрос, чтобы найти их."
+        },
         "affinity": {
             "friend": "Друг",
             "favorite": "Избранное"

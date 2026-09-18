@@ -463,6 +463,9 @@
             "failed_open_instance_in_vrchat_falling_back_to_self_invite": "无法在 VRChat 中打开房间，将向自身发送游戏内邀请",
             "failed_to_save_memo": "保存本地备注失败"
         },
+        "picker": {
+            "more_not_shown": "还有 {count} 位未显示，缩小搜索范围即可找到。"
+        },
         "affinity": {
             "friend": "好友",
             "favorite": "收藏"

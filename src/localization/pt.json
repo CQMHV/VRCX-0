@@ -463,6 +463,9 @@
             "failed_open_instance_in_vrchat_falling_back_to_self_invite": "Falha ao abrir a instância no VRChat, recorrendo ao convite para si mesmo",
             "failed_to_save_memo": "Falha ao salvar a nota local"
         },
+        "picker": {
+            "more_not_shown": "Mais {count} não exibidos. Refine a busca para encontrá-los."
+        },
         "affinity": {
             "friend": "Amigo",
             "favorite": "Favorito"
