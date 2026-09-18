@@ -1,13 +1,20 @@
+// @vitest-environment jsdom
+
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { WorldProfileRecord } from '@/domain/entities/world';
 import worldProfileRepository from '@/repositories/worldProfileRepository';
+import { useFavoriteRevisionStore } from '@/state/favoriteRevisionStore';
 
 import {
     filterRemoteEntityCacheFallbacksById,
     loadRemoteEntityCacheFallbacksById
 } from './remoteEntityCacheFallbacks';
-import { getWorldDetailFallbackIds } from './useWorldDetailFallbacks';
+import {
+    getWorldDetailFallbackIds,
+    useWorldDetailFallbacks
+} from './useWorldDetailFallbacks';
 
 const fetchWorldById = (worldId: string) =>
     worldProfileRepository.getWorldProfile({ worldId, dialog: true });
@@ -68,6 +75,39 @@ function emptyWorld(id: string): WorldProfileRecord {
 describe('world detail fallback helpers', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        useFavoriteRevisionStore.setState({ worldDetailsRevision: 0 });
+    });
+
+    it('reloads visible fallback details when world details are invalidated', async () => {
+        vi.mocked(worldProfileRepository.getWorldProfile).mockResolvedValue(
+            cachedWorld('wrld_local', 'Local World')
+        );
+
+        const { result, unmount } = renderHook(() =>
+            useWorldDetailFallbacks({
+                worldIds: ['wrld_local'],
+                kind: 'world',
+                remoteEntityDetailsStatus: 'ready'
+            })
+        );
+
+        await waitFor(() => {
+            expect(result.current).toHaveProperty('wrld_local');
+            expect(
+                worldProfileRepository.getWorldProfile
+            ).toHaveBeenCalledTimes(1);
+        });
+
+        act(() => {
+            useFavoriteRevisionStore.getState().bumpWorldDetailsRevision();
+        });
+
+        await waitFor(() => {
+            expect(
+                worldProfileRepository.getWorldProfile
+            ).toHaveBeenCalledTimes(2);
+        });
+        unmount();
     });
 
     it('only asks Rust for worlds with no hydrated remote detail', async () => {
