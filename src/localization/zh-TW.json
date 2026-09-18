@@ -1147,6 +1147,12 @@
         },
         "friends_locations": {
             "online": "上線",
+            "world_friends_one": "{count} 人",
+            "world_friends_other": "{count} 人",
+            "view_people": "好友檢視",
+            "view_worlds": "世界檢視",
+            "world_instances_one": "{count} 個房間",
+            "world_instances_other": "{count} 個房間",
             "other_online": "其他線上好友",
             "favorite": "收藏",
             "same_instance": "在同個房間",
