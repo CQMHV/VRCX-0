@@ -10,7 +10,7 @@ import {
 import { getWorldDetailFallbackIds } from './useWorldDetailFallbacks';
 
 const fetchWorldById = (worldId: string) =>
-    worldProfileRepository.getWorldProfile({ worldId });
+    worldProfileRepository.getWorldProfile({ worldId, dialog: true });
 
 vi.mock('@/repositories/worldProfileRepository', () => ({
     default: {
@@ -101,7 +101,8 @@ describe('world detail fallback helpers', () => {
         ]);
         expect(worldProfileRepository.getWorldProfile).toHaveBeenCalledTimes(3);
         expect(worldProfileRepository.getWorldProfile).toHaveBeenCalledWith({
-            worldId: 'wrld_missing'
+            worldId: 'wrld_missing',
+            dialog: true
         });
         expect(fallbacks).toMatchObject({
             wrld_missing: {

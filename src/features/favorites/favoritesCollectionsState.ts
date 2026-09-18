@@ -87,34 +87,6 @@ export function buildFavoriteAvatarDetailIds({
     return Array.from(ids);
 }
 
-export function buildFavoriteLocalWorldDetailIds({
-    kind,
-    loadAllRemoteDetails,
-    localWorldFavorites = EMPTY_OBJECT,
-    selectedGroupKey,
-    selectedSource
-}: {
-    kind: FavoriteKind;
-    loadAllRemoteDetails: boolean;
-    localWorldFavorites?: FavoriteGroupMap;
-    selectedGroupKey: string;
-    selectedSource: string;
-}) {
-    if (kind !== 'world') {
-        return [];
-    }
-
-    const ids = new Set<string>();
-    if (loadAllRemoteDetails) {
-        addNormalizedFavoriteIds(ids, localWorldFavorites);
-    } else if (selectedSource === 'local') {
-        addNormalizedFavoriteIds(ids, {
-            [selectedGroupKey]: localWorldFavorites[selectedGroupKey] || []
-        });
-    }
-    return Array.from(ids);
-}
-
 export function buildFavoriteAvatarTags({
     kind,
     remoteFavoritesById = EMPTY_OBJECT
