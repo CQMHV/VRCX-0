@@ -6150,6 +6150,8 @@
                 "failed_to_save_status_bar_clocks": "Не удалось сохранить часы в строке состояния",
                 "failed_to_open_vrchat_status": "Не удалось открыть статус VRChat",
                 "failed_to_open_media_link": "Не удалось открыть ссылку на медиа",
+                "media_link_copied": "Ссылка на медиа скопирована",
+                "failed_to_copy_media_link": "Не удалось скопировать ссылку на медиа",
                 "failed_to_update_proxy_settings": "Не удалось обновить параметры прокси",
                 "failed_to_start_background_mode": "Не удалось переключиться в фоновый режим"
             }

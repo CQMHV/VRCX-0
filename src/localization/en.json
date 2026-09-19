@@ -6189,6 +6189,8 @@
                 "failed_to_save_status_bar_clocks": "Failed to save status bar clocks",
                 "failed_to_open_vrchat_status": "Failed to open VRChat status",
                 "failed_to_open_media_link": "Failed to open media link",
+                "media_link_copied": "Media link copied",
+                "failed_to_copy_media_link": "Failed to copy media link",
                 "failed_to_update_proxy_settings": "Failed to update proxy settings",
                 "failed_to_start_background_mode": "Failed to switch to Background Mode"
             }

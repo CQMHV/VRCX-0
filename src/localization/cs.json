@@ -6149,6 +6149,8 @@
                 "failed_to_save_status_bar_clocks": "Nepodařilo se uložit hodiny na stavovém řádku",
                 "failed_to_open_vrchat_status": "Nepodařilo se otevřít stav VRChat",
                 "failed_to_open_media_link": "Nepodařilo se otevřít odkaz na médium",
+                "media_link_copied": "Odkaz na médium zkopírován",
+                "failed_to_copy_media_link": "Nepodařilo se zkopírovat odkaz na médium",
                 "failed_to_update_proxy_settings": "Nepodařilo se aktualizovat nastavení proxy",
                 "failed_to_start_background_mode": "Nepodařilo se přepnout do režimu na pozadí"
             }

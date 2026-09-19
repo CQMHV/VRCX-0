@@ -6141,6 +6141,8 @@
                 "failed_to_save_status_bar_clocks": "Uhren der Statusleiste konnten nicht gespeichert werden",
                 "failed_to_open_vrchat_status": "VRChat-Status konnte nicht geöffnet werden",
                 "failed_to_open_media_link": "Medienlink konnte nicht geöffnet werden",
+                "media_link_copied": "Medienlink kopiert",
+                "failed_to_copy_media_link": "Medienlink konnte nicht kopiert werden",
                 "failed_to_update_proxy_settings": "Proxy-Einstellungen konnten nicht aktualisiert werden",
                 "failed_to_start_background_mode": "Wechsel in den Hintergrundmodus fehlgeschlagen"
             }

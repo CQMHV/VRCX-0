@@ -6133,6 +6133,8 @@
                 "failed_to_save_status_bar_clocks": "상태 표시줄 시계를 저장하지 못했습니다.",
                 "failed_to_open_vrchat_status": "VRChat 상태를 열지 못했습니다.",
                 "failed_to_open_media_link": "미디어 링크를 열지 못했습니다.",
+                "media_link_copied": "미디어 링크를 복사했습니다.",
+                "failed_to_copy_media_link": "미디어 링크를 복사하지 못했습니다.",
                 "failed_to_update_proxy_settings": "프록시 설정을 업데이트하지 못했습니다.",
                 "failed_to_start_background_mode": "백그라운드 모드로 전환하지 못했습니다."
             }

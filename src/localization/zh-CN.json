@@ -6190,6 +6190,8 @@
                 "failed_to_save_status_bar_clocks": "保存状态栏时钟失败",
                 "failed_to_open_vrchat_status": "打开 VRChat 状态页失败",
                 "failed_to_open_media_link": "打开媒体链接失败",
+                "media_link_copied": "已复制媒体链接",
+                "failed_to_copy_media_link": "复制媒体链接失败",
                 "failed_to_update_proxy_settings": "更新代理设置失败",
                 "failed_to_start_background_mode": "切换到后台模式失败"
             }

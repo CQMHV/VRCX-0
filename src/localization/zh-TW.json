@@ -6181,6 +6181,8 @@
                 "failed_to_save_status_bar_clocks": "儲存狀態欄時鐘失敗",
                 "failed_to_open_vrchat_status": "開啟 VRChat 狀態頁失敗",
                 "failed_to_open_media_link": "開啟媒體連結失敗",
+                "media_link_copied": "已複製媒體連結",
+                "failed_to_copy_media_link": "複製媒體連結失敗",
                 "failed_to_update_proxy_settings": "更新代理設定失敗",
                 "failed_to_start_background_mode": "切換到背景模式失敗"
             }

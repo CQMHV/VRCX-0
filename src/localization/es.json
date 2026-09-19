@@ -6141,6 +6141,8 @@
                 "failed_to_save_status_bar_clocks": "No se pudieron guardar los relojes de la barra de estado",
                 "failed_to_open_vrchat_status": "No se pudo abrir el estado de VRChat",
                 "failed_to_open_media_link": "No se pudo abrir el enlace multimedia",
+                "media_link_copied": "Enlace multimedia copiado",
+                "failed_to_copy_media_link": "No se pudo copiar el enlace multimedia",
                 "failed_to_update_proxy_settings": "No se pudo actualizar la configuración del proxy",
                 "failed_to_start_background_mode": "No se pudo cambiar al modo en segundo plano"
             }

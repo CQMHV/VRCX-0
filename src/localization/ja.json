@@ -6173,6 +6173,8 @@
                 "failed_to_save_status_bar_clocks": "ステータスバーの時計を保存できませんでした",
                 "failed_to_open_vrchat_status": "VRChat ステータスを開けませんでした",
                 "failed_to_open_media_link": "メディアリンクを開けませんでした",
+                "media_link_copied": "メディアリンクをコピーしました",
+                "failed_to_copy_media_link": "メディアリンクをコピーできませんでした",
                 "failed_to_update_proxy_settings": "プロキシ設定の更新に失敗しました",
                 "failed_to_start_background_mode": "バックグラウンドモードへ切り替えられませんでした"
             }
