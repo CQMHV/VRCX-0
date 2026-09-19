@@ -43,13 +43,13 @@ pub mod maintenance {
         database_maintenance_table_sizes_get, database_vacuum_if_fragmented,
         ensure_required_database_schema, user_tables_ensure, vacuum_after_secret_migration,
         BrokenGameLogDisplayNameOutput, DatabaseMaintenanceTask, MaintenanceTableSizesOutput,
-        UserTableContextOutput,
+        UserTableContextOutput, PRINT_FAVORITE_IDS_CONFIG_KEY,
     };
 }
 
 pub use database::schema::{
-    prepare_vrcx0_schema_version, write_database_schema_versions, VRCX0_SCHEMA_VERSION,
-    VRCX0_SCHEMA_VERSION_KEY,
+    read_upstream_schema_version, read_vrcx0_schema_version, write_upstream_schema_version,
+    write_vrcx0_schema_version, VRCX0_SCHEMA_VERSION, VRCX0_SCHEMA_VERSION_KEY,
 };
 pub use database::{
     database_scale_estimate, optimize_database, DatabaseScaleEstimate, DatabaseService,
