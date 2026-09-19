@@ -61,7 +61,10 @@ export function FriendsLocationsVirtualList({
                     }
                 />
             ) : derived.hasVisibleSections && derived.viewMode === 'worlds' ? (
-                <div className="divide-border/60 flex flex-col divide-y py-1 pr-1 [&>*]:py-4 [&>*:first-child]:pt-1 [&>*:last-child]:pb-1">
+                <div
+                    key="worlds"
+                    className="divide-border/60 flex flex-col divide-y py-1 pr-1 [&>*]:py-4 [&>*:first-child]:pt-1 [&>*:last-child]:pb-1"
+                >
                     {derived.worldGroups.map((group) => (
                         <FriendsLocationsWorldSection
                             key={group.worldId}
@@ -109,6 +112,7 @@ export function FriendsLocationsVirtualList({
                 </div>
             ) : derived.hasVisibleSections ? (
                 <div
+                    key="people"
                     className="relative"
                     style={{
                         height: `${derived.positionedRows.totalHeight}px`
