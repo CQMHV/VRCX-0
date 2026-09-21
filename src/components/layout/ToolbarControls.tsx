@@ -187,55 +187,51 @@ export function ToolbarSegmented<TValue extends string>({
     iconOnly?: boolean;
 }) {
     return (
-        <div className="flex h-9.5 shrink-0 items-center sm:h-8.5">
-            <ToggleGroup
-                variant="outline"
-                value={value ? [value] : []}
-                onValueChange={(next) => {
-                    const selected = options.find(
-                        (option) => option.value === next[0]
-                    );
-                    if (selected) {
-                        onValueChange(selected.value);
-                    }
-                }}
-                className="shrink-0"
-            >
-                {options.map((option, index) => {
-                    const Icon = option.icon;
-                    const item = (
-                        <ToggleGroupItem
-                            value={option.value}
-                            aria-label={option.label}
-                        >
-                            {Icon ? <Icon data-icon="inline-start" /> : null}
-                            {iconOnly ? null : option.label}
-                            {option.count === undefined ? null : (
-                                <span className="text-content-tertiary text-[11px] leading-none font-medium tabular-nums">
-                                    {option.count}
-                                </span>
-                            )}
-                        </ToggleGroupItem>
-                    );
+        <ToggleGroup
+            variant="outline"
+            value={value ? [value] : []}
+            onValueChange={(next) => {
+                const selected = options.find(
+                    (option) => option.value === next[0]
+                );
+                if (selected) {
+                    onValueChange(selected.value);
+                }
+            }}
+            className="shrink-0"
+        >
+            {options.map((option, index) => {
+                const Icon = option.icon;
+                const item = (
+                    <ToggleGroupItem
+                        value={option.value}
+                        aria-label={option.label}
+                    >
+                        {Icon ? <Icon data-icon="inline-start" /> : null}
+                        {iconOnly ? null : option.label}
+                        {option.count === undefined ? null : (
+                            <span className="text-content-tertiary text-[11px] leading-none font-medium tabular-nums">
+                                {option.count}
+                            </span>
+                        )}
+                    </ToggleGroupItem>
+                );
 
-                    return (
-                        <Fragment key={option.value}>
-                            {index > 0 ? <ToggleGroupSeparator /> : null}
-                            {iconOnly ? (
-                                <Tooltip>
-                                    <TooltipTrigger render={item} />
-                                    <TooltipContent>
-                                        {option.label}
-                                    </TooltipContent>
-                                </Tooltip>
-                            ) : (
-                                item
-                            )}
-                        </Fragment>
-                    );
-                })}
-            </ToggleGroup>
-        </div>
+                return (
+                    <Fragment key={option.value}>
+                        {index > 0 ? <ToggleGroupSeparator /> : null}
+                        {iconOnly ? (
+                            <Tooltip>
+                                <TooltipTrigger render={item} />
+                                <TooltipContent>{option.label}</TooltipContent>
+                            </Tooltip>
+                        ) : (
+                            item
+                        )}
+                    </Fragment>
+                );
+            })}
+        </ToggleGroup>
     );
 }
 

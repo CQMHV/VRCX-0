@@ -63,12 +63,6 @@ it('keeps one view selected and supports keyboard switching with icon tooltips',
     render(<Harness />);
     const table = screen.getByRole('button', { name: 'Table' });
     const grid = screen.getByRole('button', { name: 'Grid' });
-    const layoutFrame = table.closest(
-        '[data-slot="toggle-group"]'
-    )?.parentElement;
-
-    expect(layoutFrame?.className).toContain('h-9.5');
-    expect(layoutFrame?.className).toContain('sm:h-8.5');
 
     await user.click(table);
     expect(onChange).not.toHaveBeenCalled();
