@@ -11,7 +11,6 @@ import favoritePersistenceRepository from '@/repositories/favoritePersistenceRep
 import vrchatFavoriteRepository from '@/repositories/vrchatFavoriteRepository';
 import { bootstrapFavorites } from '@/services/favoriteBootstrapService';
 import { toast } from '@/services/toastService';
-import { useFavoriteRevisionStore } from '@/state/favoriteRevisionStore';
 import { useModalStore } from '@/state/modalStore';
 import type { CurrentUserSnapshotState } from '@/state/runtimeStore';
 
@@ -85,7 +84,6 @@ export function useFavoritesCollectionActions({
             });
             if (kind === 'world') {
                 await reloadLocalWorldFavorites();
-                useFavoriteRevisionStore.getState().bumpWorldDetailsRevision();
             }
             if (kind === 'avatar') {
                 const rows = await avatarLocalRepository.getAvatarHistory(

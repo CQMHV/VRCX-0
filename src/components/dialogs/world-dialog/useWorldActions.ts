@@ -15,7 +15,6 @@ import { persistFavoriteWorldDetails } from '@/services/favoriteWorldCacheServic
 import { openFolderAndSelectItem } from '@/services/shellIntegrationService';
 import { toast } from '@/services/toastService';
 import { normalizeString } from '@/shared/utils/string';
-import { useFavoriteRevisionStore } from '@/state/favoriteRevisionStore';
 import { useVrchatConfigStore } from '@/state/vrchatConfigStore';
 
 import type { WorldWorldSideData } from './useWorldDialogData';
@@ -108,7 +107,6 @@ export function useWorldActions({
                 return;
             }
             persistFavoriteWorldDetails(nextWorld);
-            useFavoriteRevisionStore.getState().bumpWorldDetailsRevision();
             setWorld(nextWorld);
             toast.add({
                 type: 'success',
