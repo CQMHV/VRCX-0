@@ -18,7 +18,7 @@ type WorldDetailFallbackInput = {
 };
 
 const fetchWorldById = (worldId: string) =>
-    worldProfileRepository.getWorldProfile({ worldId, dialog: true });
+    worldProfileRepository.getWorldProfile({ worldId });
 
 export function getWorldDetailFallbackIds({
     worldIds,
