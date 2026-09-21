@@ -4,7 +4,6 @@ import {
     buildFavoriteAvatarDetailIds,
     buildFavoriteAvatarTags,
     buildFavoriteFriendFactIds,
-    buildFavoriteLocalWorldDetailIds,
     buildFavoriteRemoteGroupEntityIds,
     selectFavoritesCollectionsState
 } from './favoritesCollectionsState';
@@ -48,50 +47,6 @@ describe('favorites collections state helpers', () => {
                 groupedFavoriteFriendIdsByGroupKey: {
                     'friend:group_0': ['usr_a']
                 }
-            })
-        ).toEqual([]);
-    });
-
-    it('selects local world ids that need fresh detail hydration', () => {
-        const localWorldFavorites = {
-            Recent: ['wrld_recent', ' wrld_shared ', ''],
-            Archive: ['wrld_archive', 'wrld_shared']
-        };
-
-        expect(
-            buildFavoriteLocalWorldDetailIds({
-                kind: 'world',
-                loadAllRemoteDetails: false,
-                localWorldFavorites,
-                selectedGroupKey: 'Recent',
-                selectedSource: 'local'
-            })
-        ).toEqual(['wrld_recent', 'wrld_shared']);
-        expect(
-            buildFavoriteLocalWorldDetailIds({
-                kind: 'world',
-                loadAllRemoteDetails: true,
-                localWorldFavorites,
-                selectedGroupKey: 'Recent',
-                selectedSource: 'remote'
-            })
-        ).toEqual(['wrld_recent', 'wrld_shared', 'wrld_archive']);
-        expect(
-            buildFavoriteLocalWorldDetailIds({
-                kind: 'world',
-                loadAllRemoteDetails: false,
-                localWorldFavorites,
-                selectedGroupKey: 'Recent',
-                selectedSource: 'remote'
-            })
-        ).toEqual([]);
-        expect(
-            buildFavoriteLocalWorldDetailIds({
-                kind: 'avatar',
-                loadAllRemoteDetails: true,
-                localWorldFavorites,
-                selectedGroupKey: 'Recent',
-                selectedSource: 'local'
             })
         ).toEqual([]);
     });

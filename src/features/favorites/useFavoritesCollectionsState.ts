@@ -13,7 +13,6 @@ import {
     buildFavoriteAvatarDetailIds,
     buildFavoriteAvatarTags,
     buildFavoriteFriendFactIds,
-    buildFavoriteLocalWorldDetailIds,
     buildFavoriteRemoteGroupEntityIds,
     selectFavoritesCollectionsState
 } from './favoritesCollectionsState';
@@ -122,63 +121,52 @@ export function useFavoritesCollectionsState({
         selectedRemoteEntityIds,
         selectedSource
     });
-    const requestedLocalWorldEntityIds = useMemo(
-        () =>
-            buildFavoriteLocalWorldDetailIds({
-                kind,
-                loadAllRemoteDetails,
-                localWorldFavorites: localWorldFavorites.favoritesByGroup,
-                selectedGroupKey,
-                selectedSource
-            }),
-        [
-            kind,
-            loadAllRemoteDetails,
-            localWorldFavorites.favoritesByGroup,
-            selectedGroupKey,
-            selectedSource
-        ]
-    );
-    const requestedWorldIds = useMemo(() => {
-        if (kind !== 'world') {
-            return [];
-        }
-        return Array.from(
-            new Set([
-                ...requestedRemoteEntityIds,
-                ...requestedLocalWorldEntityIds
-            ])
-        );
-    }, [kind, requestedLocalWorldEntityIds, requestedRemoteEntityIds]);
-    const hydratedWorldFavoriteIds = useMemo(
-        () =>
-            Array.from(
-                new Set([
-                    ...favoriteState.favoriteWorldIds,
-                    ...requestedLocalWorldEntityIds
-                ])
-            ),
-        [favoriteState.favoriteWorldIds, requestedLocalWorldEntityIds]
-    );
     const remoteEntityDetails = useFavoriteRemoteDetails({
         type: kind === 'avatar' ? 'avatar' : 'world',
         favoriteIds:
             kind === 'world'
-                ? hydratedWorldFavoriteIds
+                ? favoriteState.favoriteWorldIds
                 : kind === 'avatar'
                   ? favoriteState.favoriteAvatarIds
                   : [],
-        requestedIds:
-            kind === 'world' ? requestedWorldIds : requestedRemoteEntityIds,
+        requestedIds: requestedRemoteEntityIds,
         avatarTags,
         cacheKey: favoriteState.favoriteLastLoadedAt || '',
         enabled:
             kind !== 'friend' &&
             favoriteState.favoriteLoadStatus === 'ready' &&
-            (kind === 'world'
-                ? requestedWorldIds.length > 0
-                : requestedRemoteEntityIds.length > 0)
+            requestedRemoteEntityIds.length > 0
     });
+    const requestedWorldIds = useMemo(() => {
+        if (kind !== 'world') {
+            return [];
+        }
+        const worldIds = new Set(requestedRemoteEntityIds);
+        let localGroups: string[][] = [];
+        if (loadAllRemoteDetails) {
+            localGroups = Object.values(localWorldFavorites.favoritesByGroup);
+        } else if (selectedSource === 'local') {
+            localGroups = [
+                localWorldFavorites.favoritesByGroup[selectedGroupKey] || []
+            ];
+        }
+        for (const ids of localGroups) {
+            for (const worldId of ids) {
+                const normalizedWorldId = worldId.trim();
+                if (normalizedWorldId) {
+                    worldIds.add(normalizedWorldId);
+                }
+            }
+        }
+        return Array.from(worldIds);
+    }, [
+        kind,
+        loadAllRemoteDetails,
+        localWorldFavorites.favoritesByGroup,
+        requestedRemoteEntityIds,
+        selectedGroupKey,
+        selectedSource
+    ]);
     const worldDetailFallbacksById = useWorldDetailFallbacks({
         worldIds: requestedWorldIds,
         kind,
