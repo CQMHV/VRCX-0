@@ -1495,9 +1495,7 @@
                 "favorites_failed_to_load": "Favorites failed to load"
             },
             "loading": {
-                "loading_favorites_baseline": "Loading favorites",
-                "loading_remote_avatar_details": "Loading remote avatar details",
-                "loading_remote_world_details": "Loading remote world details"
+                "loading_favorites_baseline": "Loading favorites"
             },
             "share_collection": {
                 "title": "Share collection",
@@ -3277,10 +3275,6 @@
                 "world_details_unavailable": "World details are unavailable.",
                 "world_deleted": "This world has been deleted.",
                 "avatar_details_unavailable": "Avatar details are unavailable."
-            },
-            "loading": {
-                "loading_world_details": "Loading world details.",
-                "loading_avatar_details": "Loading avatar details."
             },
             "dynamic": {
                 "remove_value_from_value": "Remove {value} from {value2}?",

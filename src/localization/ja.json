@@ -1491,9 +1491,7 @@
                 "favorites_failed_to_load": "お気に入りの読み込みに失敗しました"
             },
             "loading": {
-                "loading_favorites_baseline": "お気に入りを読み込み中",
-                "loading_remote_avatar_details": "リモートアバター詳細を読み込み中",
-                "loading_remote_world_details": "リモートワールド詳細を読み込み中"
+                "loading_favorites_baseline": "お気に入りを読み込み中"
             },
             "share_collection": {
                 "title": "コレクションを共有",
@@ -3273,10 +3271,6 @@
                 "world_details_unavailable": "ワールド詳細を利用できません。",
                 "world_deleted": "このワールドは削除されています。",
                 "avatar_details_unavailable": "アバター詳細を利用できません。"
-            },
-            "loading": {
-                "loading_world_details": "ワールド詳細を読み込み中",
-                "loading_avatar_details": "アバター詳細を読み込み中"
             },
             "dynamic": {
                 "remove_value_from_value": "{value2} から {value} を削除しますか？",

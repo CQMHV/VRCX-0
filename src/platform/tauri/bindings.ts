@@ -3856,7 +3856,7 @@ export type FavoriteDetailsHydrateInput = {
     favoriteIds?: string[];
     requestedIds?: string[];
     avatarTags?: string[];
-    refreshKey?: string;
+    groupTags?: string[];
 };
 export type FavoriteDetailsHydrateKind = 'avatar' | 'world';
 export type FavoriteDetailsHydrateOutput = {
