@@ -321,6 +321,7 @@ export function SidePanelSelfHeader() {
                                             hint={metadataHint}
                                             metadata={locationMetadata}
                                             link
+                                            showGroupLink
                                             showInstanceIdInLocation={
                                                 showInstanceIdInLocation
                                             }
