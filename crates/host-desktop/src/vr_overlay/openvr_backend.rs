@@ -28,7 +28,7 @@ use super::{
 };
 use openvr_devices::{snapshot_openvr_devices, string_property, BatteryReadingState};
 
-const WRIST_VISIBLE_FRAME_UPLOAD_INTERVAL: Duration = Duration::from_secs(2);
+const WRIST_VISIBLE_FRAME_UPLOAD_INTERVAL: Duration = Duration::from_secs(1);
 const MAIN_VISIBLE_FRAME_UPLOAD_INTERVAL: Duration = Duration::from_millis(16);
 const SURFACE_FADE_DURATION: Duration = Duration::from_millis(240);
 const OPENVR_CONTEXT_IN_USE_MESSAGE: &str =
@@ -359,6 +359,14 @@ impl OverlayBackend for OpenVrOverlayBackend {
             system,
             &mut self.hmd_battery_readings,
         ))
+    }
+
+    fn visible_surface_ids(&self) -> Vec<OverlaySurfaceId> {
+        self.surfaces
+            .iter()
+            .filter(|(_, surface)| surface.visible)
+            .map(|(surface_id, _)| surface_id.clone())
+            .collect()
     }
 
     fn tick(&mut self) -> TickOutcome {
