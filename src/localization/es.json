@@ -5708,7 +5708,8 @@
                 "schema_migrations": "Aplicando actualizaciones de estructura",
                 "optimize": "Optimizando la copia de la base de datos",
                 "write_version": "Guardando la versión de la base de datos",
-                "commit": "Cambiando a la base de datos actualizada"
+                "commit": "Cambiando a la base de datos actualizada",
+                "repair_data": "Reparando huecos en el historial del registro del juego"
             },
             "upgrade_failed_title": "Falló la actualización de la base de datos",
             "failure_record": "Registro del fallo",

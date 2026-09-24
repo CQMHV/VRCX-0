@@ -5722,7 +5722,8 @@
                 "schema_migrations": "Použití aktualizací struktury",
                 "optimize": "Optimalizace kopie databáze",
                 "write_version": "Ukládání verze databáze",
-                "commit": "Přepínání na aktualizovanou databázi"
+                "commit": "Přepínání na aktualizovanou databázi",
+                "repair_data": "Oprava chybějících záznamů v historii herního protokolu"
             },
             "upgrade_failed_title": "Aktualizace databáze se nezdařila",
             "failure_record": "Záznam chyby",

@@ -5708,7 +5708,8 @@
                 "schema_migrations": "Strukturaktualisierungen werden angewendet",
                 "optimize": "Datenbankkopie wird optimiert",
                 "write_version": "Datenbankversion wird gespeichert",
-                "commit": "Zur aktualisierten Datenbank wird gewechselt"
+                "commit": "Zur aktualisierten Datenbank wird gewechselt",
+                "repair_data": "Lücken im Spielprotokoll-Verlauf werden repariert"
             },
             "upgrade_failed_title": "Datenbank-Upgrade fehlgeschlagen",
             "failure_record": "Fehlerprotokoll",

@@ -5709,7 +5709,8 @@
                 "schema_migrations": "Aplicando atualizações de estrutura",
                 "optimize": "Otimizando a cópia do banco de dados",
                 "write_version": "Registrando a versão do banco de dados",
-                "commit": "Alternando para o banco de dados atualizado"
+                "commit": "Alternando para o banco de dados atualizado",
+                "repair_data": "Corrigindo lacunas no histórico do registro do jogo"
             },
             "upgrade_failed_title": "Falha na atualização do banco de dados",
             "failure_record": "Registro da falha",
