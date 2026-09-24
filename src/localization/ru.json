@@ -1158,6 +1158,8 @@
             "world_instances_few": "{count} инстанса",
             "world_instances_many": "{count} инстансов",
             "world_instances_other": "{count} инстанса",
+            "instance_population": "Игроков в инстансе: {users}",
+            "instance_population_capacity": "Игроков в инстансе: {users} / макс. {capacity}",
             "other_online": "Другие друзья в сети",
             "favorite": "Избранное",
             "same_instance": "Тот же пример",

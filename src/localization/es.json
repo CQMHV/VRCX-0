@@ -1154,6 +1154,8 @@
             "view_worlds": "Vista de mundos",
             "world_instances_one": "{count} instancia",
             "world_instances_other": "{count} instancias",
+            "instance_population": "Jugadores en la instancia: {users}",
+            "instance_population_capacity": "Jugadores en la instancia: {users} / máx. {capacity}",
             "other_online": "Otros amigos en línea",
             "favorite": "Favoritos",
             "same_instance": "Misma instancia",

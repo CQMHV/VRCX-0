@@ -1154,6 +1154,8 @@
             "view_worlds": "Weltenansicht",
             "world_instances_one": "{count} Instanz",
             "world_instances_other": "{count} Instanzen",
+            "instance_population": "Spieler in der Instanz: {users}",
+            "instance_population_capacity": "Spieler in der Instanz: {users} / max. {capacity}",
             "other_online": "Weitere Online-Freunde",
             "favorite": "Favoriten",
             "same_instance": "Gleiche Instanz",

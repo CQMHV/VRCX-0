@@ -1158,6 +1158,8 @@
             "world_instances_few": "{count} instance",
             "world_instances_many": "{count} instance",
             "world_instances_other": "{count} instancí",
+            "instance_population": "Hráčů v instanci: {users}",
+            "instance_population_capacity": "Hráčů v instanci: {users} / max. {capacity}",
             "other_online": "Ostatní přátelé online",
             "favorite": "Oblíbení",
             "same_instance": "Stejná instance",
