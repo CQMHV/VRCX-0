@@ -18,9 +18,11 @@ import { normalizeString } from '@/shared/utils/string';
 import { useRuntimeStore } from '@/state/runtimeStore';
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar';
 import { Skeleton } from '@/ui/shadcn/skeleton';
+import { Spinner } from '@/ui/shadcn/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
 import type { getFriendsLocationsDensityConfig } from '../friendsLocationsDensity';
+import { resolveLocationTarget } from '../friendsLocationsRows';
 import type {
     FriendsLocationsWorldGroup,
     FriendsLocationsWorldInstance
@@ -53,6 +55,7 @@ function FriendChip({
     onOpen: () => void;
 }) {
     const avatarUrl = userImage(friend);
+    const isTraveling = resolveLocationTarget(friend).isTraveling;
     const statusDescription = twoLine
         ? normalizeString(friend.statusDescription)
         : '';
@@ -84,6 +87,9 @@ function FriendChip({
                 </Avatar>
                 <span className="flex min-w-0 flex-col items-start">
                     <span className="flex max-w-full min-w-0 items-center gap-1 leading-4">
+                        {isTraveling ? (
+                            <Spinner className="size-3 shrink-0" />
+                        ) : null}
                         <span className="min-w-0 truncate">
                             {friend.displayName}
                         </span>
@@ -199,10 +205,7 @@ function InstanceRow({
                                     <span
                                         className={cn(
                                             'inline-flex shrink-0 items-center gap-1 tabular-nums',
-                                            population.capacity > 0 &&
-                                                population.nUsers >=
-                                                    population.capacity &&
-                                                'text-amber-400'
+                                            population.full && 'text-amber-400'
                                         )}
                                     />
                                 }
