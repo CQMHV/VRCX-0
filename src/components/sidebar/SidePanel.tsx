@@ -129,7 +129,6 @@ export const SidePanel = forwardRef<HTMLElement, SidePanelProps>(
         const [friendRefreshCooldownUntil, setFriendRefreshCooldownUntil] =
             useState(0);
         const [customTabsDialogOpen, setCustomTabsDialogOpen] = useState(false);
-        const [customTabsAutoAdd, setCustomTabsAutoAdd] = useState(false);
         const [filter, setFilter] = useState({ tab: activeTab, query: '' });
         const filterQuery = filter.tab === activeTab ? filter.query : '';
 
@@ -137,9 +136,8 @@ export const SidePanel = forwardRef<HTMLElement, SidePanelProps>(
             setFilter({ tab: activeTab, query });
         }
 
-        function openCustomTabsDialog(autoAdd = false) {
+        function openCustomTabsDialog() {
             restoreNormalWindowModeForIntent();
-            setCustomTabsAutoAdd(autoAdd);
             setCustomTabsDialogOpen(true);
         }
 
@@ -568,12 +566,12 @@ export const SidePanel = forwardRef<HTMLElement, SidePanelProps>(
                             size="icon"
                             className="shrink-0"
                             title={t(
-                                'side_panel.settings.custom_tabs.add_favorite_tab'
+                                'side_panel.settings.custom_tabs.configure'
                             )}
                             aria-label={t(
-                                'side_panel.settings.custom_tabs.add_favorite_tab'
+                                'side_panel.settings.custom_tabs.configure'
                             )}
-                            onClick={() => openCustomTabsDialog(true)}
+                            onClick={openCustomTabsDialog}
                         >
                             <PlusIcon data-icon="icon" />
                         </Button>
@@ -625,15 +623,9 @@ export const SidePanel = forwardRef<HTMLElement, SidePanelProps>(
                 />
                 <SidePanelCustomTabsDialog
                     open={customTabsDialogOpen}
-                    onOpenChange={(open) => {
-                        setCustomTabsDialogOpen(open);
-                        if (!open) {
-                            setCustomTabsAutoAdd(false);
-                        }
-                    }}
+                    onOpenChange={setCustomTabsDialogOpen}
                     layout={tabLayout}
                     favoriteGroupItems={favoriteGroupItems}
-                    autoCreateCollection={customTabsAutoAdd}
                     onSave={saveCustomTabs}
                 />
             </aside>

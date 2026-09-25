@@ -291,14 +291,12 @@ export function SidePanelCustomTabsDialog({
     onOpenChange,
     layout,
     favoriteGroupItems,
-    autoCreateCollection = false,
     onSave
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     layout: SidebarTabLayout;
     favoriteGroupItems: FavoriteGroupItem[];
-    autoCreateCollection?: boolean;
     onSave: (layout: SidebarTabLayout) => void;
 }) {
     const { t } = useTranslation();
@@ -328,21 +326,8 @@ export function SidePanelCustomTabsDialog({
         if (!open) {
             return;
         }
-        const baseLayout = normalizeSidebarTabLayout(layout);
-        setDraftLayout(
-            autoCreateCollection
-                ? normalizeSidebarTabLayout([
-                      ...baseLayout,
-                      createFavoriteCollectionTab(
-                          baseLayout,
-                          t(
-                              'side_panel.settings.custom_tabs.favorite_collection_default'
-                          )
-                      )
-                  ])
-                : baseLayout
-        );
-    }, [autoCreateCollection, layout, open, t]);
+        setDraftLayout(normalizeSidebarTabLayout(layout));
+    }, [layout, open]);
 
     function updateItem(
         id: string,
