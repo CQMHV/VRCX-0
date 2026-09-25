@@ -5,16 +5,16 @@ import vrchatInstanceRepository from '@/repositories/vrchatInstanceRepository';
 
 type InstancePopulation = ReturnType<typeof normalizeInstanceCounts>;
 
-export function useFriendsLocationsInstancePopulation({
+export function useInstancePopulation({
     worldId,
     instanceId,
     enabled,
-    friendCount
+    refreshKey
 }: {
     worldId: string;
     instanceId: string;
     enabled: boolean;
-    friendCount: number;
+    refreshKey: string | number;
 }) {
     const ref = useRef<HTMLDivElement>(null);
     const [visible, setVisible] = useState(false);
@@ -64,7 +64,7 @@ export function useFriendsLocationsInstancePopulation({
         return () => {
             active = false;
         };
-    }, [enabled, visible, worldId, instanceId, friendCount]);
+    }, [enabled, visible, worldId, instanceId, refreshKey]);
 
     return { ref, population, loading };
 }

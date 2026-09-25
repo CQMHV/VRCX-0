@@ -43,6 +43,7 @@ import {
     platformDisplayName,
     resolveLaunchLocation
 } from './WorldDialogViewParts';
+import { WorldSidebarPinButton } from './WorldSidebarPinButton';
 
 const WORLD_DATE_FALLBACKS = {
     empty: '',
@@ -245,6 +246,10 @@ export function WorldDialogTabPanels({
                             max: world.capacity || '—'
                         })}
                     </Badge>
+                    <WorldSidebarPinButton
+                        worldId={world.id}
+                        name={world.name}
+                    />
                 </div>
                 <div className="flex flex-col gap-2">
                     {displayInstanceRows.length ? (

@@ -887,6 +887,7 @@
         "self_menu": "Меню аккаунта",
         "filter_friends": "Фильтр друзей",
         "filter_groups": "Фильтр групп",
+        "filter_instances": "Фильтр инстансов",
         "filter_no_results": "Совпадений нет",
         "self_more_actions": "Ещё",
         "switch_account": "Сменить аккаунт",
@@ -931,6 +932,7 @@
                 "display_hint": "Как вкладки выглядят на боковой панели.",
                 "layout_hint": "Перетаскивайте, чтобы изменить порядок. «Друзья» и «Группы» встроены — добавляйте группы избранного как собственные вкладки.",
                 "system_badge": "Встроенная",
+                "world_badge": "Мир",
                 "always_visible": "Всегда видима",
                 "move_up": "Вверх",
                 "move_down": "Вниз",
@@ -4117,6 +4119,12 @@
                 "public_count": "Публичных {count}",
                 "private_count": "Приватных {count}",
                 "capacity_count": "Вместимость {count} ({max})",
+                "pin_to_sidebar": "Закрепить на боковой панели",
+                "pinned_to_sidebar": "Закреплено на боковой панели",
+                "pin_to_sidebar_failed": "Не удалось закрепить на боковой панели",
+                "unpin_from_sidebar": "Открепить от боковой панели",
+                "unpinned_from_sidebar": "Откреплено от боковой панели",
+                "unpin_from_sidebar_failed": "Не удалось открепить от боковой панели",
                 "instance_creator": "Создатель инстанса"
             },
             "info": {
@@ -6186,6 +6194,14 @@
             }
         },
         "groups_sidebar": {
+            "toast": {
+                "failed_to_launch_instance": "Ошибка запуска",
+                "failed_to_send_self_invite": "Не удалось отправить самоприглашение"
+            }
+        },
+        "world_rooms_sidebar": {
+            "empty": "Сейчас нет активных инстансов",
+            "failed": "Не удалось загрузить инстансы",
             "toast": {
                 "failed_to_launch_instance": "Ошибка запуска",
                 "failed_to_send_self_invite": "Не удалось отправить самоприглашение"

@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import vrchatInstanceRepository from '@/repositories/vrchatInstanceRepository';
 
-import { useFriendsLocationsInstancePopulation } from './useFriendsLocationsInstancePopulation';
+import { useInstancePopulation } from './useInstancePopulation';
 
 vi.mock('@/repositories/vrchatInstanceRepository', () => ({
     default: { getInstance: vi.fn() }
@@ -13,16 +13,16 @@ vi.mock('@/repositories/vrchatInstanceRepository', () => ({
 
 function Harness({
     enabled,
-    friendCount
+    refreshKey
 }: {
     enabled: boolean;
-    friendCount: number;
+    refreshKey: number;
 }) {
-    const { ref, population } = useFriendsLocationsInstancePopulation({
+    const { ref, population } = useInstancePopulation({
         worldId: 'wrld_a',
         instanceId: '12345~friends(usr_a)',
         enabled,
-        friendCount
+        refreshKey
     });
     return (
         <div ref={ref} data-testid="population">
@@ -44,9 +44,9 @@ afterEach(() => {
     cleanup();
 });
 
-describe('useFriendsLocationsInstancePopulation', () => {
+describe('useInstancePopulation', () => {
     it('loads the instance population once the row is shown', async () => {
-        render(<Harness enabled friendCount={1} />);
+        render(<Harness enabled refreshKey={1} />);
 
         await waitFor(() => {
             expect(screen.getByTestId('population').textContent).toBe('12/32');
@@ -57,15 +57,15 @@ describe('useFriendsLocationsInstancePopulation', () => {
         });
     });
 
-    it('refetches when the friend count in the instance changes', async () => {
-        const { rerender } = render(<Harness enabled friendCount={1} />);
+    it('refetches when the refresh key changes', async () => {
+        const { rerender } = render(<Harness enabled refreshKey={1} />);
         await waitFor(() => {
             expect(vrchatInstanceRepository.getInstance).toHaveBeenCalledTimes(
                 1
             );
         });
 
-        rerender(<Harness enabled friendCount={2} />);
+        rerender(<Harness enabled refreshKey={2} />);
 
         await waitFor(() => {
             expect(vrchatInstanceRepository.getInstance).toHaveBeenCalledTimes(
@@ -75,7 +75,7 @@ describe('useFriendsLocationsInstancePopulation', () => {
     });
 
     it('does not request locations that are not real instances', () => {
-        render(<Harness enabled={false} friendCount={1} />);
+        render(<Harness enabled={false} refreshKey={1} />);
 
         expect(vrchatInstanceRepository.getInstance).not.toHaveBeenCalled();
         expect(screen.getByTestId('population').textContent).toBe('none');

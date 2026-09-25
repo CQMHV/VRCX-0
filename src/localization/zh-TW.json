@@ -887,6 +887,7 @@
         "self_menu": "帳號選單",
         "filter_friends": "篩選好友",
         "filter_groups": "篩選群組",
+        "filter_instances": "篩選房間",
         "filter_no_results": "沒有符合的項目",
         "self_more_actions": "更多",
         "switch_account": "切換帳號",
@@ -931,6 +932,7 @@
                 "display_hint": "標籤在側欄中的顯示方式。",
                 "layout_hint": "拖曳可重新排序。好友和群組為內建標籤——把收藏分組加成你自己的標籤。",
                 "system_badge": "內建",
+                "world_badge": "世界",
                 "always_visible": "一律顯示",
                 "move_up": "上移",
                 "move_down": "下移",
@@ -4109,6 +4111,12 @@
                 "public_count": "公開 {count}",
                 "private_count": "私人 {count}",
                 "capacity_count": "用戶上限 {count} ({max})",
+                "pin_to_sidebar": "固定到側欄",
+                "pinned_to_sidebar": "已固定到側欄",
+                "pin_to_sidebar_failed": "固定到側欄失敗",
+                "unpin_from_sidebar": "取消固定",
+                "unpinned_from_sidebar": "已從側欄取消固定",
+                "unpin_from_sidebar_failed": "從側欄取消固定失敗",
                 "instance_creator": "房間建立者"
             },
             "info": {
@@ -6217,6 +6225,14 @@
             }
         },
         "groups_sidebar": {
+            "toast": {
+                "failed_to_launch_instance": "啟動房間失敗",
+                "failed_to_send_self_invite": "傳送自我邀請失敗"
+            }
+        },
+        "world_rooms_sidebar": {
+            "empty": "目前沒有活躍的房間",
+            "failed": "房間載入失敗",
             "toast": {
                 "failed_to_launch_instance": "啟動房間失敗",
                 "failed_to_send_self_invite": "傳送自我邀請失敗"

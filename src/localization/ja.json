@@ -887,6 +887,7 @@
         "self_menu": "アカウントメニュー",
         "filter_friends": "フレンドを絞り込み",
         "filter_groups": "グループを絞り込み",
+        "filter_instances": "インスタンスを絞り込み",
         "filter_no_results": "該当なし",
         "self_more_actions": "その他",
         "switch_account": "アカウントを切り替え",
@@ -931,6 +932,7 @@
                 "display_hint": "サイドバーでのタブの表示方法。",
                 "layout_hint": "ドラッグで並べ替えできます。フレンドとグループは標準タブです。お気に入りグループを自分のタブとして追加できます。",
                 "system_badge": "標準",
+                "world_badge": "ワールド",
                 "always_visible": "常に表示",
                 "move_up": "上へ移動",
                 "move_down": "下へ移動",
@@ -4103,6 +4105,12 @@
                 "public_count": "パブリック {count}",
                 "private_count": "プライベート {count}",
                 "capacity_count": "最大人数 {count} ({max})",
+                "pin_to_sidebar": "サイドバーに固定",
+                "pinned_to_sidebar": "サイドバーに固定しました",
+                "pin_to_sidebar_failed": "サイドバーに固定できませんでした",
+                "unpin_from_sidebar": "サイドバーから固定を解除",
+                "unpinned_from_sidebar": "サイドバーから固定を解除しました",
+                "unpin_from_sidebar_failed": "サイドバーから固定を解除できませんでした",
                 "instance_creator": "インスタンス作成者"
             },
             "info": {
@@ -6209,6 +6217,14 @@
             }
         },
         "groups_sidebar": {
+            "toast": {
+                "failed_to_launch_instance": "インスタンスの起動に失敗しました",
+                "failed_to_send_self_invite": "自分への招待の送信に失敗しました"
+            }
+        },
+        "world_rooms_sidebar": {
+            "empty": "現在アクティブなインスタンスはありません",
+            "failed": "インスタンスを読み込めませんでした",
             "toast": {
                 "failed_to_launch_instance": "インスタンスの起動に失敗しました",
                 "failed_to_send_self_invite": "自分への招待の送信に失敗しました"

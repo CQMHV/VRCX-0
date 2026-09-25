@@ -887,6 +887,7 @@
         "self_menu": "Menu da conta",
         "filter_friends": "Filtrar amigos",
         "filter_groups": "Filtrar grupos",
+        "filter_instances": "Filtrar instâncias",
         "filter_no_results": "Nenhuma correspondência",
         "self_more_actions": "Mais",
         "switch_account": "Trocar de conta",
@@ -931,6 +932,7 @@
                 "display_hint": "Como as abas aparecem na barra lateral.",
                 "layout_hint": "Arraste para reordenar. Amigos e Grupos são fixos — adicione grupos de favoritos como suas próprias abas.",
                 "system_badge": "Integrado",
+                "world_badge": "Mundo",
                 "always_visible": "Sempre visível",
                 "move_up": "Mover para cima",
                 "move_down": "Mover para baixo",
@@ -4109,6 +4111,12 @@
                 "public_count": "Público {count}",
                 "private_count": "Privado {count}",
                 "capacity_count": "Capacidade {count} ({max})",
+                "pin_to_sidebar": "Fixar na barra lateral",
+                "pinned_to_sidebar": "Fixado na barra lateral",
+                "pin_to_sidebar_failed": "Não foi possível fixar na barra lateral",
+                "unpin_from_sidebar": "Desafixar da barra lateral",
+                "unpinned_from_sidebar": "Desafixado da barra lateral",
+                "unpin_from_sidebar_failed": "Não foi possível desafixar da barra lateral",
                 "instance_creator": "Criador da Instância"
             },
             "info": {
@@ -6178,6 +6186,14 @@
             }
         },
         "groups_sidebar": {
+            "toast": {
+                "failed_to_launch_instance": "Falha ao iniciar a instância",
+                "failed_to_send_self_invite": "Falha ao enviar autoconvite"
+            }
+        },
+        "world_rooms_sidebar": {
+            "empty": "Nenhuma instância ativa no momento",
+            "failed": "Não foi possível carregar as instâncias",
             "toast": {
                 "failed_to_launch_instance": "Falha ao iniciar a instância",
                 "failed_to_send_self_invite": "Falha ao enviar autoconvite"

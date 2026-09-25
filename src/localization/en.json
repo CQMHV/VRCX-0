@@ -887,6 +887,7 @@
         "self_menu": "Account menu",
         "filter_friends": "Filter friends",
         "filter_groups": "Filter groups",
+        "filter_instances": "Filter instances",
         "filter_no_results": "No matches",
         "self_more_actions": "More",
         "switch_account": "Switch Account",
@@ -935,6 +936,7 @@
                 "tab_layout": "Tabs",
                 "layout_hint": "Drag to reorder. Friends and Groups are built in — add favorite collections as your own tabs.",
                 "system_badge": "Built-in",
+                "world_badge": "World",
                 "always_visible": "Always visible",
                 "move_up": "Move up",
                 "move_down": "Move down",
@@ -4108,6 +4110,12 @@
                 "public_count": "Public {count}",
                 "private_count": "Private {count}",
                 "capacity_count": "Capacity {count} ({max})",
+                "pin_to_sidebar": "Pin to Sidebar",
+                "pinned_to_sidebar": "Pinned to the sidebar",
+                "pin_to_sidebar_failed": "Couldn't pin to the sidebar",
+                "unpin_from_sidebar": "Unpin from Sidebar",
+                "unpinned_from_sidebar": "Unpinned from the sidebar",
+                "unpin_from_sidebar_failed": "Couldn't unpin from the sidebar",
                 "instance_creator": "Instance Creator"
             },
             "info": {
@@ -6225,6 +6233,14 @@
             }
         },
         "groups_sidebar": {
+            "toast": {
+                "failed_to_launch_instance": "Failed to launch instance",
+                "failed_to_send_self_invite": "Failed to send self invite"
+            }
+        },
+        "world_rooms_sidebar": {
+            "empty": "No active instances right now",
+            "failed": "Couldn't load instances",
             "toast": {
                 "failed_to_launch_instance": "Failed to launch instance",
                 "failed_to_send_self_invite": "Failed to send self invite"

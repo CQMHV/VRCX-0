@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { AffinityBadge } from '@/components/affinity/AffinityBadge';
 import { CurrentInstanceBadge } from '@/components/instances/CurrentInstanceBadge';
 import { RegionCodeBadge } from '@/components/location/RegionCodeBadge';
+import { useInstancePopulation } from '@/components/location/useInstancePopulation';
 import { useLocationMetadata } from '@/components/location/useLocationMetadata';
 import { FadeInImage } from '@/components/media/FadeInImage';
 import { resolveSidebarStatusDotClassName } from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
@@ -27,7 +28,6 @@ import type {
     FriendsLocationsWorldGroup,
     FriendsLocationsWorldInstance
 } from '../friendsLocationsWorlds';
-import { useFriendsLocationsInstancePopulation } from '../useFriendsLocationsInstancePopulation';
 import type { FriendsLocationsWorldSummary } from '../useFriendsLocationsWorldSummaries';
 
 type FriendsLocationsWorldSectionProps = {
@@ -175,11 +175,11 @@ function InstanceRow({
         ref: metaRef,
         population,
         loading: populationLoading
-    } = useFriendsLocationsInstancePopulation({
+    } = useInstancePopulation({
         worldId: parsed.worldId,
         instanceId: parsed.instanceId,
         enabled: parsed.isRealInstance,
-        friendCount: instance.friends.length
+        refreshKey: instance.friends.length
     });
     const groupName = metadata.groupName || instance.groupName;
     const label = [

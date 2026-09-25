@@ -887,6 +887,7 @@
         "self_menu": "Kontomenü",
         "filter_friends": "Freunde filtern",
         "filter_groups": "Gruppen filtern",
+        "filter_instances": "Instanzen filtern",
         "filter_no_results": "Keine Treffer",
         "self_more_actions": "Mehr",
         "switch_account": "Konto wechseln",
@@ -931,6 +932,7 @@
                 "display_hint": "Wie Tabs in der Seitenleiste aussehen.",
                 "layout_hint": "Zum Umsortieren ziehen. Freunde und Gruppen sind integriert – füge Favoritengruppen als eigene Tabs hinzu.",
                 "system_badge": "Integriert",
+                "world_badge": "Welt",
                 "always_visible": "Immer sichtbar",
                 "move_up": "Nach oben",
                 "move_down": "Nach unten",
@@ -4108,6 +4110,12 @@
                 "public_count": "Öffentlich {count}",
                 "private_count": "Privat {count}",
                 "capacity_count": "Kapazität {count} ({max})",
+                "pin_to_sidebar": "An Seitenleiste anheften",
+                "pinned_to_sidebar": "An die Seitenleiste angeheftet",
+                "pin_to_sidebar_failed": "Anheften an die Seitenleiste fehlgeschlagen",
+                "unpin_from_sidebar": "Von Seitenleiste lösen",
+                "unpinned_from_sidebar": "Von der Seitenleiste gelöst",
+                "unpin_from_sidebar_failed": "Lösen von der Seitenleiste fehlgeschlagen",
                 "instance_creator": "Instanz-Ersteller"
             },
             "info": {
@@ -6177,6 +6185,14 @@
             }
         },
         "groups_sidebar": {
+            "toast": {
+                "failed_to_launch_instance": "Instanz konnte nicht gestartet werden",
+                "failed_to_send_self_invite": "Selbsteinladung konnte nicht gesendet werden"
+            }
+        },
+        "world_rooms_sidebar": {
+            "empty": "Derzeit keine aktiven Instanzen",
+            "failed": "Instanzen konnten nicht geladen werden",
             "toast": {
                 "failed_to_launch_instance": "Instanz konnte nicht gestartet werden",
                 "failed_to_send_self_invite": "Selbsteinladung konnte nicht gesendet werden"

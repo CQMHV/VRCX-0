@@ -887,6 +887,7 @@
         "self_menu": "Menú de cuenta",
         "filter_friends": "Filtrar amigos",
         "filter_groups": "Filtrar grupos",
+        "filter_instances": "Filtrar instancias",
         "filter_no_results": "Sin coincidencias",
         "self_more_actions": "Más",
         "switch_account": "Cambiar de cuenta",
@@ -931,6 +932,7 @@
                 "display_hint": "Cómo se ven las pestañas en la barra lateral.",
                 "layout_hint": "Arrastra para reordenar. Amigos y Grupos son fijos: añade grupos de favoritos como tus propias pestañas.",
                 "system_badge": "Integrado",
+                "world_badge": "Mundo",
                 "always_visible": "Siempre visible",
                 "move_up": "Subir",
                 "move_down": "Bajar",
@@ -4108,6 +4110,12 @@
                 "public_count": "Público {count}",
                 "private_count": "Privado {count}",
                 "capacity_count": "Capacidad {count} ({max})",
+                "pin_to_sidebar": "Fijar en la barra lateral",
+                "pinned_to_sidebar": "Fijado en la barra lateral",
+                "pin_to_sidebar_failed": "No se pudo fijar en la barra lateral",
+                "unpin_from_sidebar": "Desfijar de la barra lateral",
+                "unpinned_from_sidebar": "Desfijado de la barra lateral",
+                "unpin_from_sidebar_failed": "No se pudo desfijar de la barra lateral",
                 "instance_creator": "Creador de la instancia"
             },
             "info": {
@@ -6177,6 +6185,14 @@
             }
         },
         "groups_sidebar": {
+            "toast": {
+                "failed_to_launch_instance": "Error al iniciar la instancia",
+                "failed_to_send_self_invite": "No se pudo enviar la autoinvitación"
+            }
+        },
+        "world_rooms_sidebar": {
+            "empty": "No hay instancias activas ahora mismo",
+            "failed": "No se pudieron cargar las instancias",
             "toast": {
                 "failed_to_launch_instance": "Error al iniciar la instancia",
                 "failed_to_send_self_invite": "No se pudo enviar la autoinvitación"

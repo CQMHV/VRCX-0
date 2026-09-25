@@ -830,6 +830,7 @@
         "self_menu": "계정 메뉴",
         "filter_friends": "친구 필터",
         "filter_groups": "그룹 필터",
+        "filter_instances": "인스턴스 필터",
         "filter_no_results": "일치하는 항목 없음",
         "self_more_actions": "더 보기",
         "switch_account": "계정 전환",
@@ -878,6 +879,7 @@
                 "tab_layout": "탭",
                 "layout_hint": "드래그해서 순서를 바꿀 수 있어요. 친구와 그룹은 기본 탭이며, 즐겨찾기 그룹을 나만의 탭으로 추가할 수 있어요.",
                 "system_badge": "기본",
+                "world_badge": "월드",
                 "always_visible": "항상 표시",
                 "move_up": "위로 이동",
                 "move_down": "아래로 이동",
@@ -4051,6 +4053,12 @@
                 "public_count": "공개 {count}",
                 "private_count": "비공개 {count}",
                 "capacity_count": "인원 제한 {count} ({max})",
+                "pin_to_sidebar": "사이드바에 고정",
+                "pinned_to_sidebar": "사이드바에 고정했습니다.",
+                "pin_to_sidebar_failed": "사이드바에 고정하지 못했습니다.",
+                "unpin_from_sidebar": "사이드바 고정 해제",
+                "unpinned_from_sidebar": "사이드바 고정을 해제했습니다.",
+                "unpin_from_sidebar_failed": "사이드바 고정을 해제하지 못했습니다.",
                 "instance_creator": "인스턴스 생성자"
             },
             "info": {
@@ -6169,6 +6177,14 @@
             }
         },
         "groups_sidebar": {
+            "toast": {
+                "failed_to_launch_instance": "인스턴스를 시작하지 못했습니다.",
+                "failed_to_send_self_invite": "본인 초대를 보내지 못했습니다."
+            }
+        },
+        "world_rooms_sidebar": {
+            "empty": "현재 활성 인스턴스가 없습니다.",
+            "failed": "인스턴스를 불러오지 못했습니다.",
             "toast": {
                 "failed_to_launch_instance": "인스턴스를 시작하지 못했습니다.",
                 "failed_to_send_self_invite": "본인 초대를 보내지 못했습니다."
