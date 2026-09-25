@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CurrentInstanceBadge } from '@/components/instances/CurrentInstanceBadge';
+import { InstanceVisitedBadge } from '@/components/instances/InstanceVisitedBadge';
 import { LaunchModeContextMenuGroup } from '@/components/launch/LaunchModeContextMenuGroup';
 import { RegionCodeBadge } from '@/components/location/RegionCodeBadge';
 import { useInstancePopulation } from '@/components/location/useInstancePopulation';
@@ -248,7 +249,12 @@ function WorldRoomItem({
                         )}
                         {room.isCurrent ? (
                             <CurrentInstanceBadge className="shrink-0" />
-                        ) : null}
+                        ) : (
+                            <InstanceVisitedBadge
+                                location={room.location}
+                                className="shrink-0"
+                            />
+                        )}
                         <span className="ml-auto shrink-0 pl-2 font-medium tabular-nums">
                             {userCount ?? '?'}/{capacity || '?'}
                         </span>

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CurrentInstanceBadge } from '@/components/instances/CurrentInstanceBadge';
 import { InstanceActionBar } from '@/components/instances/InstanceActionBar';
+import { InstanceVisitedBadge } from '@/components/instances/InstanceVisitedBadge';
 import { normalizeLocationText } from '@/components/location/locationModel';
 import { LocationWorld } from '@/components/LocationWorld';
 import { ScreenshotThumbnailCard } from '@/components/media/ScreenshotThumbnailCard';
@@ -327,7 +328,12 @@ export function WorldDialogTabPanels({
                                             />
                                             {instance.isCurrentInstance ? (
                                                 <CurrentInstanceBadge className="shrink-0" />
-                                            ) : null}
+                                            ) : (
+                                                <InstanceVisitedBadge
+                                                    location={location}
+                                                    className="shrink-0"
+                                                />
+                                            )}
                                         </div>
                                         <InstanceActionBar
                                             className="min-w-0 flex-wrap justify-start sm:justify-end"

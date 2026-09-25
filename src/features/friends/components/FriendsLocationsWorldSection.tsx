@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AffinityBadge } from '@/components/affinity/AffinityBadge';
 import { CurrentInstanceBadge } from '@/components/instances/CurrentInstanceBadge';
+import { InstanceVisitedBadge } from '@/components/instances/InstanceVisitedBadge';
 import { RegionCodeBadge } from '@/components/location/RegionCodeBadge';
 import { useInstancePopulation } from '@/components/location/useInstancePopulation';
 import { useLocationMetadata } from '@/components/location/useLocationMetadata';
@@ -234,11 +235,16 @@ function InstanceRow({
                             </TooltipContent>
                         </Tooltip>
                     ) : populationLoading ? (
-                        <Skeleton className="h-3 w-8 shrink-0" />
+                        <Skeleton className="h-3 w-11 shrink-0" />
                     ) : null}
                     {instance.isCurrent ? (
                         <CurrentInstanceBadge className="shrink-0" />
-                    ) : null}
+                    ) : (
+                        <InstanceVisitedBadge
+                            location={instance.location}
+                            className="shrink-0"
+                        />
+                    )}
                 </span>
                 {groupName ? (
                     <span
