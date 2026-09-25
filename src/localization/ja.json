@@ -6107,12 +6107,6 @@
                 "failed_to_remove_favorite": "お気に入りから削除できませんでした",
                 "failed_to_add_local_favorite": "ローカルのお気に入りに追加できませんでした",
                 "failed_to_remove_local_favorite": "ローカルのお気に入りから削除できませんでした"
-            },
-            "modal": {
-                "remove_vrchat_favorite": "VRChat のお気に入りから削除しますか？"
-            },
-            "dynamic": {
-                "remove_value_from_vrchat_favorites": "{value} を VRChat のお気に入りから削除しますか？"
             }
         },
         "friend_location_card": {

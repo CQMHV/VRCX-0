@@ -6084,12 +6084,6 @@
                 "failed_to_remove_favorite": "Не удалось удалить избранное",
                 "failed_to_add_local_favorite": "Не удалось добавить локальное избранное",
                 "failed_to_remove_local_favorite": "Не удалось удалить локальное избранное"
-            },
-            "modal": {
-                "remove_vrchat_favorite": "Удалить из избранного VRChat?"
-            },
-            "dynamic": {
-                "remove_value_from_vrchat_favorites": "Удалить {value} из избранного VRChat?"
             }
         },
         "friend_location_card": {

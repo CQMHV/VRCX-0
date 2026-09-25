@@ -6089,12 +6089,6 @@
                 "failed_to_remove_favorite": "Nepodařilo se odebrat oblíbenou položku",
                 "failed_to_add_local_favorite": "Nepodařilo se přidat místní oblíbenou položku",
                 "failed_to_remove_local_favorite": "Nepodařilo se odebrat místní oblíbenou položku"
-            },
-            "modal": {
-                "remove_vrchat_favorite": "Odebrat oblíbenou položku VRChat?"
-            },
-            "dynamic": {
-                "remove_value_from_vrchat_favorites": "Odebrat {value} z oblíbených VRChat?"
             }
         },
         "friend_location_card": {

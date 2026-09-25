@@ -6115,12 +6115,6 @@
                 "failed_to_remove_favorite": "移除收藏失敗",
                 "failed_to_add_local_favorite": "新增本機收藏失敗",
                 "failed_to_remove_local_favorite": "移除本機收藏失敗"
-            },
-            "modal": {
-                "remove_vrchat_favorite": "移除 VRChat 收藏？"
-            },
-            "dynamic": {
-                "remove_value_from_vrchat_favorites": "要從 VRChat 收藏中移除 {value} 嗎？"
             }
         },
         "friend_location_card": {

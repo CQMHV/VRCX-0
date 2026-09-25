@@ -6123,12 +6123,6 @@
                 "failed_to_remove_favorite": "Failed to remove favorite",
                 "failed_to_add_local_favorite": "Failed to add local favorite",
                 "failed_to_remove_local_favorite": "Failed to remove local favorite"
-            },
-            "modal": {
-                "remove_vrchat_favorite": "Remove VRChat favorite?"
-            },
-            "dynamic": {
-                "remove_value_from_vrchat_favorites": "Remove {value} from VRChat favorites?"
             }
         },
         "friend_location_card": {

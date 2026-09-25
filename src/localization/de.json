@@ -6075,12 +6075,6 @@
                 "failed_to_remove_favorite": "Favorit konnte nicht entfernt werden",
                 "failed_to_add_local_favorite": "Lokaler Favorit konnte nicht hinzugefügt werden",
                 "failed_to_remove_local_favorite": "Lokaler Favorit konnte nicht entfernt werden"
-            },
-            "modal": {
-                "remove_vrchat_favorite": "VRChat-Favorit entfernen?"
-            },
-            "dynamic": {
-                "remove_value_from_vrchat_favorites": "{value} aus VRChat-Favoriten entfernen?"
             }
         },
         "friend_location_card": {

@@ -6124,12 +6124,6 @@
                 "failed_to_remove_favorite": "移除在线收藏失败",
                 "failed_to_add_local_favorite": "添加本地收藏失败",
                 "failed_to_remove_local_favorite": "移除本地收藏失败"
-            },
-            "modal": {
-                "remove_vrchat_favorite": "移除在线收藏？"
-            },
-            "dynamic": {
-                "remove_value_from_vrchat_favorites": "要从在线收藏中移除 {value} 吗？"
             }
         },
         "friend_location_card": {

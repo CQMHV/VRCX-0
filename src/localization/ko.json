@@ -6067,12 +6067,6 @@
                 "failed_to_remove_favorite": "즐겨찾기를 삭제하지 못했습니다.",
                 "failed_to_add_local_favorite": "로컬 즐겨찾기를 추가하지 못했습니다.",
                 "failed_to_remove_local_favorite": "로컬 즐겨찾기를 삭제하지 못했습니다."
-            },
-            "modal": {
-                "remove_vrchat_favorite": "VRChat 즐겨찾기를 삭제하시겠습니까?"
-            },
-            "dynamic": {
-                "remove_value_from_vrchat_favorites": "VRChat 즐겨찾기에서 {value}을(를) 제거하시겠습니까?"
             }
         },
         "friend_location_card": {
