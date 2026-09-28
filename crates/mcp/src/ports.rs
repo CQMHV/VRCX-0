@@ -95,27 +95,12 @@ pub trait McpSocialHistoryQueryPort: Send + Sync {
         input: social::FriendChangesInput,
     ) -> vrcx_0_application_core::Result<social::FriendChangesOutput>;
 
-    fn friend_log(
-        &self,
-        input: social::FriendLogInput,
-    ) -> vrcx_0_application_core::Result<social::FriendLogOutput>;
-
     fn friend_log_first_created_at(
         &self,
         owner_user_id: &OwnerId,
         target_user_id: &str,
         kind: &str,
     ) -> vrcx_0_application_core::Result<Option<String>>;
-
-    fn copresence_summary(
-        &self,
-        input: social::CopresenceSummaryInput,
-    ) -> vrcx_0_application_core::Result<social::CopresenceSummaryOutput>;
-
-    fn friend_activity_pattern(
-        &self,
-        input: social::FriendActivityPatternInput,
-    ) -> vrcx_0_application_core::Result<social::FriendActivityPatternOutput>;
 
     fn social_graph(
         &self,

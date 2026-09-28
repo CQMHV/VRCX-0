@@ -257,13 +257,6 @@ impl McpSocialHistoryQueryPort for TestMcpSocialHistoryQueryAdapter {
         social_aggregates::get_friend_changes(self.db.as_ref(), input).map_err(Into::into)
     }
 
-    fn friend_log(
-        &self,
-        input: social::FriendLogInput,
-    ) -> vrcx_0_application_core::Result<social::FriendLogOutput> {
-        social_aggregates::get_friend_log(self.db.as_ref(), input).map_err(Into::into)
-    }
-
     fn friend_log_first_created_at(
         &self,
         owner_user_id: &OwnerId,
@@ -277,20 +270,6 @@ impl McpSocialHistoryQueryPort for TestMcpSocialHistoryQueryAdapter {
             kind,
         )
         .map_err(Into::into)
-    }
-
-    fn copresence_summary(
-        &self,
-        input: social::CopresenceSummaryInput,
-    ) -> vrcx_0_application_core::Result<social::CopresenceSummaryOutput> {
-        social_aggregates::get_copresence_summary(self.db.as_ref(), input).map_err(Into::into)
-    }
-
-    fn friend_activity_pattern(
-        &self,
-        input: social::FriendActivityPatternInput,
-    ) -> vrcx_0_application_core::Result<social::FriendActivityPatternOutput> {
-        social_aggregates::get_friend_activity_pattern(self.db.as_ref(), input).map_err(Into::into)
     }
 
     fn social_graph(
