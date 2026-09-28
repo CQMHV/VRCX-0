@@ -65,6 +65,13 @@ fn set_version(db: &DatabaseService, version: i64) {
     write_vrcx0_schema_version(db, version).unwrap();
 }
 
+fn target_migration_version() -> i64 {
+    migrations()
+        .last()
+        .map(|migration| migration.version)
+        .unwrap_or(0)
+}
+
 fn set_migration_version(db: &DatabaseService, version: i64) {
     rusqlite::Connection::open(db.db_path())
         .unwrap()
@@ -97,9 +104,9 @@ fn preflight_reports_current_upgrade_and_newer_spans() {
     let target = target_migration_version();
     let schema = VRCX0_SCHEMA_VERSION;
     for (schema_version, migration, expected, span) in [
-        (0, target, UpgradeRequired, (target, target)),
-        (16, target, UpgradeRequired, (target, target)),
-        (schema, target, Current, (target, target)),
+        (0, target, UpgradeRequired, (0, schema)),
+        (16, target, UpgradeRequired, (16, schema)),
+        (schema, target, Current, (schema, schema)),
         (schema + 1, target, NewerSchema, (schema + 1, schema)),
         (schema, target + 1, NewerSchema, (target + 1, target)),
     ] {
@@ -145,8 +152,8 @@ fn upgrades_every_supported_old_version_span_and_is_idempotent() {
         let upgraded = run_database_upgrade(&db);
 
         assert_eq!(upgraded.status, DatabaseUpgradeRunStatus::Upgraded);
-        assert_eq!(upgraded.from_version, 0);
-        assert_eq!(upgraded.to_version, target_migration_version());
+        assert_eq!(upgraded.from_version, version);
+        assert_eq!(upgraded.to_version, VRCX0_SCHEMA_VERSION);
         assert_eq!(migration_version(&db).unwrap(), target_migration_version());
         assert_eq!(
             read_vrcx0_schema_version(&db).unwrap(),
@@ -165,7 +172,7 @@ fn upgrades_every_supported_old_version_span_and_is_idempotent() {
 
         let repeated = run_database_upgrade(&db);
         assert_eq!(repeated.status, DatabaseUpgradeRunStatus::Current);
-        assert_eq!(repeated.from_version, target_migration_version());
+        assert_eq!(repeated.from_version, VRCX0_SCHEMA_VERSION);
     }
 }
 
