@@ -2177,96 +2177,64 @@ impl DesktopRuntimeHostState {
             .map_err(vrcx_0_composition::Error::Custom)
     }
 
-    pub fn registry_backup_list(&self) -> Result<Vec<RegistryBackupSnapshot>> {
-        let store = crate::game_state_store::PersistenceGameStateStore::new(Arc::clone(
-            self.runtime.database(),
-        ));
-        self.with_registry_backup_lock(|| vrcx_0_application_game::registry_backup_list(&store))
+    pub fn registry_backup(&self) -> RegistryBackupRuntime {
+        RegistryBackupRuntime {
+            database: Arc::clone(self.runtime.database()),
+            state: Arc::clone(&self.extension.registry_backup_state),
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct RegistryBackupRuntime {
+    database: Arc<vrcx_0_persistence::DatabaseService>,
+    state: Arc<Mutex<RegistryBackupMaintenanceState>>,
+}
+
+impl RegistryBackupRuntime {
+    pub fn list(&self) -> Result<Vec<RegistryBackupSnapshot>> {
+        self.with_store(|store| vrcx_0_application_game::registry_backup_list(store))
     }
 
-    pub fn registry_backup_create(&self, name: &str) -> Result<Vec<RegistryBackupSnapshot>> {
-        let store = crate::game_state_store::PersistenceGameStateStore::new(Arc::clone(
-            self.runtime.database(),
-        ));
-        self.with_registry_backup_lock(|| {
-            vrcx_0_application_game::registry_backup_create(
-                &store,
-                &HostRegistryBackupActions,
-                name,
-            )
+    pub fn create(&self, name: &str) -> Result<Vec<RegistryBackupSnapshot>> {
+        self.with_store(|store| {
+            vrcx_0_application_game::registry_backup_create(store, &HostRegistryBackupActions, name)
         })
     }
 
-    pub fn registry_backup_restore(&self, key: &str) -> Result<RegistryBackupSnapshot> {
-        let store = crate::game_state_store::PersistenceGameStateStore::new(Arc::clone(
-            self.runtime.database(),
-        ));
-        self.with_registry_backup_lock(|| {
-            vrcx_0_application_game::registry_backup_restore(
-                &store,
-                &HostRegistryBackupActions,
-                key,
-            )
+    pub fn restore(&self, key: &str) -> Result<RegistryBackupSnapshot> {
+        self.with_store(|store| {
+            vrcx_0_application_game::registry_backup_restore(store, &HostRegistryBackupActions, key)
         })
     }
 
-    pub fn registry_backup_delete(&self, key: &str) -> Result<Vec<RegistryBackupSnapshot>> {
-        let store = crate::game_state_store::PersistenceGameStateStore::new(Arc::clone(
-            self.runtime.database(),
-        ));
-        self.with_registry_backup_lock(|| {
-            vrcx_0_application_game::registry_backup_delete(&store, key)
-        })
+    pub fn delete(&self, key: &str) -> Result<Vec<RegistryBackupSnapshot>> {
+        self.with_store(|store| vrcx_0_application_game::registry_backup_delete(store, key))
     }
 
-    pub fn registry_backup_prepare_export(&self, key: &str) -> Result<RegistryBackupExport> {
-        let store = crate::game_state_store::PersistenceGameStateStore::new(Arc::clone(
-            self.runtime.database(),
-        ));
-        self.with_registry_backup_lock(|| {
-            vrcx_0_application_game::registry_backup_prepare_export(&store, key)
-        })
+    pub fn prepare_export(&self, key: &str) -> Result<RegistryBackupExport> {
+        self.with_store(|store| vrcx_0_application_game::registry_backup_prepare_export(store, key))
     }
 
-    pub fn registry_backup_write_export(
-        &self,
-        path: &Path,
-        export: &RegistryBackupExport,
-    ) -> Result<String> {
-        vrcx_0_host_desktop::shell_actions::write_string_file(path, &export.json)?;
-        self.register_host_file_access(path);
-        Ok(path.to_string_lossy().into_owned())
-    }
-
-    pub fn registry_backup_import_from_file(&self, path: &Path) -> Result<()> {
-        self.register_host_file_access(path);
+    pub fn import_from_file(&self, path: &Path) -> Result<()> {
         let json =
             vrcx_0_host_desktop::vrchat_registry::read_reg_json_file(&path.to_string_lossy())?;
-        self.registry_backup_import_json(&json)
-    }
-
-    pub fn registry_backup_import_json(&self, json: &str) -> Result<()> {
-        let store = crate::game_state_store::PersistenceGameStateStore::new(Arc::clone(
-            self.runtime.database(),
-        ));
-        self.with_registry_backup_lock(|| {
+        self.with_store(|store| {
             vrcx_0_application_game::registry_backup_import_json(
-                &store,
+                store,
                 &HostRegistryBackupActions,
-                json,
+                &json,
             )
         })
     }
 
-    pub fn registry_backup_maintenance_run(
+    pub fn maintenance_run(
         &self,
         reason: &str,
         mode: RegistryBackupMaintenanceMode,
     ) -> Result<RegistryBackupMaintenanceResult> {
-        let mut state = self.acquire_registry_backup_lock()?;
-        let store = crate::game_state_store::PersistenceGameStateStore::new(Arc::clone(
-            self.runtime.database(),
-        ));
+        let mut state = self.acquire_lock()?;
+        let store = self.store();
         Ok(run_coordinated_registry_backup_maintenance(
             &mut state,
             Instant::now(),
@@ -2288,23 +2256,25 @@ impl DesktopRuntimeHostState {
         )?)
     }
 
-    fn with_registry_backup_lock<T>(
-        &self,
-        operation: impl FnOnce() -> vrcx_0_application_core::Result<T>,
-    ) -> Result<T> {
-        let _guard = self.acquire_registry_backup_lock()?;
-        Ok(operation()?)
+    fn store(&self) -> crate::game_state_store::PersistenceGameStateStore {
+        crate::game_state_store::PersistenceGameStateStore::new(Arc::clone(&self.database))
     }
 
-    fn acquire_registry_backup_lock(
+    fn with_store<T>(
         &self,
-    ) -> Result<MutexGuard<'_, RegistryBackupMaintenanceState>> {
-        self.extension
-            .registry_backup_state
-            .lock()
-            .map_err(|error| {
-                vrcx_0_composition::Error::Custom(format!("registry backup lock poisoned: {error}"))
-            })
+        operation: impl FnOnce(
+            &crate::game_state_store::PersistenceGameStateStore,
+        ) -> vrcx_0_application_core::Result<T>,
+    ) -> Result<T> {
+        let store = self.store();
+        let _guard = self.acquire_lock()?;
+        Ok(operation(&store)?)
+    }
+
+    fn acquire_lock(&self) -> Result<MutexGuard<'_, RegistryBackupMaintenanceState>> {
+        self.state.lock().map_err(|error| {
+            vrcx_0_composition::Error::Custom(format!("registry backup lock poisoned: {error}"))
+        })
     }
 }
 
@@ -3169,6 +3139,35 @@ mod background {
             assert_eq!(full_runs.get(), 1);
             assert_eq!(followup_runs.get(), 1);
             assert_eq!(foreground.detail, "foreground-followup");
+        }
+
+        #[test]
+        fn a_cloned_registry_backup_handle_lists_backups_on_another_thread() {
+            let nonce = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos();
+            let dir = std::env::temp_dir().join(format!(
+                "vrcx-0-registry-backup-runtime-{}-{nonce}",
+                std::process::id()
+            ));
+            std::fs::create_dir_all(&dir).unwrap();
+            let registry_backup = RegistryBackupRuntime {
+                database: Arc::new(
+                    vrcx_0_persistence::DatabaseService::new(&dir.join("VRCX-0.sqlite3")).unwrap(),
+                ),
+                state: Arc::new(Mutex::new(RegistryBackupMaintenanceState::default())),
+            };
+
+            let handle = registry_backup.clone();
+            let backups = std::thread::spawn(move || handle.list())
+                .join()
+                .unwrap()
+                .unwrap();
+
+            assert!(backups.is_empty());
+            drop(registry_backup);
+            let _ = std::fs::remove_dir_all(&dir);
         }
     }
 
