@@ -764,26 +764,6 @@ const generatedCommands = {
             userId
         });
     },
-    async appDatabaseMaintenanceMaxFriendLogNumberGet(
-        userId: string
-    ): Promise<number> {
-        return await TAURI_INVOKE(
-            'app__database_maintenance_max_friend_log_number_get',
-            { userId }
-        );
-    },
-    async appDatabaseMaintenanceBrokenLeaveEntriesGet(): Promise<JsonValue[]> {
-        return await TAURI_INVOKE(
-            'app__database_maintenance_broken_leave_entries_get'
-        );
-    },
-    async appDatabaseMaintenanceBrokenGameLogDisplayNamesGet(): Promise<
-        BrokenGameLogDisplayNameOutput[]
-    > {
-        return await TAURI_INVOKE(
-            'app__database_maintenance_broken_game_log_display_names_get'
-        );
-    },
     async appAvatarGet(input: AvatarGetInput): Promise<RawJson | null> {
         return await TAURI_INVOKE('app__avatar_get', { input });
     },
@@ -3404,10 +3384,6 @@ export type BatchMutationResult = {
     rollbackFailed: number;
     items: BatchMutationItemResult[];
     lastError: string | null;
-};
-export type BrokenGameLogDisplayNameOutput = {
-    id: JsonValue;
-    displayName: JsonValue;
 };
 export type BrowseHistoryCursor = {
     lastViewedAt: string;

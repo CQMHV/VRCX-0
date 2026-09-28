@@ -73,7 +73,7 @@ fn set_migration_version(db: &DatabaseService, version: i64) {
 }
 
 fn install_failing_repair_fixture(db: &DatabaseService) {
-    database_maintenance_run(db, DatabaseMaintenanceTask::InitGlobalTables).unwrap();
+    ensure_required_database_schema(db).unwrap();
     let conn = rusqlite::Connection::open(db.db_path()).unwrap();
     conn.execute_batch(
         "INSERT INTO gamelog_join_leave
@@ -357,7 +357,7 @@ fn preflight_reports_pending_one_time_repairs_until_they_complete() {
     let db = dir.database();
     set_version(&db, VRCX0_SCHEMA_VERSION);
     set_migration_version(&db, target_migration_version());
-    database_maintenance_run(&db, DatabaseMaintenanceTask::InitGlobalTables).unwrap();
+    ensure_required_database_schema(&db).unwrap();
 
     let before = database_upgrade_preflight(&db).unwrap();
     assert_eq!(before.status, DatabaseUpgradePreflightStatus::Current);

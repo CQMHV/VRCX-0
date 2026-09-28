@@ -59,7 +59,6 @@ use vrcx_0_application::social::{
     CurrentUserMutationRuntime, GroupBanImportStartInput, GroupBanImportStatus,
 };
 use vrcx_0_application::telemetry::{TelemetryRuntime, TelemetryRuntimeDeps};
-use vrcx_0_application_activity::OverlayActivitySnapshot;
 use vrcx_0_application_core::{
     BackendRuntimeMode, BackendRuntimePhase, BackendRuntimeStatusPublisher,
     BackendRuntimeTelemetryKind, FriendProfileLoadStatusPayload, GameProcessEvent,
@@ -838,10 +837,6 @@ impl DesktopRuntimeHostState {
             .submit_feedback(content)
             .await
             .map_err(|error| vrcx_0_composition::Error::Custom(error.to_string()))
-    }
-
-    pub async fn flush_pending_telemetry_errors(&self) {
-        self.desktop.telemetry.flush_pending_rust_errors().await;
     }
 
     pub async fn shutdown_telemetry_flush(&self) {
@@ -1923,12 +1918,6 @@ impl DesktopRuntimeHostState {
             .ensure_read_allowed(path, self.runtime.paths())
     }
 
-    pub fn ensure_host_write_allowed(&self, path: impl AsRef<std::path::Path>) -> Result<()> {
-        self.desktop
-            .host_file_access
-            .ensure_write_allowed(path, self.runtime.paths())
-    }
-
     pub fn is_known_runtime_root_path(&self, path: impl AsRef<std::path::Path>) -> bool {
         crate::is_known_root_path(path, self.runtime.paths())
     }
@@ -2056,29 +2045,12 @@ impl DesktopRuntimeHostState {
         )
     }
 
-    pub fn database_upgrade_failure_log_path(&self, file_name: &str) -> String {
-        self.runtime
-            .paths()
-            .app_data
-            .join(file_name)
-            .to_string_lossy()
-            .into_owned()
-    }
-
     pub fn config_bool(&self, key: &str, fallback: bool) -> bool {
         self.runtime
             .desktop_assembly()
             .config()
             .get_bool(key, fallback)
             .unwrap_or(fallback)
-    }
-
-    pub fn set_config_bool(&self, key: &str, value: bool) -> Result<()> {
-        Ok(self
-            .runtime
-            .desktop_assembly()
-            .config()
-            .set_bool(key, value)?)
     }
 
     pub fn external_api(&self) -> &ExternalApiRuntime {
@@ -2118,18 +2090,6 @@ impl DesktopRuntimeHostState {
 
     pub fn reload_vr_overlay_config(&self) -> Result<VrOverlayRuntimeSnapshot> {
         self.desktop.vr_overlay_runtime.reload_config()
-    }
-
-    pub fn vr_overlay_snapshot(&self) -> Result<VrOverlayRuntimeSnapshot> {
-        self.desktop.vr_overlay_runtime.snapshot()
-    }
-
-    pub fn is_vr_overlay_running(&self) -> bool {
-        self.desktop.vr_overlay_runtime.is_running()
-    }
-
-    pub fn overlay_activity_snapshot(&self) -> OverlayActivitySnapshot {
-        self.desktop.services.overlay_activity().snapshot()
     }
 
     pub async fn ancillary_runtime_snapshot(&self) -> AncillaryRuntimeSnapshot {
@@ -2323,21 +2283,6 @@ impl RuntimeHostProfileExtension for DesktopRuntimeProfileExtension {
     fn start_profile_maintenance(&self, state: &RuntimeHostState) {
         self.start_registry_backup_loop(state);
         self.start_desktop_maintenance_loops(state);
-    }
-
-    fn wait_for_profile_maintenance_stopped(&self, timeout: Duration) -> bool {
-        let deadline = Instant::now() + timeout;
-        while self
-            .registry_backup_maintenance_running
-            .load(Ordering::Acquire)
-            || self.desktop_maintenance_running.load(Ordering::Acquire)
-        {
-            if Instant::now() >= deadline {
-                return false;
-            }
-            std::thread::sleep(Duration::from_millis(50));
-        }
-        true
     }
 }
 

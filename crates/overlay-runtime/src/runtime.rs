@@ -455,10 +455,6 @@ impl VrOverlayRuntime {
 }
 
 impl VrOverlayRuntime {
-    pub fn is_backend_available(&self) -> bool {
-        self.backend_available
-    }
-
     pub fn stop_detached(&self) {
         if let Ok(mut manager) = self.manager.lock() {
             manager.stop_detached();
