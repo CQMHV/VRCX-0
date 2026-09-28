@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::sync::{
-    atomic::{AtomicBool, Ordering},
+    atomic::{AtomicBool, AtomicU64, Ordering},
     Arc, Condvar, Mutex, Weak,
 };
 use std::thread::{self, ThreadId};
@@ -254,6 +254,7 @@ pub struct VrOverlayRuntime {
     hmd_frame_release_requested: AtomicBool,
     device_refresh_requested: AtomicBool,
     config_dirty: AtomicBool,
+    config_generation: AtomicU64,
     backend_available: bool,
     pub(crate) services: Option<Arc<dyn VrOverlayRuntimeServices>>,
     config: Mutex<VrOverlayRuntimeConfig>,
@@ -343,6 +344,9 @@ impl VrOverlayRuntime {
         } else {
             HostVrOverlayService::new_noop(service_configs)
         };
+        let config_generation = services
+            .as_ref()
+            .map_or(0, |services| services.config().write_generation());
         Self {
             enabled: AtomicBool::new(false),
             test_mode: AtomicBool::new(false),
@@ -353,6 +357,7 @@ impl VrOverlayRuntime {
             hmd_frame_release_requested: AtomicBool::new(false),
             device_refresh_requested: AtomicBool::new(false),
             config_dirty: AtomicBool::new(false),
+            config_generation: AtomicU64::new(config_generation),
             backend_available,
             services,
             manager: Mutex::new(VrOverlayManager::new(service)),
@@ -591,11 +596,22 @@ impl VrOverlayRuntime {
         self.refresh_wake.notify();
     }
 
+    fn config_generation_advanced(&self) -> bool {
+        let Some(services) = &self.services else {
+            return false;
+        };
+        let generation = services.config().write_generation();
+        self.config_generation.swap(generation, Ordering::AcqRel) != generation
+    }
+
     fn reconcile(&self, refresh_devices: bool, reload_config: bool) {
         if self.is_refresh_thread() {
             self.consume_slint_renderer_release_requests();
         }
-        let changed_config = if reload_config || self.config_dirty.swap(false, Ordering::AcqRel) {
+        let changed_config = if reload_config
+            || self.config_dirty.swap(false, Ordering::AcqRel)
+            || self.config_generation_advanced()
+        {
             self.changed_runtime_config()
         } else {
             None

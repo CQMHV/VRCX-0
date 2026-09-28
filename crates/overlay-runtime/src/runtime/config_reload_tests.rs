@@ -69,7 +69,7 @@ impl Drop for TestDir {
 }
 
 #[test]
-fn reconciling_uses_the_loaded_config_until_it_is_marked_dirty() {
+fn reconciling_reloads_config_after_any_repository_write() {
     let nonce = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
@@ -89,14 +89,21 @@ fn reconciling_uses_the_loaded_config_until_it_is_marked_dirty() {
         tasks: TaskSupervisor::new(),
         overlay_activity: OverlayActivityRuntime::new(),
     }));
+    assert!(!runtime.current_runtime_config().render.hide_private_worlds);
+
     config
         .set_bool(VR_OVERLAY_HIDE_PRIVATE_WORLDS_CONFIG_KEY, true)
         .unwrap();
+    runtime.reconcile_current();
+    assert!(runtime.current_runtime_config().render.hide_private_worlds);
 
+    config
+        .set_bool(VR_OVERLAY_HIDE_PRIVATE_WORLDS_CONFIG_KEY, false)
+        .unwrap();
     runtime.reconcile_current();
     assert!(!runtime.current_runtime_config().render.hide_private_worlds);
 
     runtime.mark_config_dirty();
     runtime.reconcile_current();
-    assert!(runtime.current_runtime_config().render.hide_private_worlds);
+    assert!(!runtime.current_runtime_config().render.hide_private_worlds);
 }
