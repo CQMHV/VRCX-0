@@ -2,8 +2,6 @@ use std::sync::Mutex;
 
 use vrcx_0_core::vrchat_ids::{is_avatar_id, is_world_id};
 
-pub const DEEP_LINK_ARRIVED_EVENT: &str = "deepLinkArrived";
-
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, specta::Type)]
 #[serde(
     tag = "type",
@@ -113,7 +111,7 @@ fn parse_instance_deep_link(url: &url::Url) -> Option<DeepLinkAction> {
     })
 }
 
-pub(crate) fn queue_deep_link_action(
+pub fn queue_deep_link_action(
     pending: &PendingDeepLinks,
     action: DeepLinkAction,
     after_queue: impl FnOnce(),

@@ -105,7 +105,7 @@ pub fn builder() -> Builder<tauri::Wry> {
         .typ::<AssistantErrorEvent>()
         .typ::<BackendRuntimeEventPayloadMap>()
         .typ::<BackendRuntimeTelemetry>()
-        .typ::<crate::deep_link::DeepLinkAction>()
+        .typ::<vrcx_0_runtime_host_desktop::deep_link::DeepLinkAction>()
         .typ::<FriendProjection>()
         .typ::<GameLogProjection>()
         .typ::<HostSessionProjection>()
