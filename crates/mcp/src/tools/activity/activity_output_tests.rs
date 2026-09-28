@@ -12,6 +12,10 @@ use vrcx_0_application_core::{
     WebClient, WorldCache,
 };
 use vrcx_0_application_realtime::{RealtimeHostRuntime, RealtimeHostRuntimeDeps};
+use vrcx_0_persistence::activity::{
+    activity_self_sessions_refresh, ActivityRefreshMode, ActivitySelfSessionsRefreshInput,
+};
+use vrcx_0_persistence::game_log::{write_batch, GameLogLocationEntry, GameLogWriteBatch};
 use vrcx_0_persistence::{
     config::ConfigRepository, game_log::ensure_game_log_tables, storage::StorageService,
     DatabaseService,
@@ -270,4 +274,134 @@ fn timeline_bucket_accepts_camel_and_snake_case() {
 
     assert_eq!(camel.bucket, ActivityTimelineBucketParam::DayOfWeek);
     assert_eq!(snake.bucket, ActivityTimelineBucketParam::HourOfDay);
+}
+
+fn world_visit(minute: usize, world_id: &str, created_on: &str, time: i64) -> GameLogLocationEntry {
+    GameLogLocationEntry {
+        created_at: format!("{created_on}T{:02}:{:02}:00.000Z", minute / 60, minute % 60),
+        location: format!("{world_id}:1"),
+        world_id: world_id.into(),
+        world_name: world_id.into(),
+        time,
+        group_name: String::new(),
+    }
+}
+
+fn seed_locations(db: &DatabaseService, locations: Vec<GameLogLocationEntry>) {
+    write_batch(
+        db,
+        &OwnerId::new("usr_owner"),
+        &GameLogWriteBatch {
+            locations,
+            ..GameLogWriteBatch::default()
+        },
+    )
+    .unwrap();
+}
+
+#[test]
+fn social_period_top_worlds_count_every_visit_in_the_window() {
+    let (_dir, runtime, db) =
+        crate::test_support::test_runtime_with_database("social-period-top-worlds", "usr_owner")
+            .unwrap();
+    let mut locations = (0..150)
+        .map(|minute| world_visit(minute, "wrld_often", "2026-06-01", 60_000))
+        .collect::<Vec<_>>();
+    locations
+        .extend((150..250).map(|minute| world_visit(minute, "wrld_recent", "2026-06-01", 60_000)));
+    seed_locations(db.as_ref(), locations);
+    let server = VrcxMcpServer::new(runtime);
+
+    let output = server
+        .summarize_social_period_output(
+            OwnerId::new("usr_owner"),
+            SummarizeSocialPeriodParams::default(),
+        )
+        .unwrap();
+
+    assert_eq!(output.top_worlds[0].world_id, "wrld_often");
+    assert_eq!(output.top_worlds[0].visits, 150);
+}
+
+#[test]
+fn my_activity_buckets_weekdays_in_the_callers_timezone() {
+    let (_dir, runtime, db) =
+        crate::test_support::test_runtime_with_database("my-activity-local-weekday", "usr_owner")
+            .unwrap();
+    seed_locations(
+        db.as_ref(),
+        vec![world_visit(20 * 60, "wrld_late", "2026-06-07", 3_600_000)],
+    );
+    activity_self_sessions_refresh(
+        db.as_ref(),
+        &OwnerId::new("usr_owner"),
+        ActivitySelfSessionsRefreshInput {
+            user_id: "usr_owner".into(),
+            mode: ActivityRefreshMode::Full,
+            range_days: serde_json::json!(3650),
+            now_ms: Some(ms("2026-06-10T00:00:00Z")),
+        },
+    )
+    .unwrap();
+    let server = VrcxMcpServer::new(runtime);
+
+    let output = server
+        .get_my_activity_output(
+            OwnerId::new("usr_owner"),
+            MyActivityParams {
+                time_window: None,
+                utc_offset_minutes: Some(540),
+            },
+        )
+        .unwrap();
+
+    assert_eq!(output.by_weekday.get("Mon"), Some(&60));
+    assert_eq!(output.by_weekday.get("Sun"), None);
+    assert!(output
+        .caveats
+        .iter()
+        .any(|caveat| caveat.contains("UTC+09:00")));
+}
+
+#[test]
+fn my_activity_tolerates_an_out_of_range_utc_offset() {
+    let (_dir, runtime, _db) =
+        crate::test_support::test_runtime_with_database("my-activity-huge-offset", "usr_owner")
+            .unwrap();
+    let server = VrcxMcpServer::new(runtime);
+
+    assert!(server
+        .get_my_activity_output(
+            OwnerId::new("usr_owner"),
+            MyActivityParams {
+                time_window: None,
+                utc_offset_minutes: Some(i64::MAX),
+            },
+        )
+        .is_ok());
+}
+
+#[test]
+fn social_period_states_the_best_time_bucket_timezone() {
+    let (_dir, runtime, _db) = crate::test_support::test_runtime_with_database(
+        "social-period-best-time-timezone",
+        "usr_owner",
+    )
+    .unwrap();
+    let server = VrcxMcpServer::new(runtime);
+
+    let output = server
+        .summarize_social_period_output(
+            OwnerId::new("usr_owner"),
+            SummarizeSocialPeriodParams {
+                time_window: None,
+                utc_offset_minutes: Some(540),
+            },
+        )
+        .unwrap();
+
+    assert!(output
+        .caveats
+        .iter()
+        .any(|caveat| caveat.contains("Best-time buckets are in UTC+09:00")));
 }

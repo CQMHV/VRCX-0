@@ -168,6 +168,15 @@ impl McpActivityQueryPort for TestMcpActivityQueryAdapter {
             .map_err(Into::into)
     }
 
+    fn top_visited_worlds(
+        &self,
+        owner_user_id: &OwnerId,
+        input: social::TopVisitedWorldsInput,
+    ) -> vrcx_0_application_core::Result<Vec<social::TopVisitedWorldRow>> {
+        social_aggregates::top_visited_worlds(self.db.as_ref(), owner_user_id, input)
+            .map_err(Into::into)
+    }
+
     fn fading_friends(
         &self,
         input: social::FadingFriendsInput,

@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
 use chrono::{DateTime, Datelike, Duration, Utc};
 use rmcp::handler::server::wrapper::Parameters;
@@ -252,6 +252,8 @@ impl VrcxMcpServer {
     ) -> Result<MyActivityOutput, String> {
         let time_window = input.time_window.unwrap_or_default().into();
         let bounds = time_window_bounds_ms(&time_window)?;
+        let offset_minutes = input.utc_offset_minutes.unwrap_or(0);
+        let offset_ms = offset_minutes.saturating_mul(60_000);
         let sessions = self
             .runtime
             .activity_queries
@@ -273,7 +275,9 @@ impl VrcxMcpServer {
             let duration_ms = end - start;
             total_ms += duration_ms;
             longest_ms = longest_ms.max(duration_ms);
-            if let Some(start_at) = DateTime::<Utc>::from_timestamp_millis(start) {
+            if let Some(start_at) =
+                DateTime::<Utc>::from_timestamp_millis(start.saturating_add(offset_ms))
+            {
                 *by_weekday
                     .entry(start_at.weekday().to_string())
                     .or_insert(0) += duration_ms / 60_000;
@@ -291,6 +295,10 @@ impl VrcxMcpServer {
             longest_session_minutes: longest_ms / 60_000,
             by_weekday,
             caveats: vec![
+                format!(
+                    "Weekday buckets are in {}.",
+                    activity_buckets::utc_offset_label(offset_minutes)
+                ),
                 "Activity sessions are derived from this profile's local VRCX-0 activity cache."
                     .into(),
             ],
@@ -326,6 +334,7 @@ impl VrcxMcpServer {
             owner_user_id.clone(),
             MyActivityParams {
                 time_window: Some(time_window_params.clone()),
+                utc_offset_minutes: input.utc_offset_minutes,
             },
         )?;
 
@@ -340,7 +349,7 @@ impl VrcxMcpServer {
                 owner_user_id: Some(owner_user_id.clone()),
                 friends_only: true,
                 order_by: social_aggregates::CopresenceOrderBy::default(),
-                utc_offset_minutes: None,
+                utc_offset_minutes: input.utc_offset_minutes,
             })
             .map_err(map_application_query_error)?
             .rows;
@@ -369,19 +378,17 @@ impl VrcxMcpServer {
             .take(5)
             .collect();
 
-        let top_worlds = summarize_world_visits(
-            self.runtime
-                .activity_queries
-                .search_worlds_visited(
-                    &owner_user_id,
-                    social_aggregates::SearchWorldsVisitedInput {
-                        time_window: time_window.clone(),
-                        limit: 100,
-                    },
-                )
-                .map_err(map_application_query_error)?
-                .rows,
-        );
+        let top_worlds = self
+            .runtime
+            .activity_queries
+            .top_visited_worlds(
+                &owner_user_id,
+                social_aggregates::TopVisitedWorldsInput {
+                    time_window: time_window.clone(),
+                    limit: 5,
+                },
+            )
+            .map_err(map_application_query_error)?;
 
         let best_times = self
             .runtime
@@ -391,7 +398,7 @@ impl VrcxMcpServer {
                 time_window: time_window.clone(),
                 bucket: social_aggregates::ActivityBucket::HourOfDay,
                 limit: Some(3),
-                utc_offset_minutes: None,
+                utc_offset_minutes: input.utc_offset_minutes,
             })
             .map_err(map_application_query_error)?
             .rows;
@@ -410,6 +417,10 @@ impl VrcxMcpServer {
             caveats: vec![
                 "This is a structured fact bundle for narration; all figures are observer-centered and undercount private instances.".into(),
                 "fadingFriends compares the recent half of the period against the earlier half (or the last 30 days versus the prior 30 when no period is given).".into(),
+                format!(
+                    "Best-time buckets are in {}.",
+                    activity_buckets::utc_offset_label(input.utc_offset_minutes.unwrap_or(0))
+                ),
             ],
         })
     }
@@ -700,6 +711,9 @@ struct VisitTimelineParams {
 #[serde(rename_all = "camelCase")]
 struct MyActivityParams {
     time_window: Option<TimeWindowParams>,
+    /// The user's UTC offset in minutes (e.g. 540 for UTC+9, -300 for UTC-5).
+    /// Pass it so weekday buckets come back in the user's local time.
+    utc_offset_minutes: Option<i64>,
 }
 #[derive(Clone, Debug, Deserialize, schemars::JsonSchema)]
 #[serde(rename_all = "camelCase")]
@@ -757,6 +771,9 @@ struct RecallEncounterParams {
 #[serde(rename_all = "camelCase")]
 struct SummarizeSocialPeriodParams {
     time_window: Option<TimeWindowParams>,
+    /// The user's UTC offset in minutes (e.g. 540 for UTC+9, -300 for UTC-5).
+    /// Pass it so weekday and best-time buckets come back in the user's local time.
+    utc_offset_minutes: Option<i64>,
 }
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -811,7 +828,7 @@ struct SocialPeriodSummaryOutput {
     top_companions: Vec<social_aggregates::CopresenceSummaryRow>,
     new_friends: Vec<social_aggregates::FriendLogRow>,
     fading_friends: Vec<social_aggregates::FadingFriendRow>,
-    top_worlds: Vec<WorldVisitSummary>,
+    top_worlds: Vec<social_aggregates::TopVisitedWorldRow>,
     best_times: Vec<social_aggregates::BestTimeBucketRow>,
     caveats: Vec<String>,
 }
@@ -821,54 +838,6 @@ struct SocialPeriodSummaryOutput {
 struct TimeWindowEcho {
     from: Option<String>,
     to: Option<String>,
-}
-
-#[derive(Clone, Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct WorldVisitSummary {
-    world_id: String,
-    world_name: String,
-    visits: i64,
-    total_minutes: i64,
-    last_visited_at: String,
-}
-fn summarize_world_visits(rows: Vec<social_aggregates::VisitedWorldRow>) -> Vec<WorldVisitSummary> {
-    let mut grouped: HashMap<String, WorldVisitSummary> = HashMap::new();
-    for row in rows {
-        let key = if row.world_id.is_empty() {
-            row.location.clone()
-        } else {
-            row.world_id.clone()
-        };
-        if key.is_empty() {
-            continue;
-        }
-        let entry = grouped.entry(key).or_insert_with(|| WorldVisitSummary {
-            world_id: row.world_id.clone(),
-            world_name: row.world_name.clone(),
-            visits: 0,
-            total_minutes: 0,
-            last_visited_at: String::new(),
-        });
-        if entry.world_name.is_empty() && !row.world_name.is_empty() {
-            entry.world_name = row.world_name.clone();
-        }
-        entry.visits += 1;
-        entry.total_minutes += row.stay_minutes.max(0);
-        if row.visited_at > entry.last_visited_at {
-            entry.last_visited_at = row.visited_at;
-        }
-    }
-    let mut worlds = grouped.into_values().collect::<Vec<_>>();
-    worlds.sort_by(|left, right| {
-        right
-            .visits
-            .cmp(&left.visits)
-            .then_with(|| right.total_minutes.cmp(&left.total_minutes))
-            .then_with(|| left.world_name.cmp(&right.world_name))
-    });
-    worlds.truncate(5);
-    worlds
 }
 
 #[cfg(test)]

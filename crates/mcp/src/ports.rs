@@ -44,6 +44,12 @@ pub trait McpActivityQueryPort: Send + Sync {
         input: social::SearchWorldsVisitedInput,
     ) -> vrcx_0_application_core::Result<social::SearchWorldsVisitedOutput>;
 
+    fn top_visited_worlds(
+        &self,
+        owner_user_id: &OwnerId,
+        input: social::TopVisitedWorldsInput,
+    ) -> vrcx_0_application_core::Result<Vec<social::TopVisitedWorldRow>>;
+
     fn fading_friends(
         &self,
         input: social::FadingFriendsInput,
