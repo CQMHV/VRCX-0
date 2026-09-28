@@ -164,6 +164,7 @@ pub struct DesktopRuntimeHostOptions {
     pub app_update_check_disabled: bool,
     pub updater_port: Arc<dyn vrcx_0_application_core::UpdaterPort>,
     pub database_maintenance_cache_dir: Option<PathBuf>,
+    pub task_executor: Arc<dyn RuntimeTaskExecutor>,
 }
 
 pub struct GameRuntimeBundle {
@@ -263,6 +264,7 @@ impl DesktopRuntimeHostState {
             app_update_check_disabled,
             updater_port,
             database_maintenance_cache_dir,
+            task_executor,
         } = options;
         let builder = RuntimeHostStateBuilder::new(RuntimeHostOptions {
             realtime_origin,
@@ -271,6 +273,7 @@ impl DesktopRuntimeHostState {
             app_version: app_version.clone(),
             profile: RuntimeHostProfile::Desktop,
             database_maintenance_cache_dir,
+            task_executor: Some(task_executor),
         })?;
         cleanup_legacy_updater_files(&builder.paths().app_data);
         let host_file_access = HostFileAccess::new();
@@ -1805,16 +1808,6 @@ impl DesktopRuntimeHostState {
         S: RuntimeEventSink + 'static,
     {
         self.runtime.set_event_sink(sink);
-    }
-
-    pub fn set_runtime_task_executor<E>(&self, executor: E)
-    where
-        E: RuntimeTaskExecutor + 'static,
-    {
-        self.runtime
-            .desktop_assembly()
-            .tasks()
-            .set_executor(executor);
     }
 
     pub fn set_runtime_host_actions<A>(&self, actions: A)

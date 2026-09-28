@@ -92,6 +92,7 @@ impl AppState {
         app_data_dir: AppDataDirResolution,
         database_maintenance_cache_dir: Option<std::path::PathBuf>,
         updater_port: Arc<dyn UpdaterPort>,
+        task_executor: Arc<dyn vrcx_0_application_core::RuntimeTaskExecutor>,
     ) -> Result<Self, AppError> {
         let launched_from_autostart = std::env::args().any(|arg| arg == "--autostart");
         let runtime = DesktopRuntimeHostState::new(DesktopRuntimeHostOptions {
@@ -104,6 +105,7 @@ impl AppState {
             app_update_check_disabled: crate::bootstrap::app_update_check_disabled(),
             updater_port,
             database_maintenance_cache_dir,
+            task_executor,
         })?;
         let favorite_details = runtime.favorite_details_runtime();
         let quick_search = runtime.quick_search_runtime();

@@ -144,6 +144,7 @@ fn initialize_app_state(
         app_data_dir.clone(),
         database_maintenance_cache_dir.clone(),
         updater_port.clone(),
+        Arc::new(super::adapters::TauriRuntimeTaskExecutor),
     ) {
         Ok(state) => return state,
         Err(error) => error,
@@ -157,7 +158,12 @@ fn initialize_app_state(
                     quarantined = %quarantined.display(),
                     "local database is corrupted; quarantined it to recreate a fresh database"
                 );
-                match AppState::new(app_data_dir, database_maintenance_cache_dir, updater_port) {
+                match AppState::new(
+                    app_data_dir,
+                    database_maintenance_cache_dir,
+                    updater_port,
+                    Arc::new(super::adapters::TauriRuntimeTaskExecutor),
+                ) {
                     Ok(state) => {
                         show_blocking_dialog(
                             app,
