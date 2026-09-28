@@ -5898,7 +5898,6 @@ export type RegistryBackupSnapshot = {
     key: string;
     name: string;
     date: string;
-    data: RawJson;
 };
 export type ReleaseStatusFilter = 'all' | 'hidden' | 'private' | 'public';
 export type RemoteModerationRow = {
