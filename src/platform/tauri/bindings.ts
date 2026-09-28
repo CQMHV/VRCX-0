@@ -608,9 +608,6 @@ const generatedCommands = {
             testMode
         });
     },
-    async appVrOverlayConfigReload(): Promise<VrOverlayRuntimeSnapshot> {
-        return await TAURI_INVOKE('app__vr_overlay_config_reload');
-    },
     async appRegistryBackupList(): Promise<RegistryBackupSnapshot[]> {
         return await TAURI_INVOKE('app__registry_backup_list');
     },

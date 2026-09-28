@@ -253,6 +253,7 @@ pub struct VrOverlayRuntime {
     wrist_frame_release_requested: AtomicBool,
     hmd_frame_release_requested: AtomicBool,
     device_refresh_requested: AtomicBool,
+    config_dirty: AtomicBool,
     backend_available: bool,
     pub(crate) services: Option<Arc<dyn VrOverlayRuntimeServices>>,
     config: Mutex<VrOverlayRuntimeConfig>,
@@ -351,6 +352,7 @@ impl VrOverlayRuntime {
             wrist_frame_release_requested: AtomicBool::new(false),
             hmd_frame_release_requested: AtomicBool::new(false),
             device_refresh_requested: AtomicBool::new(false),
+            config_dirty: AtomicBool::new(false),
             backend_available,
             services,
             manager: Mutex::new(VrOverlayManager::new(service)),
@@ -374,7 +376,7 @@ impl VrOverlayRuntime {
             tracing::warn!("no VR overlay backend is available in this build");
         }
         self.enabled.store(enabled, Ordering::Release);
-        self.reconcile_current_with_device_refresh(true);
+        self.reconcile(true, true);
         if !enabled && !self.current_runtime_config().hmd.enabled {
             self.release_frame_producer();
         }
@@ -387,7 +389,7 @@ impl VrOverlayRuntime {
         if !test_mode {
             self.clear_hmd_toasts();
         }
-        self.reconcile_current_with_device_refresh(true);
+        self.reconcile(true, true);
         if !test_mode && !self.enabled.load(Ordering::Acquire) {
             self.release_frame_producer();
         }
@@ -420,7 +422,7 @@ impl VrOverlayRuntime {
                 let now = Instant::now();
                 let refresh_devices =
                     now >= next_device_refresh || runtime.consume_device_refresh_request();
-                runtime.reconcile_current_with_device_refresh(refresh_devices);
+                runtime.reconcile(refresh_devices, false);
                 if refresh_devices {
                     next_device_refresh = now + WRIST_DEVICE_REFRESH_INTERVAL;
                 }
@@ -577,18 +579,27 @@ impl VrOverlayRuntime {
         }
         self.steamvr_running
             .store(steamvr_running, Ordering::Release);
-        self.reconcile_current_with_device_refresh(true);
+        self.reconcile(true, false);
     }
 
     pub fn reconcile_current(&self) {
-        self.reconcile_current_with_device_refresh(false);
+        self.reconcile(false, false);
     }
 
-    fn reconcile_current_with_device_refresh(&self, refresh_devices: bool) {
+    pub fn mark_config_dirty(&self) {
+        self.config_dirty.store(true, Ordering::Release);
+        self.refresh_wake.notify();
+    }
+
+    fn reconcile(&self, refresh_devices: bool, reload_config: bool) {
         if self.is_refresh_thread() {
             self.consume_slint_renderer_release_requests();
         }
-        let changed_config = self.changed_runtime_config();
+        let changed_config = if reload_config || self.config_dirty.swap(false, Ordering::AcqRel) {
+            self.changed_runtime_config()
+        } else {
+            None
+        };
         if let Ok(mut manager) = self.manager.lock() {
             let mut config = self.current_runtime_config();
             if let Some(next_config) = changed_config {
@@ -1152,3 +1163,5 @@ fn is_real_instance_location(location: &str) -> bool {
 
 #[cfg(test)]
 mod activity_sink_tests;
+#[cfg(test)]
+mod config_reload_tests;

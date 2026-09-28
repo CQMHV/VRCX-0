@@ -2081,8 +2081,19 @@ impl DesktopRuntimeHostState {
         self.desktop.vr_overlay_runtime.set_test_mode(test_mode)
     }
 
-    pub fn reload_vr_overlay_config(&self) -> Result<VrOverlayRuntimeSnapshot> {
-        self.desktop.vr_overlay_runtime.reload_config()
+    pub fn config_set_values(
+        &self,
+        entries: Vec<crate::local_data::ConfigWriteEntry>,
+    ) -> Result<()> {
+        self.local_data.config_set_values(entries)?;
+        self.desktop.vr_overlay_runtime.mark_config_dirty();
+        Ok(())
+    }
+
+    pub fn config_remove_value(&self, key: String) -> Result<i64> {
+        let removed = self.local_data.config_remove_value(key)?;
+        self.desktop.vr_overlay_runtime.mark_config_dirty();
+        Ok(removed)
     }
 
     pub async fn ancillary_runtime_snapshot(&self) -> AncillaryRuntimeSnapshot {

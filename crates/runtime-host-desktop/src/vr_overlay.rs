@@ -107,15 +107,9 @@ impl DesktopVrOverlayRuntime {
         }
     }
 
-    pub fn reload_config(&self) -> Result<VrOverlayRuntimeSnapshot> {
+    pub fn mark_config_dirty(&self) {
         #[cfg(any(windows, target_os = "linux"))]
-        {
-            self.runtime.reconcile_current();
-            Ok(self.runtime.snapshot().into())
-        }
-
-        #[cfg(not(any(windows, target_os = "linux")))]
-        Err(unsupported_error())
+        self.runtime.mark_config_dirty();
     }
 
     pub fn reconcile_current(&self) {
@@ -202,10 +196,6 @@ mod tests {
     fn unsupported_facade_rejects_all_commands() {
         let runtime = super::DesktopVrOverlayRuntime {};
 
-        assert_eq!(
-            runtime.reload_config().unwrap_err().to_string(),
-            "VR overlay is not supported on macOS"
-        );
         assert_eq!(
             runtime.set_enabled(true).unwrap_err().to_string(),
             "VR overlay is not supported on macOS"
