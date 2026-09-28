@@ -516,3 +516,58 @@ impl WorldCachePort for MemoryWorldCachePort {
         }
     }
 }
+
+#[derive(Clone, Copy, Default)]
+pub struct NoopAvatarCachePort;
+
+#[async_trait::async_trait]
+impl crate::AvatarCachePort for NoopAvatarCachePort {
+    fn clear_working(&self) {}
+    fn invalidate(&self, _user_id: &str, _endpoint: &str, _avatar_id: &str) {}
+    fn get_summary(
+        &self,
+        _user_id: &str,
+        _endpoint: &str,
+        _avatar_id: &str,
+    ) -> Result<Option<vrcx_0_contracts::AvatarCacheOutput>> {
+        Ok(None)
+    }
+    fn find_by_image_url(
+        &self,
+        _user_id: &str,
+        _endpoint: &str,
+        _image_url: &str,
+    ) -> Result<Option<Arc<serde_json::Value>>> {
+        Ok(None)
+    }
+    fn hydrate_from_payload(
+        &self,
+        _user_id: &str,
+        _endpoint: &str,
+        avatar: serde_json::Value,
+    ) -> Option<Arc<serde_json::Value>> {
+        Some(Arc::new(avatar))
+    }
+    fn existing_summary_ids(&self, _avatar_ids: &[String]) -> Result<Vec<String>> {
+        Ok(Vec::new())
+    }
+    fn store_summaries(
+        &self,
+        _user_id: &str,
+        _endpoint: &str,
+        entries: Vec<vrcx_0_contracts::CacheEntityInput>,
+    ) -> Result<u32> {
+        Ok(u32::try_from(entries.len()).unwrap_or(u32::MAX))
+    }
+    async fn resolve(
+        &self,
+        _web: &WebClient,
+        _user_id: &str,
+        _endpoint: &str,
+        _avatar_id: &str,
+        _full: bool,
+        _fresh: bool,
+    ) -> Result<Option<Arc<serde_json::Value>>> {
+        Ok(None)
+    }
+}

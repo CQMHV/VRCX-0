@@ -553,6 +553,7 @@ impl RuntimeHostStateBuilder {
             Arc::clone(&self.runtime_context.favorite_store),
             Arc::clone(&self.runtime_context.favorite_remote),
             Arc::clone(&self.runtime_context.world_cache),
+            Arc::clone(&self.runtime_context.avatar_cache),
             self.runtime_context.event_bus.clone(),
             self.runtime_context.tasks.clone(),
             self.runtime_context.auth_scope.clone(),

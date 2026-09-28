@@ -4,13 +4,10 @@ use vrcx_0_application::favorites::{FavoriteMoveResult, FavoriteStore};
 use vrcx_0_application_core::Result;
 use vrcx_0_contracts::{
     social_aggregates::{FavoriteLocalInput, FavoriteOutput},
-    CacheEntityInput, FavoriteRow,
+    FavoriteRow,
 };
 use vrcx_0_core::{FavoriteEntityKind, OwnerId};
 use vrcx_0_persistence::{
-    avatars::{
-        avatar_cache_existing_ids, avatar_cache_get, avatar_cache_upsert, avatar_cache_upsert_many,
-    },
     config::{get_json, resolve_config_key, set_json},
     favorites, social_aggregates, DatabaseService,
 };
@@ -128,24 +125,6 @@ impl FavoriteStore for LocalFavoriteStore {
             groups,
         )
         .map_err(Into::into)
-    }
-
-    fn avatar_cache_exists(&self, avatar_id: String) -> Result<bool> {
-        avatar_cache_get(self.db.as_ref(), avatar_id)
-            .map(|row| row.is_some())
-            .map_err(Into::into)
-    }
-
-    fn avatar_cache_upsert(&self, entry: CacheEntityInput) -> Result<i64> {
-        avatar_cache_upsert(self.db.as_ref(), entry).map_err(Into::into)
-    }
-
-    fn avatar_cache_existing_ids(&self, avatar_ids: &[String]) -> Result<Vec<String>> {
-        avatar_cache_existing_ids(self.db.as_ref(), avatar_ids).map_err(Into::into)
-    }
-
-    fn avatar_cache_upsert_many(&self, entries: Vec<CacheEntityInput>) -> Result<u32> {
-        avatar_cache_upsert_many(self.db.as_ref(), entries).map_err(Into::into)
     }
 
     fn mutate_local(

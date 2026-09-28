@@ -4,7 +4,7 @@ use vrcx_0_contracts::CacheEntityInput;
 use vrcx_0_core::json::RawJson;
 use vrcx_0_core::text::normalize_text;
 
-use vrcx_0_application_core::{Result, WorldCache};
+use vrcx_0_application_core::{AvatarCache, Result, WorldCache};
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
@@ -30,8 +30,10 @@ pub(super) enum CacheWriteDecision {
 }
 
 pub fn persist_favorite_cache_snapshot(
-    store: &dyn super::FavoriteStore,
     world_cache: &WorldCache,
+    avatar_cache: &AvatarCache,
+    user_id: &str,
+    endpoint: &str,
     input: FavoriteCacheSnapshotInput,
 ) -> Result<bool> {
     let entity = input.entity.as_value();
@@ -51,10 +53,14 @@ pub fn persist_favorite_cache_snapshot(
     if id.is_empty() {
         return Ok(false);
     }
-    if decision == CacheWriteDecision::InsertIfMissing && store.avatar_cache_exists(id)? {
+    if decision == CacheWriteDecision::InsertIfMissing
+        && !avatar_cache
+            .existing_summary_ids(std::slice::from_ref(&id))?
+            .is_empty()
+    {
         return Ok(false);
     }
-    store.avatar_cache_upsert(entry)?;
+    avatar_cache.store_summaries(user_id, endpoint, vec![entry])?;
     Ok(true)
 }
 
@@ -157,8 +163,7 @@ mod tests {
     use serde_json::json;
 
     use super::*;
-    use crate::favorites::test_support::TestFavoriteStore;
-    use vrcx_0_application_core::MemoryWorldCachePort;
+    use vrcx_0_application_core::{MemoryWorldCachePort, NoopAvatarCachePort};
 
     #[test]
     fn world_policy_upserts_public_and_private_details() {
@@ -218,7 +223,6 @@ mod tests {
 
     #[test]
     fn private_world_snapshot_overwrites_existing_public_cache() {
-        let store = TestFavoriteStore::default();
         let public = json!({
             "id": "wrld_test",
             "name": "Public name",
@@ -233,10 +237,13 @@ mod tests {
         });
 
         let world_cache = WorldCache::new(MemoryWorldCachePort::default());
+        let avatar_cache = AvatarCache::new(NoopAvatarCachePort);
 
         assert!(persist_favorite_cache_snapshot(
-            &store,
             &world_cache,
+            &avatar_cache,
+            "usr_self",
+            "https://api.vrchat.cloud/api/1",
             FavoriteCacheSnapshotInput {
                 kind: FavoriteCacheKind::World,
                 entity: RawJson::from(public),
@@ -245,8 +252,10 @@ mod tests {
         )
         .unwrap());
         assert!(persist_favorite_cache_snapshot(
-            &store,
             &world_cache,
+            &avatar_cache,
+            "usr_self",
+            "https://api.vrchat.cloud/api/1",
             FavoriteCacheSnapshotInput {
                 kind: FavoriteCacheKind::World,
                 entity: RawJson::from(private),
@@ -263,12 +272,14 @@ mod tests {
 
     #[test]
     fn world_snapshot_without_an_id_is_cached_under_the_fallback_id() {
-        let store = TestFavoriteStore::default();
         let world_cache = WorldCache::new(MemoryWorldCachePort::default());
+        let avatar_cache = AvatarCache::new(NoopAvatarCachePort);
 
         assert!(persist_favorite_cache_snapshot(
-            &store,
             &world_cache,
+            &avatar_cache,
+            "usr_self",
+            "https://api.vrchat.cloud/api/1",
             FavoriteCacheSnapshotInput {
                 kind: FavoriteCacheKind::World,
                 entity: RawJson::from(json!({

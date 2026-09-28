@@ -52,8 +52,8 @@ pub use config::{config_string_array_value, normalize_config_string_array};
 #[cfg(any(test, feature = "test-utils"))]
 pub use contract_test_support::{
     assert_json_contract, CallRecorder, MemoryCookieWebClientPort, MemoryFileCachePort,
-    MemoryWorldCachePort, NoopImageCachePort, NoopWebClientPort, NoopWorldCachePort,
-    ScriptedResults,
+    MemoryWorldCachePort, NoopAvatarCachePort, NoopImageCachePort, NoopWebClientPort,
+    NoopWorldCachePort, ScriptedResults,
 };
 pub use diagnostics::RuntimeDiagnostics;
 pub use error::Error;

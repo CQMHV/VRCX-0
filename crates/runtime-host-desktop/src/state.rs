@@ -1091,12 +1091,14 @@ impl DesktopRuntimeHostState {
         &self,
         input: FavoriteCacheSnapshotInput,
     ) -> Result<bool> {
-        let store =
-            vrcx_0_outbound_adapters::LocalFavoriteStore::new(Arc::clone(self.runtime.database()));
+        let assembly = self.runtime.desktop_assembly();
+        let scope = assembly.auth_scope().snapshot();
         Ok(
             vrcx_0_application::favorites::persist_favorite_cache_snapshot(
-                &store,
-                self.runtime.desktop_assembly().world_cache(),
+                assembly.world_cache(),
+                assembly.avatar_cache(),
+                &scope.current_user_id,
+                &scope.endpoint,
                 input,
             )?,
         )
@@ -1118,9 +1120,6 @@ impl DesktopRuntimeHostState {
         &self,
     ) -> vrcx_0_application::favorites::FavoriteDetailsRuntime {
         vrcx_0_application::favorites::FavoriteDetailsRuntime::new(
-            Arc::new(vrcx_0_outbound_adapters::LocalFavoriteStore::new(
-                Arc::clone(self.runtime.database()),
-            )),
             Arc::new(vrcx_0_outbound_adapters::VrchatFavoriteRemote::new(
                 Arc::clone(self.runtime.web_client()),
                 self.runtime.desktop_assembly().diagnostics().clone(),
@@ -1129,6 +1128,7 @@ impl DesktopRuntimeHostState {
             )),
             self.runtime.desktop_assembly().auth_scope().clone(),
             Arc::clone(self.runtime.desktop_assembly().world_cache()),
+            Arc::clone(self.runtime.desktop_assembly().avatar_cache()),
             self.runtime.desktop_assembly().tasks().clone(),
         )
     }

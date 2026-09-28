@@ -1,10 +1,10 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::sync::Mutex;
 
 use vrcx_0_application_core::{vrchat_api::VrchatApiResponse, Error, Result, RuntimeAuthScope};
 use vrcx_0_contracts::{
     social_aggregates::{FavoriteAction, FavoriteLocalInput, FavoriteOutput},
-    CacheEntityInput, FavoriteRow,
+    FavoriteRow,
 };
 use vrcx_0_core::{FavoriteEntityKind, OwnerId};
 
@@ -227,7 +227,6 @@ struct StoredFavorite {
 struct TestFavoriteStoreState {
     configs: HashMap<String, serde_json::Value>,
     favorites: Vec<StoredFavorite>,
-    avatar_cache_ids: HashSet<String>,
 }
 
 #[derive(Default)]
@@ -238,10 +237,6 @@ pub(super) struct TestFavoriteStore {
 impl TestFavoriteStore {
     fn owner(owner_user_id: Option<&OwnerId>) -> Option<String> {
         owner_user_id.map(|owner| owner.as_str().to_string())
-    }
-
-    fn cache_id(entry: &CacheEntityInput) -> String {
-        entry.id.as_str().unwrap_or_default().trim().to_string()
     }
 }
 
@@ -405,38 +400,6 @@ impl FavoriteStore for TestFavoriteStore {
                 && row.group_name == group_name)
         });
         Ok((before - state.favorites.len()) as i64)
-    }
-
-    fn avatar_cache_exists(&self, avatar_id: String) -> Result<bool> {
-        let state = self.state.lock().unwrap_or_else(|error| error.into_inner());
-        Ok(state.avatar_cache_ids.contains(&avatar_id))
-    }
-
-    fn avatar_cache_upsert(&self, entry: CacheEntityInput) -> Result<i64> {
-        let id = Self::cache_id(&entry);
-        if id.is_empty() {
-            return Err(Error::Custom("Favorite cache entry requires id.".into()));
-        }
-        let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
-        state.avatar_cache_ids.insert(id);
-        Ok(1)
-    }
-
-    fn avatar_cache_existing_ids(&self, avatar_ids: &[String]) -> Result<Vec<String>> {
-        let state = self.state.lock().unwrap_or_else(|error| error.into_inner());
-        Ok(avatar_ids
-            .iter()
-            .filter(|id| state.avatar_cache_ids.contains(*id))
-            .cloned()
-            .collect())
-    }
-
-    fn avatar_cache_upsert_many(&self, entries: Vec<CacheEntityInput>) -> Result<u32> {
-        let count = entries.len() as u32;
-        for entry in entries {
-            self.avatar_cache_upsert(entry)?;
-        }
-        Ok(count)
     }
 
     fn mutate_local(
