@@ -449,9 +449,13 @@ impl FavoriteImportRuntime {
         }
         match hydration_cache(kind) {
             FavoriteImportHydrationCache::Avatar => {
-                self.avatar_cache
+                if self
+                    .avatar_cache
                     .hydrate_from_payload(&scope.current_user_id, &scope.endpoint, payload.clone())
-                    .ok_or_else(|| Error::Custom("Avatar payload could not be cached.".into()))?;
+                    .is_none()
+                {
+                    tracing::warn!(avatar_id = %id, "favorite import avatar payload was not cached");
+                }
             }
             FavoriteImportHydrationCache::World => {
                 self.world_cache

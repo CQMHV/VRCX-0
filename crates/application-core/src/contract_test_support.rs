@@ -318,6 +318,9 @@ impl WorldCachePort for NoopWorldCachePort {
     ) -> Option<vrcx_0_contracts::WorldSummaryOutput> {
         None
     }
+    fn store_from_payload(&self, _world_value: &serde_json::Value) -> Result<Option<String>> {
+        Ok(None)
+    }
     fn hydrate_favorite_payloads(
         &self,
         world_values: &[serde_json::Value],
@@ -441,6 +444,9 @@ impl WorldCachePort for MemoryWorldCachePort {
             .get("name")
             .and_then(serde_json::Value::as_str)
             .map(ToOwned::to_owned)
+    }
+    fn store_from_payload(&self, world_value: &serde_json::Value) -> Result<Option<String>> {
+        Ok(WorldCachePort::hydrate_from_payload(self, world_value))
     }
     fn hydrate_summary_from_payload(
         &self,

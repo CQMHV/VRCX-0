@@ -1038,7 +1038,9 @@ fn cache_world_snapshot_if_safe(
         return;
     }
     if let Some(entity) = item.entity.as_ref().map(RawJson::as_value) {
-        cache_world_snapshot(world_cache, entity, &item.entity_id);
+        if let Err(error) = cache_world_snapshot(world_cache, entity, &item.entity_id) {
+            tracing::warn!("failed to cache transferred favorite world snapshot: {error}");
+        }
     }
 }
 
