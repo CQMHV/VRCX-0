@@ -236,6 +236,18 @@ impl AppState {
         Ok(written)
     }
 
+    pub async fn refresh_local_world_favorite_details(
+        &self,
+    ) -> Result<vrcx_0_application::favorites::LocalWorldDetailsRefreshOutput, AppError> {
+        let output = self
+            .runtime
+            .local_data()
+            .favorite_local_world_details_refresh()
+            .await?;
+        self.favorite_details.invalidate_world_cards().await;
+        Ok(output)
+    }
+
     pub async fn hydrate_favorite_details(
         &self,
         input: vrcx_0_application::favorites::FavoriteDetailsHydrateInput,
