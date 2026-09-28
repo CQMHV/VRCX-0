@@ -74,6 +74,7 @@ impl DatabaseUpgradeStore for LocalDatabaseUpgradeStore {
 const UPSTREAM_CLEANUP_SCHEMA_VERSION: i64 = 16;
 const COPRESENCE_DURATION_REPAIR_KEY: &str = "copresenceDurationRepairV1Done";
 const EMPTY_LEAVE_LOCATION_REPAIR_KEY: &str = "emptyLeaveLocationRepairV1Done";
+const EXPIRED_NOTIFICATION_SEEN_REPAIR_KEY: &str = "expiredNotificationSeenRepairV1Done";
 const ONE_TIME_DATA_REPAIRS: &[(&str, DatabaseMaintenanceTask)] = &[
     (
         EMPTY_LEAVE_LOCATION_REPAIR_KEY,
@@ -82,6 +83,10 @@ const ONE_TIME_DATA_REPAIRS: &[(&str, DatabaseMaintenanceTask)] = &[
     (
         COPRESENCE_DURATION_REPAIR_KEY,
         DatabaseMaintenanceTask::RepairZeroCopresenceDurations,
+    ),
+    (
+        EXPIRED_NOTIFICATION_SEEN_REPAIR_KEY,
+        DatabaseMaintenanceTask::RepairExpiredNotificationsSeen,
     ),
 ];
 const LEGACY_DATA_CLEANUP_TASKS: &[DatabaseMaintenanceTask] = &[

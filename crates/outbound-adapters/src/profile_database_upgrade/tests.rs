@@ -375,6 +375,35 @@ fn preflight_reports_pending_one_time_repairs_until_they_complete() {
 }
 
 #[test]
+fn one_time_repair_marks_expired_legacy_notifications_seen() {
+    let dir = TestDir::new("database-upgrade-expired-notification-repair");
+    let db = dir.database();
+    set_version(&db, VRCX0_SCHEMA_VERSION);
+    set_migration_version(&db, target_migration_version());
+    ensure_required_database_schema(&db).unwrap();
+    vrcx_0_persistence::realtime::ensure_realtime_tables(&db, "usrself").unwrap();
+    rusqlite::Connection::open(db.db_path())
+        .unwrap()
+        .execute_batch(
+            "INSERT INTO usrself_notifications (id, created_at, type, expired, seen)
+             VALUES ('expired', '2026-08-20T10:00:00Z', 'friendRequest', 1, 0);",
+        )
+        .unwrap();
+
+    run_database_upgrade(&db);
+
+    let seen: i64 = rusqlite::Connection::open(db.db_path())
+        .unwrap()
+        .query_row(
+            "SELECT seen FROM usrself_notifications WHERE id = 'expired'",
+            [],
+            |row| row.get(0),
+        )
+        .unwrap();
+    assert_eq!(seen, 1);
+}
+
+#[test]
 fn one_time_repair_uses_its_own_marker_and_retries_non_fatal_failures() {
     let skipped_dir = TestDir::new("database-upgrade-repair-skipped");
     let skipped_db = skipped_dir.database();

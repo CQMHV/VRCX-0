@@ -582,7 +582,7 @@ fn expire_notification(
             .build(),
     )?);
     affected = affected.saturating_add(affected_count(tx.execute_non_query(
-        &format!("UPDATE {user_prefix}_notifications SET expired = 1 WHERE id = @id"),
+        &format!("UPDATE {user_prefix}_notifications SET expired = 1, seen = 1 WHERE id = @id"),
         &ParamsBuilder::new().set("id", id).build(),
     )?));
     Ok(affected)

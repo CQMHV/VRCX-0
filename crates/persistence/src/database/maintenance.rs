@@ -100,6 +100,7 @@ pub enum DatabaseMaintenanceTask {
     FixBrokenGameLogDisplayNames,
     RepairZeroCopresenceDurations,
     RepairEmptyLeaveLocations,
+    RepairExpiredNotificationsSeen,
     ImportUpstreamPrintFavorites,
 }
 
@@ -125,6 +126,7 @@ impl DatabaseMaintenanceTask {
             Self::FixBrokenGameLogDisplayNames => "fixBrokenGameLogDisplayNames",
             Self::RepairZeroCopresenceDurations => "repairZeroCopresenceDurations",
             Self::RepairEmptyLeaveLocations => "repairEmptyLeaveLocations",
+            Self::RepairExpiredNotificationsSeen => "repairExpiredNotificationsSeen",
             Self::ImportUpstreamPrintFavorites => "importUpstreamPrintFavorites",
         }
     }
@@ -350,6 +352,16 @@ fn run_database_maintenance_task(
         }
         DatabaseMaintenanceTask::RepairEmptyLeaveLocations => {
             repair_empty_leave_locations(db)?;
+        }
+        DatabaseMaintenanceTask::RepairExpiredNotificationsSeen => {
+            for table_name in select_table_names(db, "name LIKE '%_notifications'")? {
+                if table_column_names(db, &table_name)?.contains("seen") {
+                    db.execute_non_query(
+                        &format!("UPDATE {table_name} SET seen = 1 WHERE expired = 1 AND seen = 0"),
+                        &Default::default(),
+                    )?;
+                }
+            }
         }
         DatabaseMaintenanceTask::ImportUpstreamPrintFavorites => {
             import_upstream_print_favorites(db)?;
