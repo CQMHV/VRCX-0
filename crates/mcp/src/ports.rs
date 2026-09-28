@@ -79,6 +79,7 @@ pub trait McpActivityQueryPort: Send + Sync {
         owner_user_id: &OwnerId,
         from_ms: Option<i64>,
         to_ms: i64,
+        open_location: Option<&str>,
     ) -> vrcx_0_application_core::Result<Vec<McpPlaySpan>>;
 }
 

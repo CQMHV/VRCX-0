@@ -5,11 +5,13 @@ use rmcp::handler::server::wrapper::Parameters;
 use rmcp::model::CallToolResult;
 use rmcp::{schemars, tool, tool_router};
 use serde::{Deserialize, Serialize};
+use vrcx_0_application_core::LocalGameContextSnapshot;
 use vrcx_0_contracts::social_aggregates;
 use vrcx_0_core::activity_buckets::{
     self, ActivityBucket as CoreActivityBucket, ActivityStreaks, ActivityTimeBucket,
 };
 use vrcx_0_core::activity_sessions::PLAY_SESSION_MERGE_GAP_MS;
+use vrcx_0_core::location::is_real_instance;
 
 use crate::server::VrcxMcpServer;
 
@@ -22,7 +24,7 @@ use super::common::{
 use vrcx_0_core::OwnerId;
 
 const PLAY_TIME_CAVEAT: &str =
-    "Play time counts closed instance stays from this profile's game log; time spent while VRCX-0 was not running is missing.";
+    "Play time counts instance stays from this profile's game log, including the current stay while VRChat is running; time spent while VRCX-0 was not running is missing.";
 
 #[tool_router(router = activity_tool_router, vis = "pub(crate)")]
 impl VrcxMcpServer {
@@ -449,15 +451,27 @@ impl VrcxMcpServer {
         })
     }
 
+    fn open_play_location(&self) -> Option<String> {
+        match self.runtime.realtime_runtime.local_game_context_snapshot() {
+            LocalGameContextSnapshot::Available {
+                is_game_running: true,
+                location,
+                ..
+            } if is_real_instance(&location) => Some(location),
+            _ => None,
+        }
+    }
+
     fn play_spans(
         &self,
         owner_user_id: &OwnerId,
         from_ms: Option<i64>,
         to_ms: i64,
     ) -> Result<Vec<(i64, i64)>, String> {
+        let open_location = self.open_play_location();
         self.runtime
             .activity_queries
-            .play_spans(owner_user_id, from_ms, to_ms)
+            .play_spans(owner_user_id, from_ms, to_ms, open_location.as_deref())
             .map(|spans| {
                 spans
                     .into_iter()

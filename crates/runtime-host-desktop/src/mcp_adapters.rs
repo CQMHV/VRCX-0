@@ -201,19 +201,25 @@ impl McpActivityQueryPort for DesktopMcpActivityQueryAdapter {
         owner_user_id: &OwnerId,
         from_ms: Option<i64>,
         to_ms: i64,
+        open_location: Option<&str>,
     ) -> vrcx_0_application_core::Result<Vec<McpPlaySpan>> {
-        activity_page::read_instance_spans(self.db.as_ref(), owner_user_id, from_ms, to_ms)
-            .map(|window| {
-                window
-                    .spans
-                    .into_iter()
-                    .map(|span| McpPlaySpan {
-                        start: span.start_ms,
-                        end: span.end_ms,
-                    })
-                    .collect()
-            })
-            .map_err(Into::into)
+        activity_page::read_play_spans(
+            self.db.as_ref(),
+            owner_user_id,
+            from_ms,
+            to_ms,
+            open_location,
+        )
+        .map(|spans| {
+            spans
+                .into_iter()
+                .map(|span| McpPlaySpan {
+                    start: span.start_ms,
+                    end: span.end_ms,
+                })
+                .collect()
+        })
+        .map_err(Into::into)
     }
 }
 

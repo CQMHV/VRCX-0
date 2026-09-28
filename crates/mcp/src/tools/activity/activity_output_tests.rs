@@ -7,9 +7,9 @@ use rmcp::handler::server::wrapper::Parameters;
 use vrcx_0_application::favorites::{FavoriteMutationCoordinator, FavoriteMutationRuntimeDeps};
 use vrcx_0_application::social::MutualGraphFetchRuntime;
 use vrcx_0_application_core::{
-    HostSessionRuntime, NoopPrintCleanupInputSink, RuntimeAuthScope, RuntimeDiagnostics,
-    RuntimeEventBus, RuntimeSyncEngine, TaskSupervisor, UnavailableLocalGameContextSource,
-    WebClient, WorldCache,
+    HostSessionRuntime, LocalGameContextSource, NoopPrintCleanupInputSink, RuntimeAuthScope,
+    RuntimeDiagnostics, RuntimeEventBus, RuntimeSyncEngine, TaskSupervisor,
+    UnavailableLocalGameContextSource, WebClient, WorldCache,
 };
 use vrcx_0_application_realtime::{RealtimeHostRuntime, RealtimeHostRuntimeDeps};
 use vrcx_0_persistence::game_log::{
@@ -75,6 +75,21 @@ fn test_server(
     name: &str,
     auth_scope_user_id: &str,
 ) -> Result<(TestDir, VrcxMcpServer), Box<dyn std::error::Error>> {
+    let (dir, server, _) = test_server_with_game_context(
+        name,
+        auth_scope_user_id,
+        Arc::new(UnavailableLocalGameContextSource),
+    )?;
+    Ok((dir, server))
+}
+
+type TestServerWithDatabase = (TestDir, VrcxMcpServer, Arc<DatabaseService>);
+
+fn test_server_with_game_context(
+    name: &str,
+    auth_scope_user_id: &str,
+    local_game_context: Arc<dyn LocalGameContextSource>,
+) -> Result<TestServerWithDatabase, Box<dyn std::error::Error>> {
     let dir = TestDir::new(name);
     let db = Arc::new(DatabaseService::new(&dir.path.join("VRCX-0.sqlite3"))?);
     ensure_game_log_tables(db.as_ref())?;
@@ -151,7 +166,7 @@ fn test_server(
         session,
         auth_scope.clone(),
         remote_mutations,
-        Arc::new(UnavailableLocalGameContextSource),
+        local_game_context,
         None,
         None,
         world_cache,
@@ -194,7 +209,7 @@ fn test_server(
         tasks,
         caller: crate::runtime::McpCaller::ExternalServer,
     };
-    Ok((dir, VrcxMcpServer::new(runtime)))
+    Ok((dir, VrcxMcpServer::new(runtime), db))
 }
 
 fn ms(value: &str) -> i64 {
@@ -446,6 +461,64 @@ fn my_activity_counts_only_closed_instance_stays() {
     assert_eq!(output.total_minutes, 60);
     assert_eq!(output.session_count, 1);
     assert_eq!(output.by_weekday.get("Mon"), Some(&60));
+}
+
+struct FixedLocalGameContext(LocalGameContextSnapshot);
+
+impl LocalGameContextSource for FixedLocalGameContext {
+    fn snapshot(&self) -> LocalGameContextSnapshot {
+        self.0.clone()
+    }
+}
+
+#[test]
+fn my_activity_counts_the_current_stay_while_the_game_is_running() {
+    let (_dir, server, db) = test_server_with_game_context(
+        "my-activity-open-stay",
+        "usr_owner",
+        Arc::new(FixedLocalGameContext(LocalGameContextSnapshot::Available {
+            is_game_running: true,
+            location: "wrld_open:1".into(),
+            destination: String::new(),
+            world_name: "Open".into(),
+            player_user_ids: Vec::new(),
+        })),
+    )
+    .unwrap();
+    let started_at = Utc::now() - chrono::Duration::minutes(90);
+    write_batch(
+        db.as_ref(),
+        &OwnerId::new("usr_owner"),
+        &GameLogWriteBatch {
+            locations: vec![GameLogLocationEntry {
+                created_at: vrcx_0_core::time::iso_millis(started_at),
+                location: "wrld_open:1".into(),
+                world_id: "wrld_open".into(),
+                world_name: "Open".into(),
+                time: 0,
+                group_name: String::new(),
+            }],
+            ..GameLogWriteBatch::default()
+        },
+    )
+    .unwrap();
+
+    let output = server
+        .get_my_activity_output(
+            OwnerId::new("usr_owner"),
+            MyActivityParams {
+                time_window: None,
+                utc_offset_minutes: None,
+            },
+        )
+        .unwrap();
+
+    assert!(
+        (89..=91).contains(&output.total_minutes),
+        "{}",
+        output.total_minutes
+    );
+    assert_eq!(output.session_count, 1);
 }
 
 #[test]
