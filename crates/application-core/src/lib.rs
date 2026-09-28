@@ -35,6 +35,7 @@ pub use async_runtime_policy::{
 };
 pub use auth_scope::{
     RuntimeAuthIdentity, RuntimeAuthScope, RuntimeAuthScopeObserver, RuntimeAuthScopeSnapshot,
+    RuntimeVrchatAuthFailureObserver,
 };
 pub use avatar_cache::{AvatarCache, AvatarCachePort};
 pub use backend_runtime::{
