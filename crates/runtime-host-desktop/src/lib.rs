@@ -1,5 +1,6 @@
 mod ancillary_snapshot;
 mod app_launcher;
+mod assistant_adapters;
 mod autostart;
 mod avatar;
 mod background_image;
@@ -22,12 +23,14 @@ mod integration_api;
 pub mod legacy_migration;
 pub mod local_data;
 mod log_watcher;
+mod mcp_adapters;
 mod media;
 pub mod notification;
 mod privacy_lock;
 mod process_monitor;
 mod profile_backup;
 mod profile_bio;
+mod proxy_connectivity;
 mod registry_backup;
 mod screenshot;
 pub mod sidebar_auto_hide;
@@ -67,14 +70,14 @@ pub use media::DesktopMediaRuntime;
 pub use privacy_lock::{PrivacyLockOutcome, PrivacyLockRuntime, PrivacyLockSnapshot};
 pub use process_monitor::HostGameProcessMonitorActions;
 pub use profile_backup::{DesktopProfileBackupRuntime, DesktopProfileRestoreRequest};
+pub use proxy_connectivity::test_proxy_connectivity;
 pub use registry_backup::HostRegistryBackupActions;
 pub use screenshot::DesktopScreenshotRuntime;
 pub use social::DesktopSocialRuntime;
 pub use startup_bootstrap::{system_culture, system_language, StartupBootstrapSnapshot};
 pub use state::{
-    CurrentUserRefreshOutcome, DesktopAssistantDependencies, DesktopMcpDependencies,
-    DesktopRuntimeBundle, DesktopRuntimeHostOptions, DesktopRuntimeHostState, GameRuntimeBundle,
-    RuntimeJobRecordInput,
+    CurrentUserRefreshOutcome, DesktopRuntimeBundle, DesktopRuntimeHostOptions,
+    DesktopRuntimeHostState, GameRuntimeBundle, RuntimeJobRecordInput,
 };
 pub use vrchat_remote::DesktopVrchatRemoteFacade;
 pub use vrcx_0_composition::{Error, Result};

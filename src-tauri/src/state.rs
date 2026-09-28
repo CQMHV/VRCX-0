@@ -2,15 +2,6 @@ use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use crate::adapters::assistant::{
-    TauriAssistantConfigAdapter, TauriAssistantLlmClientFactory,
-    TauriAssistantSessionPersistenceAdapter,
-};
-use crate::adapters::mcp::{
-    TauriMcpActivityQueryAdapter, TauriMcpConfigAdapter, TauriMcpFavoritesQueryAdapter,
-    TauriMcpFeedQueryAdapter, TauriMcpFriendLocalDataAdapter, TauriMcpMutualGraphAdapter,
-    TauriMcpSocialHistoryQueryAdapter,
-};
 use crate::deep_link::PendingDeepLinks;
 use crate::desktop_notification_activation::PendingDesktopNotificationActivations;
 use crate::error::AppError;
@@ -29,8 +20,8 @@ use vrcx_0_application::social::{
     UserDialogTabCountsRuntime,
 };
 use vrcx_0_application_core::UpdaterPort;
-use vrcx_0_assistant::{AssistantController, AssistantControllerDeps, LlmTranslateInput};
-use vrcx_0_mcp::{McpCaller, McpRuntime, McpRuntimeDeps, McpServerController};
+use vrcx_0_assistant::{AssistantController, LlmTranslateInput};
+use vrcx_0_mcp::{McpCaller, McpServerController};
 use vrcx_0_platform::app_paths::AppDataDirResolution;
 use vrcx_0_runtime_host_desktop::{DesktopRuntimeHostOptions, DesktopRuntimeHostState};
 
@@ -117,7 +108,7 @@ impl AppState {
         let favorite_details = runtime.favorite_details_runtime();
         let quick_search = runtime.quick_search_runtime();
         let mcp_controller =
-            McpServerController::new(mcp_runtime(&runtime, McpCaller::ExternalServer));
+            McpServerController::new(runtime.mcp_runtime(McpCaller::ExternalServer));
 
         Ok(Self {
             runtime,
@@ -142,21 +133,7 @@ impl AppState {
 
     pub async fn assistant(&self) -> Result<&AssistantController, AppError> {
         self.assistant
-            .get_or_try_init(|| {
-                let deps = self.runtime.assistant_dependencies();
-                AssistantController::new(AssistantControllerDeps {
-                    config: Arc::new(TauriAssistantConfigAdapter::new(deps.config)),
-                    llm_factory: Arc::new(TauriAssistantLlmClientFactory),
-                    proxy_url: deps.proxy_url,
-                    bus: deps.bus,
-                    tasks: deps.tasks,
-                    mcp_runtime: mcp_runtime(&self.runtime, McpCaller::Assistant),
-                    session_persistence: Arc::new(TauriAssistantSessionPersistenceAdapter::new(
-                        deps.db,
-                    )),
-                    auth_scope: deps.auth_scope,
-                })
-            })
+            .get_or_try_init(|| AssistantController::new(self.runtime.assistant_controller_deps()))
             .await
             .map_err(AppError::from)
     }
@@ -372,34 +349,6 @@ impl OpenAiTranslationPort for TauriOpenAiTranslationPort<'_> {
                 .map_err(AppError::from)
         })
     }
-}
-
-fn mcp_runtime(runtime: &DesktopRuntimeHostState, caller: McpCaller) -> McpRuntime {
-    let deps = runtime.mcp_dependencies();
-    McpRuntime::new(
-        McpRuntimeDeps {
-            realtime_runtime: deps.realtime_runtime,
-            auth_scope: deps.auth_scope.clone(),
-            config: Arc::new(TauriMcpConfigAdapter::new(deps.config)),
-            activity_queries: Arc::new(TauriMcpActivityQueryAdapter::new(Arc::clone(&deps.db))),
-            social_history_queries: Arc::new(TauriMcpSocialHistoryQueryAdapter::new(Arc::clone(
-                &deps.db,
-            ))),
-            friend_local_data: Arc::new(TauriMcpFriendLocalDataAdapter::new(Arc::clone(&deps.db))),
-            favorites_queries: Arc::new(TauriMcpFavoritesQueryAdapter::new(Arc::clone(&deps.db))),
-            feed_queries: Arc::new(TauriMcpFeedQueryAdapter::new(Arc::clone(&deps.db))),
-            mutual_graph: Arc::new(TauriMcpMutualGraphAdapter::new(
-                deps.mutual_graph_fetch,
-                Arc::clone(&deps.db),
-                Arc::clone(&deps.web),
-                deps.auth_scope.clone(),
-                deps.tasks.clone(),
-            )),
-            favorite_mutations: deps.favorite_mutations,
-            tasks: deps.tasks,
-        },
-        caller,
-    )
 }
 
 fn realtime_origin() -> String {

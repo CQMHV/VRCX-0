@@ -18,11 +18,11 @@ use vrcx_0_persistence::{
     social_aggregates, DatabaseService,
 };
 
-pub(crate) struct TauriMcpConfigAdapter {
+pub(crate) struct DesktopMcpConfigAdapter {
     config: ConfigRepository,
 }
 
-pub(crate) struct TauriMcpMutualGraphAdapter {
+pub(crate) struct DesktopMcpMutualGraphAdapter {
     runtime: MutualGraphFetchRuntime,
     db: Arc<DatabaseService>,
     web: Arc<vrcx_0_application_core::WebClient>,
@@ -30,7 +30,7 @@ pub(crate) struct TauriMcpMutualGraphAdapter {
     tasks: vrcx_0_application_core::TaskSupervisor,
 }
 
-impl TauriMcpMutualGraphAdapter {
+impl DesktopMcpMutualGraphAdapter {
     pub(crate) fn new(
         runtime: MutualGraphFetchRuntime,
         db: Arc<DatabaseService>,
@@ -48,7 +48,7 @@ impl TauriMcpMutualGraphAdapter {
     }
 }
 
-impl McpMutualGraphPort for TauriMcpMutualGraphAdapter {
+impl McpMutualGraphPort for DesktopMcpMutualGraphAdapter {
     fn status(&self) -> MutualGraphFetchStatus {
         self.runtime.status()
     }
@@ -95,13 +95,13 @@ impl McpMutualGraphPort for TauriMcpMutualGraphAdapter {
     }
 }
 
-impl TauriMcpConfigAdapter {
+impl DesktopMcpConfigAdapter {
     pub(crate) fn new(config: ConfigRepository) -> Self {
         Self { config }
     }
 }
 
-impl McpConfigPort for TauriMcpConfigAdapter {
+impl McpConfigPort for DesktopMcpConfigAdapter {
     fn get_bool(&self, key: &str, default: bool) -> vrcx_0_application_core::Result<bool> {
         self.config.get_bool(key, default).map_err(Into::into)
     }
@@ -119,17 +119,17 @@ impl McpConfigPort for TauriMcpConfigAdapter {
     }
 }
 
-pub(crate) struct TauriMcpActivityQueryAdapter {
+pub(crate) struct DesktopMcpActivityQueryAdapter {
     db: Arc<DatabaseService>,
 }
 
-impl TauriMcpActivityQueryAdapter {
+impl DesktopMcpActivityQueryAdapter {
     pub(crate) fn new(db: Arc<DatabaseService>) -> Self {
         Self { db }
     }
 }
 
-impl McpActivityQueryPort for TauriMcpActivityQueryAdapter {
+impl McpActivityQueryPort for DesktopMcpActivityQueryAdapter {
     fn copresence_summary(
         &self,
         input: social::CopresenceSummaryInput,
@@ -216,17 +216,17 @@ impl McpActivityQueryPort for TauriMcpActivityQueryAdapter {
     }
 }
 
-pub(crate) struct TauriMcpSocialHistoryQueryAdapter {
+pub(crate) struct DesktopMcpSocialHistoryQueryAdapter {
     db: Arc<DatabaseService>,
 }
 
-impl TauriMcpSocialHistoryQueryAdapter {
+impl DesktopMcpSocialHistoryQueryAdapter {
     pub(crate) fn new(db: Arc<DatabaseService>) -> Self {
         Self { db }
     }
 }
 
-impl McpSocialHistoryQueryPort for TauriMcpSocialHistoryQueryAdapter {
+impl McpSocialHistoryQueryPort for DesktopMcpSocialHistoryQueryAdapter {
     fn resolve_user(
         &self,
         input: social::ResolveUserInput,
@@ -306,17 +306,17 @@ impl McpSocialHistoryQueryPort for TauriMcpSocialHistoryQueryAdapter {
     }
 }
 
-pub(crate) struct TauriMcpFriendLocalDataAdapter {
+pub(crate) struct DesktopMcpFriendLocalDataAdapter {
     db: Arc<DatabaseService>,
 }
 
-impl TauriMcpFriendLocalDataAdapter {
+impl DesktopMcpFriendLocalDataAdapter {
     pub(crate) fn new(db: Arc<DatabaseService>) -> Self {
         Self { db }
     }
 }
 
-impl McpFriendLocalDataPort for TauriMcpFriendLocalDataAdapter {
+impl McpFriendLocalDataPort for DesktopMcpFriendLocalDataAdapter {
     fn memo_get_user(
         &self,
         user_id: String,
@@ -407,17 +407,17 @@ fn friend_memo(row: memos::UserMemoOutput) -> McpFriendMemo {
     }
 }
 
-pub(crate) struct TauriMcpFavoritesQueryAdapter {
+pub(crate) struct DesktopMcpFavoritesQueryAdapter {
     db: Arc<DatabaseService>,
 }
 
-impl TauriMcpFavoritesQueryAdapter {
+impl DesktopMcpFavoritesQueryAdapter {
     pub(crate) fn new(db: Arc<DatabaseService>) -> Self {
         Self { db }
     }
 }
 
-impl McpFavoritesQueryPort for TauriMcpFavoritesQueryAdapter {
+impl McpFavoritesQueryPort for DesktopMcpFavoritesQueryAdapter {
     fn favorite_list(
         &self,
         owner_user_id: &OwnerId,
@@ -427,17 +427,17 @@ impl McpFavoritesQueryPort for TauriMcpFavoritesQueryAdapter {
     }
 }
 
-pub(crate) struct TauriMcpFeedQueryAdapter {
+pub(crate) struct DesktopMcpFeedQueryAdapter {
     db: Arc<DatabaseService>,
 }
 
-impl TauriMcpFeedQueryAdapter {
+impl DesktopMcpFeedQueryAdapter {
     pub(crate) fn new(db: Arc<DatabaseService>) -> Self {
         Self { db }
     }
 }
 
-impl McpFeedQueryPort for TauriMcpFeedQueryAdapter {
+impl McpFeedQueryPort for DesktopMcpFeedQueryAdapter {
     fn feed_rows_interruptible(
         &self,
         input: FeedRowsQueryInput,

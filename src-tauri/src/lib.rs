@@ -1,4 +1,3 @@
-mod adapters;
 mod app;
 pub mod bindings_export;
 mod bootstrap;
