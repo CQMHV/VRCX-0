@@ -4,7 +4,7 @@ use vrcx_0_contracts::CacheEntityInput;
 use vrcx_0_core::json::RawJson;
 use vrcx_0_core::text::normalize_text;
 
-use vrcx_0_application_core::Result;
+use vrcx_0_application_core::{Result, WorldCache};
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
@@ -31,9 +31,17 @@ pub(super) enum CacheWriteDecision {
 
 pub fn persist_favorite_cache_snapshot(
     store: &dyn super::FavoriteStore,
+    world_cache: &WorldCache,
     input: FavoriteCacheSnapshotInput,
 ) -> Result<bool> {
     let entity = input.entity.as_value();
+    if matches!(input.kind, FavoriteCacheKind::World) {
+        return Ok(cache_world_snapshot(
+            world_cache,
+            entity,
+            &input.fallback_entity_id,
+        ));
+    }
     let decision = cache_write_decision(input.kind, entity);
     if decision == CacheWriteDecision::Skip {
         return Ok(false);
@@ -43,14 +51,30 @@ pub fn persist_favorite_cache_snapshot(
     if id.is_empty() {
         return Ok(false);
     }
-    if decision == CacheWriteDecision::InsertIfMissing {
-        let exists = store.cache_exists(input.kind, id)?;
-        if exists {
-            return Ok(false);
-        }
+    if decision == CacheWriteDecision::InsertIfMissing && store.avatar_cache_exists(id)? {
+        return Ok(false);
     }
-    store.cache_upsert(input.kind, entry)?;
+    store.avatar_cache_upsert(entry)?;
     Ok(true)
+}
+
+pub(super) fn cache_world_snapshot(
+    world_cache: &WorldCache,
+    world: &Value,
+    fallback_world_id: &str,
+) -> bool {
+    if cache_write_decision(FavoriteCacheKind::World, world) != CacheWriteDecision::Upsert {
+        return false;
+    }
+    let fallback_world_id = normalize_text(fallback_world_id);
+    if entity_id(world).is_empty() && !fallback_world_id.is_empty() {
+        let mut world = world.clone();
+        if let Some(fields) = world.as_object_mut() {
+            fields.insert("id".into(), Value::String(fallback_world_id));
+        }
+        return world_cache.hydrate_from_payload(&world).is_some();
+    }
+    world_cache.hydrate_from_payload(world).is_some()
 }
 
 pub(super) fn cache_write_decision(kind: FavoriteCacheKind, entity: &Value) -> CacheWriteDecision {
@@ -134,7 +158,7 @@ mod tests {
 
     use super::*;
     use crate::favorites::test_support::TestFavoriteStore;
-    use crate::favorites::FavoriteStore;
+    use vrcx_0_application_core::MemoryWorldCachePort;
 
     #[test]
     fn world_policy_upserts_public_and_private_details() {
@@ -208,8 +232,11 @@ mod tests {
             "imageUrl": "https://example.test/private.png"
         });
 
+        let world_cache = WorldCache::new(MemoryWorldCachePort::default());
+
         assert!(persist_favorite_cache_snapshot(
             &store,
+            &world_cache,
             FavoriteCacheSnapshotInput {
                 kind: FavoriteCacheKind::World,
                 entity: RawJson::from(public),
@@ -219,6 +246,7 @@ mod tests {
         .unwrap());
         assert!(persist_favorite_cache_snapshot(
             &store,
+            &world_cache,
             FavoriteCacheSnapshotInput {
                 kind: FavoriteCacheKind::World,
                 entity: RawJson::from(private),
@@ -227,8 +255,35 @@ mod tests {
         )
         .unwrap());
 
-        assert!(store
-            .cache_exists(FavoriteCacheKind::World, "wrld_test".into())
-            .unwrap());
+        assert_eq!(
+            world_cache.get_name("wrld_test").as_deref(),
+            Some("Private name")
+        );
+    }
+
+    #[test]
+    fn world_snapshot_without_an_id_is_cached_under_the_fallback_id() {
+        let store = TestFavoriteStore::default();
+        let world_cache = WorldCache::new(MemoryWorldCachePort::default());
+
+        assert!(persist_favorite_cache_snapshot(
+            &store,
+            &world_cache,
+            FavoriteCacheSnapshotInput {
+                kind: FavoriteCacheKind::World,
+                entity: RawJson::from(json!({
+                    "name": "Fallback world",
+                    "releaseStatus": "public",
+                    "imageUrl": "https://example.test/world.png"
+                })),
+                fallback_entity_id: "wrld_fallback".into(),
+            },
+        )
+        .unwrap());
+
+        assert_eq!(
+            world_cache.get_name("wrld_fallback").as_deref(),
+            Some("Fallback world")
+        );
     }
 }

@@ -559,6 +559,7 @@ fn test_runtime_with_database_and_event_bus(
             Arc::clone(&web),
             diagnostics.clone(),
             sync.clone(),
+            Arc::clone(&world_cache),
         )),
         FavoriteMutationRuntimeDeps::new(
             diagnostics,
@@ -566,6 +567,7 @@ fn test_runtime_with_database_and_event_bus(
             event_bus.clone(),
             auth_scope.clone(),
             Arc::clone(&remote_mutations),
+            Arc::clone(&world_cache),
         ),
     );
     let backend_status = vrcx_0_application_core::BackendRuntimeStatusPublisher::new(

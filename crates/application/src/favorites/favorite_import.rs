@@ -445,10 +445,8 @@ impl FavoriteImportRuntime {
         }
         match hydration_cache(kind) {
             FavoriteImportHydrationCache::Avatar => {
-                self.store.cache_upsert(
-                    super::FavoriteCacheKind::Avatar,
-                    cache_entity_from_payload(&payload),
-                )?;
+                self.store
+                    .avatar_cache_upsert(cache_entity_from_payload(&payload))?;
             }
             FavoriteImportHydrationCache::World => {
                 self.world_cache

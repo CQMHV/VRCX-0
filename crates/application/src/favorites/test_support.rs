@@ -9,9 +9,9 @@ use vrcx_0_contracts::{
 use vrcx_0_core::{FavoriteEntityKind, OwnerId};
 
 use super::{
-    FavoriteCacheKind, FavoriteMoveResult, FavoriteRemote, FavoriteRemoteAddInput,
-    FavoriteRemoteCommand, FavoriteRemoteFuture, FavoriteRemoteGroupClearInput,
-    FavoriteRemoteGroupSaveInput, FavoriteStore,
+    FavoriteMoveResult, FavoriteRemote, FavoriteRemoteAddInput, FavoriteRemoteCommand,
+    FavoriteRemoteFuture, FavoriteRemoteGroupClearInput, FavoriteRemoteGroupSaveInput,
+    FavoriteStore,
 };
 
 #[derive(Default)]
@@ -228,7 +228,6 @@ struct TestFavoriteStoreState {
     configs: HashMap<String, serde_json::Value>,
     favorites: Vec<StoredFavorite>,
     avatar_cache_ids: HashSet<String>,
-    world_cache_ids: HashSet<String>,
 }
 
 #[derive(Default)]
@@ -408,24 +407,18 @@ impl FavoriteStore for TestFavoriteStore {
         Ok((before - state.favorites.len()) as i64)
     }
 
-    fn cache_exists(&self, kind: FavoriteCacheKind, id: String) -> Result<bool> {
+    fn avatar_cache_exists(&self, avatar_id: String) -> Result<bool> {
         let state = self.state.lock().unwrap_or_else(|error| error.into_inner());
-        Ok(match kind {
-            FavoriteCacheKind::Avatar => state.avatar_cache_ids.contains(&id),
-            FavoriteCacheKind::World => state.world_cache_ids.contains(&id),
-        })
+        Ok(state.avatar_cache_ids.contains(&avatar_id))
     }
 
-    fn cache_upsert(&self, kind: FavoriteCacheKind, entry: CacheEntityInput) -> Result<i64> {
+    fn avatar_cache_upsert(&self, entry: CacheEntityInput) -> Result<i64> {
         let id = Self::cache_id(&entry);
         if id.is_empty() {
             return Err(Error::Custom("Favorite cache entry requires id.".into()));
         }
         let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
-        match kind {
-            FavoriteCacheKind::Avatar => state.avatar_cache_ids.insert(id),
-            FavoriteCacheKind::World => state.world_cache_ids.insert(id),
-        };
+        state.avatar_cache_ids.insert(id);
         Ok(1)
     }
 
@@ -441,7 +434,7 @@ impl FavoriteStore for TestFavoriteStore {
     fn avatar_cache_upsert_many(&self, entries: Vec<CacheEntityInput>) -> Result<u32> {
         let count = entries.len() as u32;
         for entry in entries {
-            self.cache_upsert(FavoriteCacheKind::Avatar, entry)?;
+            self.avatar_cache_upsert(entry)?;
         }
         Ok(count)
     }

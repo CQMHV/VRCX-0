@@ -359,6 +359,7 @@ impl RuntimeHostContext {
                 Arc::clone(&web),
                 diagnostics.clone(),
                 sync.clone(),
+                Arc::clone(&world_cache),
             ));
         let favorite_mutations = FavoriteMutationCoordinator::new(
             Arc::clone(&favorite_store),
@@ -369,6 +370,7 @@ impl RuntimeHostContext {
                 event_bus.clone(),
                 auth_scope.clone(),
                 Arc::clone(&remote_mutations),
+                Arc::clone(&world_cache),
             ),
         );
         Self {

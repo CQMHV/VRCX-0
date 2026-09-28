@@ -1115,7 +1115,13 @@ impl DesktopRuntimeHostState {
     ) -> Result<bool> {
         let store =
             vrcx_0_outbound_adapters::LocalFavoriteStore::new(Arc::clone(self.runtime.database()));
-        Ok(vrcx_0_application::favorites::persist_favorite_cache_snapshot(&store, input)?)
+        Ok(
+            vrcx_0_application::favorites::persist_favorite_cache_snapshot(
+                &store,
+                self.runtime.desktop_assembly().world_cache(),
+                input,
+            )?,
+        )
     }
 
     pub fn social(&self) -> &DesktopSocialRuntime {
@@ -1141,6 +1147,7 @@ impl DesktopRuntimeHostState {
                 Arc::clone(self.runtime.web_client()),
                 self.runtime.desktop_assembly().diagnostics().clone(),
                 self.runtime.desktop_assembly().sync().clone(),
+                Arc::clone(self.runtime.desktop_assembly().world_cache()),
             )),
             self.runtime.desktop_assembly().auth_scope().clone(),
             Arc::clone(self.runtime.desktop_assembly().world_cache()),
