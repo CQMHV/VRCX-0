@@ -21,10 +21,9 @@ pub trait McpConfigPort: Send + Sync {
 pub type McpConfig = Arc<dyn McpConfigPort>;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct McpActivitySession {
+pub struct McpPlaySpan {
     pub start: i64,
     pub end: i64,
-    pub is_open_tail: bool,
 }
 
 pub trait McpActivityQueryPort: Send + Sync {
@@ -75,10 +74,12 @@ pub trait McpActivityQueryPort: Send + Sync {
         input: social::FriendLogInput,
     ) -> vrcx_0_application_core::Result<social::FriendLogOutput>;
 
-    fn activity_sessions(
+    fn play_spans(
         &self,
-        owner_user_id: OwnerId,
-    ) -> vrcx_0_application_core::Result<Vec<McpActivitySession>>;
+        owner_user_id: &OwnerId,
+        from_ms: Option<i64>,
+        to_ms: i64,
+    ) -> vrcx_0_application_core::Result<Vec<McpPlaySpan>>;
 }
 
 pub type McpActivityQueries = Arc<dyn McpActivityQueryPort>;

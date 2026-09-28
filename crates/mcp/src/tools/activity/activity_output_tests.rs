@@ -12,10 +12,9 @@ use vrcx_0_application_core::{
     WebClient, WorldCache,
 };
 use vrcx_0_application_realtime::{RealtimeHostRuntime, RealtimeHostRuntimeDeps};
-use vrcx_0_persistence::activity::{
-    activity_self_sessions_refresh, ActivityRefreshMode, ActivitySelfSessionsRefreshInput,
+use vrcx_0_persistence::game_log::{
+    write_batch, GameLogJoinLeaveEntry, GameLogLocationEntry, GameLogWriteBatch,
 };
-use vrcx_0_persistence::game_log::{write_batch, GameLogLocationEntry, GameLogWriteBatch};
 use vrcx_0_persistence::{
     config::ConfigRepository, game_log::ensure_game_log_tables, storage::StorageService,
     DatabaseService,
@@ -330,18 +329,12 @@ fn my_activity_buckets_weekdays_in_the_callers_timezone() {
     let (_dir, runtime, db) =
         crate::test_support::test_runtime_with_database("my-activity-local-weekday", "usr_owner")
             .unwrap();
-    seed_locations(
-        db.as_ref(),
-        vec![world_visit(20 * 60, "wrld_late", "2026-06-07", 3_600_000)],
-    );
-    activity_self_sessions_refresh(
+    write_batch(
         db.as_ref(),
         &OwnerId::new("usr_owner"),
-        ActivitySelfSessionsRefreshInput {
-            user_id: "usr_owner".into(),
-            mode: ActivityRefreshMode::Full,
-            range_days: serde_json::json!(3650),
-            now_ms: Some(ms("2026-06-10T00:00:00Z")),
+        &GameLogWriteBatch {
+            join_leave: vec![closed_stay("2026-06-07T21:00:00.000Z", 60)],
+            ..GameLogWriteBatch::default()
         },
     )
     .unwrap();
@@ -406,4 +399,85 @@ fn social_period_states_the_best_time_bucket_timezone() {
         .caveats
         .iter()
         .any(|caveat| caveat.contains("Best-time buckets are in UTC+09:00")));
+}
+
+fn closed_stay(left_at: &str, minutes: i64) -> GameLogJoinLeaveEntry {
+    GameLogJoinLeaveEntry {
+        created_at: left_at.into(),
+        event_type: "OnPlayerLeft".into(),
+        display_name: "Owner".into(),
+        user_id: "usr_owner".into(),
+        location: "wrld_stay:1".into(),
+        world_name: "Stay".into(),
+        time: minutes * 60_000,
+    }
+}
+
+#[test]
+fn my_activity_counts_only_closed_instance_stays() {
+    let (_dir, runtime, db) =
+        crate::test_support::test_runtime_with_database("my-activity-closed-stays", "usr_owner")
+            .unwrap();
+    write_batch(
+        db.as_ref(),
+        &OwnerId::new("usr_owner"),
+        &GameLogWriteBatch {
+            locations: vec![
+                world_visit(0, "wrld_open", "2026-06-07", 0),
+                world_visit(20 * 60, "wrld_stay", "2026-06-07", 0),
+            ],
+            join_leave: vec![closed_stay("2026-06-07T21:00:00.000Z", 60)],
+            ..GameLogWriteBatch::default()
+        },
+    )
+    .unwrap();
+    let server = VrcxMcpServer::new(runtime);
+
+    let output = server
+        .get_my_activity_output(
+            OwnerId::new("usr_owner"),
+            MyActivityParams {
+                time_window: None,
+                utc_offset_minutes: Some(540),
+            },
+        )
+        .unwrap();
+
+    assert_eq!(output.total_minutes, 60);
+    assert_eq!(output.session_count, 1);
+    assert_eq!(output.by_weekday.get("Mon"), Some(&60));
+}
+
+#[test]
+fn back_to_back_instance_stays_count_as_one_play_session() {
+    let (_dir, runtime, db) =
+        crate::test_support::test_runtime_with_database("my-activity-merged-stays", "usr_owner")
+            .unwrap();
+    write_batch(
+        db.as_ref(),
+        &OwnerId::new("usr_owner"),
+        &GameLogWriteBatch {
+            join_leave: vec![
+                closed_stay("2026-06-07T21:30:00.000Z", 30),
+                closed_stay("2026-06-07T22:00:20.000Z", 30),
+            ],
+            ..GameLogWriteBatch::default()
+        },
+    )
+    .unwrap();
+    let server = VrcxMcpServer::new(runtime);
+
+    let output = server
+        .get_my_activity_output(
+            OwnerId::new("usr_owner"),
+            MyActivityParams {
+                time_window: None,
+                utc_offset_minutes: None,
+            },
+        )
+        .unwrap();
+
+    assert_eq!(output.total_minutes, 60);
+    assert_eq!(output.session_count, 1);
+    assert_eq!(output.longest_session_minutes, 60);
 }

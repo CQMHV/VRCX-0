@@ -9,9 +9,9 @@ use vrcx_0_contracts::social_aggregates;
 use vrcx_0_core::activity_buckets::{
     self, ActivityBucket as CoreActivityBucket, ActivityStreaks, ActivityTimeBucket,
 };
+use vrcx_0_core::activity_sessions::PLAY_SESSION_MERGE_GAP_MS;
 
 use crate::server::VrcxMcpServer;
-use crate::McpActivitySession;
 
 use super::common::{
     application_query_result, deserialize_optional_bool, map_application_query_error,
@@ -21,8 +21,8 @@ use super::common::{
 };
 use vrcx_0_core::OwnerId;
 
-const ACTIVITY_CACHE_CAVEAT: &str =
-    "Activity sessions come from this profile's local VRCX-0 activity cache.";
+const PLAY_TIME_CAVEAT: &str =
+    "Play time counts closed instance stays from this profile's game log; time spent while VRCX-0 was not running is missing.";
 
 #[tool_router(router = activity_tool_router, vis = "pub(crate)")]
 impl VrcxMcpServer {
@@ -134,14 +134,14 @@ impl VrcxMcpServer {
         Parameters(input): Parameters<ActivityTimelineParams>,
     ) -> Result<CallToolResult, String> {
         let owner_user_id = require_current_user_id(&self.runtime)?;
-        let now_ms = Utc::now().timestamp_millis();
-        let pairs = self.activity_session_pairs_for_user(owner_user_id.clone(), now_ms)?;
         let time_window: social_aggregates::TimeWindow = input.time_window.into();
         let bounds = time_window_bounds_ms(&time_window)?;
+        let to_ms = bounds.to.unwrap_or_else(|| Utc::now().timestamp_millis());
+        let sessions = self.play_sessions(&owner_user_id, bounds.from, to_ms)?;
         let offset_minutes = input.utc_offset_minutes.unwrap_or(0);
         let bucket = input.bucket.into();
         let rows = activity_buckets::activity_timeline(
-            &pairs,
+            &sessions,
             bucket,
             offset_minutes,
             bounds.from,
@@ -159,9 +159,9 @@ impl VrcxMcpServer {
     ) -> Result<CallToolResult, String> {
         let owner_user_id = require_current_user_id(&self.runtime)?;
         let now_ms = Utc::now().timestamp_millis();
-        let pairs = self.activity_session_pairs_for_user(owner_user_id.clone(), now_ms)?;
+        let sessions = self.play_sessions(&owner_user_id, None, now_ms)?;
         let offset_minutes = input.utc_offset_minutes.unwrap_or(0);
-        let streaks = activity_buckets::activity_streaks(&pairs, now_ms, offset_minutes);
+        let streaks = activity_buckets::activity_streaks(&sessions, now_ms, offset_minutes);
         structured_result(activity_streaks_output(offset_minutes, streaks))
     }
     #[tool(
@@ -254,27 +254,20 @@ impl VrcxMcpServer {
         let bounds = time_window_bounds_ms(&time_window)?;
         let offset_minutes = input.utc_offset_minutes.unwrap_or(0);
         let offset_ms = offset_minutes.saturating_mul(60_000);
-        let sessions = self
-            .runtime
-            .activity_queries
-            .activity_sessions(owner_user_id)
-            .map_err(map_application_query_error)?;
-        let mut session_count = 0usize;
+        let to_ms = bounds.to.unwrap_or_else(|| Utc::now().timestamp_millis());
+        let spans = self.play_spans(&owner_user_id, bounds.from, to_ms)?;
+        let sessions = activity_buckets::merge_spans(&spans, PLAY_SESSION_MERGE_GAP_MS);
+        let session_count = sessions.len();
+        let longest_ms = sessions
+            .iter()
+            .map(|(start, end)| end - start)
+            .max()
+            .unwrap_or(0);
         let mut total_ms = 0i64;
-        let mut longest_ms = 0i64;
         let mut by_weekday = BTreeMap::new();
-        for session in sessions {
-            let start = bounds
-                .from
-                .map_or(session.start, |from| session.start.max(from));
-            let end = bounds.to.map_or(session.end, |to| session.end.min(to));
-            if end <= start {
-                continue;
-            }
-            session_count += 1;
+        for (start, end) in activity_buckets::merge_spans(&spans, 0) {
             let duration_ms = end - start;
             total_ms += duration_ms;
-            longest_ms = longest_ms.max(duration_ms);
             if let Some(start_at) =
                 DateTime::<Utc>::from_timestamp_millis(start.saturating_add(offset_ms))
             {
@@ -299,8 +292,7 @@ impl VrcxMcpServer {
                     "Weekday buckets are in {}.",
                     activity_buckets::utc_offset_label(offset_minutes)
                 ),
-                "Activity sessions are derived from this profile's local VRCX-0 activity cache."
-                    .into(),
+                PLAY_TIME_CAVEAT.into(),
             ],
         })
     }
@@ -457,31 +449,33 @@ impl VrcxMcpServer {
         })
     }
 
-    fn activity_session_pairs_for_user(
+    fn play_spans(
         &self,
-        owner_user_id: OwnerId,
-        now_ms: i64,
+        owner_user_id: &OwnerId,
+        from_ms: Option<i64>,
+        to_ms: i64,
     ) -> Result<Vec<(i64, i64)>, String> {
         self.runtime
             .activity_queries
-            .activity_sessions(owner_user_id)
-            .map(|sessions| activity_session_pairs(sessions, now_ms))
+            .play_spans(owner_user_id, from_ms, to_ms)
+            .map(|spans| {
+                spans
+                    .into_iter()
+                    .map(|span| (span.start, span.end))
+                    .collect()
+            })
             .map_err(map_application_query_error)
     }
-}
 
-fn activity_session_pairs(sessions: Vec<McpActivitySession>, now_ms: i64) -> Vec<(i64, i64)> {
-    sessions
-        .into_iter()
-        .filter_map(|session| {
-            let end = if session.is_open_tail {
-                now_ms
-            } else {
-                session.end
-            };
-            (end > session.start).then_some((session.start, end))
-        })
-        .collect()
+    fn play_sessions(
+        &self,
+        owner_user_id: &OwnerId,
+        from_ms: Option<i64>,
+        to_ms: i64,
+    ) -> Result<Vec<(i64, i64)>, String> {
+        self.play_spans(owner_user_id, from_ms, to_ms)
+            .map(|spans| activity_buckets::merge_spans(&spans, PLAY_SESSION_MERGE_GAP_MS))
+    }
 }
 
 fn activity_timeline_output(
@@ -514,7 +508,7 @@ fn activity_timeline_output(
                 "Buckets are in {}.",
                 activity_buckets::utc_offset_label(offset_minutes)
             ),
-            ACTIVITY_CACHE_CAVEAT.into(),
+            PLAY_TIME_CAVEAT.into(),
         ],
     }
 }
@@ -554,7 +548,7 @@ fn activity_streaks_output(offset_minutes: i64, streaks: ActivityStreaks) -> Act
                 "Day boundaries and breaks are counted in {}.",
                 activity_buckets::utc_offset_label(offset_minutes)
             ),
-            ACTIVITY_CACHE_CAVEAT.into(),
+            PLAY_TIME_CAVEAT.into(),
         ],
     }
 }

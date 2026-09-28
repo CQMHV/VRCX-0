@@ -8,13 +8,12 @@ use vrcx_0_contracts::social_aggregates as social;
 use vrcx_0_contracts::FavoriteRow;
 use vrcx_0_core::{FavoriteEntityKind, OwnerId};
 use vrcx_0_mcp::{
-    McpActivityQueryPort, McpActivitySession, McpConfigPort, McpFavoritesQueryPort,
-    McpFeedQueryPort, McpFriendCurrent, McpFriendLocalDataPort, McpFriendMemo, McpInterruptCheck,
-    McpLocalModeration, McpMemoSave, McpMutualGraphMeta, McpMutualGraphPort,
-    McpSocialHistoryQueryPort,
+    McpActivityQueryPort, McpConfigPort, McpFavoritesQueryPort, McpFeedQueryPort, McpFriendCurrent,
+    McpFriendLocalDataPort, McpFriendMemo, McpInterruptCheck, McpLocalModeration, McpMemoSave,
+    McpMutualGraphMeta, McpMutualGraphPort, McpPlaySpan, McpSocialHistoryQueryPort,
 };
 use vrcx_0_persistence::{
-    activity, config::ConfigRepository, favorites, friends, local_moderation, memos,
+    activity_page, config::ConfigRepository, favorites, friends, local_moderation, memos,
     social_aggregates, DatabaseService,
 };
 
@@ -197,18 +196,20 @@ impl McpActivityQueryPort for DesktopMcpActivityQueryAdapter {
         social_aggregates::get_friend_log(self.db.as_ref(), input).map_err(Into::into)
     }
 
-    fn activity_sessions(
+    fn play_spans(
         &self,
-        owner_user_id: OwnerId,
-    ) -> vrcx_0_application_core::Result<Vec<McpActivitySession>> {
-        activity::activity_sessions_get(self.db.as_ref(), owner_user_id.to_string())
-            .map(|sessions| {
-                sessions
+        owner_user_id: &OwnerId,
+        from_ms: Option<i64>,
+        to_ms: i64,
+    ) -> vrcx_0_application_core::Result<Vec<McpPlaySpan>> {
+        activity_page::read_instance_spans(self.db.as_ref(), owner_user_id, from_ms, to_ms)
+            .map(|window| {
+                window
+                    .spans
                     .into_iter()
-                    .map(|session| McpActivitySession {
-                        start: session.start,
-                        end: session.end,
-                        is_open_tail: session.is_open_tail,
+                    .map(|span| McpPlaySpan {
+                        start: span.start_ms,
+                        end: span.end_ms,
                     })
                     .collect()
             })
