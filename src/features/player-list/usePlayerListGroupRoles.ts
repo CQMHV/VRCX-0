@@ -3,55 +3,79 @@ import { useMemo, useState } from 'react';
 
 import { commands } from '@/platform/tauri/bindings';
 import groupProfileRepository from '@/repositories/groupProfileRepository';
-import {
-    isVrchatRequestError,
-    unwrapVrchatResponse
-} from '@/repositories/vrchatRequest';
-import { createConcurrencyLimiter } from '@/shared/utils/concurrency';
 import { parseLocation } from '@/shared/utils/location';
-import { executeWithBackoff } from '@/shared/utils/retry';
 import { useRuntimeStore } from '@/state/runtimeStore';
 
-import {
-    playerGroupMemberRoleIds,
-    playerGroupRoles,
-    playerGroupRoster
-} from './playerListGroupRoles';
+import { playerGroupRoles, playerGroupRoster } from './playerListGroupRoles';
 import type { PlayerListRow } from './playerListTypes';
 
-const MEMBER_LOOKUP_CONCURRENCY = 3;
-const MEMBER_LOOKUP_RETRIES = 3;
+const ROLE_LOOKUP_CHUNK_SIZE = 6;
 
-const limitMemberLookup = createConcurrencyLimiter(MEMBER_LOOKUP_CONCURRENCY);
+type PendingRoleLookup = {
+    groupId: string;
+    userId: string;
+    signal: AbortSignal;
+    resolve: (roleIds: string[] | null) => void;
+};
 
-async function fetchMemberRoleIds(
+const pendingRoleLookups: PendingRoleLookup[] = [];
+let drainingRoleLookups = false;
+
+function takeRoleLookupChunk(): PendingRoleLookup[] {
+    const chunk: PendingRoleLookup[] = [];
+    let index = 0;
+    while (
+        index < pendingRoleLookups.length &&
+        chunk.length < ROLE_LOOKUP_CHUNK_SIZE
+    ) {
+        const lookup = pendingRoleLookups[index];
+        if (lookup.signal.aborted) {
+            pendingRoleLookups.splice(index, 1);
+            lookup.resolve(null);
+        } else if (!chunk.length || lookup.groupId === chunk[0].groupId) {
+            pendingRoleLookups.splice(index, 1);
+            chunk.push(lookup);
+        } else {
+            index += 1;
+        }
+    }
+    return chunk;
+}
+
+async function drainRoleLookups() {
+    for (
+        let chunk = takeRoleLookupChunk();
+        chunk.length;
+        chunk = takeRoleLookupChunk()
+    ) {
+        const results = await commands
+            .appVrchatGroupMemberRoleIdsGet({
+                groupId: chunk[0].groupId,
+                userIds: [...new Set(chunk.map((lookup) => lookup.userId))]
+            })
+            .catch(() => []);
+        const roleIdsByUser = new Map(
+            results.map((result) => [result.userId, result.roleIds])
+        );
+        for (const lookup of chunk) {
+            lookup.resolve(roleIdsByUser.get(lookup.userId) ?? null);
+        }
+    }
+    drainingRoleLookups = false;
+}
+
+function lookupMemberRoleIds(
     groupId: string,
     userId: string,
     signal: AbortSignal
 ): Promise<string[] | null> {
-    try {
-        const json = await limitMemberLookup(() =>
-            executeWithBackoff(
-                async () =>
-                    unwrapVrchatResponse(
-                        await commands.appVrchatGroupMemberGet({
-                            groupId,
-                            userId
-                        }),
-                        'group member'
-                    ).json,
-                {
-                    maxRetries: MEMBER_LOOKUP_RETRIES,
-                    shouldRetry: (error) =>
-                        isVrchatRequestError(error) && error.status === 429,
-                    isCancelled: () => signal.aborted
-                }
-            )
-        );
-        return playerGroupMemberRoleIds(json);
-    } catch {
-        return null;
-    }
+    return new Promise((resolve) => {
+        pendingRoleLookups.push({ groupId, userId, signal, resolve });
+        if (!drainingRoleLookups) {
+            drainingRoleLookups = true;
+            setTimeout(() => void drainRoleLookups(), 0);
+        }
+    });
 }
 
 export function usePlayerListGroupRoles(
@@ -95,7 +119,8 @@ export function usePlayerListGroupRoles(
             retry: false,
             staleTime: Infinity,
             refetchOnWindowFocus: false,
-            queryFn: ({ signal }) => fetchMemberRoleIds(groupId, userId, signal)
+            queryFn: ({ signal }) =>
+                lookupMemberRoleIds(groupId, userId, signal)
         })),
         combine: (results) => results.map((result) => result.data)
     });

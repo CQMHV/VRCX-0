@@ -16,7 +16,7 @@ import type { PlayerListRow } from './playerListTypes';
 import { usePlayerListGroupRoles } from './usePlayerListGroupRoles';
 
 vi.mock('@/platform/tauri/bindings', () => ({
-    commands: { appVrchatGroupMemberGet: vi.fn() }
+    commands: { appVrchatGroupMemberRoleIdsGet: vi.fn() }
 }));
 vi.mock('@/repositories/groupProfileRepository', () => ({
     default: { getGroupProfile: vi.fn() }
@@ -62,30 +62,6 @@ function player(userId: string): PlayerListRow {
         location: ''
     };
 }
-
-function member(userId: string, roleIds: string[]) {
-    return {
-        id: `gmem_${userId}`,
-        groupId: 'grp_a',
-        userId,
-        roleIds,
-        mRoleIds: roleIds,
-        joinedAt: '2026-01-01',
-        user: {
-            id: userId,
-            displayName: userId,
-            thumbnailUrl: 'https://x/y.png'
-        }
-    };
-}
-
-function response(value: unknown) {
-    return { status: 200, data: JSON.stringify(value) };
-}
-const rateLimited = {
-    status: 429,
-    data: '{"error":{"message":"Too many requests","status_code":429}}'
-};
 
 function renderRoles(initialRows: PlayerListRow[]) {
     useRuntimeStore.setState((state) => ({
@@ -168,14 +144,18 @@ describe('player list group roles', () => {
         }
     );
 
-    it('queries each player once, caches only role IDs, blanks failed lookups and refetches on refresh', async () => {
-        vi.mocked(commands.appVrchatGroupMemberGet).mockImplementation(
-            async ({ userId }) => {
-                if (userId === 'b') throw new Error('Forbidden');
-                return response(
-                    member(userId ?? '', [userId === 'a' ? 'staff' : 'member'])
-                );
-            }
+    it('looks up newly seen players in one batch, caches role IDs per player and refetches on refresh', async () => {
+        const roleIdsByUser: Record<string, string[] | null> = {
+            a: ['staff'],
+            b: null,
+            c: ['member']
+        };
+        vi.mocked(commands.appVrchatGroupMemberRoleIdsGet).mockImplementation(
+            async ({ userIds }) =>
+                userIds.map((userId) => ({
+                    userId,
+                    roleIds: roleIdsByUser[userId] ?? null
+                }))
         );
         const { result, rerender, client } = renderRoles([
             player('a'),
@@ -184,7 +164,13 @@ describe('player list group roles', () => {
         await waitFor(() =>
             expect(roleNames(result.current.rows)).toEqual([['Staff'], null])
         );
-        expect(commands.appVrchatGroupMemberGet).toHaveBeenCalledTimes(2);
+        expect(commands.appVrchatGroupMemberRoleIdsGet).toHaveBeenCalledTimes(
+            1
+        );
+        expect(commands.appVrchatGroupMemberRoleIdsGet).toHaveBeenCalledWith({
+            groupId: 'grp_a',
+            userIds: ['a', 'b']
+        });
         expect(
             client.getQueryData(['player-list-group', 'owner', '', 'grp_a'])
         ).toEqual(roster);
@@ -206,83 +192,111 @@ describe('player list group roles', () => {
                 'b'
             ])
         ).toBeNull();
+
         rerender({ rows: [player('a'), player('b'), player('c')] });
         await waitFor(() =>
             expect(roleNames(result.current.rows)[2]).toEqual(['Member'])
         );
-        expect(commands.appVrchatGroupMemberGet).toHaveBeenCalledTimes(3);
-        expect(commands.appVrchatGroupMemberGet).toHaveBeenLastCalledWith({
+        expect(commands.appVrchatGroupMemberRoleIdsGet).toHaveBeenCalledTimes(
+            2
+        );
+        expect(
+            commands.appVrchatGroupMemberRoleIdsGet
+        ).toHaveBeenLastCalledWith({
             groupId: 'grp_a',
-            userId: 'c'
+            userIds: ['c']
         });
+
         rerender({ rows: [player('c')] });
         rerender({ rows: [player('a'), player('c')] });
         await waitFor(() =>
             expect(roleNames(result.current.rows)[0]).toEqual(['Staff'])
         );
-        expect(commands.appVrchatGroupMemberGet).toHaveBeenCalledTimes(3);
+        expect(commands.appVrchatGroupMemberRoleIdsGet).toHaveBeenCalledTimes(
+            2
+        );
+
         act(() => result.current.refresh());
         await waitFor(() =>
-            expect(commands.appVrchatGroupMemberGet).toHaveBeenCalledTimes(5)
+            expect(
+                commands.appVrchatGroupMemberRoleIdsGet
+            ).toHaveBeenCalledTimes(3)
         );
+        expect(
+            commands.appVrchatGroupMemberRoleIdsGet
+        ).toHaveBeenLastCalledWith({
+            groupId: 'grp_a',
+            userIds: ['a', 'c']
+        });
+
         act(() => result.current.selectGroup('grp_b'));
         expect(result.current.groupId).toBe('grp_b');
         expect(roleNames(result.current.rows)).toEqual([null, null]);
         await waitFor(() =>
-            expect(commands.appVrchatGroupMemberGet).toHaveBeenCalledWith({
+            expect(
+                commands.appVrchatGroupMemberRoleIdsGet
+            ).toHaveBeenLastCalledWith({
                 groupId: 'grp_b',
-                userId: 'a'
+                userIds: ['a', 'c']
             })
         );
         client.clear();
     });
 
-    it('keeps at most three member lookups in flight', async () => {
-        const pending = new Map<
-            string,
-            (value: ReturnType<typeof response>) => void
-        >();
-        vi.mocked(commands.appVrchatGroupMemberGet).mockImplementation(
-            ({ userId }) =>
+    it('sends larger rooms in chunks of six, one chunk at a time', async () => {
+        const pending: Array<
+            (value: { userId: string; roleIds: string[] }[]) => void
+        > = [];
+        vi.mocked(commands.appVrchatGroupMemberRoleIdsGet).mockImplementation(
+            () =>
                 new Promise((resolve) => {
-                    pending.set(userId ?? '', resolve);
+                    pending.push(resolve);
                 })
         );
-        const { result, client } = renderRoles(
-            ['a', 'b', 'c', 'd', 'e'].map(player)
-        );
+        const ids = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const { result, client } = renderRoles(ids.map(player));
+
         await waitFor(() =>
-            expect(commands.appVrchatGroupMemberGet).toHaveBeenCalledTimes(3)
+            expect(
+                commands.appVrchatGroupMemberRoleIdsGet
+            ).toHaveBeenCalledTimes(1)
         );
-        await act(async () => {
-            pending.get('a')?.(response(member('a', ['staff'])));
+        expect(
+            commands.appVrchatGroupMemberRoleIdsGet
+        ).toHaveBeenLastCalledWith({
+            groupId: 'grp_a',
+            userIds: ids.slice(0, 6)
         });
-        await waitFor(() =>
-            expect(commands.appVrchatGroupMemberGet).toHaveBeenCalledTimes(4)
-        );
+
+        await act(async () => {
+            pending[0](
+                ids
+                    .slice(0, 6)
+                    .map((userId) => ({ userId, roleIds: ['staff'] }))
+            );
+        });
         await waitFor(() =>
             expect(roleNames(result.current.rows)[0]).toEqual(['Staff'])
         );
+        await waitFor(() =>
+            expect(
+                commands.appVrchatGroupMemberRoleIdsGet
+            ).toHaveBeenCalledTimes(2)
+        );
+        expect(
+            commands.appVrchatGroupMemberRoleIdsGet
+        ).toHaveBeenLastCalledWith({
+            groupId: 'grp_a',
+            userIds: ['g', 'h']
+        });
         await act(async () => {
-            for (const id of ['b', 'c', 'd'])
-                pending.get(id)?.(response(member(id, ['member'])));
+            pending[1](
+                ['g', 'h'].map((userId) => ({ userId, roleIds: ['member'] }))
+            );
         });
         await waitFor(() =>
-            expect(commands.appVrchatGroupMemberGet).toHaveBeenCalledTimes(5)
+            expect(roleNames(result.current.rows)[7]).toEqual(['Member'])
         );
         client.clear();
     });
-
-    it('retries rate-limited lookups with backoff', async () => {
-        vi.mocked(commands.appVrchatGroupMemberGet)
-            .mockResolvedValueOnce(rateLimited)
-            .mockResolvedValueOnce(response(member('a', ['staff'])));
-        const { result, client } = renderRoles([player('a')]);
-        await waitFor(
-            () => expect(roleNames(result.current.rows)).toEqual([['Staff']]),
-            { timeout: 4000 }
-        );
-        expect(commands.appVrchatGroupMemberGet).toHaveBeenCalledTimes(2);
-        client.clear();
-    }, 10000);
 });

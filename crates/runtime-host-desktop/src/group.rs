@@ -2,15 +2,16 @@ use std::sync::Arc;
 
 use vrcx_0_application::social::{
     self as application, GroupApiDeps, GroupCalendarDeps, GroupCalendarInput,
-    GroupCalendarSnapshot, GroupQuickModerationActionInput, GroupQuickModerationActionOutput,
-    GroupQuickModerationDeps, GroupQuickModerationInput, GroupQuickModerationOutput,
-    UserGroupsOverviewDeps, UserGroupsOverviewInput, UserGroupsOverviewOutput,
-    VrchatGroupGalleryInput, VrchatGroupIdInput, VrchatGroupJoinRequestRespondInput,
-    VrchatGroupJoinRequestsInput, VrchatGroupLogsInput, VrchatGroupMemberPropsInput,
-    VrchatGroupMemberRoleInput, VrchatGroupMembersInput, VrchatGroupMembersSearchInput,
-    VrchatGroupPagedInput, VrchatGroupPostCreateInput, VrchatGroupPostDeleteInput,
-    VrchatGroupPostEditInput, VrchatGroupProfileInput, VrchatGroupRepresentationInput,
-    VrchatGroupUpdateInput, VrchatGroupUserGroupsInput, VrchatGroupUserInput,
+    GroupCalendarSnapshot, GroupMemberRoleIds, GroupQuickModerationActionInput,
+    GroupQuickModerationActionOutput, GroupQuickModerationDeps, GroupQuickModerationInput,
+    GroupQuickModerationOutput, UserGroupsOverviewDeps, UserGroupsOverviewInput,
+    UserGroupsOverviewOutput, VrchatGroupGalleryInput, VrchatGroupIdInput,
+    VrchatGroupJoinRequestRespondInput, VrchatGroupJoinRequestsInput, VrchatGroupLogsInput,
+    VrchatGroupMemberPropsInput, VrchatGroupMemberRoleIdsInput, VrchatGroupMemberRoleInput,
+    VrchatGroupMembersInput, VrchatGroupMembersSearchInput, VrchatGroupPagedInput,
+    VrchatGroupPostCreateInput, VrchatGroupPostDeleteInput, VrchatGroupPostEditInput,
+    VrchatGroupProfileInput, VrchatGroupRepresentationInput, VrchatGroupUpdateInput,
+    VrchatGroupUserGroupsInput, VrchatGroupUserInput,
 };
 use vrcx_0_application_core::vrchat_api::VrchatApiResponse;
 use vrcx_0_application_core::{
@@ -129,8 +130,11 @@ impl DesktopGroupRuntime {
         Ok(application::get_posts(self.api_deps(), input).await?)
     }
 
-    pub async fn member(&self, input: VrchatGroupUserInput) -> Result<VrchatApiResponse> {
-        Ok(application::get_member(self.api_deps(), input).await?)
+    pub async fn member_role_ids(
+        &self,
+        input: VrchatGroupMemberRoleIdsInput,
+    ) -> Vec<GroupMemberRoleIds> {
+        application::get_member_role_ids(self.api_deps(), input).await
     }
 
     pub async fn members(&self, input: VrchatGroupMembersInput) -> Result<VrchatApiResponse> {
