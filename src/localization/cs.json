@@ -166,7 +166,10 @@
         "note_local": "Lokální poznámka",
         "note_synced": "VRChat poznámka",
         "last_online": "Naposledy online před {duration}",
-        "in_private_world": "V soukromém světě"
+        "in_private_world": "V soukromém světě",
+        "mutual_friends": "Společní přátelé: {count}",
+        "no_mutual_friends": "Žádní společní přátelé",
+        "name_separator": ", "
     },
     "deep_link": {
         "import_collection": {
@@ -3191,6 +3194,18 @@
             },
             "toast": {
                 "failed_to_look_up_this_player": "Nepodařilo se vyhledat tohoto hráče"
+            },
+            "mutual_friends": {
+                "query": "Zjistit společné přátele",
+                "graph_fetch_running": "Právě se načítá graf společných přátel. Zjistěte to po dokončení.",
+                "summary": "Hráči se společnými přáteli: {count}",
+                "circles_prefix": "hlavně z komunit",
+                "circles_suffix": "",
+                "cell_tooltip": "{names} · společní přátelé: {count}",
+                "cell_tooltip_circle": "{names} · společní přátelé: {count} · hlavně z komunity {circle}",
+                "requery": "Zjistit znovu",
+                "show": "Zobrazit výsledky",
+                "hide": "Skrýt"
             }
         },
         "auth": {
@@ -3875,6 +3890,9 @@
                     "alphabetical": "Abecedně",
                     "last_active": "Naposledy aktivní",
                     "friend_order": "Pořadí přátel"
+                },
+                "view": {
+                    "list": "Seznam"
                 }
             },
             "activity": {
@@ -5936,7 +5954,8 @@
             "bioLink": "Odkazy v bio",
             "note": "Poznámka",
             "user": "Uživatel",
-            "location": "Lokace"
+            "location": "Lokace",
+            "mutualFriends": "Společní přátelé"
         },
         "friendLog": {
             "date": "Datum",
@@ -6458,5 +6477,9 @@
         "restore": "Obnovit a restartovat",
         "keep": "Zobrazení je správné, ponechat",
         "failed": "Nepodařilo se změnit nastavení vykreslování. Zkus to znovu."
+    },
+    "mutual_graph_hint": {
+        "build": "Graf společných přátel zatím neexistuje · Vytvořit",
+        "room_scan_running": "Probíhá zjišťování společných přátel v této instanci. Zkuste to po dokončení znovu."
     }
 }

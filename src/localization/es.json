@@ -166,7 +166,10 @@
         "note_local": "Nota local",
         "note_synced": "Nota de VRChat",
         "last_online": "En línea por última vez hace {duration}",
-        "in_private_world": "En un mundo privado"
+        "in_private_world": "En un mundo privado",
+        "mutual_friends": "{count} amigos en común",
+        "no_mutual_friends": "Sin amigos en común",
+        "name_separator": ", "
     },
     "deep_link": {
         "import_collection": {
@@ -3181,6 +3184,18 @@
             },
             "toast": {
                 "failed_to_look_up_this_player": "No se pudo buscar este jugador"
+            },
+            "mutual_friends": {
+                "query": "Consultar amigos en común",
+                "graph_fetch_running": "Se está obteniendo el grafo de amigos en común. Consulta cuando termine.",
+                "summary": "{count} jugadores tienen amigos en común contigo",
+                "circles_prefix": "sobre todo de las comunidades de",
+                "circles_suffix": "",
+                "cell_tooltip": "{names} · {count} amigos en común",
+                "cell_tooltip_circle": "{names} · {count} amigos en común · sobre todo de la comunidad de {circle}",
+                "requery": "Consultar de nuevo",
+                "show": "Mostrar resultados",
+                "hide": "Ocultar"
             }
         },
         "auth": {
@@ -3861,6 +3876,9 @@
                     "alphabetical": "Alfabético",
                     "last_active": "Última actividad",
                     "friend_order": "Orden de amistad"
+                },
+                "view": {
+                    "list": "Lista"
                 }
             },
             "activity": {
@@ -5920,7 +5938,8 @@
             "bioLink": "Enlaces de Biografía",
             "note": "Nota",
             "user": "Usuario",
-            "location": "Ubicación"
+            "location": "Ubicación",
+            "mutualFriends": "Amigos en común"
         },
         "friendLog": {
             "date": "Fecha",
@@ -6442,5 +6461,9 @@
         "restore": "Restaurar y reiniciar",
         "keep": "Se muestra bien, conservar",
         "failed": "No se pudo cambiar la configuración gráfica. Vuelve a intentarlo."
+    },
+    "mutual_graph_hint": {
+        "build": "Aún no hay grafo de amigos en común · Crearlo",
+        "room_scan_running": "Consultando amigos en común de esta instancia. Inténtalo de nuevo cuando termine."
     }
 }

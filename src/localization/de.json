@@ -166,7 +166,10 @@
         "note_local": "Lokale Notiz",
         "note_synced": "VRChat-Notiz",
         "last_online": "Zuletzt online vor {duration}",
-        "in_private_world": "In einer privaten Welt"
+        "in_private_world": "In einer privaten Welt",
+        "mutual_friends": "{count} gemeinsame Freunde",
+        "no_mutual_friends": "Keine gemeinsamen Freunde",
+        "name_separator": ", "
     },
     "deep_link": {
         "import_collection": {
@@ -3181,6 +3184,18 @@
             },
             "toast": {
                 "failed_to_look_up_this_player": "Dieser Spieler konnte nicht gesucht werden"
+            },
+            "mutual_friends": {
+                "query": "Gemeinsame Freunde abfragen",
+                "graph_fetch_running": "Der Gemeinsame-Freunde-Graph wird gerade abgerufen. Danach erneut abfragen.",
+                "summary": "{count} Spieler haben gemeinsame Freunde mit dir",
+                "circles_prefix": "vor allem aus den Communitys von",
+                "circles_suffix": "",
+                "cell_tooltip": "{names} · {count} gemeinsame Freunde",
+                "cell_tooltip_circle": "{names} · {count} gemeinsame Freunde · vor allem aus der Community von {circle}",
+                "requery": "Erneut abfragen",
+                "show": "Ergebnisse anzeigen",
+                "hide": "Ausblenden"
             }
         },
         "auth": {
@@ -3861,6 +3876,9 @@
                     "alphabetical": "Alphabetisch",
                     "last_active": "Zuletzt aktiv",
                     "friend_order": "Freundesreihenfolge"
+                },
+                "view": {
+                    "list": "Liste"
                 }
             },
             "activity": {
@@ -5920,7 +5938,8 @@
             "bioLink": "Bio-Links",
             "note": "Notiz",
             "user": "Nutzer",
-            "location": "Standort"
+            "location": "Standort",
+            "mutualFriends": "Gemeinsame Freunde"
         },
         "friendLog": {
             "date": "Datum",
@@ -6442,5 +6461,9 @@
         "restore": "Wiederherstellen und neu starten",
         "keep": "Darstellung korrekt, beibehalten",
         "failed": "Die Darstellungseinstellung konnte nicht geändert werden. Versuche es erneut."
+    },
+    "mutual_graph_hint": {
+        "build": "Noch kein Gemeinsame-Freunde-Graph · Jetzt erstellen",
+        "room_scan_running": "Gemeinsame Freunde für diese Instanz werden abgefragt. Bitte danach erneut versuchen."
     }
 }

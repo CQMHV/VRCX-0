@@ -166,7 +166,10 @@
         "note_local": "로컬 메모",
         "note_synced": "VRChat 노트",
         "last_online": "마지막 접속 {duration} 전",
-        "in_private_world": "비공개 월드"
+        "in_private_world": "비공개 월드",
+        "mutual_friends": "공통 친구 {count}명",
+        "no_mutual_friends": "공통 친구 없음",
+        "name_separator": ", "
     },
     "deep_link": {
         "import_collection": {
@@ -3122,6 +3125,18 @@
             },
             "toast": {
                 "failed_to_look_up_this_player": "이 플레이어를 검색하지 못했습니다."
+            },
+            "mutual_friends": {
+                "query": "공통 친구 조회",
+                "graph_fetch_running": "공통 친구 그래프를 가져오는 중입니다. 완료된 후 조회하세요",
+                "summary": "{count}명과 공통 친구가 있습니다",
+                "circles_prefix": "주로",
+                "circles_suffix": "커뮤니티",
+                "cell_tooltip": "{names} 등 공통 친구 {count}명",
+                "cell_tooltip_circle": "{names} 등 공통 친구 {count}명 · 주로 {circle} 커뮤니티",
+                "requery": "다시 조회",
+                "show": "결과 보기",
+                "hide": "숨기기"
             }
         },
         "auth": {
@@ -3802,6 +3817,9 @@
                     "alphabetical": "알파벳순",
                     "last_active": "마지막 활성",
                     "friend_order": "친구 추가 순서"
+                },
+                "view": {
+                    "list": "목록"
                 }
             },
             "activity": {
@@ -5910,7 +5928,8 @@
             "bioLink": "링크",
             "note": "참고",
             "user": "유저",
-            "location": "위치"
+            "location": "위치",
+            "mutualFriends": "공통 친구"
         },
         "friendLog": {
             "date": "날짜",
@@ -6489,5 +6508,9 @@
         "restore": "호환 모드로 복원하고 다시 시작",
         "keep": "정상적으로 표시됨, 유지",
         "failed": "렌더링 설정을 변경하지 못했습니다. 다시 시도하세요."
+    },
+    "mutual_graph_hint": {
+        "build": "공통 친구 그래프가 아직 없습니다 · 만들기",
+        "room_scan_running": "이 인스턴스의 공통 친구를 조회하는 중입니다. 완료된 후 다시 시도하세요"
     }
 }

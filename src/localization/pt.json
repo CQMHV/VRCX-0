@@ -166,7 +166,10 @@
         "note_local": "Nota local",
         "note_synced": "Nota do VRChat",
         "last_online": "Online pela última vez há {duration}",
-        "in_private_world": "Em um mundo privado"
+        "in_private_world": "Em um mundo privado",
+        "mutual_friends": "{count} amigos mútuos",
+        "no_mutual_friends": "Nenhum amigo mútuo",
+        "name_separator": ", "
     },
     "deep_link": {
         "import_collection": {
@@ -3181,6 +3184,18 @@
             },
             "toast": {
                 "failed_to_look_up_this_player": "Falha ao buscar este jogador"
+            },
+            "mutual_friends": {
+                "query": "Consultar amigos mútuos",
+                "graph_fetch_running": "O grafo de amigos mútuos está sendo obtido. Consulte quando terminar.",
+                "summary": "{count} jogadores têm amigos mútuos com você",
+                "circles_prefix": "principalmente das comunidades de",
+                "circles_suffix": "",
+                "cell_tooltip": "{names} · {count} amigos mútuos",
+                "cell_tooltip_circle": "{names} · {count} amigos mútuos · principalmente da comunidade de {circle}",
+                "requery": "Consultar novamente",
+                "show": "Mostrar resultados",
+                "hide": "Ocultar"
             }
         },
         "auth": {
@@ -3862,6 +3877,9 @@
                     "alphabetical": "Ordem Alfabética",
                     "last_active": "Último Ativo",
                     "friend_order": "Ordem de Amizade"
+                },
+                "view": {
+                    "list": "Lista"
                 }
             },
             "activity": {
@@ -5921,7 +5939,8 @@
             "bioLink": "Links da Bio",
             "note": "Nota",
             "user": "Usuário",
-            "location": "Localização"
+            "location": "Localização",
+            "mutualFriends": "Amigos mútuos"
         },
         "friendLog": {
             "date": "Data",
@@ -6443,5 +6462,9 @@
         "restore": "Restaurar e reiniciar",
         "keep": "Exibição normal, manter",
         "failed": "Não foi possível alterar a configuração gráfica. Tente novamente."
+    },
+    "mutual_graph_hint": {
+        "build": "Ainda não há grafo de amigos mútuos · Criar",
+        "room_scan_running": "Consultando amigos mútuos desta instância. Tente novamente quando terminar."
     }
 }

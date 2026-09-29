@@ -166,7 +166,10 @@
         "note_local": "Local note",
         "note_synced": "VRChat note",
         "last_online": "Last online {duration} ago",
-        "in_private_world": "In a private world"
+        "in_private_world": "In a private world",
+        "mutual_friends": "{count} mutual friends",
+        "no_mutual_friends": "No mutual friends",
+        "name_separator": ", "
     },
     "deep_link": {
         "import_collection": {
@@ -3181,6 +3184,18 @@
             },
             "toast": {
                 "failed_to_look_up_this_player": "Failed to look up this player"
+            },
+            "mutual_friends": {
+                "query": "Check mutual friends",
+                "graph_fetch_running": "The mutual friend graph is being fetched. Check again when it finishes.",
+                "summary": "{count} players share friends with you",
+                "circles_prefix": "mostly from the communities of",
+                "circles_suffix": "",
+                "cell_tooltip": "{names} · {count} mutual friends",
+                "cell_tooltip_circle": "{names} · {count} mutual friends · mostly from {circle}'s community",
+                "requery": "Check again",
+                "show": "Show results",
+                "hide": "Hide"
             }
         },
         "auth": {
@@ -3861,6 +3876,9 @@
                     "alphabetical": "Alphabetical",
                     "last_active": "Last Active",
                     "friend_order": "Friend Order"
+                },
+                "view": {
+                    "list": "List"
                 }
             },
             "activity": {
@@ -5968,7 +5986,8 @@
             "bioLink": "Bio Links",
             "note": "Note",
             "user": "User",
-            "location": "Location"
+            "location": "Location",
+            "mutualFriends": "Mutual friends"
         },
         "friendLog": {
             "date": "Date",
@@ -6490,5 +6509,9 @@
         "restore": "Restore and restart",
         "keep": "Display is normal, keep",
         "failed": "Could not change the rendering setting. Please try again."
+    },
+    "mutual_graph_hint": {
+        "build": "No mutual friend graph yet · Build it",
+        "room_scan_running": "Checking mutual friends for this instance. Try again when it finishes."
     }
 }

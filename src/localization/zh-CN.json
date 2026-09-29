@@ -166,7 +166,10 @@
         "note_local": "本地备注",
         "note_synced": "线上备注",
         "last_online": "最后在线 {duration} 前",
-        "in_private_world": "目前位于私人房间"
+        "in_private_world": "目前位于私人房间",
+        "mutual_friends": "{count} 位共同好友",
+        "no_mutual_friends": "没有共同好友",
+        "name_separator": "、"
     },
     "deep_link": {
         "import_collection": {
@@ -3179,6 +3182,18 @@
             },
             "toast": {
                 "failed_to_look_up_this_player": "查找玩家失败"
+            },
+            "mutual_friends": {
+                "query": "查询共同好友",
+                "graph_fetch_running": "好友关系图正在拉取，完成后再查询",
+                "summary": "{count} 人与你有共同好友",
+                "circles_prefix": "主要来自",
+                "circles_suffix": "的圈子",
+                "cell_tooltip": "{names} 等 {count} 位共同好友",
+                "cell_tooltip_circle": "{names} 等 {count} 位共同好友 · 主要来自{circle}的圈子",
+                "requery": "再次查询",
+                "show": "显示结果",
+                "hide": "隐藏"
             }
         },
         "auth": {
@@ -3860,6 +3875,9 @@
                     "alphabetical": "字母顺序",
                     "last_active": "最后活跃",
                     "friend_order": "添加顺序"
+                },
+                "view": {
+                    "list": "列表"
                 }
             },
             "activity": {
@@ -5967,7 +5985,8 @@
             "bioLink": "社交链接",
             "note": "备注",
             "user": "玩家",
-            "location": "位置"
+            "location": "位置",
+            "mutualFriends": "共同好友"
         },
         "friendLog": {
             "date": "时间",
@@ -6489,5 +6508,9 @@
         "restore": "恢复兼容模式并重启",
         "keep": "显示正常，保留",
         "failed": "无法更改渲染设置，请重试。"
+    },
+    "mutual_graph_hint": {
+        "build": "尚未生成好友关系图，去生成",
+        "room_scan_running": "正在查询本房间的共同好友，请稍后再试"
     }
 }

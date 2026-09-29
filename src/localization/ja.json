@@ -166,7 +166,10 @@
         "note_local": "ローカルノート",
         "note_synced": "VRChatノート",
         "last_online": "最終オンライン {duration}前",
-        "in_private_world": "プライベートワールド"
+        "in_private_world": "プライベートワールド",
+        "mutual_friends": "共通のフレンド {count}人",
+        "no_mutual_friends": "共通のフレンドはいません",
+        "name_separator": "、"
     },
     "deep_link": {
         "import_collection": {
@@ -3175,6 +3178,18 @@
             },
             "toast": {
                 "failed_to_look_up_this_player": "このプレイヤーの検索に失敗しました"
+            },
+            "mutual_friends": {
+                "query": "共通のフレンドを確認",
+                "graph_fetch_running": "共通のフレンドのグラフを取得中です。完了後に確認してください",
+                "summary": "{count}人と共通のフレンドがいます",
+                "circles_prefix": "主に",
+                "circles_suffix": "のコミュニティ",
+                "cell_tooltip": "{names} など共通のフレンド {count}人",
+                "cell_tooltip_circle": "{names} など共通のフレンド {count}人 · 主に{circle}のコミュニティ",
+                "requery": "もう一度確認",
+                "show": "結果を表示",
+                "hide": "非表示"
             }
         },
         "auth": {
@@ -3854,6 +3869,9 @@
                     "alphabetical": "アルファベット順",
                     "last_active": "最終活動時間順",
                     "friend_order": "フレンド追加順"
+                },
+                "view": {
+                    "list": "リスト"
                 }
             },
             "activity": {
@@ -5950,7 +5968,8 @@
             "bioLink": "自己紹介リンク",
             "note": "ノート",
             "user": "ユーザー",
-            "location": "場所"
+            "location": "場所",
+            "mutualFriends": "共通のフレンド"
         },
         "friendLog": {
             "date": "日付",
@@ -6472,5 +6491,9 @@
         "restore": "互換モードに戻して再起動",
         "keep": "正常に表示されているので保存",
         "failed": "描画設定を変更できませんでした。もう一度お試しください。"
+    },
+    "mutual_graph_hint": {
+        "build": "共通のフレンドのグラフが未作成です · 作成する",
+        "room_scan_running": "このインスタンスの共通のフレンドを確認中です。完了後にもう一度お試しください"
     }
 }

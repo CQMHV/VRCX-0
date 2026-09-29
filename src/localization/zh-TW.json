@@ -166,7 +166,10 @@
         "note_local": "本機備註",
         "note_synced": "VRChat 備註",
         "last_online": "最後上線： {duration} 前",
-        "in_private_world": "在私人世界中"
+        "in_private_world": "在私人世界中",
+        "mutual_friends": "{count} 位共同好友",
+        "no_mutual_friends": "沒有共同好友",
+        "name_separator": "、"
     },
     "deep_link": {
         "import_collection": {
@@ -3179,6 +3182,18 @@
             },
             "toast": {
                 "failed_to_look_up_this_player": "尋找這個用戶失敗"
+            },
+            "mutual_friends": {
+                "query": "查詢共同好友",
+                "graph_fetch_running": "共同好友關係圖正在取得中，完成後再查詢",
+                "summary": "{count} 人與你有共同好友",
+                "circles_prefix": "主要來自",
+                "circles_suffix": "的社群",
+                "cell_tooltip": "{names} 等 {count} 位共同好友",
+                "cell_tooltip_circle": "{names} 等 {count} 位共同好友 · 主要來自{circle}的社群",
+                "requery": "再次查詢",
+                "show": "顯示結果",
+                "hide": "隱藏"
             }
         },
         "auth": {
@@ -3860,6 +3875,9 @@
                     "alphabetical": "按字母排序",
                     "last_active": "最後上線",
                     "friend_order": "好友列表順序"
+                },
+                "view": {
+                    "list": "列表"
                 }
             },
             "activity": {
@@ -5958,7 +5976,8 @@
             "bioLink": "社交連結",
             "note": "備註",
             "user": "用戶",
-            "location": "位置"
+            "location": "位置",
+            "mutualFriends": "共同好友"
         },
         "friendLog": {
             "date": "時間",
@@ -6480,5 +6499,9 @@
         "restore": "恢復相容模式並重新啟動",
         "keep": "顯示正常，保留",
         "failed": "無法變更繪製設定，請重試。"
+    },
+    "mutual_graph_hint": {
+        "build": "尚未建立共同好友關係圖，前往建立",
+        "room_scan_running": "正在查詢此房間的共同好友，請稍後再試"
     }
 }
