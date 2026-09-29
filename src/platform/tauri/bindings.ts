@@ -2839,7 +2839,6 @@ export type ActivityPageView = {
     utcOffsetMinutes: number;
     windowFromMs: number;
     windowToMs: number;
-    hasOpenTail: boolean;
     summary: ActivityPageSummary;
     previous: ActivityPagePreviousSummary;
     series: ActivityPageSeries;
@@ -2866,11 +2865,7 @@ export type ActivityPageWorlds = {
     returningWorldMinutes: number;
 };
 export type ActivitySeriesBucket = 'day' | 'week';
-export type ActivitySeriesPoint = {
-    startDate: string;
-    minutes: number;
-    inferred: boolean;
-};
+export type ActivitySeriesPoint = { startDate: string; minutes: number };
 export type ActivityViewBuildInput = {
     ownerUserId: OwnerId;
     targetUserId: string;
