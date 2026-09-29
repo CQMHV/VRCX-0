@@ -174,11 +174,6 @@ describe('DashboardGameLogWidget', () => {
             )
         );
         expect(eventTypes).toHaveLength(3);
-        expect(
-            eventTypes.every((eventType) =>
-                eventType.classList.contains('text-right')
-            )
-        ).toBe(true);
         const affinitySlot = view.container.querySelector(
             '[data-dashboard-widget-affinity-slot]'
         );

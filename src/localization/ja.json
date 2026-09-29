@@ -4227,8 +4227,7 @@
                 "add_domain": "ドメインを追加"
             },
             "loading": {
-                "loading_world_profile": "ワールドプロフィールを読み込み中",
-                "fetching_the_current_vrchat_world_snapshot_for_this_dialog": "ワールドの詳細を読み込み中"
+                "loading_world_profile": "ワールドプロフィールを読み込み中"
             },
             "error": {
                 "world_profile_unavailable": "ワールドプロフィールを取得できません",

@@ -4234,8 +4234,7 @@
                 "add_domain": "Add domain"
             },
             "loading": {
-                "loading_world_profile": "Loading world profile",
-                "fetching_the_current_vrchat_world_snapshot_for_this_dialog": "Loading world details"
+                "loading_world_profile": "Loading world profile"
             },
             "error": {
                 "world_profile_unavailable": "World profile unavailable",

@@ -16,7 +16,6 @@ import type { FavoriteKind } from '@/domain/favorites/types';
 const mocks = vi.hoisted(() => ({
     addFavorite: vi.fn(),
     addLocalFavorite: vi.fn(),
-    confirm: vi.fn(),
     createLocalFavoriteGroup: vi.fn(),
     deleteFavorite: vi.fn(),
     favoriteState: {} as Record<string, unknown>,
@@ -72,7 +71,7 @@ vi.mock('@/state/favoriteStore', () => ({
 
 vi.mock('@/state/modalStore', () => ({
     useModalStore: <T,>(selector: (state: ModalStoreState) => T) =>
-        selector({ confirm: mocks.confirm, prompt: mocks.prompt })
+        selector({ prompt: mocks.prompt })
 }));
 
 vi.mock('@/ui/shadcn/button', () => ({
@@ -159,14 +158,12 @@ type FavoriteStoreState = {
 };
 
 type ModalStoreState = {
-    confirm: typeof mocks.confirm;
     prompt: typeof mocks.prompt;
 };
 
 describe('FavoriteActionMenu local group creation', () => {
     beforeEach(() => {
         mocks.addLocalFavorite.mockReset().mockResolvedValue(1);
-        mocks.confirm.mockReset();
         mocks.createLocalFavoriteGroup.mockReset().mockResolvedValue(undefined);
         mocks.prompt.mockReset().mockResolvedValue({
             ok: true,
@@ -270,7 +267,6 @@ describe('FavoriteActionMenu VRChat favorite groups', () => {
     beforeEach(() => {
         mocks.addFavorite.mockReset().mockResolvedValue({});
         mocks.deleteFavorite.mockReset().mockResolvedValue({});
-        mocks.confirm.mockReset();
     });
 
     afterEach(() => {
@@ -287,7 +283,7 @@ describe('FavoriteActionMenu VRChat favorite groups', () => {
         expect(groupItem('Karaoke').getAttribute('aria-checked')).toBe('false');
     });
 
-    it('unfavorites without asking when the checked group is clicked', async () => {
+    it('unfavorites when the checked group is clicked', async () => {
         openMenu('group_0');
 
         fireEvent.click(groupItem('Best Friends'));
@@ -297,7 +293,6 @@ describe('FavoriteActionMenu VRChat favorite groups', () => {
                 objectId: 'usr_friend'
             })
         );
-        expect(mocks.confirm).not.toHaveBeenCalled();
         expect(mocks.addFavorite).not.toHaveBeenCalled();
     });
 

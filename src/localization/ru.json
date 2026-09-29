@@ -4245,8 +4245,7 @@
                 "add_domain": "Добавить домен"
             },
             "loading": {
-                "loading_world_profile": "Загрузка мирового профиля",
-                "fetching_the_current_vrchat_world_snapshot_for_this_dialog": "Загрузка сведений о мире"
+                "loading_world_profile": "Загрузка мирового профиля"
             },
             "error": {
                 "world_profile_unavailable": "Мировой профиль отсутствует",

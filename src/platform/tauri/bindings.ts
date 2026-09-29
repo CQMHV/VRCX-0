@@ -1170,15 +1170,6 @@ const generatedCommands = {
             notification
         });
     },
-    async appNotificationAddV2(
-        userId: string,
-        notification: JsonValue
-    ): Promise<null> {
-        return await TAURI_INVOKE('app__notification_add_v2', {
-            userId,
-            notification
-        });
-    },
     async appNotificationV2Expire(userId: string, id: string): Promise<null> {
         return await TAURI_INVOKE('app__notification_v2_expire', {
             userId,
@@ -2433,9 +2424,6 @@ const generatedCommands = {
         return await TAURI_INVOKE('app__app_update_install_confirm', {
             version
         });
-    },
-    async appCheckLegacyVrcxAvailable(): Promise<boolean> {
-        return await TAURI_INVOKE('app__check_legacy_vrcx_available');
     },
     async appGetLegacyVrcxForceMigrationStatus(): Promise<LegacyVrcxMigrationStatus> {
         return await TAURI_INVOKE(

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { getDisplayDayLabels, getRangeDays } from './UserActivityPanelImpl';
+import { getDisplayDayLabels, getRangeDays } from './userActivityPanelModel';
 
-describe('UserActivityPanelImpl helpers', () => {
+describe('userActivityPanelModel', () => {
     const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     it('rotates day labels from the configured first day of week', () => {
@@ -35,8 +35,9 @@ describe('UserActivityPanelImpl helpers', () => {
         ]);
     });
 
-    it('parses range days and falls back to the default range', () => {
+    it('parses range days, maps all-time to zero, and falls back to the default range', () => {
         expect(getRangeDays('7')).toBe(7);
+        expect(getRangeDays('all')).toBe(0);
         expect(getRangeDays('bad')).toBe(30);
         expect(getRangeDays(undefined)).toBe(30);
     });

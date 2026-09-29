@@ -4250,8 +4250,7 @@
                 "add_domain": "Přidat doménu"
             },
             "loading": {
-                "loading_world_profile": "Načítání profilu světa",
-                "fetching_the_current_vrchat_world_snapshot_for_this_dialog": "Načítání podrobností světa"
+                "loading_world_profile": "Načítání profilu světa"
             },
             "error": {
                 "world_profile_unavailable": "Profil světa není dostupný",

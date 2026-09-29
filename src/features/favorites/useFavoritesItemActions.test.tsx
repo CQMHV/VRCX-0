@@ -174,6 +174,7 @@ describe('useFavoritesItemActions', () => {
             result.current.sendFavoriteFriendInvite(favoriteFriend)
         );
 
+        expect(mocks.confirm).toHaveBeenCalledOnce();
         expect(mocks.sendInvite).not.toHaveBeenCalled();
         expect(mocks.toastSuccess).not.toHaveBeenCalled();
     });

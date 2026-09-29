@@ -4175,8 +4175,7 @@
                 "add_domain": "도메인 추가"
             },
             "loading": {
-                "loading_world_profile": "세계 프로필 로드 중",
-                "fetching_the_current_vrchat_world_snapshot_for_this_dialog": "월드 정보 불러오는 중"
+                "loading_world_profile": "세계 프로필 로드 중"
             },
             "error": {
                 "world_profile_unavailable": "월드 프로필을 사용할 수 없습니다.",

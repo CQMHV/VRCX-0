@@ -637,7 +637,6 @@ impl DesktopRuntimeHostState {
             runtime.paths().app_data.join("error-log.txt"),
         );
         let legacy_migration = DesktopLegacyMigrationRuntime::new(
-            runtime.legacy_vrcx_available(),
             runtime.legacy_vrcx_migration_status().clone(),
             runtime.legacy_vrcx_source().clone(),
             vrcx_0_contracts::LegacyMigrationPaths::from_app_data(runtime.paths().app_data.clone()),

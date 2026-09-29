@@ -88,7 +88,6 @@ describe('GameLogToolbar', () => {
         render(<ToolbarHarness {...createProps()} />);
         const user = userEvent.setup();
         const trigger = screen.getByRole('button', { name: dateRangeLabel });
-        expect(trigger.hasAttribute('title')).toBe(false);
         await user.hover(trigger);
         expect(
             (

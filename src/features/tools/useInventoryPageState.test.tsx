@@ -330,6 +330,16 @@ describe('useInventoryPageState', () => {
         await act(async () => {
             await pendingMutation;
         });
+
+        await act(async () => {
+            await result.current.setProfileDecorationEquipped(secondItem);
+        });
+        expect(mediaMocks.equipProfileDecoration).toHaveBeenCalledTimes(2);
+        expect(mediaMocks.equipProfileDecoration).toHaveBeenLastCalledWith({
+            expectedUserId: 'usr_self',
+            inventoryId: 'inv_frame_b',
+            equipSlot: 'iconFrame'
+        });
     });
 
     it('does not report a successful write as failed when self refresh rejects', async () => {

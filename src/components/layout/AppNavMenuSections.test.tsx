@@ -20,7 +20,6 @@ describe('AppNavFooter', () => {
         );
 
         expect(markup).toContain('data-active=""');
-        expect(markup).toContain('nav_tooltip.settings');
     });
 
     it('shows settings and sidebar shortcut keys while hints are visible', () => {

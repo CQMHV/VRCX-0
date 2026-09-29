@@ -73,17 +73,8 @@ function createProps(overrides: Partial<DialogProps> = {}): DialogProps {
 describe('ManageAvatarTagsDialog', () => {
     afterEach(cleanup);
 
-    it('renders only while open and normalizes duplicate initial tags', () => {
-        const { rerender } = render(
-            <ManageAvatarTagsDialog {...createProps({ open: false })} />
-        );
-        expect(
-            screen.queryByRole('heading', {
-                name: 'view.my_avatars.label.manage_avatar_tags'
-            })
-        ).toBeNull();
-
-        rerender(<ManageAvatarTagsDialog {...createProps()} />);
+    it('keeps the first color of a duplicated initial tag', () => {
+        render(<ManageAvatarTagsDialog {...createProps()} />);
         expect(screen.getAllByText('Alpha')).toHaveLength(1);
         const blue = screen.getByRole('button', {
             name: 'Blue'

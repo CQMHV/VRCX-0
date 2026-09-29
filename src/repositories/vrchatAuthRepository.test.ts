@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const commandMocks = vi.hoisted(() => ({
     appVrchatAuthConfigGet: vi.fn(),
-    appVrchatAuthConfigRefresh: vi.fn(),
     appVrchatAuthCurrentUserGet: vi.fn(),
     appVrchatAuthSessionStart: vi.fn(),
     appVrchatAuthSessionRespond: vi.fn(),
@@ -59,16 +58,6 @@ describe('vrchatAuthRepository', () => {
         });
 
         expect(commandMocks.appVrchatAuthCurrentUserGet).toHaveBeenCalledWith();
-    });
-
-    it('uses distinct snapshot and force-refresh config commands', async () => {
-        await vrchatAuthRepository.getConfig();
-        await vrchatAuthRepository.refreshConfig();
-
-        expect(commandMocks.appVrchatAuthConfigGet).toHaveBeenCalledTimes(1);
-        expect(commandMocks.appVrchatAuthConfigRefresh).toHaveBeenCalledTimes(
-            1
-        );
     });
 
     it('builds file-analysis requests with numeric versions and encoded error endpoints', async () => {

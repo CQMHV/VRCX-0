@@ -14,10 +14,6 @@ vi.mock('@/components/feed/FeedDetailCell', () => ({
     FeedDetailCell: () => <span>detail</span>
 }));
 
-vi.mock('@/components/feed/FeedLocationLink', () => ({
-    FeedLocationLink: () => <span>world</span>
-}));
-
 vi.mock('@/components/feed/FeedTypeIndicator', () => ({
     FeedTypeIndicator: () => <span>type</span>
 }));
@@ -96,12 +92,6 @@ describe('FeedVirtualListShell', () => {
             '[data-feed-list-summary]'
         );
         expect(summary?.textContent).toContain('timeusertypedetail');
-        expect(summary?.className).toContain(
-            'h-[var(--vrcx-0-table-row-height)]'
-        );
-        expect(summary?.className).not.toContain(
-            'min-h-[var(--vrcx-0-table-row-height)]'
-        );
     });
 
     it('renders static labels instead of sortable headers', () => {

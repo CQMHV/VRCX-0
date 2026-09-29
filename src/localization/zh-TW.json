@@ -4233,8 +4233,7 @@
                 "add_domain": "新增域名"
             },
             "loading": {
-                "loading_world_profile": "正在載入世界個人資料",
-                "fetching_the_current_vrchat_world_snapshot_for_this_dialog": "正在載入世界詳細資訊"
+                "loading_world_profile": "正在載入世界個人資料"
             },
             "error": {
                 "world_profile_unavailable": "世界個人資料無法使用",

@@ -40,7 +40,7 @@ describe('recentActionService', () => {
         vi.unstubAllGlobals();
     });
 
-    it('records only tracked actions and respects the configured cooldown', async () => {
+    it('records an action for a trimmed user id and prunes it once the cooldown expires', async () => {
         const { service, localStorage } = await loadRecentActionService();
 
         service.configureRecentActionCooldown({ enabled: true, minutes: 30 });

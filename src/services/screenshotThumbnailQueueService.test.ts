@@ -71,6 +71,7 @@ describe('screenshotThumbnailQueue', () => {
         expect(mocks.ensureScreenshotThumbnail).toHaveBeenCalledTimes(1);
 
         first.cancel();
+        second.cancel();
         task.resolve('thumbnail');
 
         await expect(first.promise).resolves.toBe('thumbnail');

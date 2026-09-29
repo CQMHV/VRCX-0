@@ -13,7 +13,6 @@ vi.mock('@/platform/tauri/bindings', () => ({
 import { commands } from '@/platform/tauri/bindings';
 
 import {
-    defaultWorldCacheInfo,
     readWorldCacheInfo,
     resolveWorldAssetBundleArgs
 } from './worldAssetBundle';
@@ -23,15 +22,6 @@ function assetUrl(fileId: string, version: number, variantVersion: number = 0) {
 }
 
 describe('worldAssetBundle', () => {
-    it('returns the stable default cache info shape', () => {
-        expect(defaultWorldCacheInfo()).toEqual({
-            inCache: false,
-            cacheSize: '',
-            cacheLocked: false,
-            cachePath: ''
-        });
-    });
-
     it('selects the newest compatible standalone windows package from the end', () => {
         const args = resolveWorldAssetBundleArgs(
             {

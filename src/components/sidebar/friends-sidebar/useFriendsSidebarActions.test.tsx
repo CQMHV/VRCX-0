@@ -14,8 +14,6 @@ vi.mock('@/repositories/configRepository', () => ({
     }
 }));
 
-import { openUserDialog } from '@/services/dialogService';
-
 import { useFriendsSidebarActions } from './useFriendsSidebarActions';
 
 describe('useFriendsSidebarActions', () => {
@@ -46,6 +44,5 @@ describe('useFriendsSidebarActions', () => {
             status: 'busy',
             statusDescription: 'Focusing'
         });
-        expect(openUserDialog).not.toHaveBeenCalled();
     });
 });

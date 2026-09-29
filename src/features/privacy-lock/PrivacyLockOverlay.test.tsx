@@ -56,7 +56,9 @@ beforeEach(() => {
 describe('PrivacyLockOverlay', () => {
     it('renders nothing while unlocked', () => {
         render(<PrivacyLockOverlay />);
-        expect(screen.queryByText('privacy_lock.locked_title')).toBeNull();
+        expect(
+            document.querySelector('[data-vrcx-0-surface="privacy-lock"]')
+        ).toBeNull();
     });
 
     it('covers the app without a form until the snapshot matches the user', () => {

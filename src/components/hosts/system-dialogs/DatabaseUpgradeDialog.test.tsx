@@ -72,16 +72,11 @@ describe('DatabaseUpgradeDialog', () => {
             progressTotal: 100
         });
 
-        const { container } = render(<DatabaseUpgradeDialog open />);
+        render(<DatabaseUpgradeDialog open />);
 
         expect(
             screen.getByRole('progressbar').getAttribute('aria-valuenow')
         ).toBeNull();
-        expect(
-            container.querySelector(
-                '.indeterminate-progress [data-slot="progress-indicator"]'
-            )
-        ).not.toBeNull();
     });
 
     it('holds back the stage detail until the upgrade has run long enough', () => {

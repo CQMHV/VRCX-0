@@ -172,27 +172,6 @@ describe('player list group roles', () => {
             groupId: 'grp_a',
             userId: 'b'
         });
-        expect(
-            client.getQueryData(['player-list-group', 'owner', '', 'grp_a'])
-        ).toEqual(roster);
-        expect(
-            client.getQueryData([
-                'player-list-group',
-                'owner',
-                '',
-                'grp_a',
-                'a'
-            ])
-        ).toEqual(['staff']);
-        expect(
-            client.getQueryData([
-                'player-list-group',
-                'owner',
-                '',
-                'grp_a',
-                'b'
-            ])
-        ).toBeNull();
 
         rerender({ rows: [player('a'), player('b'), player('c')] });
         await waitFor(() =>

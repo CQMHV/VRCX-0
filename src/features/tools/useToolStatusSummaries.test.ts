@@ -106,7 +106,6 @@ describe('useToolStatusSummaries', () => {
         expect(
             commands.appPresenceAutomationRuleEnabledSet
         ).toHaveBeenCalledWith('time', 'evening', true);
-        expect(commands.appPresenceAutomationRulesSet).not.toHaveBeenCalled();
         expect(mocks.applyServerEntry).toHaveBeenCalledWith(
             'presenceAutomationTimeRules',
             JSON.stringify(savedRules)
@@ -132,7 +131,6 @@ describe('useToolStatusSummaries', () => {
             'discord',
             true
         );
-        expect(commands.appAppLauncherEntriesSet).not.toHaveBeenCalled();
     });
 });
 

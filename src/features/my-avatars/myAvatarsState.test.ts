@@ -70,7 +70,7 @@ describe('myAvatarsState', () => {
         );
     });
 
-    it('falls back to an empty persisted state when storage is unavailable or invalid', () => {
+    it('falls back to an empty persisted state when nothing is saved or the saved JSON is invalid', () => {
         expect(readPersistedMyAvatarsState()).toEqual({});
 
         installLocalStorage({

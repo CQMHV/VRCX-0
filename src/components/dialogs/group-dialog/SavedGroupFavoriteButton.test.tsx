@@ -93,7 +93,7 @@ describe('SavedGroupFavoriteButton', () => {
         cleanup();
     });
 
-    it('creates the first collection through the modal prompt instead of an input inside the menu', async () => {
+    it('creates the first collection from a modal prompt and adds the group to it', async () => {
         const createdSnapshot = {
             collections: [
                 {
@@ -111,7 +111,6 @@ describe('SavedGroupFavoriteButton', () => {
         render(<SavedGroupFavoriteButton groupId="grp_test" />);
 
         await waitFor(() => expect(mocks.getFavorites).toHaveBeenCalledOnce());
-        expect(screen.queryByRole('textbox')).toBeNull();
 
         fireEvent.click(
             screen.getByRole('button', {

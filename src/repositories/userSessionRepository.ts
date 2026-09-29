@@ -8,7 +8,6 @@ type UserTableContext = UserTableContextOutput;
 interface UserSessionRepository {
     normalizeUserTablePrefix(userId: string): string;
     ensureUserTables(userId: string): Promise<UserTableContext>;
-    initUserTablesUncached(userId: string): Promise<UserTableContext>;
 }
 
 const userTableInitPromises = new Map<string, Promise<UserTableContext>>();
@@ -61,23 +60,10 @@ async function ensureUserTables(userId: string): Promise<UserTableContext> {
     return promise;
 }
 
-async function initUserTablesUncached(
-    userId: string
-): Promise<UserTableContext> {
-    const userPrefix = normalizeUserTablePrefix(userId);
-    const context = await commands.appUserTablesEnsure(normalizeUserId(userId));
-
-    return {
-        userId: context.userId || normalizeUserId(userId),
-        userPrefix: context.userPrefix || userPrefix
-    };
-}
-
 const userSessionRepository: UserSessionRepository = {
     normalizeUserTablePrefix,
-    ensureUserTables,
-    initUserTablesUncached
+    ensureUserTables
 };
 
-export { ensureUserTables, initUserTablesUncached, normalizeUserTablePrefix };
+export { ensureUserTables, normalizeUserTablePrefix };
 export default userSessionRepository;
