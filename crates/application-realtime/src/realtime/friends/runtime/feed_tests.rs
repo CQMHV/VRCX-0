@@ -112,10 +112,7 @@ mod tests {
             first.persistence.feed_entries[0].to_json()["type"],
             "Status"
         );
-        assert_eq!(
-            first.projection.feed_entries[0].to_json()["type"],
-            "Status"
-        );
+        assert_eq!(first.projection.feed_entries[0].to_json()["type"], "Status");
 
         let RealtimeFriendApplyResult::Output(second) =
             runtime.apply_ws_message(&RealtimeWsMessagePayload {

@@ -1,9 +1,7 @@
 use std::collections::BTreeSet;
 use vrcx_0_application_activity::activity_page::ActivityPageStore;
 use vrcx_0_application_core::Result;
-use vrcx_0_contracts::activity_page::{
-    ActivityLocationSpan, ActivityPageView, CachedActivityPage,
-};
+use vrcx_0_contracts::activity_page::{ActivityLocationSpan, ActivityPageView, CachedActivityPage};
 use vrcx_0_contracts::social_aggregates::{
     CopresenceSummaryInput, CopresenceSummaryOutput, FadingFriendsInput, FadingFriendsOutput,
 };

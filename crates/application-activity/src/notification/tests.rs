@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use super::{
-    generic_webhook_payload, parse_webhook_fields,
-    CachedNotificationUserImageResolver, RealtimeUserImageResolverSlot, RenderedNotification,
+    generic_webhook_payload, parse_webhook_fields, CachedNotificationUserImageResolver,
+    RealtimeUserImageResolverSlot, RenderedNotification,
 };
 use crate::{
     OverlayActivityActorRelation, OverlayActivityCategory, OverlayActivityContent,

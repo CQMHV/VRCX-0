@@ -42,7 +42,12 @@ pub fn activity_page_view_build(
 
         match build_fresh(store, &input, range_days, &cursor, &window) {
             Ok(view) => {
-                store.write_cached_page(&input.owner_user_id, range_days, PAYLOAD_VERSION, &view)?;
+                store.write_cached_page(
+                    &input.owner_user_id,
+                    range_days,
+                    PAYLOAD_VERSION,
+                    &view,
+                )?;
                 Ok(view)
             }
             Err(error) => match cached {

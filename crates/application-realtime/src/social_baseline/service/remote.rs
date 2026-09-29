@@ -387,7 +387,10 @@ mod tests {
         .await
         .unwrap();
 
-        assert_eq!(max_in_flight.load(Ordering::SeqCst), PAGED_ARRAY_CONCURRENCY);
+        assert_eq!(
+            max_in_flight.load(Ordering::SeqCst),
+            PAGED_ARRAY_CONCURRENCY
+        );
         assert_eq!(rows.len(), 262);
         assert_eq!(
             rows.first().and_then(|row| row.get("offset")),

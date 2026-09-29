@@ -2,9 +2,7 @@ use super::*;
 use std::cell::{Cell, RefCell};
 use std::collections::BTreeSet;
 use vrcx_0_application_core::{Error, Result};
-use vrcx_0_contracts::activity_page::{
-    ActivityLocationSpan, CachedActivityPage,
-};
+use vrcx_0_contracts::activity_page::{ActivityLocationSpan, CachedActivityPage};
 use vrcx_0_contracts::social_aggregates::{
     CopresenceSummaryInput, CopresenceSummaryOutput, FadingFriendsInput, FadingFriendsOutput,
 };
