@@ -41,20 +41,15 @@ vi.mock('@/services/toastService', () => ({
 
 vi.mock('@/platform/tauri/bindings', () => ({
     commands: {
-        appAuthFailureNotificationShow: mocks.appAuthFailureNotificationShow
+        appAuthFailureNotificationShow: mocks.appAuthFailureNotificationShow,
+        appVrchatAuthAutoLoginStart: mocks.autoLoginStart,
+        appVrchatAuthSessionCancel: mocks.cancelLoginSession,
+        appVrchatAuthSessionStart: mocks.startLoginSession
     }
 }));
 
 vi.mock('@/platform/tauri/webview', () => ({
     flashWindow: mocks.flashWindow
-}));
-
-vi.mock('@/repositories/vrchatAuthRepository', () => ({
-    default: {
-        autoLoginStart: mocks.autoLoginStart,
-        cancelLoginSession: mocks.cancelLoginSession,
-        startLoginSession: mocks.startLoginSession
-    }
 }));
 
 vi.mock('./authExecutionService', () => ({

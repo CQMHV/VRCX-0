@@ -17,7 +17,7 @@ vi.mock('react-i18next', async (importOriginal) => ({
     ...(await importOriginal<typeof import('react-i18next')>()),
     useTranslation: () => ({ t: mocks.t })
 }));
-vi.mock('@/repositories/mediaRepository', () => ({
+vi.mock('@/repositories/vrchatMediaRepository', () => ({
     default: { getFileList: mocks.getFileList }
 }));
 

@@ -15,7 +15,6 @@ import {
     commands,
     type PresenceAutomationRuleKind
 } from '@/platform/tauri/bindings';
-import appLauncherRepository from '@/repositories/appLauncherRepository';
 import configRepository from '@/repositories/configRepository';
 import {
     getCurrentAppLauncherSnapshot,
@@ -212,7 +211,7 @@ async function loadToolStatusSummaries(
             toggle: {
                 enabled: appLauncher.enabled,
                 setEnabled: async (nextEnabled) => {
-                    await appLauncherRepository.setEnabled(nextEnabled);
+                    await commands.appAppLauncherEnabledSet(nextEnabled);
                     publishToolsStatusUpdated();
                 }
             },

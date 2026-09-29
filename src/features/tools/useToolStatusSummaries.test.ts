@@ -12,9 +12,6 @@ import {
 const mocks = vi.hoisted(() => ({
     applyServerEntry: vi.fn(),
     getString: vi.fn(),
-    snapshot: vi.fn(),
-    setEntries: vi.fn(),
-    setEnabled: vi.fn(),
     getProfileBackupSettings: vi.fn()
 }));
 
@@ -26,14 +23,6 @@ vi.mock('@/repositories/configRepository', () => ({
     default: {
         applyServerEntry: mocks.applyServerEntry,
         getString: mocks.getString
-    }
-}));
-
-vi.mock('@/repositories/appLauncherRepository', () => ({
-    default: {
-        snapshot: mocks.snapshot,
-        setEntries: mocks.setEntries,
-        setEnabled: mocks.setEnabled
     }
 }));
 
@@ -81,7 +70,7 @@ beforeEach(() => {
     vi.mocked(commands.appLlmEndpointList).mockResolvedValue([]);
     mocks.getString.mockResolvedValue('Off');
     mocks.getProfileBackupSettings.mockResolvedValue(null);
-    mocks.snapshot.mockResolvedValue(
+    vi.mocked(commands.appAppLauncherSnapshotGet).mockResolvedValue(
         launcherSnapshot([
             launcherEntry('obs', false),
             launcherEntry('discord', false)
@@ -143,7 +132,7 @@ describe('useToolStatusSummaries', () => {
             'discord',
             true
         );
-        expect(mocks.setEntries).not.toHaveBeenCalled();
+        expect(commands.appAppLauncherEntriesSet).not.toHaveBeenCalled();
     });
 });
 

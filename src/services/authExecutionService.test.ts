@@ -49,11 +49,11 @@ vi.mock('@/repositories/authRepository', () => ({
     }
 }));
 
-vi.mock('@/repositories/vrchatAuthRepository', () => ({
-    default: {
-        startLoginSession: mocks.startLoginSession,
-        respondLoginSession: mocks.respondLoginSession,
-        cancelLoginSession: mocks.cancelLoginSession
+vi.mock('@/platform/tauri/bindings', () => ({
+    commands: {
+        appVrchatAuthSessionStart: mocks.startLoginSession,
+        appVrchatAuthSessionRespond: mocks.respondLoginSession,
+        appVrchatAuthSessionCancel: mocks.cancelLoginSession
     }
 }));
 
@@ -698,7 +698,9 @@ describe('authExecutionService characterization', () => {
 
             expect(mocks.startLoginSession).toHaveBeenCalledTimes(2);
             expect(mocks.cancelLoginSession).toHaveBeenCalledTimes(1);
-            expect(mocks.cancelLoginSession).toHaveBeenCalledWith('attempt-1');
+            expect(mocks.cancelLoginSession).toHaveBeenCalledWith({
+                attemptId: 'attempt-1'
+            });
             expect(mocks.otpPrompt).toHaveBeenCalledTimes(2);
             expect(
                 mocks.otpPrompt.mock.calls.map(([prompt]) => prompt.mode)
@@ -789,7 +791,9 @@ describe('authExecutionService characterization', () => {
             });
 
             expect(mocks.cancelLoginSession).toHaveBeenCalledTimes(1);
-            expect(mocks.cancelLoginSession).toHaveBeenCalledWith('attempt-1');
+            expect(mocks.cancelLoginSession).toHaveBeenCalledWith({
+                attemptId: 'attempt-1'
+            });
             expect(mocks.respondLoginSession).not.toHaveBeenCalled();
         });
     });

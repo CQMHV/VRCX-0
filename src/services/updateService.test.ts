@@ -6,16 +6,11 @@ const mocks = vi.hoisted(() => ({
     appAppUpdateInstallConfirm: vi.fn()
 }));
 
-vi.mock('@/repositories/externalApiRepository', () => ({
-    default: {
-        fetchGithubReleases: mocks.fetchGithubReleases
-    }
-}));
-
 vi.mock('@/platform/tauri/bindings', () => ({
     commands: {
         appAppUpdateDownloadStatusGet: mocks.appAppUpdateDownloadStatusGet,
-        appAppUpdateInstallConfirm: mocks.appAppUpdateInstallConfirm
+        appAppUpdateInstallConfirm: mocks.appAppUpdateInstallConfirm,
+        appExternalApiGithubReleasesGet: mocks.fetchGithubReleases
     }
 }));
 

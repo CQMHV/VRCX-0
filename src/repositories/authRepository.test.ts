@@ -10,10 +10,7 @@ vi.mock('@/platform/tauri/bindings', () => ({
     commands: commandMocks
 }));
 
-import authRepository, {
-    deleteSavedCredential,
-    endSession
-} from './authRepository';
+import authRepository from './authRepository';
 
 function savedSnapshot(patch: Record<string, unknown> = {}) {
     return {
@@ -68,7 +65,9 @@ describe('authRepository', () => {
     });
 
     it('deletes a saved credential and returns the next snapshot', async () => {
-        await expect(deleteSavedCredential('usr_2')).resolves.toMatchObject({
+        await expect(
+            authRepository.deleteSavedCredential('usr_2')
+        ).resolves.toMatchObject({
             lastUserLoggedIn: null,
             savedCredentialsList: []
         });
@@ -81,7 +80,7 @@ describe('authRepository', () => {
     });
 
     it('ends auth sessions through the single typed command', async () => {
-        await endSession({ kind: 'logout' });
+        await authRepository.endSession({ kind: 'logout' });
 
         expect(commandMocks.appVrchatAuthSessionEnd).toHaveBeenCalledWith({
             kind: 'logout'

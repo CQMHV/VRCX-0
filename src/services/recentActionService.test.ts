@@ -24,7 +24,7 @@ async function loadRecentActionService(
 ) {
     vi.resetModules();
     const localStorage = createLocalStorage(initialStorage);
-    vi.stubGlobal('window', { localStorage });
+    vi.stubGlobal('localStorage', localStorage);
     const service = await import('./recentActionService');
     return { service, localStorage };
 }
@@ -37,7 +37,7 @@ describe('recentActionService', () => {
 
     afterEach(() => {
         vi.useRealTimers();
-        Reflect.deleteProperty(globalThis, 'window');
+        vi.unstubAllGlobals();
     });
 
     it('records only tracked actions and respects the configured cooldown', async () => {

@@ -1,11 +1,10 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
     PLAYER_LIST_COLUMN_IDS,
     DEFAULT_PLAYER_LIST_SORTING,
     PLAYER_LIST_STORAGE_KEY,
     readPersistedPlayerListState,
-    safeJsonParse,
     sanitizePlayerListColumnOrder,
     sanitizePlayerListColumnVisibility,
     sanitizePlayerListSorting,
@@ -16,15 +15,10 @@ function installLocalStorage(initial: Record<string, unknown> = {}) {
     const store = new Map(
         Object.entries(initial).map(([key, value]) => [key, String(value)])
     );
-    Object.defineProperty(globalThis, 'window', {
-        configurable: true,
-        value: {
-            localStorage: {
-                getItem: (key: string) => store.get(key) ?? null,
-                setItem: (key: string, value: string) => {
-                    store.set(key, String(value));
-                }
-            }
+    vi.stubGlobal('localStorage', {
+        getItem: (key: string) => store.get(key) ?? null,
+        setItem: (key: string, value: string) => {
+            store.set(key, String(value));
         }
     });
     return store;
@@ -32,29 +26,11 @@ function installLocalStorage(initial: Record<string, unknown> = {}) {
 
 describe('playerListState', () => {
     afterEach(() => {
-        Reflect.deleteProperty(globalThis, 'window');
+        vi.unstubAllGlobals();
     });
 
     it('uses the default player-list table shape when saved state is missing or invalid', () => {
-        expect(safeJsonParse('{bad json')).toBeNull();
         expect(readPersistedPlayerListState()).toEqual({});
-        Object.defineProperty(globalThis, 'window', {
-            configurable: true,
-            value: {
-                localStorage: {
-                    getItem() {
-                        throw new Error('storage blocked');
-                    },
-                    setItem() {
-                        throw new Error('storage blocked');
-                    }
-                }
-            }
-        });
-        expect(readPersistedPlayerListState()).toEqual({});
-        expect(() =>
-            writePersistedPlayerListState({ columnOrder: ['avatar'] })
-        ).not.toThrow();
         expect(sanitizePlayerListSorting(null)).toEqual(
             DEFAULT_PLAYER_LIST_SORTING
         );

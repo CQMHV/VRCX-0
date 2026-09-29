@@ -32,7 +32,7 @@ const toastMocks = vi.hoisted(() => ({
     success: vi.fn()
 }));
 
-vi.mock('@/repositories/mediaRepository', () => ({
+vi.mock('@/repositories/vrchatMediaRepository', () => ({
     default: mediaMocks
 }));
 vi.mock('@/services/backgroundMaintenanceSessionService', () => ({

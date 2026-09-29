@@ -32,8 +32,8 @@ vi.mock('@/services/toastService', () => ({
     }
 }));
 
-vi.mock('@/repositories/mediaRepository', () => ({
-    default: { deleteScreenshotFile: mocks.deleteScreenshotFile }
+vi.mock('@/platform/tauri/bindings', () => ({
+    commands: { appDeleteScreenshotFile: mocks.deleteScreenshotFile }
 }));
 
 vi.mock('@/state/modalStore', () => ({

@@ -15,9 +15,9 @@ import {
 } from '@/domain/entities/inventory';
 import { userFacingErrorMessage } from '@/lib/errorDisplay';
 import { cn } from '@/lib/utils';
-import mediaRepository, {
+import vrchatMediaRepository, {
     type InventoryItemRecord
-} from '@/repositories/mediaRepository';
+} from '@/repositories/vrchatMediaRepository';
 import { getRecentBoopEmojis } from '@/services/boopRecentService';
 import { convertFileUrlToImageUrl } from '@/services/entityMediaService';
 import {
@@ -109,7 +109,7 @@ function normalizeInventoryEmoji(
 }
 
 async function fetchCustomEmojis(): Promise<BoopEmojiChoice[]> {
-    const { json } = await mediaRepository.getFileList({
+    const { json } = await vrchatMediaRepository.getFileList({
         n: 100,
         tag: 'emoji'
     });
@@ -122,7 +122,7 @@ async function fetchCustomEmojis(): Promise<BoopEmojiChoice[]> {
 }
 
 async function fetchInventoryEmojis(): Promise<BoopEmojiChoice[]> {
-    const { items } = await mediaRepository.collectInventoryItems({
+    const { items } = await vrchatMediaRepository.collectInventoryItems({
         types: ['emoji'],
         notFlags: ['ugc'],
         archived: false

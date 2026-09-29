@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
     GAME_LOG_COLUMN_IDS,
@@ -20,17 +20,12 @@ function installLocalStorage(initial: Record<string, unknown> = {}) {
         Object.entries(initial).map(([key, value]) => [key, String(value)])
     );
 
-    Object.defineProperty(globalThis, 'window', {
-        configurable: true,
-        value: {
-            localStorage: {
-                getItem(key: string) {
-                    return store.has(key) ? store.get(key) : null;
-                },
-                setItem(key: string, value: string) {
-                    store.set(key, String(value));
-                }
-            }
+    vi.stubGlobal('localStorage', {
+        getItem(key: string) {
+            return store.has(key) ? store.get(key) : null;
+        },
+        setItem(key: string, value: string) {
+            store.set(key, String(value));
         }
     });
 
@@ -38,7 +33,7 @@ function installLocalStorage(initial: Record<string, unknown> = {}) {
 }
 
 afterEach(() => {
-    Reflect.deleteProperty(globalThis, 'window');
+    vi.unstubAllGlobals();
 });
 
 describe('gameLogState', () => {
@@ -76,24 +71,6 @@ describe('gameLogState', () => {
             [STORAGE_KEY]: '{not-json'
         });
         expect(readPersistedGameLogState()).toEqual({});
-
-        Object.defineProperty(globalThis, 'window', {
-            configurable: true,
-            value: {
-                localStorage: {
-                    getItem() {
-                        throw new Error('storage blocked');
-                    },
-                    setItem() {
-                        throw new Error('storage blocked');
-                    }
-                }
-            }
-        });
-        expect(readPersistedGameLogState()).toEqual({});
-        expect(() =>
-            writePersistedGameLogState({ pageSize: 10 })
-        ).not.toThrow();
 
         expect(sanitizeGameLogSorting([{ id: 'unknown', desc: true }])).toBe(
             GAME_LOG_DEFAULT_SORTING

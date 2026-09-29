@@ -3,8 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
     buildFriendsLocationsSegmentOptions,
     FRIENDS_LOCATIONS_SEGMENTS,
-    parseConfigArray,
-    safeJsonParse
+    parseConfigArray
 } from './friendsLocationsConfig';
 import {
     DEFAULT_FRIENDS_LOCATIONS_DENSITY,
@@ -40,12 +39,7 @@ describe('friends locations config helpers', () => {
     });
 
     it('parses JSON config arrays and drops empty entries', () => {
-        expect(safeJsonParse('{"enabled":true}', {})).toEqual({
-            enabled: true
-        });
-        expect(safeJsonParse('bad json', { fallback: true })).toEqual({
-            fallback: true
-        });
+        expect(parseConfigArray('bad json')).toEqual([]);
         expect(parseConfigArray('["group_a","",null,"group_b"]')).toEqual([
             'group_a',
             'group_b'

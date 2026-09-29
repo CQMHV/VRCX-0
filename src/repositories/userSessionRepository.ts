@@ -8,8 +8,6 @@ type UserTableContext = UserTableContextOutput;
 interface UserSessionRepository {
     normalizeUserTablePrefix(userId: string): string;
     ensureUserTables(userId: string): Promise<UserTableContext>;
-    getUserTableContext(userId: string): Promise<UserTableContext>;
-    initUserTables(userId: string): Promise<UserTableContext>;
     initUserTablesUncached(userId: string): Promise<UserTableContext>;
 }
 
@@ -63,14 +61,6 @@ async function ensureUserTables(userId: string): Promise<UserTableContext> {
     return promise;
 }
 
-async function initUserTables(userId: string): Promise<UserTableContext> {
-    return ensureUserTables(userId);
-}
-
-async function getUserTableContext(userId: string): Promise<UserTableContext> {
-    return ensureUserTables(userId);
-}
-
 async function initUserTablesUncached(
     userId: string
 ): Promise<UserTableContext> {
@@ -86,8 +76,6 @@ async function initUserTablesUncached(
 const userSessionRepository: UserSessionRepository = {
     normalizeUserTablePrefix,
     ensureUserTables,
-    getUserTableContext,
-    initUserTables,
     initUserTablesUncached
 };
 
