@@ -4560,7 +4560,8 @@
                 "edit_profile": "Edit Group Details",
                 "edit_profile_media": "Edit Banner and Icon",
                 "use_banner": "Use as banner",
-                "use_group_icon": "Use as group icon"
+                "use_group_icon": "Use as group icon",
+                "delete": "Delete Group"
             },
             "overview": {
                 "header": "Overview",
@@ -4704,7 +4705,9 @@
                 "failed_to_send_group_invite": "Failed to send group invite",
                 "failed_to_delete_group_post": "Failed to delete group post",
                 "group_profile_updated": "Group updated",
-                "failed_to_update_group_profile": "Failed to update group"
+                "failed_to_update_group_profile": "Failed to update group",
+                "group_deleted": "Group deleted",
+                "failed_to_delete_group": "Failed to delete group"
             },
             "modal": {
                 "leave_group": "Leave group?",
@@ -4713,7 +4716,9 @@
                 "delete_group_post": "Delete group post?",
                 "block_group": "Block group?",
                 "unblock_group": "Unblock group?",
-                "invite_to_group": "Invite to Group"
+                "invite_to_group": "Invite to Group",
+                "delete_group": "Delete group?",
+                "delete": "Delete"
             },
             "dynamic": {
                 "leave_value": "Leave {value}?",
@@ -4721,7 +4726,8 @@
                 "value_completed": "{value} completed",
                 "search_value": "Search {value}",
                 "no_value": "No {value}",
-                "value_copied": "{value} copied"
+                "value_copied": "{value} copied",
+                "delete_value": "Delete {value}? Everyone loses access to the group."
             },
             "edit": {
                 "short_code": "Short Code",

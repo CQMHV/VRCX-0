@@ -12,6 +12,7 @@ import { userFacingErrorMessage } from '@/lib/errorDisplay';
 import { commands } from '@/platform/tauri/bindings';
 import groupProfileRepository from '@/repositories/groupProfileRepository';
 import { toast } from '@/services/toastService';
+import { useMyGroupsRevisionStore } from '@/state/myGroupsRevisionStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
 
 import { moveGroupInOrder, normalizeGroupOrder } from './myGroupsOrder';
@@ -120,9 +121,11 @@ export function useMyGroupsPageState() {
         [currentUserId, t]
     );
 
+    const groupsRevision = useMyGroupsRevisionStore((state) => state.revision);
+
     useEffect(() => {
-        void load();
-    }, [load]);
+        void load(groupsRevision > 0);
+    }, [load, groupsRevision]);
 
     useEffect(() => {
         setEditMode(false);

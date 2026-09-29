@@ -101,13 +101,16 @@ export function GroupDialogTabbedView({
         memberVisibility,
         memberStatus,
         joinState,
-        canJoin
+        canJoin,
+        canLeave,
+        canDelete
     } = groupView;
     const {
         onPreviousInstancesChange,
         onRefresh,
         onJoin,
         onLeave,
+        onDelete,
         onCancelRequest,
         onRepresent,
         onSubscribe,
@@ -638,9 +641,11 @@ export function GroupDialogTabbedView({
 
     const headerModel = {
         actionStatus,
+        canDelete,
         canInviteToGroup,
         canEditProfile,
         canJoin,
+        canLeave,
         canManagePosts,
         canModerateGroup,
         canSetVisibility,
@@ -674,6 +679,7 @@ export function GroupDialogTabbedView({
         onCreateGroupPost: createGroupPost,
         onEditProfile: () => setProfileEditorOpen(true),
         onEditProfileMedia: () => setProfileMediaOpen(true),
+        onDelete,
         onJoin,
         onLeave,
         onOpenGroupPage: () => openExternalLink(groupUrl),

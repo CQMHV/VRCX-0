@@ -58,6 +58,9 @@ export function GroupDialogContent({
                 onLeave: () => {
                     actions.leaveGroup();
                 },
+                onDelete: () => {
+                    actions.deleteGroup();
+                },
                 onCancelRequest: () => {
                     actions.cancelJoinRequest();
                 },

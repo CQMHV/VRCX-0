@@ -4,8 +4,8 @@ use serde_json::Value;
 use vrcx_0_core::vrchat_endpoints::VRCHAT_API_DEFAULT_ENDPOINT;
 
 use crate::http_api::{
-    api_input, encode_path_segment, get_input, normalize_text, object_body, require_text,
-    HttpApiError, HttpApiRequestInput,
+    api_input, encode_path_segment, get_input, normalize_text, object_body, query_input,
+    require_text, HttpApiError, HttpApiRequestInput,
 };
 
 mod params;
@@ -301,6 +301,19 @@ pub fn profile_update_input(
             "PUT",
             group_path(&group_id, ""),
             Some(serde_json::json!(params)),
+        ),
+    ))
+}
+
+pub fn delete_input(group_id: String) -> Result<(String, HttpApiRequestInput), HttpApiError> {
+    let group_id = require_text(group_id, "VrchatGroupDelete requires groupId.")?;
+    Ok((
+        group_id.clone(),
+        query_input(
+            VRCHAT_API_DEFAULT_ENDPOINT.into(),
+            "DELETE",
+            group_path(&group_id, ""),
+            HashMap::from([("hardDelete".to_string(), Value::Bool(false))]),
         ),
     ))
 }
@@ -832,6 +845,22 @@ mod tests {
         for params in invalid {
             assert!(profile_update_input("grp_1".into(), params).is_err());
         }
+    }
+
+    #[test]
+    fn group_delete_soft_deletes_the_group() {
+        let (group_id, request) = delete_input("grp_1".into()).unwrap();
+
+        assert_eq!(group_id, "grp_1");
+        assert_eq!(request.method.as_deref(), Some("DELETE"));
+        assert_eq!(request.path.as_deref(), Some("groups/grp%5F1"));
+        assert_eq!(
+            request
+                .query_params
+                .as_ref()
+                .and_then(|params| params.get("hardDelete")),
+            Some(&Value::Bool(false))
+        );
     }
 
     #[test]

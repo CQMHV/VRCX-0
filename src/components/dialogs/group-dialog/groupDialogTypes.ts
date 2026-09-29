@@ -26,7 +26,8 @@ export type GroupActionStatus =
     | 'represent'
     | 'member-props'
     | 'block'
-    | 'profile';
+    | 'profile'
+    | 'delete';
 
 export type GroupRemoteTab = 'posts' | 'photos';
 type GroupRemoteStatusValue = RemoteTabStatus;
@@ -72,6 +73,8 @@ export type GroupDialogView = {
     memberStatus: string;
     joinState: string;
     canJoin: boolean;
+    canLeave: boolean;
+    canDelete: boolean;
 };
 
 export type GroupDialogControls = {
@@ -81,6 +84,7 @@ export type GroupDialogControls = {
     onRefresh: () => void;
     onJoin: () => void;
     onLeave: () => void;
+    onDelete: () => void;
     onCancelRequest: () => void;
     onRepresent: (enabled: boolean) => void;
     onSubscribe: (enabled: boolean) => void;

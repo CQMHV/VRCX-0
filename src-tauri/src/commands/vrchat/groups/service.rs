@@ -212,6 +212,20 @@ pub async fn app__vrchat_group_update(
 
 #[tauri::command]
 #[specta::specta]
+pub async fn app__vrchat_group_delete(
+    state: State<'_, AppState>,
+    input: VrchatGroupIdInput,
+) -> Result<VrchatApiResponse, AppError> {
+    state
+        .runtime_host()
+        .groups()
+        .delete(input)
+        .await
+        .map_err(AppError::from)
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn app__vrchat_group_post_create(
     state: State<'_, AppState>,
     input: VrchatGroupPostCreateInput,

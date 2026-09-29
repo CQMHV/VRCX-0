@@ -4517,7 +4517,8 @@
                 "edit_profile": "Editar detalhes do grupo",
                 "edit_profile_media": "Editar banner e ícone",
                 "use_banner": "Usar como banner",
-                "use_group_icon": "Usar como ícone do grupo"
+                "use_group_icon": "Usar como ícone do grupo",
+                "delete": "Excluir grupo"
             },
             "overview": {
                 "header": "Visão Geral",
@@ -4661,7 +4662,9 @@
                 "failed_to_send_group_invite": "Falha ao enviar o convite de grupo",
                 "failed_to_delete_group_post": "Falha ao excluir a publicação do grupo",
                 "group_profile_updated": "Grupo atualizado",
-                "failed_to_update_group_profile": "Falha ao atualizar o grupo"
+                "failed_to_update_group_profile": "Falha ao atualizar o grupo",
+                "group_deleted": "Grupo excluído",
+                "failed_to_delete_group": "Falha ao excluir o grupo"
             },
             "modal": {
                 "leave_group": "Sair do grupo?",
@@ -4670,7 +4673,9 @@
                 "delete_group_post": "Excluir publicação do grupo?",
                 "block_group": "Bloquear grupo?",
                 "unblock_group": "Desbloquear grupo?",
-                "invite_to_group": "Convidar para o grupo"
+                "invite_to_group": "Convidar para o grupo",
+                "delete_group": "Excluir grupo?",
+                "delete": "Excluir"
             },
             "dynamic": {
                 "leave_value": "Sair de {value}?",
@@ -4678,7 +4683,8 @@
                 "value_completed": "{value} concluído",
                 "search_value": "Pesquisar {value}",
                 "no_value": "Nenhum {value}",
-                "value_copied": "{value} copiado"
+                "value_copied": "{value} copiado",
+                "delete_value": "Excluir {value}? Ninguém mais terá acesso ao grupo."
             },
             "edit": {
                 "short_code": "Código curto",

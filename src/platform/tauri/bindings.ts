@@ -1629,6 +1629,11 @@ const generatedCommands = {
     ): Promise<HttpApiExecuteResponse> {
         return await TAURI_INVOKE('app__vrchat_group_update', { input });
     },
+    async appVrchatGroupDelete(
+        input: VrchatGroupIdInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_group_delete', { input });
+    },
     async appVrchatGroupPostCreate(
         input: VrchatGroupPostCreateInput
     ): Promise<HttpApiExecuteResponse> {

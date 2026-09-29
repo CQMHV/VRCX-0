@@ -4544,7 +4544,8 @@
                 "edit_profile": "グループ情報を編集",
                 "edit_profile_media": "バナーとアイコンを編集",
                 "use_banner": "バナーに使用",
-                "use_group_icon": "グループアイコンに使用"
+                "use_group_icon": "グループアイコンに使用",
+                "delete": "グループを削除"
             },
             "overview": {
                 "header": "概要",
@@ -4688,7 +4689,9 @@
                 "failed_to_send_group_invite": "グループ招待を送信できませんでした",
                 "failed_to_delete_group_post": "グループ投稿を削除できませんでした",
                 "group_profile_updated": "グループを更新しました",
-                "failed_to_update_group_profile": "グループを更新できませんでした"
+                "failed_to_update_group_profile": "グループを更新できませんでした",
+                "group_deleted": "グループを削除しました",
+                "failed_to_delete_group": "グループを削除できませんでした"
             },
             "modal": {
                 "leave_group": "グループを退出しますか？",
@@ -4697,7 +4700,9 @@
                 "delete_group_post": "グループ投稿を削除しますか？",
                 "block_group": "グループをブロックしますか？",
                 "unblock_group": "グループのブロックを解除しますか？",
-                "invite_to_group": "グループに招待"
+                "invite_to_group": "グループに招待",
+                "delete_group": "グループを削除しますか？",
+                "delete": "削除"
             },
             "dynamic": {
                 "leave_value": "{value} を退出しますか？",
@@ -4705,7 +4710,8 @@
                 "value_completed": "{value} が完了しました",
                 "search_value": "{value} を検索",
                 "no_value": "{value}はありません",
-                "value_copied": "{value}をコピーしました"
+                "value_copied": "{value}をコピーしました",
+                "delete_value": "{value} を削除しますか？削除すると誰もこのグループを利用できなくなります。"
             },
             "edit": {
                 "short_code": "ショートコード",

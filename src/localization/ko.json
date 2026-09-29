@@ -4501,7 +4501,8 @@
                 "edit_profile": "그룹 정보 편집",
                 "edit_profile_media": "배너 및 아이콘 편집",
                 "use_banner": "배너로 사용",
-                "use_group_icon": "그룹 아이콘으로 사용"
+                "use_group_icon": "그룹 아이콘으로 사용",
+                "delete": "그룹 삭제"
             },
             "overview": {
                 "header": "개요",
@@ -4641,7 +4642,9 @@
                 "failed_to_send_group_invite": "그룹 초대를 보내지 못했습니다.",
                 "failed_to_delete_group_post": "그룹 게시물을 삭제하지 못했습니다.",
                 "group_profile_updated": "그룹을 업데이트했습니다",
-                "failed_to_update_group_profile": "그룹을 업데이트하지 못했습니다"
+                "failed_to_update_group_profile": "그룹을 업데이트하지 못했습니다",
+                "group_deleted": "그룹을 삭제했습니다",
+                "failed_to_delete_group": "그룹을 삭제하지 못했습니다"
             },
             "modal": {
                 "leave_group": "그룹을 탈퇴하시겠습니까?",
@@ -4650,7 +4653,9 @@
                 "delete_group_post": "그룹 게시물을 삭제하시겠습니까?",
                 "block_group": "그룹을 차단하시겠습니까?",
                 "unblock_group": "그룹을 차단 해제하시겠습니까?",
-                "invite_to_group": "그룹에 초대"
+                "invite_to_group": "그룹에 초대",
+                "delete_group": "그룹을 삭제할까요?",
+                "delete": "삭제"
             },
             "dynamic": {
                 "leave_value": "{value}을(를) 떠나시겠습니까?",
@@ -4658,7 +4663,8 @@
                 "value_completed": "{value} 완료됨",
                 "search_value": "{value} 검색",
                 "no_value": "{value} 없음",
-                "value_copied": "{value} 복사됨"
+                "value_copied": "{value} 복사됨",
+                "delete_value": "{value}을(를) 삭제할까요? 삭제하면 아무도 이 그룹에 접근할 수 없습니다."
             },
             "role_name": {
                 "group_owner": "그룹 소유자",

@@ -4527,7 +4527,8 @@
                 "edit_profile": "Изменить данные группы",
                 "edit_profile_media": "Изменить баннер и иконку",
                 "use_banner": "Сделать баннером",
-                "use_group_icon": "Сделать иконкой группы"
+                "use_group_icon": "Сделать иконкой группы",
+                "delete": "Удалить группу"
             },
             "overview": {
                 "header": "Общий обзор",
@@ -4671,7 +4672,9 @@
                 "failed_to_send_group_invite": "Не удалось направить приглашение группы",
                 "failed_to_delete_group_post": "Не удалось удалить публикацию группы",
                 "group_profile_updated": "Группа обновлена",
-                "failed_to_update_group_profile": "Не удалось обновить группу"
+                "failed_to_update_group_profile": "Не удалось обновить группу",
+                "group_deleted": "Группа удалена",
+                "failed_to_delete_group": "Не удалось удалить группу"
             },
             "modal": {
                 "leave_group": "Оставить группу?",
@@ -4680,7 +4683,9 @@
                 "delete_group_post": "Удалить групповую почту?",
                 "block_group": "Блок-группа?",
                 "unblock_group": "Разблокированная группа?",
-                "invite_to_group": "Приглашение к группе"
+                "invite_to_group": "Приглашение к группе",
+                "delete_group": "Удалить группу?",
+                "delete": "Удалить"
             },
             "dynamic": {
                 "leave_value": "Покинуть {value}?",
@@ -4688,7 +4693,8 @@
                 "value_completed": "{value} завершено",
                 "search_value": "Поиск {value}",
                 "no_value": "Нет {value}",
-                "value_copied": "{value} скопировано"
+                "value_copied": "{value} скопировано",
+                "delete_value": "Удалить {value}? После этого доступ к группе пропадёт у всех."
             },
             "edit": {
                 "short_code": "Короткий код",

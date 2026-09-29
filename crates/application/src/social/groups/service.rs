@@ -31,6 +31,7 @@ pub enum GroupRemoteRequest {
     GetLogs(VrchatGroupLogsInput),
     GetUserInstances(VrchatGroupUserGroupsInput),
     Update(VrchatGroupUpdateInput),
+    Delete(VrchatGroupIdInput),
     CreatePost(VrchatGroupPostCreateInput),
     EditPost(VrchatGroupPostEditInput),
     DeletePost(VrchatGroupPostDeleteInput),
@@ -391,6 +392,22 @@ pub async fn update_group(
         &deps,
         "app__vrchat_group_update",
         format!("Updating group {}.", built.primary_id),
+        built.request,
+    )
+    .await
+}
+
+pub async fn delete_group(
+    deps: GroupApiDeps,
+    input: VrchatGroupIdInput,
+) -> Result<VrchatApiResponse> {
+    let built = deps
+        .remote_requests
+        .build(GroupRemoteRequest::Delete(input))?;
+    execute_group_api(
+        &deps,
+        "app__vrchat_group_delete",
+        format!("Deleting group {}.", built.primary_id),
         built.request,
     )
     .await

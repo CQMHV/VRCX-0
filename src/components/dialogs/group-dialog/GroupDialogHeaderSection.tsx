@@ -16,6 +16,7 @@ import {
     ShieldOffIcon,
     TagIcon,
     TicketIcon,
+    Trash2Icon,
     UserIcon,
     UsersRoundIcon,
     XIcon
@@ -52,9 +53,11 @@ import { SavedGroupFavoriteButton } from './SavedGroupFavoriteButton';
 
 interface GroupHeaderModel {
     actionStatus: GroupActionStatus;
+    canDelete: boolean;
     canInviteToGroup: boolean;
     canEditProfile: boolean;
     canJoin: boolean;
+    canLeave: boolean;
     canManagePosts: boolean;
     canModerateGroup: boolean;
     canSetVisibility: boolean;
@@ -85,6 +88,7 @@ interface GroupHeaderCommands {
     onCopyGroupName: () => void;
     onCopyGroupUrl: () => void;
     onCreateGroupPost: () => void;
+    onDelete: () => void;
     onEditProfile: () => void;
     onEditProfileMedia: () => void;
     onJoin: () => void;
@@ -130,9 +134,11 @@ export function GroupDialogHeaderSection({
 
     const {
         actionStatus,
+        canDelete,
         canInviteToGroup,
         canEditProfile,
         canJoin,
+        canLeave,
         canManagePosts,
         canModerateGroup,
         canSetVisibility,
@@ -162,6 +168,7 @@ export function GroupDialogHeaderSection({
         onCopyGroupName,
         onCopyGroupUrl,
         onCreateGroupPost,
+        onDelete,
         onEditProfile,
         onEditProfileMedia,
         onJoin,
@@ -502,15 +509,28 @@ export function GroupDialogHeaderSection({
                                     </EntityActionSub>
                                 </>
                             ) : null}
-                            <EntityActionSeparator />
-                            <EntityActionItem
-                                icon={LogOutIcon}
-                                destructive
-                                disabled={actionStatus === 'leave'}
-                                onClick={onLeave}
-                            >
-                                {t('dialog.group.actions.leave')}
-                            </EntityActionItem>
+                            {canLeave || canDelete ? (
+                                <>
+                                    <EntityActionSeparator />
+                                    <EntityActionItem
+                                        icon={
+                                            canDelete ? Trash2Icon : LogOutIcon
+                                        }
+                                        destructive
+                                        disabled={
+                                            actionStatus === 'leave' ||
+                                            actionStatus === 'delete'
+                                        }
+                                        onClick={canDelete ? onDelete : onLeave}
+                                    >
+                                        {t(
+                                            canDelete
+                                                ? 'dialog.group.actions.delete'
+                                                : 'dialog.group.actions.leave'
+                                        )}
+                                    </EntityActionItem>
+                                </>
+                            ) : null}
                         </>
                     ) : (
                         <>

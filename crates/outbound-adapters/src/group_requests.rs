@@ -6,7 +6,7 @@ use vrcx_0_application::social::{
 use vrcx_0_application_core::{vrchat_api::VrchatApiRequest, Result};
 use vrcx_0_core::vrchat_endpoints::VRCHAT_API_DEFAULT_ENDPOINT;
 use vrcx_0_vrchat_client::groups::{
-    current_user_group_instances_get_input, gallery_get_input, group_block_input,
+    current_user_group_instances_get_input, delete_input, gallery_get_input, group_block_input,
     group_get_no_params_input, group_paged_get_input, invite_delete_input, invite_send_input,
     join_input, join_request_respond_input, join_requests_get_input, leave_input, logs_get_input,
     member_ban_input, member_kick_input, member_props_set_input, member_role_add_input,
@@ -122,6 +122,10 @@ impl GroupRemoteRequests for VrchatGroupRemoteRequests {
             GroupRemoteRequest::Update(input) => {
                 let (group_id, request) =
                     profile_update_input(input.group_id, profile_update(input.params))?;
+                Ok(built1(group_id, request))
+            }
+            GroupRemoteRequest::Delete(input) => {
+                let (group_id, request) = delete_input(input.group_id)?;
                 Ok(built1(group_id, request))
             }
             GroupRemoteRequest::CreatePost(input) => {

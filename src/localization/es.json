@@ -4516,7 +4516,8 @@
                 "edit_profile": "Editar detalles del grupo",
                 "edit_profile_media": "Editar banner e icono",
                 "use_banner": "Usar como banner",
-                "use_group_icon": "Usar como icono del grupo"
+                "use_group_icon": "Usar como icono del grupo",
+                "delete": "Eliminar grupo"
             },
             "overview": {
                 "header": "Resumen",
@@ -4660,7 +4661,9 @@
                 "failed_to_send_group_invite": "No se pudo enviar la invitación al grupo",
                 "failed_to_delete_group_post": "No se pudo eliminar la publicación del grupo",
                 "group_profile_updated": "Grupo actualizado",
-                "failed_to_update_group_profile": "No se pudo actualizar el grupo"
+                "failed_to_update_group_profile": "No se pudo actualizar el grupo",
+                "group_deleted": "Grupo eliminado",
+                "failed_to_delete_group": "No se pudo eliminar el grupo"
             },
             "modal": {
                 "leave_group": "¿Abandonar el grupo?",
@@ -4669,7 +4672,9 @@
                 "delete_group_post": "¿Eliminar la publicación del grupo?",
                 "block_group": "¿Bloquear el grupo?",
                 "unblock_group": "¿Desbloquear el grupo?",
-                "invite_to_group": "Invitar al grupo"
+                "invite_to_group": "Invitar al grupo",
+                "delete_group": "¿Eliminar grupo?",
+                "delete": "Eliminar"
             },
             "dynamic": {
                 "leave_value": "¿Abandonar {value}?",
@@ -4677,7 +4682,8 @@
                 "value_completed": "{value} completado",
                 "search_value": "Buscar {value}",
                 "no_value": "No hay {value}",
-                "value_copied": "{value} copiado"
+                "value_copied": "{value} copiado",
+                "delete_value": "¿Eliminar {value}? Nadie podrá volver a acceder al grupo."
             },
             "edit": {
                 "short_code": "Código corto",

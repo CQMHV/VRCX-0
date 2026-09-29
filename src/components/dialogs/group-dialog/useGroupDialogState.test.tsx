@@ -7,10 +7,17 @@ import type { GroupProfileRecord } from '@/domain/entities/group';
 import type { EntityRecord } from '@/domain/entities/shared';
 
 const mocks = vi.hoisted(() => ({
+    appVrchatGroupDelete: vi.fn(),
     appVrchatGroupUpdate: vi.fn(),
+    closeDialog: vi.fn(),
+    confirm: vi.fn(),
     toastAdd: vi.fn(),
     enrichEntityDialogHistory: vi.fn(),
     getGroupProfile: vi.fn(),
+    joinGroup: vi.fn(),
+    leaveGroup: vi.fn(),
+    setGroupMemberProps: vi.fn(),
+    setGroupRepresentation: vi.fn(),
     getPreviousInstancesByGroupId: vi.fn(),
     normalize: vi.fn(),
     recordLocationHintsFromInstances: vi.fn(),
@@ -28,7 +35,10 @@ vi.mock('@/services/toastService', () => ({
 }));
 
 vi.mock('@/platform/tauri/bindings', () => ({
-    commands: { appVrchatGroupUpdate: mocks.appVrchatGroupUpdate }
+    commands: {
+        appVrchatGroupDelete: mocks.appVrchatGroupDelete,
+        appVrchatGroupUpdate: mocks.appVrchatGroupUpdate
+    }
 }));
 
 vi.mock('@/repositories/gameLogRepository', () => ({
@@ -40,6 +50,10 @@ vi.mock('@/repositories/gameLogRepository', () => ({
 vi.mock('@/repositories/groupProfileRepository', () => ({
     default: {
         getGroupProfile: mocks.getGroupProfile,
+        joinGroup: mocks.joinGroup,
+        leaveGroup: mocks.leaveGroup,
+        setGroupMemberProps: mocks.setGroupMemberProps,
+        setGroupRepresentation: mocks.setGroupRepresentation,
         normalize: mocks.normalize
     }
 }));
@@ -59,10 +73,12 @@ vi.mock('@/services/entityMediaService', () => ({
 vi.mock('@/state/dialogStore', () => ({
     useDialogStore: <T,>(
         selector: (state: {
+            closeDialog: typeof mocks.closeDialog;
             updateEntityDialogMetadata: typeof mocks.updateEntityDialogMetadata;
         }) => T
     ): T =>
         selector({
+            closeDialog: mocks.closeDialog,
             updateEntityDialogMetadata: mocks.updateEntityDialogMetadata
         })
 }));
@@ -75,8 +91,8 @@ vi.mock('@/state/friendRosterStore', () => ({
 
 vi.mock('@/state/modalStore', () => ({
     useModalStore: <T,>(
-        selector: (state: { confirm: ReturnType<typeof vi.fn> }) => T
-    ): T => selector({ confirm: vi.fn() })
+        selector: (state: { confirm: typeof mocks.confirm }) => T
+    ): T => selector({ confirm: mocks.confirm })
 }));
 
 vi.mock('@/state/runtimeStore', () => ({
@@ -127,6 +143,8 @@ vi.mock('@/state/runtimeStore', () => ({
             }
         })
 }));
+
+import { useMyGroupsRevisionStore } from '@/state/myGroupsRevisionStore';
 
 import { useGroupDialogState } from './useGroupDialogState';
 
@@ -244,6 +262,7 @@ describe('useGroupDialogState profile updates', () => {
             name: 'Renamed group'
         });
 
+        const revision = useMyGroupsRevisionStore.getState().revision;
         let saved = false;
         await act(async () => {
             const { actions } = result.current;
@@ -263,6 +282,7 @@ describe('useGroupDialogState profile updates', () => {
             force: true
         });
         expect(result.current.group?.name).toBe('Renamed group');
+        expect(useMyGroupsRevisionStore.getState().revision).toBe(revision + 1);
         expect(result.current.actionStatus).toBe('idle');
     });
 
@@ -288,5 +308,161 @@ describe('useGroupDialogState profile updates', () => {
             expect.objectContaining({ type: 'error' })
         );
         expect(result.current.actionStatus).toBe('idle');
+    });
+});
+
+describe('useGroupDialogState group deletion', () => {
+    const ownedGroup: GroupProfileRecord = {
+        ...baseGroup,
+        ownerId: 'usr_current',
+        memberCount: 1
+    };
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        mocks.normalize.mockImplementation(
+            (value: EntityRecord): GroupProfileRecord => ({
+                ...baseGroup,
+                ...value
+            })
+        );
+        mocks.getGroupProfile.mockResolvedValue(ownedGroup);
+        mocks.getPreviousInstancesByGroupId.mockResolvedValue(new Map());
+        mocks.appVrchatGroupDelete.mockResolvedValue({
+            status: 200,
+            data: '{"success":{"message":"Group deleted","status_code":200}}'
+        });
+    });
+
+    async function deleteOwnedGroup() {
+        const { result } = renderHook(() =>
+            useGroupDialogState({ groupId: 'grp_test', seedData: ownedGroup })
+        );
+        await waitFor(() => {
+            expect(mocks.getGroupProfile).toHaveBeenCalledOnce();
+        });
+        await act(async () => {
+            const { actions } = result.current;
+            if (!actions) {
+                throw new Error('Group dialog actions are unavailable.');
+            }
+            await actions.deleteGroup();
+        });
+        return result;
+    }
+
+    it('deletes the group after the last member confirms and closes the dialog', async () => {
+        mocks.confirm.mockResolvedValue({ ok: true });
+        const revision = useMyGroupsRevisionStore.getState().revision;
+
+        await deleteOwnedGroup();
+
+        expect(mocks.confirm).toHaveBeenCalledWith(
+            expect.objectContaining({ destructive: true })
+        );
+        expect(mocks.appVrchatGroupDelete).toHaveBeenCalledWith({
+            groupId: 'grp_test'
+        });
+        expect(mocks.closeDialog).toHaveBeenCalledOnce();
+        expect(useMyGroupsRevisionStore.getState().revision).toBe(revision + 1);
+    });
+
+    it('keeps the group when the owner cancels', async () => {
+        mocks.confirm.mockResolvedValue({ ok: false });
+        const revision = useMyGroupsRevisionStore.getState().revision;
+
+        const result = await deleteOwnedGroup();
+
+        expect(mocks.appVrchatGroupDelete).not.toHaveBeenCalled();
+        expect(mocks.closeDialog).not.toHaveBeenCalled();
+        expect(result.current.actionStatus).toBe('idle');
+        expect(useMyGroupsRevisionStore.getState().revision).toBe(revision);
+    });
+});
+
+describe('useGroupDialogState My Groups sync', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        mocks.normalize.mockImplementation(
+            (value: EntityRecord): GroupProfileRecord => ({
+                ...baseGroup,
+                ...value
+            })
+        );
+        mocks.getPreviousInstancesByGroupId.mockResolvedValue(new Map());
+        mocks.confirm.mockResolvedValue({ ok: true });
+        mocks.joinGroup.mockResolvedValue({
+            json: { membershipStatus: 'member' },
+            status: 200
+        });
+        mocks.leaveGroup.mockResolvedValue({ json: {}, status: 200 });
+        mocks.setGroupRepresentation.mockResolvedValue({ json: {} });
+        mocks.setGroupMemberProps.mockResolvedValue({ json: {} });
+    });
+
+    async function runAction(
+        group: GroupProfileRecord,
+        action: (
+            actions: NonNullable<
+                ReturnType<typeof useGroupDialogState>['actions']
+            >
+        ) => Promise<unknown>
+    ) {
+        mocks.getGroupProfile.mockResolvedValue(group);
+        const { result } = renderHook(() =>
+            useGroupDialogState({ groupId: 'grp_test', seedData: group })
+        );
+        await waitFor(() => {
+            expect(mocks.getGroupProfile).toHaveBeenCalledOnce();
+        });
+        const revision = useMyGroupsRevisionStore.getState().revision;
+        await act(async () => {
+            const { actions } = result.current;
+            if (!actions) {
+                throw new Error('Group dialog actions are unavailable.');
+            }
+            await action(actions);
+        });
+        return useMyGroupsRevisionStore.getState().revision - revision;
+    }
+
+    it('updates My Groups after a member leaves', async () => {
+        expect(
+            await runAction(baseGroup, (actions) => actions.leaveGroup())
+        ).toBe(1);
+        expect(mocks.leaveGroup).toHaveBeenCalledWith({ groupId: 'grp_test' });
+    });
+
+    it('updates My Groups after joining an open group', async () => {
+        expect(
+            await runAction(
+                {
+                    ...baseGroup,
+                    joinState: 'open',
+                    membershipStatus: 'inactive'
+                },
+                (actions) => actions.joinGroup()
+            )
+        ).toBe(1);
+        expect(mocks.joinGroup).toHaveBeenCalledWith({ groupId: 'grp_test' });
+    });
+
+    it('updates My Groups after representing the group', async () => {
+        expect(
+            await runAction(baseGroup, (actions) =>
+                actions.updateGroupRepresentation(true)
+            )
+        ).toBe(1);
+    });
+
+    it('updates My Groups after changing member visibility', async () => {
+        expect(
+            await runAction(baseGroup, (actions) =>
+                actions.updateGroupMemberProps(
+                    { visibility: 'friends' },
+                    'visibility updated'
+                )
+            )
+        ).toBe(1);
     });
 });

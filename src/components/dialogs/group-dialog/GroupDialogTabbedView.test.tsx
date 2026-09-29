@@ -212,7 +212,9 @@ const groupResource: GroupDialogResource = {
 
 const groupView: GroupDialogView = {
     bannerUrl: '',
+    canDelete: false,
     canJoin: false,
+    canLeave: true,
     iconUrl: '',
     isBlocked: false,
     isMember: true,
@@ -229,6 +231,7 @@ const groupControls: GroupDialogControls = {
     onUpdateProfile: vi.fn(),
     onCancelRequest: vi.fn(),
     onJoin: vi.fn(),
+    onDelete: vi.fn(),
     onLeave: vi.fn(),
     onPreviousInstancesChange: vi.fn(),
     onRefresh: vi.fn(),

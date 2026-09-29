@@ -182,6 +182,10 @@ impl DesktopGroupRuntime {
         Ok(application::update_group(self.api_deps(), input).await?)
     }
 
+    pub async fn delete(&self, input: VrchatGroupIdInput) -> Result<VrchatApiResponse> {
+        Ok(application::delete_group(self.api_deps(), input).await?)
+    }
+
     pub async fn create_post(
         &self,
         input: VrchatGroupPostCreateInput,

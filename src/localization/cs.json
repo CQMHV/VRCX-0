@@ -4532,7 +4532,8 @@
                 "edit_profile": "Upravit údaje skupiny",
                 "edit_profile_media": "Upravit banner a ikonu",
                 "use_banner": "Použít jako banner",
-                "use_group_icon": "Použít jako ikonu skupiny"
+                "use_group_icon": "Použít jako ikonu skupiny",
+                "delete": "Smazat skupinu"
             },
             "overview": {
                 "header": "Přehled",
@@ -4676,7 +4677,9 @@
                 "failed_to_send_group_invite": "Nepodařilo se odeslat pozvánku do skupiny",
                 "failed_to_delete_group_post": "Nepodařilo se smazat příspěvek skupiny",
                 "group_profile_updated": "Skupina aktualizována",
-                "failed_to_update_group_profile": "Skupinu se nepodařilo aktualizovat"
+                "failed_to_update_group_profile": "Skupinu se nepodařilo aktualizovat",
+                "group_deleted": "Skupina smazána",
+                "failed_to_delete_group": "Skupinu se nepodařilo smazat"
             },
             "modal": {
                 "leave_group": "Opustit skupinu?",
@@ -4685,7 +4688,9 @@
                 "delete_group_post": "Smazat příspěvek skupiny?",
                 "block_group": "Zablokovat skupinu?",
                 "unblock_group": "Odblokovat skupinu?",
-                "invite_to_group": "Pozvat do skupiny"
+                "invite_to_group": "Pozvat do skupiny",
+                "delete_group": "Smazat skupinu?",
+                "delete": "Smazat"
             },
             "dynamic": {
                 "leave_value": "Opustit {value}?",
@@ -4693,7 +4698,8 @@
                 "value_completed": "{value} dokončeno",
                 "search_value": "Hledat {value}",
                 "no_value": "Žádné {value}",
-                "value_copied": "{value} zkopírováno"
+                "value_copied": "{value} zkopírováno",
+                "delete_value": "Smazat {value}? Ke skupině pak už nebude mít nikdo přístup."
             },
             "edit": {
                 "short_code": "Krátký kód",

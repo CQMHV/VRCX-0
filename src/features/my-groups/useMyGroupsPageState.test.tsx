@@ -74,6 +74,7 @@ vi.mock('@/services/toastService', () => ({
 }));
 
 import { groupIdForRow } from '@/components/dialogs/user-dialog/userDialogGroupRows';
+import { useMyGroupsRevisionStore } from '@/state/myGroupsRevisionStore';
 
 import { useMyGroupsPageState } from './useMyGroupsPageState';
 
@@ -85,6 +86,7 @@ const groups = [
 describe('useMyGroupsPageState', () => {
     beforeEach(() => {
         vi.resetAllMocks();
+        useMyGroupsRevisionStore.setState({ revision: 0 });
         runtimeState.auth.currentUserId = 'usr_self';
         runtimeState.gameState.isGameRunning = false;
         runtimeState.hostCapabilities.registryPrefs.available = true;
@@ -102,6 +104,42 @@ describe('useMyGroupsPageState', () => {
     });
 
     afterEach(cleanup);
+
+    it('reloads fresh groups after a group changes outside the page', async () => {
+        const { result } = renderHook(() => useMyGroupsPageState());
+        await waitFor(() => {
+            expect(result.current.visibleGroups).toHaveLength(2);
+        });
+        repositoryMocks.getUserGroups.mockResolvedValue([groups[1]]);
+
+        act(() => {
+            useMyGroupsRevisionStore.getState().bumpRevision();
+        });
+
+        await waitFor(() => {
+            expect(result.current.visibleGroups.map(groupIdForRow)).toEqual([
+                'grp_b'
+            ]);
+        });
+        expect(repositoryMocks.getUserGroups).toHaveBeenLastCalledWith({
+            userId: 'usr_self',
+            force: true
+        });
+    });
+
+    it('loads fresh groups when opened after a group changed elsewhere', async () => {
+        useMyGroupsRevisionStore.getState().bumpRevision();
+
+        const { result } = renderHook(() => useMyGroupsPageState());
+
+        await waitFor(() => {
+            expect(result.current.status).toBe('ready');
+        });
+        expect(repositoryMocks.getUserGroups).toHaveBeenCalledWith({
+            userId: 'usr_self',
+            force: true
+        });
+    });
 
     it('shows groups in the in-game order by default', async () => {
         const { result } = renderHook(() => useMyGroupsPageState());

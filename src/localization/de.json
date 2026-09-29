@@ -4516,7 +4516,8 @@
                 "edit_profile": "Gruppendetails bearbeiten",
                 "edit_profile_media": "Banner und Symbol bearbeiten",
                 "use_banner": "Als Banner verwenden",
-                "use_group_icon": "Als Gruppensymbol verwenden"
+                "use_group_icon": "Als Gruppensymbol verwenden",
+                "delete": "Gruppe löschen"
             },
             "overview": {
                 "header": "Übersicht",
@@ -4660,7 +4661,9 @@
                 "failed_to_send_group_invite": "Gruppeneinladung konnte nicht gesendet werden",
                 "failed_to_delete_group_post": "Gruppenbeitrag konnte nicht gelöscht werden",
                 "group_profile_updated": "Gruppe aktualisiert",
-                "failed_to_update_group_profile": "Gruppe konnte nicht aktualisiert werden"
+                "failed_to_update_group_profile": "Gruppe konnte nicht aktualisiert werden",
+                "group_deleted": "Gruppe gelöscht",
+                "failed_to_delete_group": "Gruppe konnte nicht gelöscht werden"
             },
             "modal": {
                 "leave_group": "Gruppe verlassen?",
@@ -4669,7 +4672,9 @@
                 "delete_group_post": "Gruppenbeitrag löschen?",
                 "block_group": "Gruppe blockieren?",
                 "unblock_group": "Gruppe entsperren?",
-                "invite_to_group": "In Gruppe einladen"
+                "invite_to_group": "In Gruppe einladen",
+                "delete_group": "Gruppe löschen?",
+                "delete": "Löschen"
             },
             "dynamic": {
                 "leave_value": "{value} verlassen?",
@@ -4677,7 +4682,8 @@
                 "value_completed": "{value} abgeschlossen",
                 "search_value": "{value} suchen",
                 "no_value": "Kein(e) {value}",
-                "value_copied": "{value} kopiert"
+                "value_copied": "{value} kopiert",
+                "delete_value": "{value} löschen? Danach hat niemand mehr Zugriff auf die Gruppe."
             },
             "edit": {
                 "short_code": "Kurzcode",
