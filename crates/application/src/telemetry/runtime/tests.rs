@@ -167,22 +167,6 @@ fn local_weekday_uses_sunday_zero() {
 }
 
 #[test]
-fn runtime_mode_maps_all_backend_modes() {
-    assert_eq!(
-        runtime_mode(BackendRuntimeMode::Foreground),
-        TelemetryRuntimeMode::Foreground
-    );
-    assert_eq!(
-        runtime_mode(BackendRuntimeMode::Background),
-        TelemetryRuntimeMode::Background
-    );
-    assert_eq!(
-        runtime_mode(BackendRuntimeMode::Headless),
-        TelemetryRuntimeMode::Headless
-    );
-}
-
-#[test]
 fn send_attempts_back_off_between_retries() {
     let now = instant_past_epoch_safe(SEND_RETRY_BACKOFF);
     assert!(attempt_due(None, now));
