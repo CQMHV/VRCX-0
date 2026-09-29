@@ -146,7 +146,7 @@ mod tests {
         fn fail(&self, user_id: &str, message: &str) {
             self.responses.lock().unwrap().insert(
                 format!("groups/grp_1/members/{user_id}"),
-                VecDeque::from([Err(Error::WebClient(message.to_string()))]),
+                VecDeque::from([Err(Error::Custom(message.to_string()))]),
             );
         }
 
