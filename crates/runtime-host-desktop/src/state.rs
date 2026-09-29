@@ -335,6 +335,7 @@ impl DesktopRuntimeHostState {
             transport: Arc::new(vrcx_0_outbound_adapters::HttpTelemetryTransport::production()),
             tasks: builder.desktop_assembly().tasks().clone(),
             backend_runtime: builder.backend_runtime().clone(),
+            auth_scope: builder.desktop_assembly().auth_scope().clone(),
             app_version: app_version.clone(),
         });
         let profile_config: Arc<dyn vrcx_0_application::profile::ProfileConfigStore> =
