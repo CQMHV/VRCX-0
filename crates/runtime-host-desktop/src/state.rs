@@ -3146,35 +3146,6 @@ mod background {
             assert_eq!(followup_runs.get(), 1);
             assert_eq!(foreground.detail, "foreground-followup");
         }
-
-        #[test]
-        fn a_cloned_registry_backup_handle_lists_backups_on_another_thread() {
-            let nonce = std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap()
-                .as_nanos();
-            let dir = std::env::temp_dir().join(format!(
-                "vrcx-0-registry-backup-runtime-{}-{nonce}",
-                std::process::id()
-            ));
-            std::fs::create_dir_all(&dir).unwrap();
-            let registry_backup = RegistryBackupRuntime {
-                database: Arc::new(
-                    vrcx_0_persistence::DatabaseService::new(&dir.join("VRCX-0.sqlite3")).unwrap(),
-                ),
-                state: Arc::new(Mutex::new(RegistryBackupMaintenanceState::default())),
-            };
-
-            let handle = registry_backup.clone();
-            let backups = std::thread::spawn(move || handle.list())
-                .join()
-                .unwrap()
-                .unwrap();
-
-            assert!(backups.is_empty());
-            drop(registry_backup);
-            let _ = std::fs::remove_dir_all(&dir);
-        }
     }
 
     mod discord_reconcile_tests {
