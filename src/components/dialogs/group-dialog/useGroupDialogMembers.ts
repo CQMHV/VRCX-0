@@ -45,7 +45,8 @@ export function useGroupDialogMembers({
     seedRows: GroupMemberRow[];
 }) {
     const { t } = useTranslation();
-    const searchFailedMessage = t('dialog.group.members.failed_to_search');
+    const searchFailedMessageRef = useRef('');
+    searchFailedMessageRef.current = t('dialog.group.members.failed_to_search');
     const pages = useGroupMemberPages(
         (offset, force) =>
             groupProfileRepository.getGroupMembers({
@@ -162,14 +163,17 @@ export function useGroupDialogMembers({
                 setSearchRows([]);
                 setSearchStatus('error');
                 setSearchError(
-                    userFacingErrorMessage(searchFailure, searchFailedMessage)
+                    userFacingErrorMessage(
+                        searchFailure,
+                        searchFailedMessageRef.current
+                    )
                 );
             }
         }, SEARCH_DEBOUNCE_MS);
         return () => {
             window.clearTimeout(timer);
         };
-    }, [active, groupId, isSearching, searchFailedMessage, trimmedQuery]);
+    }, [active, groupId, isSearching, trimmedQuery]);
 
     const visibleRows = isSearching
         ? searchRows

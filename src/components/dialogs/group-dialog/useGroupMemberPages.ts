@@ -101,6 +101,7 @@ export function useGroupMemberPages(
         const offset = offsetRef.current;
         loadingMoreRef.current = true;
         setLoadingMore(true);
+        setError('');
         try {
             const page = await fetchPageRef.current(offset, false);
             if (requestId !== requestIdRef.current) {
@@ -109,9 +110,14 @@ export function useGroupMemberPages(
             offsetRef.current = offset + page.length;
             setRows((current) => appendUniqueMemberRows(current, page));
             setHasMore(page.length >= VRCHAT_API_DEFAULT_PAGE_SIZE);
-        } catch {
+        } catch (loadError) {
             if (requestId === requestIdRef.current) {
-                setHasMore(false);
+                setError(
+                    userFacingErrorMessage(
+                        loadError,
+                        loadFailedMessageRef.current
+                    )
+                );
             }
         } finally {
             if (requestId === requestIdRef.current) {

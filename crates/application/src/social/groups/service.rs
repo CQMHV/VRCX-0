@@ -139,7 +139,7 @@ pub(super) fn build_member_request(
         .request)
 }
 
-async fn execute_group_api(
+pub(super) async fn execute_group_api(
     deps: &GroupApiDeps,
     command: &str,
     detail: impl Into<String>,

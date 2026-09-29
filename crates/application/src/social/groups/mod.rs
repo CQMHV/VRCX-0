@@ -12,7 +12,7 @@ pub use group_ban_import::{
     GroupBanImportActions, GroupBanImportFuture, GroupBanImportItemResult, GroupBanImportItemState,
     GroupBanImportRuntime, GroupBanImportStartInput, GroupBanImportState, GroupBanImportStatus,
 };
-pub use member_role_ids::{get_member_role_ids, GroupMemberRoleIds, VrchatGroupMemberRoleIdsInput};
+pub use member_role_ids::get_member_role_ids;
 pub use membership_batch::{
     run_group_membership_batch, GroupMembershipBatchAction, GroupMembershipBatchCoordinator,
     GroupMembershipBatchInput, GroupMembershipBatchItemResult, GroupMembershipBatchItemState,

@@ -1539,8 +1539,8 @@ const generatedCommands = {
         return await TAURI_INVOKE('app__vrchat_group_get', { input });
     },
     async appVrchatGroupMemberRoleIdsGet(
-        input: VrchatGroupMemberRoleIdsInput
-    ): Promise<GroupMemberRoleIds[]> {
+        input: VrchatGroupUserInput
+    ): Promise<string[] | null> {
         return await TAURI_INVOKE('app__vrchat_group_member_role_ids_get', {
             input
         });
@@ -4679,7 +4679,6 @@ export type GroupMemberPatch = {
     managerNotes?: string | null;
     visibility?: GroupMemberVisibility | null;
 };
-export type GroupMemberRoleIds = { userId: string; roleIds: string[] | null };
 export type GroupMemberSort = 'joinedAt:asc' | 'joinedAt:desc';
 export type GroupMemberVisibility = 'friends' | 'hidden' | 'visible';
 export type GroupMembershipBatchAction =
@@ -6553,10 +6552,6 @@ export type VrchatGroupMemberPropsInput = {
     groupId?: string;
     userId?: string;
     params: GroupMemberPatch;
-};
-export type VrchatGroupMemberRoleIdsInput = {
-    groupId: string;
-    userIds: string[];
 };
 export type VrchatGroupMemberRoleInput = {
     groupId?: string;

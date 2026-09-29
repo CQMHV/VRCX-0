@@ -135,11 +135,12 @@ function useEmojiRows(
     enabled: boolean
 ) {
     const { t } = useTranslation();
-    const failedMessage = t('dialog.boop_dialog.failed_to_load_emojis');
     const [rows, setRows] = useState<BoopEmojiChoice[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const requestIdRef = useRef(0);
+    const failedMessageRef = useRef('');
+    failedMessageRef.current = t('dialog.boop_dialog.failed_to_load_emojis');
 
     const load = useCallback(async () => {
         const requestId = ++requestIdRef.current;
@@ -153,14 +154,16 @@ function useEmojiRows(
         } catch (nextError) {
             if (requestIdRef.current === requestId) {
                 setRows([]);
-                setError(userFacingErrorMessage(nextError, failedMessage));
+                setError(
+                    userFacingErrorMessage(nextError, failedMessageRef.current)
+                );
             }
         } finally {
             if (requestIdRef.current === requestId) {
                 setLoading(false);
             }
         }
-    }, [failedMessage, fetchRows]);
+    }, [fetchRows]);
 
     useEffect(() => {
         if (enabled) {

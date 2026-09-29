@@ -144,18 +144,15 @@ describe('player list group roles', () => {
         }
     );
 
-    it('looks up newly seen players in one batch, caches role IDs per player and refetches on refresh', async () => {
+    it('looks up each newly seen player once, caches role IDs per player and refetches on refresh', async () => {
         const roleIdsByUser: Record<string, string[] | null> = {
             a: ['staff'],
             b: null,
             c: ['member']
         };
         vi.mocked(commands.appVrchatGroupMemberRoleIdsGet).mockImplementation(
-            async ({ userIds }) =>
-                userIds.map((userId) => ({
-                    userId,
-                    roleIds: roleIdsByUser[userId] ?? null
-                }))
+            async ({ userId }) =>
+                userId ? (roleIdsByUser[userId] ?? null) : null
         );
         const { result, rerender, client } = renderRoles([
             player('a'),
@@ -165,11 +162,15 @@ describe('player list group roles', () => {
             expect(roleNames(result.current.rows)).toEqual([['Staff'], null])
         );
         expect(commands.appVrchatGroupMemberRoleIdsGet).toHaveBeenCalledTimes(
-            1
+            2
         );
         expect(commands.appVrchatGroupMemberRoleIdsGet).toHaveBeenCalledWith({
             groupId: 'grp_a',
-            userIds: ['a', 'b']
+            userId: 'a'
+        });
+        expect(commands.appVrchatGroupMemberRoleIdsGet).toHaveBeenCalledWith({
+            groupId: 'grp_a',
+            userId: 'b'
         });
         expect(
             client.getQueryData(['player-list-group', 'owner', '', 'grp_a'])
@@ -198,13 +199,13 @@ describe('player list group roles', () => {
             expect(roleNames(result.current.rows)[2]).toEqual(['Member'])
         );
         expect(commands.appVrchatGroupMemberRoleIdsGet).toHaveBeenCalledTimes(
-            2
+            3
         );
         expect(
             commands.appVrchatGroupMemberRoleIdsGet
         ).toHaveBeenLastCalledWith({
             groupId: 'grp_a',
-            userIds: ['c']
+            userId: 'c'
         });
 
         rerender({ rows: [player('c')] });
@@ -213,21 +214,24 @@ describe('player list group roles', () => {
             expect(roleNames(result.current.rows)[0]).toEqual(['Staff'])
         );
         expect(commands.appVrchatGroupMemberRoleIdsGet).toHaveBeenCalledTimes(
-            2
+            3
         );
 
         act(() => result.current.refresh());
         await waitFor(() =>
             expect(
                 commands.appVrchatGroupMemberRoleIdsGet
-            ).toHaveBeenCalledTimes(3)
+            ).toHaveBeenCalledTimes(5)
         );
         expect(
-            commands.appVrchatGroupMemberRoleIdsGet
-        ).toHaveBeenLastCalledWith({
-            groupId: 'grp_a',
-            userIds: ['a', 'c']
-        });
+            vi
+                .mocked(commands.appVrchatGroupMemberRoleIdsGet)
+                .mock.calls.slice(3)
+                .map(([input]) => input)
+        ).toEqual([
+            { groupId: 'grp_a', userId: 'a' },
+            { groupId: 'grp_a', userId: 'c' }
+        ]);
 
         act(() => result.current.selectGroup('grp_b'));
         expect(result.current.groupId).toBe('grp_b');
@@ -235,68 +239,41 @@ describe('player list group roles', () => {
         await waitFor(() =>
             expect(
                 commands.appVrchatGroupMemberRoleIdsGet
-            ).toHaveBeenLastCalledWith({
-                groupId: 'grp_b',
-                userIds: ['a', 'c']
-            })
+            ).toHaveBeenCalledWith({ groupId: 'grp_b', userId: 'c' })
         );
         client.clear();
     });
 
-    it('sends larger rooms in chunks of six, one chunk at a time', async () => {
-        const pending: Array<
-            (value: { userId: string; roleIds: string[] }[]) => void
-        > = [];
+    it('shows no roles for a failed lookup without caching it, so refresh retries it', async () => {
         vi.mocked(commands.appVrchatGroupMemberRoleIdsGet).mockImplementation(
-            () =>
-                new Promise((resolve) => {
-                    pending.push(resolve);
-                })
+            async ({ userId }) => {
+                if (userId === 'b') {
+                    throw new Error('connection reset');
+                }
+                return ['staff'];
+            }
         );
-        const ids = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-        const { result, client } = renderRoles(ids.map(player));
+        const { result, client } = renderRoles([player('a'), player('b')]);
+        await waitFor(() =>
+            expect(roleNames(result.current.rows)).toEqual([['Staff'], null])
+        );
+        const failedKey = ['player-list-group', 'owner', '', 'grp_a', 'b'];
+        await waitFor(() =>
+            expect(client.getQueryState(failedKey)?.status).toBe('error')
+        );
+        expect(client.getQueryState(failedKey)?.data).toBeUndefined();
 
+        vi.mocked(commands.appVrchatGroupMemberRoleIdsGet).mockResolvedValue([
+            'member'
+        ]);
+        act(() => result.current.refresh());
         await waitFor(() =>
-            expect(
-                commands.appVrchatGroupMemberRoleIdsGet
-            ).toHaveBeenCalledTimes(1)
+            expect(roleNames(result.current.rows)).toEqual([
+                ['Member'],
+                ['Member']
+            ])
         );
-        expect(
-            commands.appVrchatGroupMemberRoleIdsGet
-        ).toHaveBeenLastCalledWith({
-            groupId: 'grp_a',
-            userIds: ids.slice(0, 6)
-        });
-
-        await act(async () => {
-            pending[0](
-                ids
-                    .slice(0, 6)
-                    .map((userId) => ({ userId, roleIds: ['staff'] }))
-            );
-        });
-        await waitFor(() =>
-            expect(roleNames(result.current.rows)[0]).toEqual(['Staff'])
-        );
-        await waitFor(() =>
-            expect(
-                commands.appVrchatGroupMemberRoleIdsGet
-            ).toHaveBeenCalledTimes(2)
-        );
-        expect(
-            commands.appVrchatGroupMemberRoleIdsGet
-        ).toHaveBeenLastCalledWith({
-            groupId: 'grp_a',
-            userIds: ['g', 'h']
-        });
-        await act(async () => {
-            pending[1](
-                ['g', 'h'].map((userId) => ({ userId, roleIds: ['member'] }))
-            );
-        });
-        await waitFor(() =>
-            expect(roleNames(result.current.rows)[7]).toEqual(['Member'])
-        );
+        expect(client.getQueryData(failedKey)).toEqual(['member']);
         client.clear();
     });
 });

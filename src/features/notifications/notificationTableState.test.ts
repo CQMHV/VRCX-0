@@ -32,8 +32,6 @@ describe('notification table state helpers', () => {
         vi.unstubAllGlobals();
     });
 
-    it('parses persisted JSON safely', () => {});
-
     it('reads and writes persisted table state without dropping existing keys', () => {
         const { localStorage, values } = installLocalStorage({
             'vrcx-0:table:notifications': JSON.stringify({ pageSize: 25 })

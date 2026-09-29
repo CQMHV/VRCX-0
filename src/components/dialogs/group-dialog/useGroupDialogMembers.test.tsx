@@ -155,10 +155,11 @@ describe('useGroupDialogMembers', () => {
         expect(result.current.model.hasMore).toBe(false);
     });
 
-    it('keeps loaded members and stops paging when loading more fails', async () => {
+    it('keeps loaded members, reports the error and lets the next load more retry', async () => {
         mocks.getGroupMembers
             .mockResolvedValueOnce(page(0, 100))
-            .mockRejectedValueOnce(new Error('rate limited'));
+            .mockRejectedValueOnce(new Error('rate limited'))
+            .mockResolvedValueOnce(page(100, 50));
         const { result } = renderHook(() =>
             useGroupDialogMembers({
                 endpoint: 'api',
@@ -175,9 +176,20 @@ describe('useGroupDialogMembers', () => {
             await result.current.loadMore();
         });
 
-        expect(result.current.model.error).toBe('');
+        expect(result.current.model.error).toBe('rate limited');
         expect(result.current.model.loadedCount).toBe(100);
+        expect(result.current.model.hasMore).toBe(true);
+
+        await act(async () => {
+            await result.current.loadMore();
+        });
+
+        expect(result.current.model.error).toBe('');
+        expect(result.current.model.loadedCount).toBe(150);
         expect(result.current.model.hasMore).toBe(false);
+        expect(mocks.getGroupMembers).toHaveBeenLastCalledWith(
+            expect.objectContaining({ offset: 100 })
+        );
     });
 
     it('asks for the next page after every fetched member even when a page repeats members', async () => {

@@ -335,6 +335,7 @@ export function GroupMembersPanel({
         toggled.has(`${viewMode}:${key}`) === count > AUTO_COLLAPSE_COUNT;
     const autoLoad =
         members.hasMore &&
+        !members.error &&
         (viewMode === 'friends' || isBucketOpen(BASE_BUCKET_KEY, baseCount));
 
     function toggleBucket(key: string) {
@@ -369,6 +370,8 @@ export function GroupMembersPanel({
     const listBusy = members.isSearching
         ? members.searchStatus === 'running' && !members.rows.length
         : membersBusy && !pool.length;
+    const listError =
+        members.error && (members.isSearching || !members.loadedCount);
     const listEmpty =
         !members.isSearching && !members.hasMore && !buckets.length;
 
@@ -450,7 +453,7 @@ export function GroupMembersPanel({
                 </div>
             </div>
 
-            {listBusy || members.error ? (
+            {listBusy || listError ? (
                 <GroupListState
                     title={t('dialog.group.members.header')}
                     loading={listBusy}
@@ -517,6 +520,11 @@ export function GroupMembersPanel({
                                     total: memberTotal
                                 })}
                             </span>
+                            {members.error ? (
+                                <span className="text-destructive">
+                                    {members.error}
+                                </span>
+                            ) : null}
                             {members.hasMore ? (
                                 <Button
                                     type="button"
