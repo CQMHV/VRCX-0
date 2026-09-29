@@ -1,6 +1,7 @@
 use vrcx_0_application::social::{
     GroupBuiltRequest, GroupMemberPatch, GroupMemberSort, GroupMemberVisibility, GroupPostMutation,
-    GroupPostVisibility, GroupRemoteRequest, GroupRemoteRequests,
+    GroupPostVisibility, GroupProfileJoinState, GroupProfileUpdate, GroupRemoteRequest,
+    GroupRemoteRequests,
 };
 use vrcx_0_application_core::{vrchat_api::VrchatApiRequest, Result};
 use vrcx_0_core::vrchat_endpoints::VRCHAT_API_DEFAULT_ENDPOINT;
@@ -10,7 +11,7 @@ use vrcx_0_vrchat_client::groups::{
     join_input, join_request_respond_input, join_requests_get_input, leave_input, logs_get_input,
     member_ban_input, member_kick_input, member_props_set_input, member_role_add_input,
     member_role_remove_input, member_unban_input, members_get_input, members_search_input,
-    post_create_input, post_delete_input, post_edit_input, profile_get_input,
+    post_create_input, post_delete_input, post_edit_input, profile_get_input, profile_update_input,
     representation_set_input, request_cancel_input, unblock_input, user_groups_get_input,
 };
 
@@ -117,6 +118,11 @@ impl GroupRemoteRequests for VrchatGroupRemoteRequests {
                     input.user_id,
                 )?;
                 Ok(built1(user_id, request))
+            }
+            GroupRemoteRequest::Update(input) => {
+                let (group_id, request) =
+                    profile_update_input(input.group_id, profile_update(input.params))?;
+                Ok(built1(group_id, request))
             }
             GroupRemoteRequest::CreatePost(input) => {
                 let (group_id, request) = post_create_input(input.group_id, post(input.params))?;
@@ -234,6 +240,34 @@ fn post(input: GroupPostMutation) -> vrcx_0_vrchat_client::groups::GroupPostMuta
         },
         role_ids: input.role_ids,
         image_id: input.image_id,
+    }
+}
+
+fn profile_update(input: GroupProfileUpdate) -> vrcx_0_vrchat_client::groups::GroupProfileUpdate {
+    vrcx_0_vrchat_client::groups::GroupProfileUpdate {
+        name: input.name,
+        short_code: input.short_code,
+        description: input.description,
+        join_state: match input.join_state {
+            GroupProfileJoinState::Closed => {
+                vrcx_0_vrchat_client::groups::GroupProfileJoinState::Closed
+            }
+            GroupProfileJoinState::Invite => {
+                vrcx_0_vrchat_client::groups::GroupProfileJoinState::Invite
+            }
+            GroupProfileJoinState::Open => {
+                vrcx_0_vrchat_client::groups::GroupProfileJoinState::Open
+            }
+            GroupProfileJoinState::Request => {
+                vrcx_0_vrchat_client::groups::GroupProfileJoinState::Request
+            }
+        },
+        languages: input.languages,
+        rules: input.rules,
+        links: input.links,
+        icon_id: input.icon_id,
+        banner_id: input.banner_id,
+        allow_group_join_prompt: input.allow_group_join_prompt,
     }
 }
 

@@ -4,9 +4,11 @@ import {
     BellOffIcon,
     CopyIcon,
     ExternalLinkIcon,
+    ImageIcon,
     LogInIcon,
     LogOutIcon,
     MessageSquareIcon,
+    PencilIcon,
     RefreshCwIcon,
     SettingsIcon,
     Share2Icon,
@@ -51,6 +53,7 @@ import { SavedGroupFavoriteButton } from './SavedGroupFavoriteButton';
 interface GroupHeaderModel {
     actionStatus: GroupActionStatus;
     canInviteToGroup: boolean;
+    canEditProfile: boolean;
     canJoin: boolean;
     canManagePosts: boolean;
     canModerateGroup: boolean;
@@ -82,6 +85,8 @@ interface GroupHeaderCommands {
     onCopyGroupName: () => void;
     onCopyGroupUrl: () => void;
     onCreateGroupPost: () => void;
+    onEditProfile: () => void;
+    onEditProfileMedia: () => void;
     onJoin: () => void;
     onLeave: () => void;
     onOpenGroupPage: () => void;
@@ -126,6 +131,7 @@ export function GroupDialogHeaderSection({
     const {
         actionStatus,
         canInviteToGroup,
+        canEditProfile,
         canJoin,
         canManagePosts,
         canModerateGroup,
@@ -156,6 +162,8 @@ export function GroupDialogHeaderSection({
         onCopyGroupName,
         onCopyGroupUrl,
         onCreateGroupPost,
+        onEditProfile,
+        onEditProfileMedia,
         onJoin,
         onLeave,
         onOpenGroupPage,
@@ -373,6 +381,26 @@ export function GroupDialogHeaderSection({
                                         : 'dialog.group.actions.subscribe'
                                 )}
                             </EntityActionItem>
+                            {canEditProfile ? (
+                                <>
+                                    <EntityActionItem
+                                        icon={PencilIcon}
+                                        disabled={actionStatus === 'profile'}
+                                        onClick={onEditProfile}
+                                    >
+                                        {t('dialog.group.actions.edit_profile')}
+                                    </EntityActionItem>
+                                    <EntityActionItem
+                                        icon={ImageIcon}
+                                        disabled={actionStatus === 'profile'}
+                                        onClick={onEditProfileMedia}
+                                    >
+                                        {t(
+                                            'dialog.group.actions.edit_profile_media'
+                                        )}
+                                    </EntityActionItem>
+                                </>
+                            ) : null}
                             {canInviteToGroup ? (
                                 <EntityActionItem
                                     icon={MessageSquareIcon}

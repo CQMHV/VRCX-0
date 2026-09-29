@@ -80,7 +80,8 @@ export function GroupDialogContent({
                 },
                 onBlock: (enabled: boolean) => {
                     actions.updateGroupBlock(enabled);
-                }
+                },
+                onUpdateProfile: actions.updateGroupProfile
             }}
         />
     );

@@ -4513,7 +4513,11 @@
                 "moderation_tools": "Ferramentas de Moderação",
                 "leave": "Sair do Grupo",
                 "block": "Bloquear Grupo",
-                "unblock": "Desbloquear Grupo"
+                "unblock": "Desbloquear Grupo",
+                "edit_profile": "Editar detalhes do grupo",
+                "edit_profile_media": "Editar banner e ícone",
+                "use_banner": "Usar como banner",
+                "use_group_icon": "Usar como ícone do grupo"
             },
             "overview": {
                 "header": "Visão Geral",
@@ -4623,7 +4627,9 @@
                 "name_a_z": "Nome A-Z",
                 "name_z_a": "Nome Z-A",
                 "role": "Cargo",
-                "all_roles": "Todos os cargos"
+                "all_roles": "Todos os cargos",
+                "banner": "Banner",
+                "group_icon": "Ícone do grupo"
             },
             "success": {
                 "group_join_request_cancelled": "Solicitação de entrada no grupo cancelada",
@@ -4653,7 +4659,9 @@
                 "group_post_created": "Publicação do grupo criada",
                 "failed_to_save_group_post": "Falha ao salvar a publicação do grupo",
                 "failed_to_send_group_invite": "Falha ao enviar o convite de grupo",
-                "failed_to_delete_group_post": "Falha ao excluir a publicação do grupo"
+                "failed_to_delete_group_post": "Falha ao excluir a publicação do grupo",
+                "group_profile_updated": "Grupo atualizado",
+                "failed_to_update_group_profile": "Falha ao atualizar o grupo"
             },
             "modal": {
                 "leave_group": "Sair do grupo?",
@@ -4671,6 +4679,17 @@
                 "search_value": "Pesquisar {value}",
                 "no_value": "Nenhum {value}",
                 "value_copied": "{value} copiado"
+            },
+            "edit": {
+                "short_code": "Código curto",
+                "short_code_hint": "De 3 a 6 letras maiúsculas ou números. Alterá-lo também muda o link do grupo.",
+                "add_link": "Adicionar link",
+                "remove_link": "Remover link",
+                "join_state_open": "Qualquer pessoa",
+                "join_state_request": "Mediante pedido",
+                "join_state_invite": "Somente por convite",
+                "join_state_closed": "Fechado",
+                "allow_join_prompt": "Convidar quem está em instâncias do grupo a entrar"
             }
         },
         "favorite": {

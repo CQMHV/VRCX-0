@@ -5,9 +5,14 @@ import type { GroupInstanceRecord } from '@/domain/entities/group';
 import type { EntityRecord } from '@/domain/entities/shared';
 import type { LoadStatus } from '@/domain/shared/types';
 import { userFacingErrorMessage } from '@/lib/errorDisplay';
-import type { GroupMemberPatch } from '@/platform/tauri/bindings';
+import { commands } from '@/platform/tauri/bindings';
+import type {
+    GroupMemberPatch,
+    GroupProfileUpdate
+} from '@/platform/tauri/bindings';
 import gameLogRepository from '@/repositories/gameLogRepository';
 import groupProfileRepository from '@/repositories/groupProfileRepository';
+import { unwrapVrchatResponse } from '@/repositories/vrchatRequest';
 import { enrichEntityDialogHistory } from '@/services/dialogService';
 import { recordLocationHintsFromInstances } from '@/services/domainIngestionService';
 import { toast } from '@/services/toastService';
@@ -610,6 +615,44 @@ export function useGroupDialogState({
         }
     }
 
+    async function updateGroupProfile(params: GroupProfileUpdate) {
+        if (actionStatusRef.current !== 'idle') {
+            return false;
+        }
+
+        actionStatusRef.current = 'profile';
+        setActionStatus('profile');
+        try {
+            const response = unwrapVrchatResponse(
+                await commands.appVrchatGroupUpdate({
+                    groupId: normalizedGroupId,
+                    params
+                }),
+                `groups/${encodeURIComponent(normalizedGroupId)}`
+            );
+            await refreshGroupProfile().catch(() => {
+                commitGroupSnapshot(response.json);
+            });
+            toast.add({
+                type: 'success',
+                title: t('dialog.group.toast.group_profile_updated')
+            });
+            return true;
+        } catch (error) {
+            toast.add({
+                type: 'error',
+                title: userFacingErrorMessage(
+                    error,
+                    t('dialog.group.toast.failed_to_update_group_profile')
+                )
+            });
+            return false;
+        } finally {
+            actionStatusRef.current = 'idle';
+            setActionStatus('idle');
+        }
+    }
+
     return {
         status: groupDialogStatus.ready,
         group,
@@ -626,6 +669,7 @@ export function useGroupDialogState({
             refreshGroup,
             updateGroupBlock,
             updateGroupMemberProps,
+            updateGroupProfile,
             updateGroupRepresentation
         },
         labels: {

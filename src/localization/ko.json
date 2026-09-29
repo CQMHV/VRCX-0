@@ -4497,7 +4497,11 @@
                 "moderation_tools": "조정 도구",
                 "leave": "그룹 탈퇴",
                 "block": "그룹 차단",
-                "unblock": "그룹 차단 해제"
+                "unblock": "그룹 차단 해제",
+                "edit_profile": "그룹 정보 편집",
+                "edit_profile_media": "배너 및 아이콘 편집",
+                "use_banner": "배너로 사용",
+                "use_group_icon": "그룹 아이콘으로 사용"
             },
             "overview": {
                 "header": "개요",
@@ -4603,7 +4607,9 @@
                 "name_a_z": "이름 A~Z",
                 "name_z_a": "이름 Z-A",
                 "role": "역할",
-                "all_roles": "모든 역할"
+                "all_roles": "모든 역할",
+                "banner": "배너",
+                "group_icon": "그룹 아이콘"
             },
             "success": {
                 "group_join_request_cancelled": "그룹 가입 요청이 취소되었습니다.",
@@ -4633,7 +4639,9 @@
                 "group_post_created": "그룹 게시물이 생성되었습니다.",
                 "failed_to_save_group_post": "그룹 게시물을 저장하지 못했습니다.",
                 "failed_to_send_group_invite": "그룹 초대를 보내지 못했습니다.",
-                "failed_to_delete_group_post": "그룹 게시물을 삭제하지 못했습니다."
+                "failed_to_delete_group_post": "그룹 게시물을 삭제하지 못했습니다.",
+                "group_profile_updated": "그룹을 업데이트했습니다",
+                "failed_to_update_group_profile": "그룹을 업데이트하지 못했습니다"
             },
             "modal": {
                 "leave_group": "그룹을 탈퇴하시겠습니까?",
@@ -4656,6 +4664,17 @@
                 "group_owner": "그룹 소유자",
                 "everyone": "전체 인원",
                 "member": "멤버"
+            },
+            "edit": {
+                "short_code": "짧은 코드",
+                "short_code_hint": "대문자 또는 숫자 3~6자. 바꾸면 그룹 링크도 함께 바뀝니다.",
+                "add_link": "링크 추가",
+                "remove_link": "링크 삭제",
+                "join_state_open": "누구나",
+                "join_state_request": "가입 신청",
+                "join_state_invite": "초대 전용",
+                "join_state_closed": "닫힘",
+                "allow_join_prompt": "그룹 인스턴스에 있는 사람에게 가입 안내 표시"
             }
         },
         "favorite": {

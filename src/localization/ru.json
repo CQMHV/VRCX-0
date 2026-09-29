@@ -4523,7 +4523,11 @@
                 "moderation_tools": "Инструменты модерации",
                 "leave": "Покинуть группу",
                 "block": "Заблокировать группу",
-                "unblock": "Разблокировать группу"
+                "unblock": "Разблокировать группу",
+                "edit_profile": "Изменить данные группы",
+                "edit_profile_media": "Изменить баннер и иконку",
+                "use_banner": "Сделать баннером",
+                "use_group_icon": "Сделать иконкой группы"
             },
             "overview": {
                 "header": "Общий обзор",
@@ -4633,7 +4637,9 @@
                 "name_a_z": "Имя A-Z",
                 "name_z_a": "Имя Z-A",
                 "role": "Роль",
-                "all_roles": "Все роли"
+                "all_roles": "Все роли",
+                "banner": "Баннер",
+                "group_icon": "Иконка группы"
             },
             "success": {
                 "group_join_request_cancelled": "Запрос на вступление в группу отменён",
@@ -4663,7 +4669,9 @@
                 "group_post_created": "Публикация группы создана",
                 "failed_to_save_group_post": "Не удалось сохранить публикацию группы",
                 "failed_to_send_group_invite": "Не удалось направить приглашение группы",
-                "failed_to_delete_group_post": "Не удалось удалить публикацию группы"
+                "failed_to_delete_group_post": "Не удалось удалить публикацию группы",
+                "group_profile_updated": "Группа обновлена",
+                "failed_to_update_group_profile": "Не удалось обновить группу"
             },
             "modal": {
                 "leave_group": "Оставить группу?",
@@ -4681,6 +4689,17 @@
                 "search_value": "Поиск {value}",
                 "no_value": "Нет {value}",
                 "value_copied": "{value} скопировано"
+            },
+            "edit": {
+                "short_code": "Короткий код",
+                "short_code_hint": "3–6 заглавных латинских букв или цифр. При изменении меняется и ссылка на группу.",
+                "add_link": "Добавить ссылку",
+                "remove_link": "Удалить ссылку",
+                "join_state_open": "Все",
+                "join_state_request": "По заявке",
+                "join_state_invite": "Только по приглашению",
+                "join_state_closed": "Закрыто",
+                "allow_join_prompt": "Предлагать вступить тем, кто находится в инстансах группы"
             }
         },
         "favorite": {

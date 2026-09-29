@@ -4546,7 +4546,11 @@
                 "moderation_tools": "管理工具",
                 "leave": "離開群組",
                 "block": "封鎖群組",
-                "unblock": "解除封鎖群組"
+                "unblock": "解除封鎖群組",
+                "edit_profile": "編輯群組資料",
+                "edit_profile_media": "編輯橫幅和圖示",
+                "use_banner": "用作橫幅",
+                "use_group_icon": "用作群組圖示"
             },
             "overview": {
                 "header": "概覽",
@@ -4656,7 +4660,9 @@
                 "name_a_z": "名稱 A-Z",
                 "name_z_a": "名稱 Z-A",
                 "role": "角色",
-                "all_roles": "所有角色"
+                "all_roles": "所有角色",
+                "banner": "橫幅",
+                "group_icon": "群組圖示"
             },
             "success": {
                 "group_join_request_cancelled": "已取消加入群組請求",
@@ -4686,7 +4692,9 @@
                 "group_post_created": "群組帖子已建立",
                 "failed_to_save_group_post": "儲存群組帖子失敗",
                 "failed_to_send_group_invite": "傳送群組邀請失敗",
-                "failed_to_delete_group_post": "刪除群組帖子失敗"
+                "failed_to_delete_group_post": "刪除群組帖子失敗",
+                "group_profile_updated": "群組已更新",
+                "failed_to_update_group_profile": "更新群組失敗"
             },
             "modal": {
                 "leave_group": "退出群組？",
@@ -4704,6 +4712,17 @@
                 "search_value": "搜尋 {value}",
                 "no_value": "沒有{value}",
                 "value_copied": "已複製{value}"
+            },
+            "edit": {
+                "short_code": "短代碼",
+                "short_code_hint": "3–6 個大寫字母或數字。修改後群組連結也會跟著改變。",
+                "add_link": "新增連結",
+                "remove_link": "移除連結",
+                "join_state_open": "任何人",
+                "join_state_request": "需申請",
+                "join_state_invite": "僅限邀請",
+                "join_state_closed": "關閉",
+                "allow_join_prompt": "在群組實例中提示玩家加入群組"
             }
         },
         "favorite": {

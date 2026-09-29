@@ -4512,7 +4512,11 @@
                 "moderation_tools": "Moderationswerkzeuge",
                 "leave": "Gruppe verlassen",
                 "block": "Gruppe blockieren",
-                "unblock": "Gruppe entsperren"
+                "unblock": "Gruppe entsperren",
+                "edit_profile": "Gruppendetails bearbeiten",
+                "edit_profile_media": "Banner und Symbol bearbeiten",
+                "use_banner": "Als Banner verwenden",
+                "use_group_icon": "Als Gruppensymbol verwenden"
             },
             "overview": {
                 "header": "Übersicht",
@@ -4622,7 +4626,9 @@
                 "name_a_z": "Name A-Z",
                 "name_z_a": "Name Z-A",
                 "role": "Rolle",
-                "all_roles": "Alle Rollen"
+                "all_roles": "Alle Rollen",
+                "banner": "Banner",
+                "group_icon": "Gruppensymbol"
             },
             "success": {
                 "group_join_request_cancelled": "Beitrittsanfrage abgebrochen",
@@ -4652,7 +4658,9 @@
                 "group_post_created": "Gruppenbeitrag erstellt",
                 "failed_to_save_group_post": "Gruppenbeitrag konnte nicht gespeichert werden",
                 "failed_to_send_group_invite": "Gruppeneinladung konnte nicht gesendet werden",
-                "failed_to_delete_group_post": "Gruppenbeitrag konnte nicht gelöscht werden"
+                "failed_to_delete_group_post": "Gruppenbeitrag konnte nicht gelöscht werden",
+                "group_profile_updated": "Gruppe aktualisiert",
+                "failed_to_update_group_profile": "Gruppe konnte nicht aktualisiert werden"
             },
             "modal": {
                 "leave_group": "Gruppe verlassen?",
@@ -4670,6 +4678,17 @@
                 "search_value": "{value} suchen",
                 "no_value": "Kein(e) {value}",
                 "value_copied": "{value} kopiert"
+            },
+            "edit": {
+                "short_code": "Kurzcode",
+                "short_code_hint": "3–6 Großbuchstaben oder Ziffern. Eine Änderung ändert auch den Gruppenlink.",
+                "add_link": "Link hinzufügen",
+                "remove_link": "Link entfernen",
+                "join_state_open": "Alle",
+                "join_state_request": "Auf Anfrage",
+                "join_state_invite": "Nur mit Einladung",
+                "join_state_closed": "Geschlossen",
+                "allow_join_prompt": "Personen in Gruppeninstanzen zum Beitritt auffordern"
             }
         },
         "favorite": {

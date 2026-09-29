@@ -4540,7 +4540,11 @@
                 "moderation_tools": "管理用ツール",
                 "leave": "グループから抜ける",
                 "block": "グループをブロック",
-                "unblock": "グループのブロックを解除"
+                "unblock": "グループのブロックを解除",
+                "edit_profile": "グループ情報を編集",
+                "edit_profile_media": "バナーとアイコンを編集",
+                "use_banner": "バナーに使用",
+                "use_group_icon": "グループアイコンに使用"
             },
             "overview": {
                 "header": "概要",
@@ -4650,7 +4654,9 @@
                 "name_a_z": "名前 A-Z",
                 "name_z_a": "名前 Z-A",
                 "role": "ロール",
-                "all_roles": "すべてのロール"
+                "all_roles": "すべてのロール",
+                "banner": "バナー",
+                "group_icon": "グループアイコン"
             },
             "success": {
                 "group_join_request_cancelled": "グループ参加リクエストをキャンセルしました",
@@ -4680,7 +4686,9 @@
                 "group_post_created": "グループ投稿を作成しました",
                 "failed_to_save_group_post": "グループ投稿を保存できませんでした",
                 "failed_to_send_group_invite": "グループ招待を送信できませんでした",
-                "failed_to_delete_group_post": "グループ投稿を削除できませんでした"
+                "failed_to_delete_group_post": "グループ投稿を削除できませんでした",
+                "group_profile_updated": "グループを更新しました",
+                "failed_to_update_group_profile": "グループを更新できませんでした"
             },
             "modal": {
                 "leave_group": "グループを退出しますか？",
@@ -4698,6 +4706,17 @@
                 "search_value": "{value} を検索",
                 "no_value": "{value}はありません",
                 "value_copied": "{value}をコピーしました"
+            },
+            "edit": {
+                "short_code": "ショートコード",
+                "short_code_hint": "英大文字または数字で3〜6文字。変更するとグループのリンクも変わります。",
+                "add_link": "リンクを追加",
+                "remove_link": "リンクを削除",
+                "join_state_open": "誰でも",
+                "join_state_request": "申請制",
+                "join_state_invite": "招待のみ",
+                "join_state_closed": "締め切り",
+                "allow_join_prompt": "グループインスタンスにいる人へ参加を促す"
             }
         },
         "favorite": {

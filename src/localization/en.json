@@ -4556,7 +4556,11 @@
                 "moderation_tools": "Moderation Tools",
                 "leave": "Leave Group",
                 "block": "Block Group",
-                "unblock": "Unblock Group"
+                "unblock": "Unblock Group",
+                "edit_profile": "Edit Group Details",
+                "edit_profile_media": "Edit Banner and Icon",
+                "use_banner": "Use as banner",
+                "use_group_icon": "Use as group icon"
             },
             "overview": {
                 "header": "Overview",
@@ -4666,7 +4670,9 @@
                 "name_a_z": "Name A-Z",
                 "name_z_a": "Name Z-A",
                 "role": "Role",
-                "all_roles": "All roles"
+                "all_roles": "All roles",
+                "banner": "Banner",
+                "group_icon": "Group Icon"
             },
             "success": {
                 "group_join_request_cancelled": "Group join request cancelled",
@@ -4696,7 +4702,9 @@
                 "group_post_created": "Group post created",
                 "failed_to_save_group_post": "Failed to save group post",
                 "failed_to_send_group_invite": "Failed to send group invite",
-                "failed_to_delete_group_post": "Failed to delete group post"
+                "failed_to_delete_group_post": "Failed to delete group post",
+                "group_profile_updated": "Group updated",
+                "failed_to_update_group_profile": "Failed to update group"
             },
             "modal": {
                 "leave_group": "Leave group?",
@@ -4714,6 +4722,17 @@
                 "search_value": "Search {value}",
                 "no_value": "No {value}",
                 "value_copied": "{value} copied"
+            },
+            "edit": {
+                "short_code": "Short Code",
+                "short_code_hint": "3–6 uppercase letters or numbers. Changing it also changes the group link.",
+                "add_link": "Add Link",
+                "remove_link": "Remove Link",
+                "join_state_open": "Anyone",
+                "join_state_request": "Request to Join",
+                "join_state_invite": "Invite Only",
+                "join_state_closed": "Closed",
+                "allow_join_prompt": "Prompt people in group instances to join"
             }
         },
         "favorite": {

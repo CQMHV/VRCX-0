@@ -4528,7 +4528,11 @@
                 "moderation_tools": "Nástroje moderace",
                 "leave": "Opustit skupinu",
                 "block": "Zablokovat skupinu",
-                "unblock": "Odblokovat skupinu"
+                "unblock": "Odblokovat skupinu",
+                "edit_profile": "Upravit údaje skupiny",
+                "edit_profile_media": "Upravit banner a ikonu",
+                "use_banner": "Použít jako banner",
+                "use_group_icon": "Použít jako ikonu skupiny"
             },
             "overview": {
                 "header": "Přehled",
@@ -4638,7 +4642,9 @@
                 "name_a_z": "Název A-Z",
                 "name_z_a": "Název Z-A",
                 "role": "Role",
-                "all_roles": "Všechny role"
+                "all_roles": "Všechny role",
+                "banner": "Banner",
+                "group_icon": "Ikona skupiny"
             },
             "success": {
                 "group_join_request_cancelled": "Žádost o vstup do skupiny zrušena",
@@ -4668,7 +4674,9 @@
                 "group_post_created": "Příspěvek skupiny vytvořen",
                 "failed_to_save_group_post": "Nepodařilo se uložit příspěvek skupiny",
                 "failed_to_send_group_invite": "Nepodařilo se odeslat pozvánku do skupiny",
-                "failed_to_delete_group_post": "Nepodařilo se smazat příspěvek skupiny"
+                "failed_to_delete_group_post": "Nepodařilo se smazat příspěvek skupiny",
+                "group_profile_updated": "Skupina aktualizována",
+                "failed_to_update_group_profile": "Skupinu se nepodařilo aktualizovat"
             },
             "modal": {
                 "leave_group": "Opustit skupinu?",
@@ -4686,6 +4694,17 @@
                 "search_value": "Hledat {value}",
                 "no_value": "Žádné {value}",
                 "value_copied": "{value} zkopírováno"
+            },
+            "edit": {
+                "short_code": "Krátký kód",
+                "short_code_hint": "3–6 velkých písmen nebo číslic. Jeho změnou se změní i odkaz na skupinu.",
+                "add_link": "Přidat odkaz",
+                "remove_link": "Odebrat odkaz",
+                "join_state_open": "Kdokoli",
+                "join_state_request": "Na žádost",
+                "join_state_invite": "Jen na pozvánku",
+                "join_state_closed": "Uzavřeno",
+                "allow_join_prompt": "Nabízet připojení lidem v instancích skupiny"
             }
         },
         "favorite": {

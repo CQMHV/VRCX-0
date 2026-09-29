@@ -26,6 +26,7 @@ import {
     EntityDialogScaffold,
     EntityDialogTwoColumnLayout
 } from '../EntityDialogScaffold';
+import { ProfileMediaPanel } from '../ProfileMediaPanel';
 import { downloadJsonFile } from './groupDialogDownloads';
 import { filterGroupPosts, getGroupDialogTabs } from './groupDialogFilters';
 import { GroupDialogHeaderSection } from './GroupDialogHeaderSection';
@@ -47,6 +48,8 @@ import {
     extractGroupEventRows,
     firstArray,
     followingEventIds,
+    GROUP_PROFILE_MEDIA_SECTIONS,
+    groupProfileUpdateFromGroup,
     hasGroupModerationPermission,
     hasGroupPermission,
     normalizeGroupEvent,
@@ -55,6 +58,7 @@ import {
 import { shouldShowGroupBadgeValue } from './GroupDialogViewParts';
 import { staffRoleIdsOf } from './GroupMembersPanel';
 import { GroupPostEditorDialog } from './GroupPostEditorDialog';
+import { GroupProfileEditDialog } from './GroupProfileEditDialog';
 import { useGroupDialogLanguageRows } from './useGroupDialogLanguageRows';
 import { useGroupDialogMembers } from './useGroupDialogMembers';
 import { useGroupDialogPosts } from './useGroupDialogPosts';
@@ -108,7 +112,8 @@ export function GroupDialogTabbedView({
         onRepresent,
         onSubscribe,
         onVisibility,
-        onBlock
+        onBlock,
+        onUpdateProfile
     } = groupControls;
 
     const {
@@ -119,6 +124,8 @@ export function GroupDialogTabbedView({
         prompt
     } = useGroupDialogTabbedRuntimeState();
     const [activeTab, setActiveTab] = useState('overview');
+    const [profileEditorOpen, setProfileEditorOpen] = useState(false);
+    const [profileMediaOpen, setProfileMediaOpen] = useState(false);
     const [remoteData, setRemoteData] = useState<GroupRemoteData>({
         posts: [],
         photos: []
@@ -184,6 +191,10 @@ export function GroupDialogTabbedView({
     const canInviteToGroup =
         isGroupOwner || hasGroupPermission(group, 'group-invites-manage');
     const canModerateGroup = hasGroupModerationPermission(group);
+    const profileUpdate = groupProfileUpdateFromGroup(group);
+    const canEditProfile =
+        profileUpdate !== null &&
+        (isGroupOwner || hasGroupPermission(group, 'group-data-manage'));
     const filteredPosts = filterGroupPosts(posts, search.posts);
 
     const resetForTarget = useEffectEvent(() => {
@@ -202,6 +213,8 @@ export function GroupDialogTabbedView({
         setGroupEventsStatus('idle');
         setGroupEventsError('');
         setSearch({ posts: '' });
+        setProfileEditorOpen(false);
+        setProfileMediaOpen(false);
         const nextTab = resolveGroupDialogTab(tabs, lastGroupDialogTab);
         lastGroupDialogTab = nextTab;
         setActiveTab(nextTab);
@@ -626,6 +639,7 @@ export function GroupDialogTabbedView({
     const headerModel = {
         actionStatus,
         canInviteToGroup,
+        canEditProfile,
         canJoin,
         canManagePosts,
         canModerateGroup,
@@ -658,6 +672,8 @@ export function GroupDialogTabbedView({
         onCopyGroupUrl: () =>
             copyGroupText(groupUrl, t('dialog.group.info.url')),
         onCreateGroupPost: createGroupPost,
+        onEditProfile: () => setProfileEditorOpen(true),
+        onEditProfileMedia: () => setProfileMediaOpen(true),
         onJoin,
         onLeave,
         onOpenGroupPage: () => openExternalLink(groupUrl),
@@ -745,10 +761,29 @@ export function GroupDialogTabbedView({
                     />
                 }
             >
-                <GroupDialogTabPanels
-                    tabModel={tabModel}
-                    tabCommands={tabCommands}
-                />
+                {canEditProfile && profileMediaOpen ? (
+                    <ProfileMediaPanel
+                        title={t('dialog.group.actions.edit_profile_media')}
+                        sections={GROUP_PROFILE_MEDIA_SECTIONS}
+                        currentFileIds={{
+                            bannerId: profileUpdate.bannerId ?? '',
+                            iconId: profileUpdate.iconId ?? ''
+                        }}
+                        actionStatus={actionStatus}
+                        onBack={() => setProfileMediaOpen(false)}
+                        onSetField={(field, fileId) =>
+                            onUpdateProfile({
+                                ...profileUpdate,
+                                [field]: fileId
+                            })
+                        }
+                    />
+                ) : (
+                    <GroupDialogTabPanels
+                        tabModel={tabModel}
+                        tabCommands={tabCommands}
+                    />
+                )}
             </EntityDialogTwoColumnLayout>
             <GroupPostEditorDialog
                 open={Boolean(postEditor)}
@@ -763,6 +798,17 @@ export function GroupDialogTabbedView({
                 submitting={postEditorSubmitting}
                 onSubmit={(form: GroupPostForm) => {
                     submitGroupPost(form);
+                }}
+            />
+            <GroupProfileEditDialog
+                open={canEditProfile && profileEditorOpen}
+                onOpenChange={setProfileEditorOpen}
+                group={group}
+                saving={actionStatus === 'profile'}
+                onSave={async (params) => {
+                    if (await onUpdateProfile(params)) {
+                        setProfileEditorOpen(false);
+                    }
                 }}
             />
         </EntityDialogScaffold>

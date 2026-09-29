@@ -1,12 +1,14 @@
 // @vitest-environment jsdom
 
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { GroupProfileRecord } from '@/domain/entities/group';
 import type { EntityRecord } from '@/domain/entities/shared';
 
 const mocks = vi.hoisted(() => ({
+    appVrchatGroupUpdate: vi.fn(),
+    toastAdd: vi.fn(),
     enrichEntityDialogHistory: vi.fn(),
     getGroupProfile: vi.fn(),
     getPreviousInstancesByGroupId: vi.fn(),
@@ -22,7 +24,11 @@ vi.mock('react-i18next', () => ({
 }));
 
 vi.mock('@/services/toastService', () => ({
-    toast: { add: vi.fn() }
+    toast: { add: mocks.toastAdd }
+}));
+
+vi.mock('@/platform/tauri/bindings', () => ({
+    commands: { appVrchatGroupUpdate: mocks.appVrchatGroupUpdate }
 }));
 
 vi.mock('@/repositories/gameLogRepository', () => ({
@@ -188,5 +194,99 @@ describe('useGroupDialogState instance loading', () => {
                 }
             ]
         });
+    });
+});
+
+describe('useGroupDialogState profile updates', () => {
+    const params = {
+        name: 'Renamed group',
+        shortCode: 'TEST',
+        description: '',
+        joinState: 'open' as const,
+        languages: [],
+        rules: '',
+        links: [],
+        iconId: 'file_icon',
+        bannerId: null,
+        allowGroupJoinPrompt: false
+    };
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        mocks.normalize.mockImplementation(
+            (value: EntityRecord): GroupProfileRecord => ({
+                ...baseGroup,
+                ...value
+            })
+        );
+        mocks.getGroupProfile.mockResolvedValue(baseGroup);
+        mocks.getPreviousInstancesByGroupId.mockResolvedValue(new Map());
+    });
+
+    async function renderLoadedGroup() {
+        const rendered = renderHook(() =>
+            useGroupDialogState({ groupId: 'grp_test', seedData: baseGroup })
+        );
+        await waitFor(() => {
+            expect(mocks.getGroupProfile).toHaveBeenCalledOnce();
+        });
+        return rendered;
+    }
+
+    it('saves the whole profile and shows the refreshed group', async () => {
+        mocks.appVrchatGroupUpdate.mockResolvedValue({
+            status: 200,
+            data: '{"id":"grp_test"}'
+        });
+        const { result } = await renderLoadedGroup();
+        mocks.getGroupProfile.mockResolvedValue({
+            ...baseGroup,
+            name: 'Renamed group'
+        });
+
+        let saved = false;
+        await act(async () => {
+            const { actions } = result.current;
+            if (!actions) {
+                throw new Error('Group dialog actions are unavailable.');
+            }
+            saved = await actions.updateGroupProfile(params);
+        });
+
+        expect(saved).toBe(true);
+        expect(mocks.appVrchatGroupUpdate).toHaveBeenCalledWith({
+            groupId: 'grp_test',
+            params
+        });
+        expect(mocks.getGroupProfile).toHaveBeenLastCalledWith({
+            groupId: 'grp_test',
+            force: true
+        });
+        expect(result.current.group?.name).toBe('Renamed group');
+        expect(result.current.actionStatus).toBe('idle');
+    });
+
+    it('reports a rejected save and keeps the current group', async () => {
+        mocks.appVrchatGroupUpdate.mockResolvedValue({
+            status: 403,
+            data: '{"error":{"message":"Missing permission","status_code":403}}'
+        });
+        const { result } = await renderLoadedGroup();
+
+        let saved = true;
+        await act(async () => {
+            const { actions } = result.current;
+            if (!actions) {
+                throw new Error('Group dialog actions are unavailable.');
+            }
+            saved = await actions.updateGroupProfile(params);
+        });
+
+        expect(saved).toBe(false);
+        expect(mocks.getGroupProfile).toHaveBeenCalledOnce();
+        expect(mocks.toastAdd).toHaveBeenCalledWith(
+            expect.objectContaining({ type: 'error' })
+        );
+        expect(result.current.actionStatus).toBe('idle');
     });
 });
