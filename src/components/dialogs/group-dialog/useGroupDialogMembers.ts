@@ -7,6 +7,11 @@ import { userFacingErrorMessage } from '@/lib/errorDisplay';
 import groupProfileRepository from '@/repositories/groupProfileRepository';
 import { VRCHAT_API_DEFAULT_PAGE_SIZE } from '@/shared/constants/pagination';
 
+import {
+    appendUniqueMemberRows,
+    useGroupMemberPages
+} from './useGroupMemberPages';
+
 const SEARCH_DEBOUNCE_MS = 300;
 const STAFF_ROLE_FETCH_LIMIT = 4;
 
@@ -24,32 +29,6 @@ export type GroupDialogMembersModel = {
     searchStatus: RemoteTabStatus;
 };
 
-type LoadKey = {
-    endpoint: string;
-    groupId: string;
-};
-
-function sameKey(left: LoadKey, right: LoadKey) {
-    return left.endpoint === right.endpoint && left.groupId === right.groupId;
-}
-
-function memberKey(row: GroupMemberRow) {
-    return row.userId || row.id;
-}
-
-function mergeRows(current: GroupMemberRow[], incoming: GroupMemberRow[]) {
-    const seen = new Set(current.map(memberKey));
-    const next = [...current];
-    for (const row of incoming) {
-        const key = memberKey(row);
-        if (!seen.has(key)) {
-            seen.add(key);
-            next.push(row);
-        }
-    }
-    return next;
-}
-
 export function useGroupDialogMembers({
     endpoint,
     groupId,
@@ -66,44 +45,43 @@ export function useGroupDialogMembers({
     seedRows: GroupMemberRow[];
 }) {
     const { t } = useTranslation();
-    const loadFailedMessage = t('dialog.group.members.failed_to_load');
     const searchFailedMessage = t('dialog.group.members.failed_to_search');
-    const [rows, setRows] = useState<GroupMemberRow[]>([]);
+    const pages = useGroupMemberPages(
+        (offset, force) =>
+            groupProfileRepository.getGroupMembers({
+                groupId,
+                n: VRCHAT_API_DEFAULT_PAGE_SIZE,
+                offset,
+                force
+            }),
+        t('dialog.group.members.failed_to_load')
+    );
+    const { reset, loadFirstPage } = pages;
     const [staffRows, setStaffRows] = useState<GroupMemberRow[]>([]);
-    const [status, setStatus] = useState<RemoteTabStatus>('');
-    const [error, setError] = useState('');
-    const [hasMore, setHasMore] = useState(false);
-    const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [query, setQuery] = useState('');
     const [searchRows, setSearchRows] = useState<GroupMemberRow[]>([]);
     const [searchStatus, setSearchStatus] = useState<RemoteTabStatus>('');
-    const keyRef = useRef<LoadKey>({ endpoint, groupId });
-    const requestRef = useRef(0);
+    const [searchError, setSearchError] = useState('');
+    const loadedKeyRef = useRef('');
+    const staffRequestRef = useRef(0);
     const searchRequestRef = useRef(0);
     const staffRoleKey = staffRoleIds.join('\n');
+    const loadKey = `${endpoint}\n${groupId}`;
 
     const trimmedQuery = query.trim();
     const isSearching = trimmedQuery.length > 0;
 
-    async function fetchPage(key: LoadKey, offset: number, force: boolean) {
-        return groupProfileRepository.getGroupMembers({
-            groupId: key.groupId,
-            n: VRCHAT_API_DEFAULT_PAGE_SIZE,
-            offset,
-            force
-        });
-    }
-
-    async function loadStaff(key: LoadKey, requestId: number, force: boolean) {
+    async function loadStaff(force: boolean) {
+        const requestId = ++staffRequestRef.current;
         const roleIds = staffRoleKey ? staffRoleKey.split('\n') : [];
         if (!roleIds.length) {
             setStaffRows([]);
             return;
         }
-        const pages = await Promise.allSettled(
+        const staffPages = await Promise.allSettled(
             roleIds.slice(0, STAFF_ROLE_FETCH_LIMIT).map((roleId) =>
                 groupProfileRepository.getGroupMembers({
-                    groupId: key.groupId,
+                    groupId,
                     n: VRCHAT_API_DEFAULT_PAGE_SIZE,
                     offset: 0,
                     roleId,
@@ -111,114 +89,44 @@ export function useGroupDialogMembers({
                 })
             )
         );
-        if (requestId !== requestRef.current || !sameKey(key, keyRef.current)) {
+        if (requestId !== staffRequestRef.current) {
             return;
         }
         let merged: GroupMemberRow[] = [];
-        for (const page of pages) {
-            if (page.status === 'fulfilled') {
-                merged = mergeRows(merged, page.value);
+        for (const staffPage of staffPages) {
+            if (staffPage.status === 'fulfilled') {
+                merged = appendUniqueMemberRows(merged, staffPage.value);
             }
         }
         setStaffRows(merged);
     }
 
-    async function loadFirstPage(force: boolean) {
-        const key: LoadKey = { endpoint, groupId };
-        keyRef.current = key;
-        const requestId = ++requestRef.current;
-        setStatus('running');
-        setError('');
-        void loadStaff(key, requestId, force);
-        try {
-            const page = await fetchPage(key, 0, force);
-            if (
-                requestId !== requestRef.current ||
-                !sameKey(key, keyRef.current)
-            ) {
-                return;
-            }
-            setRows(page);
-            setHasMore(page.length >= VRCHAT_API_DEFAULT_PAGE_SIZE);
-            setStatus('ready');
-        } catch (loadError) {
-            if (requestId !== requestRef.current) {
-                return;
-            }
-            setStatus('error');
-            setError(userFacingErrorMessage(loadError, loadFailedMessage));
-        }
-    }
-
-    async function loadMore() {
-        if (isLoadingMore || !hasMore || status !== 'ready') {
-            return;
-        }
-        const key = keyRef.current;
-        const requestId = requestRef.current;
-        setIsLoadingMore(true);
-        try {
-            const page = await fetchPage(key, rows.length, false);
-            if (
-                requestId !== requestRef.current ||
-                !sameKey(key, keyRef.current)
-            ) {
-                return;
-            }
-            setRows((current) => mergeRows(current, page));
-            setHasMore(page.length >= VRCHAT_API_DEFAULT_PAGE_SIZE);
-        } catch (loadError) {
-            if (requestId !== requestRef.current) {
-                return;
-            }
-            setError(userFacingErrorMessage(loadError, loadFailedMessage));
-        } finally {
-            if (requestId === requestRef.current) {
-                setIsLoadingMore(false);
-            }
-        }
-    }
-
-    async function loadAll() {
-        const key = keyRef.current;
-        const all = await groupProfileRepository.getAllGroupMembers({
-            groupId: key.groupId,
-            force: true
-        });
-        if (sameKey(key, keyRef.current)) {
-            setRows(all);
-            setHasMore(false);
-        }
-        return all;
+    function refresh(force: boolean) {
+        loadedKeyRef.current = loadKey;
+        setSearchError('');
+        void loadStaff(force);
+        return loadFirstPage(force);
     }
 
     useEffect(() => {
-        requestRef.current += 1;
+        reset();
+        staffRequestRef.current += 1;
         searchRequestRef.current += 1;
-        setRows([]);
         setStaffRows([]);
-        setStatus('');
-        setError('');
-        setHasMore(false);
-        setIsLoadingMore(false);
         setQuery('');
         setSearchRows([]);
         setSearchStatus('');
-    }, [endpoint, groupId]);
+        setSearchError('');
+    }, [endpoint, groupId, reset]);
 
     const loadForActiveKey = useEffectEvent(() => {
         if (!active || !groupId) {
             return;
         }
-        const key: LoadKey = { endpoint, groupId };
-        if (
-            status !== '' &&
-            status !== 'error' &&
-            sameKey(key, keyRef.current)
-        ) {
+        if (loadedKeyRef.current === loadKey && pages.status !== 'error') {
             return;
         }
-        void loadFirstPage(false);
+        void refresh(false);
     });
 
     useEffect(() => {
@@ -247,14 +155,14 @@ export function useGroupDialogMembers({
                 }
                 setSearchRows(results);
                 setSearchStatus('ready');
-            } catch (searchError) {
+            } catch (searchFailure) {
                 if (requestId !== searchRequestRef.current) {
                     return;
                 }
                 setSearchRows([]);
                 setSearchStatus('error');
-                setError(
-                    userFacingErrorMessage(searchError, searchFailedMessage)
+                setSearchError(
+                    userFacingErrorMessage(searchFailure, searchFailedMessage)
                 );
             }
         }, SEARCH_DEBOUNCE_MS);
@@ -265,19 +173,19 @@ export function useGroupDialogMembers({
 
     const visibleRows = isSearching
         ? searchRows
-        : status === 'ready' || rows.length
-          ? rows
+        : pages.status === 'ready' || pages.rows.length
+          ? pages.rows
           : seedRows;
 
     const model: GroupDialogMembersModel = {
         rows: visibleRows,
         staffRows,
-        status,
-        error,
-        loadedCount: rows.length,
+        status: pages.status,
+        error: pages.error || searchError,
+        loadedCount: pages.rows.length,
         totalCount,
-        hasMore: !isSearching && hasMore,
-        isLoadingMore,
+        hasMore: !isSearching && pages.hasMore,
+        isLoadingMore: pages.loadingMore,
         query,
         isSearching,
         searchStatus
@@ -286,8 +194,14 @@ export function useGroupDialogMembers({
     return {
         model,
         setQuery,
-        refresh: () => loadFirstPage(true),
-        loadMore,
-        loadAll
+        refresh: () => refresh(true),
+        loadMore: pages.loadMore,
+        loadAll: () =>
+            pages.replaceRows(() =>
+                groupProfileRepository.getAllGroupMembers({
+                    groupId,
+                    force: true
+                })
+            )
     };
 }

@@ -154,4 +154,85 @@ describe('useGroupDialogMembers', () => {
         expect(result.current.model.loadedCount).toBe(3);
         expect(result.current.model.hasMore).toBe(false);
     });
+
+    it('keeps loaded members and stops paging when loading more fails', async () => {
+        mocks.getGroupMembers
+            .mockResolvedValueOnce(page(0, 100))
+            .mockRejectedValueOnce(new Error('rate limited'));
+        const { result } = renderHook(() =>
+            useGroupDialogMembers({
+                endpoint: 'api',
+                groupId: 'grp_1',
+                active: true,
+                totalCount: 300,
+                staffRoleIds: [],
+                seedRows: []
+            })
+        );
+        await waitFor(() => expect(result.current.model.status).toBe('ready'));
+
+        await act(async () => {
+            await result.current.loadMore();
+        });
+
+        expect(result.current.model.error).toBe('');
+        expect(result.current.model.loadedCount).toBe(100);
+        expect(result.current.model.hasMore).toBe(false);
+    });
+
+    it('asks for the next page after every fetched member even when a page repeats members', async () => {
+        mocks.getGroupMembers
+            .mockResolvedValueOnce(page(0, 100))
+            .mockResolvedValueOnce(page(95, 100))
+            .mockResolvedValueOnce([]);
+        const { result } = renderHook(() =>
+            useGroupDialogMembers({
+                endpoint: 'api',
+                groupId: 'grp_1',
+                active: true,
+                totalCount: 300,
+                staffRoleIds: [],
+                seedRows: []
+            })
+        );
+        await waitFor(() => expect(result.current.model.status).toBe('ready'));
+
+        await act(async () => {
+            await result.current.loadMore();
+        });
+        await act(async () => {
+            await result.current.loadMore();
+        });
+
+        expect(result.current.model.loadedCount).toBe(195);
+        expect(mocks.getGroupMembers).toHaveBeenLastCalledWith(
+            expect.objectContaining({ offset: 200 })
+        );
+    });
+
+    it('loads the next group once the dialog switches groups while open', async () => {
+        mocks.getGroupMembers
+            .mockResolvedValueOnce(page(0, 3))
+            .mockResolvedValueOnce(page(10, 2));
+        const { result, rerender } = renderHook(
+            ({ groupId }: { groupId: string }) =>
+                useGroupDialogMembers({
+                    endpoint: 'api',
+                    groupId,
+                    active: true,
+                    totalCount: null,
+                    staffRoleIds: [],
+                    seedRows: []
+                }),
+            { initialProps: { groupId: 'grp_1' } }
+        );
+        await waitFor(() => expect(result.current.model.loadedCount).toBe(3));
+
+        rerender({ groupId: 'grp_2' });
+
+        await waitFor(() => expect(result.current.model.loadedCount).toBe(2));
+        expect(mocks.getGroupMembers).toHaveBeenLastCalledWith(
+            expect.objectContaining({ groupId: 'grp_2', offset: 0 })
+        );
+    });
 });

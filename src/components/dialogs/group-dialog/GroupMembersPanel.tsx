@@ -41,6 +41,11 @@ import { getGroupRowImage, getGroupRowLabel } from './groupDialogUtils';
 import { GroupListState } from './GroupListState';
 import { useFriendMemberIds } from './useFriendMemberIds';
 import type { GroupDialogMembersModel } from './useGroupDialogMembers';
+import {
+    appendUniqueMemberRows,
+    groupMemberRowKey,
+    groupMemberUserId
+} from './useGroupMemberPages';
 
 type StaffRole = GroupRoleRecord & { id: string };
 
@@ -126,26 +131,6 @@ export function staffRoleIdsOf(group: GroupProfileRecord | null): string[] {
     return rankedRoles(group).map((role) => role.id);
 }
 
-function memberUserId(row: GroupMemberRow) {
-    return row.userId || row.user?.id || '';
-}
-
-function memberKey(row: GroupMemberRow) {
-    return row.userId || row.id;
-}
-
-function dedupeRows(rows: GroupMemberRow[]) {
-    const seen = new Set<string>();
-    return rows.filter((row) => {
-        const key = memberKey(row);
-        if (seen.has(key)) {
-            return false;
-        }
-        seen.add(key);
-        return true;
-    });
-}
-
 function GroupMemberTile({
     row,
     roles,
@@ -161,7 +146,7 @@ function GroupMemberTile({
     const label = getGroupRowLabel(row);
     const image = getGroupRowImage(row, 'members');
     const user = row.user ?? null;
-    const userId = memberUserId(row);
+    const userId = groupMemberUserId(row);
     const notableRoles = roles.filter(
         (role) =>
             role.id !== omitRoleId &&
@@ -291,7 +276,7 @@ function MemberTileGrid({
         <div className="grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] items-start gap-1">
             {rows.map((row) => (
                 <GroupMemberTile
-                    key={memberKey(row)}
+                    key={groupMemberRowKey(row)}
                     row={row}
                     roles={roles}
                     omitRoleId={omitRoleId}
@@ -328,10 +313,10 @@ export function GroupMembersPanel({
 
     const membersBusy = members.status === 'running';
     const memberTotal = members.totalCount ?? members.loadedCount;
-    const pool = dedupeRows([...members.staffRows, ...members.rows]);
-    const friendMemberIds = useFriendMemberIds(pool.map(memberUserId));
+    const pool = appendUniqueMemberRows(members.staffRows, members.rows);
+    const friendMemberIds = useFriendMemberIds(pool.map(groupMemberUserId));
     const isFriend = (row: GroupMemberRow) =>
-        friendMemberIds.has(memberUserId(row));
+        friendMemberIds.has(groupMemberUserId(row));
     const visiblePool = viewMode === 'friends' ? pool.filter(isFriend) : pool;
     const staffRoles = rankedRoles(group);
     const allBuckets = bucketRows(visiblePool, staffRoles, t);
