@@ -3629,6 +3629,8 @@
             "group_count": "Skupin: {count}",
             "edit_mode": "Upravit",
             "exit_edit_mode": "Hotovo",
+            "section_own": "Vlastní skupiny",
+            "section_joined": "Skupiny, ve kterých jste členem",
             "order_hint": "Přetažením skupin nastavíte pořadí, v jakém se zobrazují ve VRChatu.",
             "order_game_running": "VRChat běží. Změny pořadí mohou být při ukončení hry přepsány.",
             "order_unavailable": "Pořadí skupin není k dispozici: {reason}",

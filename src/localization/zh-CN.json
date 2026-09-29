@@ -3613,6 +3613,8 @@
             "group_count": "{count} 个群组",
             "edit_mode": "编辑",
             "exit_edit_mode": "完成",
+            "section_own": "我创建的群组",
+            "section_joined": "我加入的群组",
             "order_hint": "拖拽群组，调整 VRChat 中显示群组的顺序。",
             "order_game_running": "VRChat 正在运行，顺序改动可能在游戏退出时被覆盖。",
             "order_unavailable": "无法调整群组顺序：{reason}",

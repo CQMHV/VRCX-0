@@ -3615,6 +3615,8 @@
             "group_count": "{count} Gruppe(n)",
             "edit_mode": "Bearbeiten",
             "exit_edit_mode": "Fertig",
+            "section_own": "Eigene Gruppen",
+            "section_joined": "Beigetretene Gruppen",
             "order_hint": "Ziehe die Gruppen, um ihre Anzeigereihenfolge in VRChat festzulegen.",
             "order_game_running": "VRChat läuft. Änderungen an der Reihenfolge können beim Beenden des Spiels überschrieben werden.",
             "order_unavailable": "Gruppenreihenfolge nicht verfügbar: {reason}",

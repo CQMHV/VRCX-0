@@ -3615,6 +3615,8 @@
             "group_count": "{count} grupo(s)",
             "edit_mode": "Editar",
             "exit_edit_mode": "Concluir",
+            "section_own": "Meus grupos",
+            "section_joined": "Grupos em que participo",
             "order_hint": "Arraste os grupos para definir a ordem em que aparecem no VRChat.",
             "order_game_running": "O VRChat está em execução. As mudanças de ordem podem ser sobrescritas ao fechar o jogo.",
             "order_unavailable": "Não é possível alterar a ordem dos grupos: {reason}",

@@ -3609,6 +3609,8 @@
             "group_count": "グループ {count} 件",
             "edit_mode": "編集",
             "exit_edit_mode": "完了",
+            "section_own": "自分のグループ",
+            "section_joined": "参加したグループ",
             "order_hint": "グループをドラッグして、VRChat 内での表示順を変更します。",
             "order_game_running": "VRChatが起動中です。並び順の変更はゲーム終了時に上書きされることがあります。",
             "order_unavailable": "並び順を変更できません：{reason}",

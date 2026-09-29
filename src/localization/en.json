@@ -3615,6 +3615,8 @@
             "group_count": "{count} group(s)",
             "edit_mode": "Edit",
             "exit_edit_mode": "Done",
+            "section_own": "Own Groups",
+            "section_joined": "Joined Groups",
             "order_hint": "Drag groups to set the order VRChat shows them in.",
             "order_game_running": "VRChat is running. Order changes may be overwritten when the game exits.",
             "order_unavailable": "Group order is unavailable: {reason}",
