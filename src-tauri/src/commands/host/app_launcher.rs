@@ -52,6 +52,19 @@ pub fn app__app_launcher_entries_set(
 
 #[tauri::command(async)]
 #[specta::specta]
+pub fn app__app_launcher_entry_enabled_set(
+    state: State<'_, AppState>,
+    entry_id: String,
+    enabled: bool,
+) -> Result<AppLauncherSnapshot, AppError> {
+    require_app_launcher_supported()?;
+    Ok(state
+        .runtime_host()
+        .set_app_launcher_entry_enabled(&entry_id, enabled)?)
+}
+
+#[tauri::command(async)]
+#[specta::specta]
 pub fn app__app_launcher_entry_test(
     state: State<'_, AppState>,
     entry_id: String,

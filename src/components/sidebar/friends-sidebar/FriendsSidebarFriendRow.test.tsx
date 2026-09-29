@@ -2,11 +2,6 @@ import React, { type PropsWithChildren, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('react-i18next', async (importOriginal) => ({
-    ...(await importOriginal<typeof import('react-i18next')>()),
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 vi.mock('@/components/friends/FriendInstanceTimer', () => ({
     FriendInstanceTimer: () => <span data-instance-timer />,
     FriendLocationTimer: ({

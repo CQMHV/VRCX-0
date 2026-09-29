@@ -13,6 +13,8 @@ import { useFriendRosterStore } from '@/state/friendRosterStore';
 import { usePreferencesStore } from '@/state/preferencesStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
 
+vi.unmock('react-i18next');
+
 const mocks = vi.hoisted(() => ({
     queryFeedLatest: vi.fn()
 }));

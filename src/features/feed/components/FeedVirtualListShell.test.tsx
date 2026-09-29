@@ -10,10 +10,6 @@ import type {
     FeedTableInstance
 } from '@/components/feed/feedTypes';
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 vi.mock('@/components/feed/FeedDetailCell', () => ({
     FeedDetailCell: () => <span>detail</span>
 }));

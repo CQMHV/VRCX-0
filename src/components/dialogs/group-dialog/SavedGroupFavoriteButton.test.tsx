@@ -18,10 +18,6 @@ const mocks = vi.hoisted(() => ({
     prompt: vi.fn()
 }));
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 vi.mock('@/platform/tauri/bindings', () => ({
     commands: {
         appSavedGroupCollectionCreate: mocks.createCollection,

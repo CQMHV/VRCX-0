@@ -18,10 +18,10 @@ import {
 import { FadeInImage } from '@/components/media/FadeInImage';
 import type {
     GroupMemberRow,
-    GroupProfileRecord
+    GroupProfileRecord,
+    GroupRoleRecord
 } from '@/domain/entities/group';
 import { openUserDialog } from '@/services/dialogService';
-import { useFriendRosterStore } from '@/state/friendRosterStore';
 import { Badge } from '@/ui/shadcn/badge';
 import { Button } from '@/ui/shadcn/button';
 import {
@@ -39,15 +39,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
 import { getGroupRowImage, getGroupRowLabel } from './groupDialogUtils';
 import { GroupListState } from './GroupListState';
+import { useFriendMemberIds } from './useFriendMemberIds';
 import type { GroupDialogMembersModel } from './useGroupDialogMembers';
 
-type GroupRoleRecord = {
-    id?: string;
-    name?: string;
-    order?: number;
-    isManagementRole?: boolean;
-    permissions?: string[];
-};
+type StaffRole = GroupRoleRecord & { id: string };
 
 type MemberViewMode = 'all' | 'friends';
 
@@ -72,17 +67,15 @@ function roleLabel(name: string | undefined, t: TFunction) {
     return key ? t(key) : name || '';
 }
 
-function isNotableRole(role: GroupRoleRecord) {
-    return Boolean(
-        role.id &&
-        (role.isManagementRole ||
-            (Array.isArray(role.permissions) && role.permissions.length > 0))
-    );
-}
-
-function rankedRoles(group: GroupProfileRecord | null) {
-    return groupRoles(group)
-        .filter(isNotableRole)
+function rankedRoles(group: GroupProfileRecord | null): StaffRole[] {
+    const roles = Array.isArray(group?.roles) ? group.roles : [];
+    return roles
+        .filter(
+            (role): role is StaffRole =>
+                Boolean(role.id) &&
+                (role.isManagementRole === true ||
+                    Boolean(role.permissions?.length))
+        )
         .sort(
             (left, right) =>
                 (left.order ?? Number.MAX_SAFE_INTEGER) -
@@ -92,15 +85,15 @@ function rankedRoles(group: GroupProfileRecord | null) {
 
 function bucketRows(
     rows: GroupMemberRow[],
-    roles: GroupRoleRecord[],
+    roles: StaffRole[],
     t: TFunction
 ): MemberBucket[] {
     const byRole = new Map<string, GroupMemberRow[]>();
     const base: GroupMemberRow[] = [];
     for (const row of rows) {
         const roleIds = Array.isArray(row.roleIds) ? row.roleIds : [];
-        const top = roles.find((role) => role.id && roleIds.includes(role.id));
-        if (top?.id) {
+        const top = roles.find((role) => roleIds.includes(role.id));
+        if (top) {
             const list = byRole.get(top.id) ?? [];
             list.push(row);
             byRole.set(top.id, list);
@@ -110,8 +103,8 @@ function bucketRows(
     }
     const buckets: MemberBucket[] = [];
     for (const role of roles) {
-        const list = role.id ? byRole.get(role.id) : undefined;
-        if (role.id && list?.length) {
+        const list = byRole.get(role.id);
+        if (list?.length) {
             buckets.push({
                 key: role.id,
                 title: roleLabel(role.name, t),
@@ -129,14 +122,12 @@ function bucketRows(
     return buckets;
 }
 
-function groupRoles(group: GroupProfileRecord | null): GroupRoleRecord[] {
-    return Array.isArray(group?.roles)
-        ? (group.roles as GroupRoleRecord[])
-        : [];
+export function staffRoleIdsOf(group: GroupProfileRecord | null): string[] {
+    return rankedRoles(group).map((role) => role.id);
 }
 
-export function staffRoleIdsOf(group: GroupProfileRecord | null): string[] {
-    return rankedRoles(group).map((role) => role.id as string);
+function memberUserId(row: GroupMemberRow) {
+    return row.userId || row.user?.id || '';
 }
 
 function memberKey(row: GroupMemberRow) {
@@ -157,12 +148,12 @@ function dedupeRows(rows: GroupMemberRow[]) {
 
 function GroupMemberTile({
     row,
-    group,
+    roles,
     omitRoleId,
     isFriend
 }: {
     row: GroupMemberRow;
-    group: GroupProfileRecord | null;
+    roles: StaffRole[];
     omitRoleId: string | null;
     isFriend: boolean;
 }) {
@@ -170,12 +161,12 @@ function GroupMemberTile({
     const label = getGroupRowLabel(row);
     const image = getGroupRowImage(row, 'members');
     const user = row.user ?? null;
-    const memberUserId = row.userId || user?.id || '';
-    const notableRoles = rankedRoles(group).filter(
+    const userId = memberUserId(row);
+    const notableRoles = roles.filter(
         (role) =>
             role.id !== omitRoleId &&
             Array.isArray(row.roleIds) &&
-            row.roleIds.includes(role.id as string)
+            row.roleIds.includes(role.id)
     );
     const visibleRoles = notableRoles.slice(0, ROLE_CHIP_LIMIT);
     const hiddenRoles = notableRoles.slice(ROLE_CHIP_LIMIT);
@@ -188,9 +179,9 @@ function GroupMemberTile({
             variant="ghost"
             className="box-border h-auto w-full min-w-0 justify-start gap-2.5 p-1.5 text-left text-sm font-normal"
             onClick={() => {
-                if (memberUserId) {
+                if (userId) {
                     openUserDialog({
-                        userId: memberUserId,
+                        userId,
                         title: user?.displayName || undefined,
                         seedData: user
                     });
@@ -287,12 +278,12 @@ function GroupMemberTile({
 
 function MemberTileGrid({
     rows,
-    group,
+    roles,
     isFriend,
     omitRoleId = null
 }: {
     rows: GroupMemberRow[];
-    group: GroupProfileRecord | null;
+    roles: StaffRole[];
     isFriend: (row: GroupMemberRow) => boolean;
     omitRoleId?: string | null;
 }) {
@@ -302,7 +293,7 @@ function MemberTileGrid({
                 <GroupMemberTile
                     key={memberKey(row)}
                     row={row}
-                    group={group}
+                    roles={roles}
                     omitRoleId={omitRoleId}
                     isFriend={isFriend(row)}
                 />
@@ -329,7 +320,6 @@ export function GroupMembersPanel({
     onRefresh: () => void;
 }) {
     const { t } = useTranslation();
-    const friendsById = useFriendRosterStore((state) => state.friendsById);
     const [viewMode, setViewMode] = useState<MemberViewMode>('all');
     const [toggled, setToggled] = useState<Set<string>>(() => new Set());
     const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -338,11 +328,13 @@ export function GroupMembersPanel({
 
     const membersBusy = members.status === 'running';
     const memberTotal = members.totalCount ?? members.loadedCount;
-    const isFriend = (row: GroupMemberRow) =>
-        Boolean(friendsById[row.userId || row.user?.id || '']);
     const pool = dedupeRows([...members.staffRows, ...members.rows]);
+    const friendMemberIds = useFriendMemberIds(pool.map(memberUserId));
+    const isFriend = (row: GroupMemberRow) =>
+        friendMemberIds.has(memberUserId(row));
     const visiblePool = viewMode === 'friends' ? pool.filter(isFriend) : pool;
-    const allBuckets = bucketRows(visiblePool, rankedRoles(group), t);
+    const staffRoles = rankedRoles(group);
+    const allBuckets = bucketRows(visiblePool, staffRoles, t);
     const rankedCount = allBuckets
         .filter((bucket) => bucket.roleId)
         .reduce((total, bucket) => total + bucket.rows.length, 0);
@@ -484,7 +476,7 @@ export function GroupMembersPanel({
                     <>
                         <MemberTileGrid
                             rows={members.rows}
-                            group={group}
+                            roles={staffRoles}
                             isFriend={isFriend}
                         />
                         <div className="text-muted-foreground px-1 text-xs">
@@ -521,7 +513,7 @@ export function GroupMembersPanel({
                                 {open ? (
                                     <MemberTileGrid
                                         rows={bucket.rows}
-                                        group={group}
+                                        roles={staffRoles}
                                         omitRoleId={bucket.roleId}
                                         isFriend={isFriend}
                                     />

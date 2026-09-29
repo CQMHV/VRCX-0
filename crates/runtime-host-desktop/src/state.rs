@@ -1713,6 +1713,22 @@ impl DesktopRuntimeHostState {
         )?)
     }
 
+    pub fn set_presence_automation_rule_enabled(
+        &self,
+        kind: PresenceAutomationRuleKind,
+        rule_id: &str,
+        enabled: bool,
+    ) -> Result<Vec<RawJson>> {
+        let store = crate::game_state_store::PersistenceGameStateStore::new(Arc::clone(
+            self.runtime.database(),
+        ));
+        Ok(
+            vrcx_0_application_game::presence_automation_rule_enabled_set(
+                &store, kind, rule_id, enabled,
+            )?,
+        )
+    }
+
     pub fn set_overlay_activity_filters(
         &self,
         filters: vrcx_0_application_activity::notification::OverlayActivityPreferenceFilters,
@@ -2149,6 +2165,23 @@ impl DesktopRuntimeHostState {
             &serde_json::to_value(&entries)?,
         )?;
         Ok(self.game.auto_launch.set_entries(entries))
+    }
+
+    pub fn set_app_launcher_entry_enabled(
+        &self,
+        entry_id: &str,
+        enabled: bool,
+    ) -> Result<AppLauncherSnapshot> {
+        let config = self.runtime.desktop_assembly().config();
+        Ok(self
+            .game
+            .auto_launch
+            .set_entry_enabled(entry_id, enabled, |entries| {
+                config.set_json(
+                    APP_LAUNCHER_ENTRIES_CONFIG_KEY,
+                    &serde_json::to_value(entries)?,
+                )
+            })?)
     }
 
     pub fn test_app_launcher_entry(&self, entry_id: &str) -> Result<AppLauncherSnapshot> {

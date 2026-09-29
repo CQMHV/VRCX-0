@@ -51,10 +51,6 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
     };
 });
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 vi.mock(
     '@/components/sidebar/friends-sidebar/friendsSidebarModel',
     async (importOriginal) => ({

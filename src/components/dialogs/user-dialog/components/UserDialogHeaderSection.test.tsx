@@ -17,11 +17,6 @@ import {
     type UserHeaderModel
 } from './UserDialogHeaderSection';
 
-vi.mock('react-i18next', async (importOriginal) => ({
-    ...(await importOriginal<typeof import('react-i18next')>()),
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 let notifyResize: (() => void) | null = null;
 
 class ResizeObserverMock {

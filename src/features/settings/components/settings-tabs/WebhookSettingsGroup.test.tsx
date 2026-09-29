@@ -2,12 +2,6 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key: string) => key
-    })
-}));
-
 vi.mock('@/ui/shadcn/button', async () => {
     const React = await import('react');
     type MockProps = React.PropsWithChildren<Record<string, unknown>>;

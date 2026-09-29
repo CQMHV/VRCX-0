@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 
-import { Field } from '@/features/settings/components/SettingsField';
 import { openPrivacyLockDialog } from '@/state/privacyLockDialogStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
 import { Button } from '@/ui/shadcn/button';
+
+import { Field } from './SettingsField';
 
 export function PrivacyLockSetting() {
     const { t } = useTranslation();

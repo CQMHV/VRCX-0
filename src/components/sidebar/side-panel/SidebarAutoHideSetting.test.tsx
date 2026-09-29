@@ -10,9 +10,6 @@ import { useSidebarAutoHideStore } from '@/state/sidebarAutoHideStore';
 
 import { SidebarAutoHideSetting } from './SidebarAutoHideSetting';
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string) => key })
-}));
 vi.mock('@/services/sidebarAutoHideService', () => ({
     setSidebarAutoHideEnabled: vi.fn()
 }));

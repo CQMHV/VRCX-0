@@ -4562,7 +4562,9 @@
                 "loaded_of_total": "{total}명 중 {loaded}명 불러옴",
                 "search_results": "결과 {count}개",
                 "export_loaded": "불러온 항목 내보내기({count})",
-                "export_all": "전체 내보내기({count})"
+                "export_all": "전체 내보내기({count})",
+                "failed_to_load": "회원을 불러오지 못했습니다.",
+                "failed_to_search": "회원을 검색하지 못했습니다."
             },
             "gallery": {
                 "header": "갤러리"
@@ -5400,7 +5402,8 @@
             "send": "보내기",
             "recent": "최근 사용",
             "inventory_emojis": "인벤토리",
-            "no_inventory_emojis": "인벤토리에 아직 부프용 이모티콘이 없습니다"
+            "no_inventory_emojis": "인벤토리에 아직 부프용 이모티콘이 없습니다",
+            "failed_to_load_emojis": "이모지를 불러오지 못했습니다."
         },
         "vrcx_updater": {
             "latest_version": "VRCX-0이 최신 버전입니다",

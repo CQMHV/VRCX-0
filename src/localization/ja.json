@@ -4609,7 +4609,9 @@
                 "loaded_of_total": "{total} 件中 {loaded} 件を読み込み済み",
                 "search_results": "{count} 件",
                 "export_loaded": "読み込み済みを書き出し（{count}）",
-                "export_all": "すべて書き出し（{count}）"
+                "export_all": "すべて書き出し（{count}）",
+                "failed_to_load": "メンバーを読み込めませんでした",
+                "failed_to_search": "メンバーを検索できませんでした"
             },
             "gallery": {
                 "header": "写真"
@@ -5440,7 +5442,8 @@
             "send": "送信",
             "recent": "最近使った項目",
             "inventory_emojis": "インベントリ",
-            "no_inventory_emojis": "インベントリにつっつき用の絵文字はまだありません"
+            "no_inventory_emojis": "インベントリにつっつき用の絵文字はまだありません",
+            "failed_to_load_emojis": "絵文字を読み込めませんでした"
         },
         "vrcx_updater": {
             "latest_version": "VRCX-0は最新版です。",

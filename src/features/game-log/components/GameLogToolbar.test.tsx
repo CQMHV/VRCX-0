@@ -13,10 +13,6 @@ import { GameLogToolbar } from './GameLogToolbar';
 
 const mocks = vi.hoisted(() => ({ picker: vi.fn() }));
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 vi.mock('@/components/data-table/TableColumnVisibilityMenu', () => ({
     TableColumnVisibilityMenu: () => <button>Columns</button>
 }));

@@ -4592,7 +4592,9 @@
                 "loaded_of_total": "Загружено {loaded} из {total}",
                 "search_results": "Результатов: {count}",
                 "export_loaded": "Экспорт загруженных ({count})",
-                "export_all": "Экспорт всех ({count})"
+                "export_all": "Экспорт всех ({count})",
+                "failed_to_load": "Не удалось загрузить участников",
+                "failed_to_search": "Не удалось найти участников"
             },
             "gallery": {
                 "header": "Фото"
@@ -5425,7 +5427,8 @@
             "send": "Отправить",
             "recent": "Недавние",
             "inventory_emojis": "Инвентарь",
-            "no_inventory_emojis": "В инвентаре пока нет эмодзи для бупа"
+            "no_inventory_emojis": "В инвентаре пока нет эмодзи для бупа",
+            "failed_to_load_emojis": "Не удалось загрузить эмодзи"
         },
         "vrcx_updater": {
             "latest_version": "У вас установлена актуальная версия VRCX-0.",

@@ -13,6 +13,7 @@ import {
     resolveInventoryImageUrl,
     resolveInventoryName
 } from '@/domain/entities/inventory';
+import { userFacingErrorMessage } from '@/lib/errorDisplay';
 import { cn } from '@/lib/utils';
 import mediaRepository, {
     type InventoryItemRecord
@@ -133,6 +134,8 @@ function useEmojiRows(
     fetchRows: () => Promise<BoopEmojiChoice[]>,
     enabled: boolean
 ) {
+    const { t } = useTranslation();
+    const failedMessage = t('dialog.boop_dialog.failed_to_load_emojis');
     const [rows, setRows] = useState<BoopEmojiChoice[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -150,18 +153,14 @@ function useEmojiRows(
         } catch (nextError) {
             if (requestIdRef.current === requestId) {
                 setRows([]);
-                setError(
-                    nextError instanceof Error
-                        ? nextError.message
-                        : 'Failed to load emojis.'
-                );
+                setError(userFacingErrorMessage(nextError, failedMessage));
             }
         } finally {
             if (requestIdRef.current === requestId) {
                 setLoading(false);
             }
         }
-    }, [fetchRows]);
+    }, [failedMessage, fetchRows]);
 
     useEffect(() => {
         if (enabled) {

@@ -6,11 +6,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { DashboardRow } from '@/repositories/dashboardRepository';
 import { TooltipProvider } from '@/ui/shadcn/tooltip';
 
-vi.mock('react-i18next', async (importOriginal) => ({
-    ...(await importOriginal<typeof import('react-i18next')>()),
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 vi.mock('./DashboardViewParts', () => ({
     DashboardPanelPreviewForPanel: () => <div>preview</div>,
     DashboardPanelSelectorDialog: ({ open }: { open: boolean }) => (

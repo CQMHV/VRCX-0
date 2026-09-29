@@ -21,11 +21,6 @@ vi.mock('@/platform/tauri/bindings', () => ({
 vi.mock('@/repositories/groupProfileRepository', () => ({
     default: { getGroupProfile: vi.fn() }
 }));
-vi.mock('react-i18next', async (importOriginal) => ({
-    ...(await importOriginal<typeof import('react-i18next')>()),
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 const roles = [
     { id: 'member', name: 'Member', order: 5 },
     { id: 'staff', name: 'Staff', order: 1 },

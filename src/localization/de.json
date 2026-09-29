@@ -4581,7 +4581,9 @@
                 "loaded_of_total": "{loaded} von {total} geladen",
                 "search_results": "{count} Treffer",
                 "export_loaded": "Geladene exportieren ({count})",
-                "export_all": "Alle exportieren ({count})"
+                "export_all": "Alle exportieren ({count})",
+                "failed_to_load": "Mitglieder konnten nicht geladen werden",
+                "failed_to_search": "Mitgliedersuche fehlgeschlagen"
             },
             "gallery": {
                 "header": "Fotos"
@@ -5414,7 +5416,8 @@
             "send": "Senden",
             "recent": "Zuletzt verwendet",
             "inventory_emojis": "Inventar",
-            "no_inventory_emojis": "Noch keine Boop-Emojis im Inventar"
+            "no_inventory_emojis": "Noch keine Boop-Emojis im Inventar",
+            "failed_to_load_emojis": "Emojis konnten nicht geladen werden"
         },
         "vrcx_updater": {
             "latest_version": "VRCX-0 ist auf dem neuesten Stand",

@@ -213,7 +213,6 @@ describe('communityThemeService', () => {
             'getCommunityThemeOverrideCssSnapshot',
             'initializeCommunityThemes',
             'installCommunityTheme',
-            'isCommunityThemeAccentControlled',
             'loadCatalog',
             'loadCommunityThemeStats',
             'loadLocalCommunityThemePreview',

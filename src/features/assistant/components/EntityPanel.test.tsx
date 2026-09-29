@@ -19,12 +19,6 @@ const storeMocks = vi.hoisted(() => ({
     } as AssistantStoreState
 }));
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key: string) => key
-    })
-}));
-
 vi.mock('@/ui/shadcn/scroll-area', async () => {
     const React = await import('react');
 

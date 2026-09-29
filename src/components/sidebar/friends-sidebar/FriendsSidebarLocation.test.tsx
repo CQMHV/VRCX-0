@@ -15,6 +15,8 @@ import {
     type TimeUnitLabels
 } from '@/shared/utils/dateTime';
 
+vi.unmock('react-i18next');
+
 const timerState = vi.hoisted((): { timeUnitLabels: TimeUnitLabels } => ({
     timeUnitLabels: { y: 'y', d: 'd', h: 'h', m: 'm', s: 's' }
 }));

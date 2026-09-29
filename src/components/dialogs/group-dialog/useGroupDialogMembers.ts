@@ -1,7 +1,9 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { GroupMemberRow } from '@/domain/entities/group';
 import type { RemoteTabStatus } from '@/domain/shared/types';
+import { userFacingErrorMessage } from '@/lib/errorDisplay';
 import groupProfileRepository from '@/repositories/groupProfileRepository';
 import { VRCHAT_API_DEFAULT_PAGE_SIZE } from '@/shared/constants/pagination';
 
@@ -48,10 +50,6 @@ function mergeRows(current: GroupMemberRow[], incoming: GroupMemberRow[]) {
     return next;
 }
 
-function errorMessage(error: unknown, fallback: string) {
-    return error instanceof Error ? error.message : fallback;
-}
-
 export function useGroupDialogMembers({
     endpoint,
     groupId,
@@ -67,6 +65,9 @@ export function useGroupDialogMembers({
     staffRoleIds: readonly string[];
     seedRows: GroupMemberRow[];
 }) {
+    const { t } = useTranslation();
+    const loadFailedMessage = t('dialog.group.members.failed_to_load');
+    const searchFailedMessage = t('dialog.group.members.failed_to_search');
     const [rows, setRows] = useState<GroupMemberRow[]>([]);
     const [staffRows, setStaffRows] = useState<GroupMemberRow[]>([]);
     const [status, setStatus] = useState<RemoteTabStatus>('');
@@ -145,7 +146,7 @@ export function useGroupDialogMembers({
                 return;
             }
             setStatus('error');
-            setError(errorMessage(loadError, 'Failed to load members.'));
+            setError(userFacingErrorMessage(loadError, loadFailedMessage));
         }
     }
 
@@ -170,7 +171,7 @@ export function useGroupDialogMembers({
             if (requestId !== requestRef.current) {
                 return;
             }
-            setError(errorMessage(loadError, 'Failed to load members.'));
+            setError(userFacingErrorMessage(loadError, loadFailedMessage));
         } finally {
             if (requestId === requestRef.current) {
                 setIsLoadingMore(false);
@@ -253,14 +254,14 @@ export function useGroupDialogMembers({
                 setSearchRows([]);
                 setSearchStatus('error');
                 setError(
-                    errorMessage(searchError, 'Failed to search members.')
+                    userFacingErrorMessage(searchError, searchFailedMessage)
                 );
             }
         }, SEARCH_DEBOUNCE_MS);
         return () => {
             window.clearTimeout(timer);
         };
-    }, [active, groupId, isSearching, trimmedQuery]);
+    }, [active, groupId, isSearching, searchFailedMessage, trimmedQuery]);
 
     const visibleRows = isSearching
         ? searchRows

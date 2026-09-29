@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
+use std::sync::Mutex;
 use std::time::Duration;
 
 use chrono::{Datelike, Local, Timelike, Utc};
@@ -108,16 +109,39 @@ pub fn presence_automation_rules_get(
     )
 }
 
+static PRESENCE_RULES_WRITE: Mutex<()> = Mutex::new(());
+
 pub fn presence_automation_rules_set(
     config: &dyn GameStateStore,
     kind: PresenceAutomationRuleKind,
     rules: Vec<RawJson>,
 ) -> Result<Vec<RawJson>> {
+    let _write = PRESENCE_RULES_WRITE.lock().unwrap();
     config.set_json(
         presence_rules_key(kind),
         &Value::Array(rules.iter().map(|rule| rule.as_value().clone()).collect()),
     )?;
     Ok(rules)
+}
+
+pub fn presence_automation_rule_enabled_set(
+    config: &dyn GameStateStore,
+    kind: PresenceAutomationRuleKind,
+    rule_id: &str,
+    enabled: bool,
+) -> Result<Vec<RawJson>> {
+    let _write = PRESENCE_RULES_WRITE.lock().unwrap();
+    let mut rules = safe_value_array(&config.get_string(presence_rules_key(kind), "[]")?);
+    for rule in rules
+        .iter_mut()
+        .filter(|rule| rule.get("id").and_then(Value::as_str) == Some(rule_id))
+    {
+        if let Some(fields) = rule.as_object_mut() {
+            fields.insert("enabled".to_string(), Value::Bool(enabled));
+        }
+    }
+    config.set_json(presence_rules_key(kind), &Value::Array(rules.clone()))?;
+    Ok(rules.into_iter().map(RawJson::from).collect())
 }
 
 fn presence_rules_key(kind: PresenceAutomationRuleKind) -> &'static str {
@@ -883,6 +907,43 @@ mod tests {
 
         assert_eq!(loaded.len(), 1);
         assert_eq!(loaded[0].as_value(), &rule);
+    }
+
+    #[test]
+    fn toggling_one_presence_rule_keeps_the_other_rules_and_fields() {
+        let config = TestGameStateStore::default();
+        presence_automation_rules_set(
+            &config,
+            PresenceAutomationRuleKind::Time,
+            vec![
+                RawJson::from(json!({"id": "morning", "enabled": false, "label": "Wake"})),
+                RawJson::from(json!({"id": "evening", "enabled": false})),
+            ],
+        )
+        .unwrap();
+
+        let saved = presence_automation_rule_enabled_set(
+            &config,
+            PresenceAutomationRuleKind::Time,
+            "morning",
+            true,
+        )
+        .unwrap();
+        let loaded =
+            presence_automation_rules_get(&config, PresenceAutomationRuleKind::Time).unwrap();
+
+        let expected = vec![
+            json!({"id": "morning", "enabled": true, "label": "Wake"}),
+            json!({"id": "evening", "enabled": false}),
+        ];
+        let values = |rules: &[RawJson]| {
+            rules
+                .iter()
+                .map(|rule| rule.as_value().clone())
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(values(&saved), expected);
+        assert_eq!(values(&loaded), expected);
     }
 
     #[test]

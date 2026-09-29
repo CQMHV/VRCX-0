@@ -4597,7 +4597,9 @@
                 "loaded_of_total": "Načteno {loaded} z {total}",
                 "search_results": "{count} výsledků",
                 "export_loaded": "Exportovat načtené ({count})",
-                "export_all": "Exportovat vše ({count})"
+                "export_all": "Exportovat vše ({count})",
+                "failed_to_load": "Nepodařilo se načíst členy",
+                "failed_to_search": "Nepodařilo se vyhledat členy"
             },
             "gallery": {
                 "header": "Fotografie"
@@ -5430,7 +5432,8 @@
             "send": "Odeslat",
             "recent": "Nedávno použité",
             "inventory_emojis": "Inventář",
-            "no_inventory_emojis": "V inventáři zatím nejsou žádná emoji pro boop"
+            "no_inventory_emojis": "V inventáři zatím nejsou žádná emoji pro boop",
+            "failed_to_load_emojis": "Nepodařilo se načíst emoji"
         },
         "vrcx_updater": {
             "latest_version": "VRCX-0 is up to date.",

@@ -4615,7 +4615,9 @@
                 "loaded_of_total": "已載入 {loaded} / {total}",
                 "search_results": "{count} 個結果",
                 "export_loaded": "匯出已載入（{count}）",
-                "export_all": "匯出全部（{count}）"
+                "export_all": "匯出全部（{count}）",
+                "failed_to_load": "載入成員失敗",
+                "failed_to_search": "搜尋成員失敗"
             },
             "gallery": {
                 "header": "畫廊"
@@ -5448,7 +5450,8 @@
             "send": "傳送",
             "recent": "最近使用",
             "inventory_emojis": "庫存",
-            "no_inventory_emojis": "庫存裡還沒有可用的戳一下表情符號"
+            "no_inventory_emojis": "庫存裡還沒有可用的戳一下表情符號",
+            "failed_to_load_emojis": "載入表情符號失敗"
         },
         "vrcx_updater": {
             "latest_version": "VRCX-0 已是最新版本",

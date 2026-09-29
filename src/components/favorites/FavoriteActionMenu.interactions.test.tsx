@@ -23,10 +23,6 @@ const mocks = vi.hoisted(() => ({
     prompt: vi.fn()
 }));
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 vi.mock('@/components/favorites/useLocalWorldFavorites', () => ({
     useLocalWorldFavorites: () => ({
         favoritesByGroup: {},

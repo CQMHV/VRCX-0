@@ -28,10 +28,6 @@ vi.mock('@/services/toastService', () => ({
     }
 }));
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 vi.mock('@/repositories/memoPersistenceRepository', () => ({
     default: {
         getUserMemo: mocks.getUserMemo,

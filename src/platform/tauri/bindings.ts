@@ -584,6 +584,17 @@ const generatedCommands = {
             rules
         });
     },
+    async appPresenceAutomationRuleEnabledSet(
+        kind: PresenceAutomationRuleKind,
+        ruleId: string,
+        enabled: boolean
+    ): Promise<RawJson[]> {
+        return await TAURI_INVOKE('app__presence_automation_rule_enabled_set', {
+            kind,
+            ruleId,
+            enabled
+        });
+    },
     async appFavoritesTransferSelection(
         input: FavoriteTransferSelectionInput
     ): Promise<FavoriteTransferSelectionResult> {
@@ -2542,6 +2553,15 @@ const generatedCommands = {
         entries: AppLauncherEntry[]
     ): Promise<AppLauncherSnapshot> {
         return await TAURI_INVOKE('app__app_launcher_entries_set', { entries });
+    },
+    async appAppLauncherEntryEnabledSet(
+        entryId: string,
+        enabled: boolean
+    ): Promise<AppLauncherSnapshot> {
+        return await TAURI_INVOKE('app__app_launcher_entry_enabled_set', {
+            entryId,
+            enabled
+        });
     },
     async appAppLauncherEntryTest(
         entryId: string

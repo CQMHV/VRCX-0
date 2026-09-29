@@ -20,12 +20,6 @@ const mocks = vi.hoisted(() => ({
     restartApplication: vi.fn()
 }));
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key: string) => key
-    })
-}));
-
 vi.mock('@/services/databaseUpgradeService', () => mocks);
 
 vi.mock('@/ui/shadcn/button', () => ({

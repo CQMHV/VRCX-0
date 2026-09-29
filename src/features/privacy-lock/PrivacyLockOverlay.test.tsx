@@ -32,10 +32,6 @@ vi.mock('@/services/backgroundModeService', () => ({
 vi.mock('@/services/entityMediaService', () => ({
     userImage: () => ''
 }));
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 import { useRuntimeStore } from '@/state/runtimeStore';
 
 import { PrivacyLockOverlay } from './PrivacyLockOverlay';

@@ -13,10 +13,6 @@ import {
 import * as friendSections from './friendsLocationsSections';
 import { useFriendsLocationsPageDerivedState } from './useFriendsLocationsPageDerivedState';
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string) => key })
-}));
-
 vi.mock('./useFriendsLocationsWorldSummaries', () => ({
     useFriendsLocationsWorldSummaries: () => new Map()
 }));

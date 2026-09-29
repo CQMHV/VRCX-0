@@ -569,3 +569,34 @@ fn app_launcher_args_split_preserves_quoted_values() {
     );
     assert!(split_command_line_args(r#""unterminated"#).is_err());
 }
+
+#[test]
+fn app_launcher_entry_toggle_changes_only_that_entry_and_persists_it() {
+    let manager = AutoAppLaunchManager::new(true, vec![local_entry("obs"), local_entry("discord")]);
+    let mut persisted = Vec::new();
+
+    let snapshot = manager
+        .set_entry_enabled("discord", false, |entries| {
+            persisted = entries.to_vec();
+            Ok::<(), String>(())
+        })
+        .unwrap();
+
+    let enabled_by_id: Vec<(&str, bool)> = snapshot
+        .entries
+        .iter()
+        .map(|entry| (entry.id.as_str(), entry.enabled))
+        .collect();
+    assert_eq!(enabled_by_id, vec![("obs", true), ("discord", false)]);
+    assert_eq!(persisted, snapshot.entries);
+}
+
+#[test]
+fn app_launcher_entry_toggle_keeps_entries_when_saving_fails() {
+    let manager = AutoAppLaunchManager::new(true, vec![local_entry("obs")]);
+
+    let result = manager.set_entry_enabled("obs", false, |_| Err("disk full".to_string()));
+
+    assert_eq!(result.unwrap_err(), "disk full");
+    assert!(manager.snapshot().entries[0].enabled);
+}
