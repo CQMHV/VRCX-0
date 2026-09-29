@@ -947,9 +947,13 @@ mod tests {
     }
 
     #[test]
-    fn forcing_game_running_reuses_owned_rule_values() {
+    fn forcing_game_running_prepends_a_single_game_running_condition() {
         let rule = json!({
-            "conditions": [{"type": "futureCondition", "value": "future-value"}],
+            "conditions": [
+                {"type": "futureCondition", "value": "future-value"},
+                {"type": "isGameRunning", "value": false},
+                {"type": "isGameRunning"},
+            ],
             "actions": {"status": "join me"},
         });
         let action_value = rule["actions"]["status"].as_str().unwrap().as_ptr();
@@ -957,6 +961,14 @@ mod tests {
 
         let forced = force_game_running_condition(rule);
 
+        assert_eq!(
+            forced["conditions"],
+            json!([
+                {"type": "isGameRunning"},
+                {"type": "futureCondition", "value": "future-value"},
+            ])
+        );
+        assert_eq!(forced["actions"], json!({"status": "join me"}));
         assert_eq!(
             forced["actions"]["status"].as_str().unwrap().as_ptr(),
             action_value
