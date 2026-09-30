@@ -129,7 +129,7 @@ export function FriendsLocationsFriendChips({
     );
 
     return (
-        <div className="-ml-1 grid min-w-0 grid-cols-[repeat(auto-fill,minmax(0,200px))] gap-1.5">
+        <div className="grid min-w-0 grid-cols-[repeat(auto-fill,minmax(0,200px))] gap-1.5">
             {friends.map((friend) => (
                 <FriendChip
                     key={friend.id}

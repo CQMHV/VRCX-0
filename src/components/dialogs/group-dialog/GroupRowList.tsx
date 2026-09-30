@@ -324,7 +324,7 @@ function PhotoGalleryRows({
                             {gallery.description}
                         </div>
                     ) : null}
-                    <div className="grid max-h-[60vh] gap-4 overflow-y-auto pt-2 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid max-h-[60vh] gap-4 overflow-y-auto p-1 pt-2 sm:grid-cols-2 lg:grid-cols-3">
                         {galleryRows.map((row, index) => {
                             const image = getGroupRowImage(row, 'photos');
                             return (

@@ -384,7 +384,7 @@ export function WorldRoomsSidebar({
             ref={viewportRef}
             className="relative h-full overflow-auto overflow-x-hidden"
         >
-            <div className="px-1.5 pb-2.5">
+            <div className="px-1.5 pt-1 pb-2.5">
                 <div
                     className="relative w-full"
                     style={{ height: `${totalSize}px` }}

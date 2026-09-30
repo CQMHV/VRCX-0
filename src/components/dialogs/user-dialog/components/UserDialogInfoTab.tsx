@@ -848,7 +848,7 @@ export function UserDialogInfoTab({
     const { profile, bioLinks } = bioSection;
 
     return (
-        <EntityDialogTabContent value="info" className="px-px pt-3 pb-px">
+        <EntityDialogTabContent value="info" className="pt-3">
             <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_18rem]">
                 <div className="flex min-w-0 flex-col gap-4">
                     <UserDialogPresenceSection

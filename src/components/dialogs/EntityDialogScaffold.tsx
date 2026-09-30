@@ -189,7 +189,7 @@ function EntityDialogTabContent({
             value={value}
             keepMounted={forceMount || undefined}
             className={cn(
-                'm-0 min-h-0 flex-1 overflow-auto pt-4 data-hidden:hidden',
+                'm-0 min-h-0 flex-1 overflow-auto px-1 pt-4 pb-1 data-hidden:hidden',
                 className
             )}
         >
@@ -240,7 +240,7 @@ function EntityMemoTextarea({
 
     return (
         <div className="box-border flex w-full cursor-default items-center p-1.5 text-sm">
-            <div className="flex-1 overflow-hidden">
+            <div className="min-w-0 flex-1">
                 <span className="block truncate leading-5 font-medium">
                     {label}
                 </span>
