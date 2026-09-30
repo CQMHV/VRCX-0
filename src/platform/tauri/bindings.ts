@@ -5637,7 +5637,6 @@ export type PresenceEntry = { rev: number; view: PresenceView };
 export type PresencePlace = {
     location: ParsedLocation;
     travelingTo: ParsedLocation | null;
-    sinceMs: number;
 };
 export type PresenceView =
     | { kind: 'online'; place: PresencePlace; platform: string }

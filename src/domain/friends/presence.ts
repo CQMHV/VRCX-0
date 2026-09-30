@@ -6,7 +6,6 @@ import type { FriendRosterBucket } from './types';
 export type PresencePlace = {
     location: ParsedLocation;
     travelingTo: ParsedLocation | null;
-    sinceMs: number;
 };
 
 export type PresenceView =

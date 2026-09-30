@@ -1,3 +1,5 @@
+import type { PresenceView } from '@/domain/friends/presence';
+
 type UserFactSource =
     | 'seed'
     | 'instance'
@@ -61,6 +63,7 @@ interface UserFact {
     $isProbableTroll?: boolean;
     $platform?: string;
     pendingOffline?: boolean;
+    $presence?: PresenceView;
     stateBucket?: UserStateBucket;
     $location?: UserFactLocation;
     $travelingToLocation?: UserFactLocation;

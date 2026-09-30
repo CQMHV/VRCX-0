@@ -1,5 +1,7 @@
 use serde::Serialize;
+use serde_json::{Map, Value};
 
+use crate::friends::StateBucket;
 use crate::location::{is_real_instance, parse_location, ParsedLocation};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -80,16 +82,13 @@ pub enum LeaveTarget {
 pub struct PresencePlace {
     pub location: ParsedLocation,
     pub traveling_to: Option<ParsedLocation>,
-    #[specta(type = f64)]
-    pub since_ms: i64,
 }
 
 impl PresencePlace {
-    pub fn new(place: &Place, since_ms: i64) -> Self {
+    pub fn new(place: &Place) -> Self {
         Self {
             location: parse_location(place.tag()),
             traveling_to: place.traveling_to().map(parse_location),
-            since_ms,
         }
     }
 }
@@ -113,6 +112,27 @@ pub enum PresenceView {
         platform: String,
     },
     Offline,
+}
+
+impl PresenceView {
+    pub fn from_profile(profile: &Map<String, Value>) -> Self {
+        let text = |key: &str| profile.get(key).and_then(Value::as_str).unwrap_or("");
+        let place = Place::from_location(text("location"), text("travelingToLocation"));
+        let platform = text("platform").to_string();
+        let online = || Self::Online {
+            place: PresencePlace::new(&place),
+            platform: platform.clone(),
+        };
+        match StateBucket::normalize(text("state")) {
+            Some(StateBucket::Online) => online(),
+            Some(StateBucket::Active) => Self::Active {
+                platform: platform.clone(),
+            },
+            Some(StateBucket::Offline) => Self::Offline,
+            None if place != Place::Unknown => online(),
+            None => Self::Offline,
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, specta::Type)]
@@ -164,9 +184,39 @@ mod tests {
     }
 
     #[test]
+    fn profiles_map_to_stateless_presence_views() {
+        let view = |profile: serde_json::Value| {
+            PresenceView::from_profile(profile.as_object().expect("profile object"))
+        };
+        assert!(matches!(
+            view(serde_json::json!({ "state": "online", "location": "wrld_a:1", "platform": "android" })),
+            PresenceView::Online { ref place, ref platform }
+                if place.location.tag == "wrld_a:1" && platform == "android"
+        ));
+        assert_eq!(
+            view(serde_json::json!({ "state": "active", "platform": "web" })),
+            PresenceView::Active {
+                platform: "web".into()
+            }
+        );
+        assert_eq!(
+            view(serde_json::json!({ "state": "offline", "location": "wrld_a:1" })),
+            PresenceView::Offline
+        );
+        assert!(matches!(
+            view(serde_json::json!({ "location": "private" })),
+            PresenceView::Online { .. }
+        ));
+        assert_eq!(
+            view(serde_json::json!({ "location": "offline" })),
+            PresenceView::Offline
+        );
+    }
+
+    #[test]
     fn presence_view_serializes_as_tagged_union() {
         let view = PresenceView::PendingOffline {
-            place: PresencePlace::new(&Place::Private, 5),
+            place: PresencePlace::new(&Place::Private),
             platform: "standalonewindows".into(),
             target: LeaveTarget::Active,
             deadline_ms: 9,
@@ -175,7 +225,6 @@ mod tests {
         assert_eq!(json["kind"], "pendingOffline");
         assert_eq!(json["target"], "active");
         assert_eq!(json["deadlineMs"], 9);
-        assert_eq!(json["place"]["sinceMs"], 5);
         assert_eq!(json["place"]["location"]["isPrivate"], true);
         assert_eq!(
             serde_json::to_value(PresenceView::Offline).unwrap()["kind"],

@@ -777,7 +777,6 @@ fn views_expose_the_held_place_while_pending() {
         panic!("pending view");
     };
     assert_eq!(place.location.tag, "wrld_a:1");
-    assert_eq!(place.since_ms, T);
     assert_eq!(target, LeaveTarget::Active);
     assert_eq!(deadline_ms, T + 100);
     assert_eq!(presence_view(&Phase::offline()), PresenceView::Offline);

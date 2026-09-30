@@ -102,6 +102,10 @@ fn insert_derived_location_fields(object: &mut Map<String, Value>) {
 pub fn apply_derived_fields(object: &mut Map<String, Value>) {
     insert_derived_trust_fields(object);
     insert_derived_location_fields(object);
+    let presence = crate::presence::PresenceView::from_profile(object);
+    if let Ok(presence) = serde_json::to_value(presence) {
+        object.insert(derived_keys::PRESENCE.into(), presence);
+    }
 }
 
 #[derive(Clone, Debug)]

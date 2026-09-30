@@ -12,8 +12,7 @@ import {
 
 const place = {
     location: parseLocation('wrld_a:1'),
-    travelingTo: null,
-    sinceMs: 1_000
+    travelingTo: null
 };
 
 const online: PresenceView = { kind: 'online', place, platform: 'android' };
