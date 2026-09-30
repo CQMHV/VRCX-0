@@ -12,3 +12,4 @@ pub(crate) use evidence::{Claim, Evidence, Source, WsPresenceEvent};
 pub(crate) use feed::presence_feed;
 pub(crate) use model::{OnlineState, Phase};
 pub(crate) use reduce::reduce;
+pub(crate) use view::dwell_place;

@@ -13,7 +13,7 @@ use vrcx_0_core::OwnerId;
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
 use crate::realtime::friends::presence::{
-    presence_feed, reduce, Claim, Evidence, OnlineState, Phase,
+    dwell_place, presence_feed, reduce, Claim, Evidence, OnlineState, Phase,
 };
 use crate::realtime::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendWake, RealtimeFriendApplyResult,
@@ -274,13 +274,13 @@ impl RealtimeFriendsRuntime {
             baseline_revision,
             entries,
         };
-        let records = roster
+        let places = roster
             .entries
             .iter()
-            .map(|(user_id, entry)| (user_id.clone(), entry.record.clone()))
+            .map(|(user_id, entry)| (user_id.clone(), dwell_place(&entry.presence)))
             .collect::<HashMap<_, _>>();
         state.roster = Some(roster);
-        let location_time_snapshot = state.instance_dwell.sync_friends(&records, now_ms);
+        let location_time_snapshot = state.instance_dwell.sync_friends(&places);
         if membership_changed {
             state.invalidate_friend_user_ids_snapshot();
         }

@@ -23,6 +23,16 @@ use vrcx_0_core::game_process::GameProcessEvent;
 use super::{GameLogProcessEvent, GameLogProcessor, GameLogProcessorDeps, GameLogWorkerJob};
 use vrcx_0_core::OwnerId;
 
+fn place_from_record(
+    record: &vrcx_0_core::friends::FriendRecord,
+    observed_ms: i64,
+) -> vrcx_0_application_core::FriendPlace {
+    vrcx_0_application_core::FriendPlace::Present {
+        location: record.location.clone(),
+        since_ms: observed_ms,
+    }
+}
+
 #[derive(Clone, Default)]
 struct RecordingOverlaySink {
     deliveries: Arc<Mutex<Vec<OverlayActivityDelivery>>>,
@@ -305,17 +315,19 @@ fn disabled_persistence_keeps_live_state_projection_overlay_and_side_effects() -
 fn disabled_initial_scan_rebuilds_memory_without_replaying_side_effects() -> Result<()> {
     let (_dir, store, mut processor) = test_processor("runtime-gamelog-disabled-replay")?;
     let timers = Arc::new(vrcx_0_application_core::InstanceDwellRegistry::new());
-    timers.observe_friend_record(
+    timers.observe_friend(
         "usr_replay",
-        &vrcx_0_core::friends::FriendRecord {
-            id: "usr_replay".into(),
-            state: "online".into(),
-            location: "wrld_replay:1".into(),
-            ..Default::default()
-        },
-        chrono::DateTime::parse_from_rfc3339("2026-05-14T05:11:00Z")
-            .unwrap()
-            .timestamp_millis(),
+        &place_from_record(
+            &vrcx_0_core::friends::FriendRecord {
+                id: "usr_replay".into(),
+                state: "online".into(),
+                location: "wrld_replay:1".into(),
+                ..Default::default()
+            },
+            chrono::DateTime::parse_from_rfc3339("2026-05-14T05:11:00Z")
+                .unwrap()
+                .timestamp_millis(),
+        ),
     );
     processor.deps.instance_roster_observer = Some(timers.clone());
     store.set_bool("gameLogDisabled", true)?;
@@ -371,15 +383,17 @@ fn entering_a_friends_instance_keeps_dwell_without_rewriting_log_join_time() -> 
         let started_at = chrono::DateTime::parse_from_rfc3339("2026-09-06T10:00:00Z")
             .unwrap()
             .timestamp_millis();
-        timers.observe_friend_record(
+        timers.observe_friend(
             "usr_friend",
-            &vrcx_0_core::friends::FriendRecord {
-                id: "usr_friend".into(),
-                state: "online".into(),
-                location: "wrld_local:1".into(),
-                ..Default::default()
-            },
-            started_at,
+            &place_from_record(
+                &vrcx_0_core::friends::FriendRecord {
+                    id: "usr_friend".into(),
+                    state: "online".into(),
+                    location: "wrld_local:1".into(),
+                    ..Default::default()
+                },
+                started_at,
+            ),
         );
         processor.deps.instance_roster_observer = Some(timers.clone());
         let location = GameLogWorkerJob::Event(event(
@@ -433,15 +447,17 @@ fn room_exit_cleanup_preserves_the_dwell_of_friends_staying_in_the_old_instance(
                 },
             )];
             for (user_id, since_ms) in [("usr_a", 1_000), ("usr_b", 2_000)] {
-                timers.observe_friend_record(
+                timers.observe_friend(
                     user_id,
-                    &vrcx_0_core::friends::FriendRecord {
-                        id: user_id.into(),
-                        state: "online".into(),
-                        location: "wrld_old:1".into(),
-                        ..Default::default()
-                    },
-                    since_ms,
+                    &place_from_record(
+                        &vrcx_0_core::friends::FriendRecord {
+                            id: user_id.into(),
+                            state: "online".into(),
+                            location: "wrld_old:1".into(),
+                            ..Default::default()
+                        },
+                        since_ms,
+                    ),
                 );
                 initial.push(event(
                     "1970-01-01T00:30:25Z",
@@ -537,15 +553,17 @@ fn local_mode_initial_replay_does_not_restart_remote_timers() -> Result<()> {
         store.set_bool("gameLogDisabled", persistence_disabled)?;
         let timers = Arc::new(vrcx_0_application_core::InstanceDwellRegistry::new());
         for user_id in ["usr_remote", "usr_local"] {
-            timers.observe_friend_record(
+            timers.observe_friend(
                 user_id,
-                &vrcx_0_core::friends::FriendRecord {
-                    id: user_id.into(),
-                    state: "online".into(),
-                    location: "wrld_current:2".into(),
-                    ..Default::default()
-                },
-                500,
+                &place_from_record(
+                    &vrcx_0_core::friends::FriendRecord {
+                        id: user_id.into(),
+                        state: "online".into(),
+                        location: "wrld_current:2".into(),
+                        ..Default::default()
+                    },
+                    500,
+                ),
             );
         }
         processor.deps.instance_roster_observer = Some(timers.clone());
@@ -615,15 +633,17 @@ fn local_mode_initial_replay_does_not_restart_remote_timers() -> Result<()> {
 fn local_mode_resume_prefix_does_not_restart_timers_but_live_departures_do() -> Result<()> {
     let (_dir, _store, mut processor) = test_processor("runtime-gamelog-resume-departures")?;
     let timers = Arc::new(vrcx_0_application_core::InstanceDwellRegistry::new());
-    timers.observe_friend_record(
+    timers.observe_friend(
         "usr_friend",
-        &vrcx_0_core::friends::FriendRecord {
-            id: "usr_friend".into(),
-            state: "online".into(),
-            location: "wrld_local:1".into(),
-            ..Default::default()
-        },
-        500,
+        &place_from_record(
+            &vrcx_0_core::friends::FriendRecord {
+                id: "usr_friend".into(),
+                state: "online".into(),
+                location: "wrld_local:1".into(),
+                ..Default::default()
+            },
+            500,
+        ),
     );
     processor.deps.instance_roster_observer = Some(timers.clone());
     processor.set_persistence_resume_after("1970-01-01T00:00:03Z");
@@ -672,15 +692,17 @@ fn local_mode_resume_prefix_does_not_restart_timers_but_live_departures_do() -> 
 fn local_mode_distinguishes_player_leave_rejoin_and_own_room_exit() -> Result<()> {
     let (_dir, _store, mut processor) = test_processor("runtime-gamelog-local-mode")?;
     let timers = Arc::new(vrcx_0_application_core::InstanceDwellRegistry::new());
-    timers.observe_friend_record(
+    timers.observe_friend(
         "usr_friend",
-        &vrcx_0_core::friends::FriendRecord {
-            id: "usr_friend".into(),
-            state: "online".into(),
-            location: "wrld_local:1".into(),
-            ..Default::default()
-        },
-        500,
+        &place_from_record(
+            &vrcx_0_core::friends::FriendRecord {
+                id: "usr_friend".into(),
+                state: "online".into(),
+                location: "wrld_local:1".into(),
+                ..Default::default()
+            },
+            500,
+        ),
     );
     processor.deps.instance_roster_observer = Some(timers.clone());
     let joined = GameLogEventKind::PlayerJoined {
@@ -743,15 +765,17 @@ fn local_mode_distinguishes_player_leave_rejoin_and_own_room_exit() -> Result<()
 fn local_mode_player_leave_is_not_lost_when_own_exit_is_in_the_same_batch() -> Result<()> {
     let (_dir, _store, mut processor) = test_processor("runtime-gamelog-batched-leave")?;
     let timers = Arc::new(vrcx_0_application_core::InstanceDwellRegistry::new());
-    timers.observe_friend_record(
+    timers.observe_friend(
         "usr_friend",
-        &vrcx_0_core::friends::FriendRecord {
-            id: "usr_friend".into(),
-            state: "online".into(),
-            location: "wrld_local:1".into(),
-            ..Default::default()
-        },
-        500,
+        &place_from_record(
+            &vrcx_0_core::friends::FriendRecord {
+                id: "usr_friend".into(),
+                state: "online".into(),
+                location: "wrld_local:1".into(),
+                ..Default::default()
+            },
+            500,
+        ),
     );
     processor.deps.instance_roster_observer = Some(timers.clone());
     processor.handle_jobs(vec![

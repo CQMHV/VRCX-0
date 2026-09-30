@@ -1,6 +1,28 @@
-use vrcx_0_core::presence::{PresencePlace, PresenceView};
+use vrcx_0_application_core::FriendPlace;
+use vrcx_0_core::presence::{Place, PresencePlace, PresenceView};
 
 use super::model::Phase;
+
+pub(crate) fn dwell_place(phase: &Phase) -> FriendPlace {
+    let Some(state) = phase.online_state() else {
+        return FriendPlace::Elsewhere {
+            location: "offline".to_string(),
+        };
+    };
+    match &state.place {
+        Place::Instance(tag) => FriendPlace::Present {
+            location: tag.clone(),
+            since_ms: state.since_ms,
+        },
+        Place::Traveling { to } => FriendPlace::Traveling {
+            destination: to.clone().unwrap_or_default(),
+            since_ms: state.since_ms,
+        },
+        place => FriendPlace::Elsewhere {
+            location: place.tag().to_string(),
+        },
+    }
+}
 
 pub(crate) fn presence_view(phase: &Phase) -> PresenceView {
     match phase {

@@ -12,7 +12,8 @@ use vrcx_0_core::OwnerId;
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
 use crate::realtime::friends::presence::{
-    presence_feed, reduce, Claim, Evidence, OnlineState, Phase, Source, WsPresenceEvent,
+    dwell_place, presence_feed, reduce, Claim, Evidence, OnlineState, Phase, Source,
+    WsPresenceEvent,
 };
 use crate::realtime::{FriendIconChange, FriendWake, RealtimeFriendOutput};
 
@@ -133,7 +134,6 @@ pub(super) fn apply_presence_evidence(
             record: previous.record,
             presence: step.next,
         },
-        now,
     );
     Some(finish(output))
 }
@@ -256,7 +256,6 @@ fn apply_change(
             record: projected,
             presence: step.next,
         },
-        now,
     );
     Some(())
 }
@@ -320,13 +319,7 @@ fn create_entry(
         .into_iter()
         .filter(|entry| matches!(entry, FeedLiveEntry::OnPlayerJoining { .. })),
     );
-    commit(
-        state,
-        output,
-        user_id,
-        FriendEntry { record, presence },
-        now,
-    );
+    commit(state, output, user_id, FriendEntry { record, presence });
     Some(())
 }
 
@@ -395,13 +388,11 @@ fn commit(
     output: &mut RealtimeFriendOutput,
     user_id: &str,
     mut entry: FriendEntry,
-    now: &EventTime,
 ) {
     project_presence(&mut entry.record, &entry.presence);
-    if let Some(snapshot) =
-        state
-            .instance_dwell
-            .observe_friend_record(user_id, &entry.record, now.timestamp_ms)
+    if let Some(snapshot) = state
+        .instance_dwell
+        .observe_friend(user_id, &dwell_place(&entry.presence))
     {
         output.projection.location_time_snapshot = Some(snapshot);
     }

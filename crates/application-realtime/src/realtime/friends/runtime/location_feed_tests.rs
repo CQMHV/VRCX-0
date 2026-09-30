@@ -454,4 +454,56 @@ mod tests {
             "OnPlayerJoining"
         );
     }
+
+    #[test]
+    fn returning_to_the_origin_instance_restores_the_dwell_start() {
+        let runtime = RealtimeFriendsRuntime::default();
+        runtime.set_baseline(
+            FriendRosterBaseline {
+                current_user_id: "usr_self".into(),
+                friends_by_id: [(
+                    "usr_friend".to_string(),
+                    FriendRecord {
+                        id: "usr_friend".into(),
+                        state: "offline".into(),
+                        ..FriendRecord::default()
+                    },
+                )]
+                .into_iter()
+                .collect(),
+                ..FriendRosterBaseline::default()
+            },
+            1,
+            0,
+        );
+        let location = |location: &str, received_at: &str| {
+            let RealtimeFriendApplyResult::Output(output) =
+                runtime.apply_ws_message(&RealtimeWsMessagePayload {
+                    json: json!({
+                        "type": "friend-location",
+                        "content": {
+                            "userId": "usr_friend",
+                            "location": location,
+                            "travelingToLocation": "wrld_origin:1",
+                            "user": { "id": "usr_friend" }
+                        }
+                    }),
+                    raw: "{}".into(),
+                    received_at: received_at.into(),
+                })
+            else {
+                panic!("friend-location should produce an output");
+            };
+            output
+        };
+
+        let arrived = location("wrld_origin:1", "2026-07-13T10:00:00Z");
+        let origin_since = arrived.projection.location_time_snapshot.unwrap()[0].since_ms;
+        location("traveling", "2026-07-13T10:30:00Z");
+        let back = location("wrld_origin:1", "2026-07-13T10:31:00Z");
+
+        let snapshot = back.projection.location_time_snapshot.unwrap();
+        assert_eq!(snapshot[0].location, "wrld_origin:1");
+        assert_eq!(snapshot[0].since_ms, origin_since);
+    }
 }
