@@ -9,11 +9,11 @@ use vrcx_0_application_core::{Error, Result};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
 
-use crate::realtime::friends::{player_joining_feed_entry, PendingOfflineSchedule};
+use crate::realtime::friends::player_joining_feed_entry;
 use crate::realtime::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendBaselineSyncOutcome,
-    FriendProjection, FriendStateBucketAuthority, RealtimeFriendOutput, RealtimeFriendSnapshot,
-    RealtimeSessionContext,
+    FriendProjection, FriendStateBucketAuthority, FriendWake, RealtimeFriendOutput,
+    RealtimeFriendSnapshot, RealtimeSessionContext,
 };
 use crate::social_baseline::service::{
     reconcile_friend_roster_records, FriendRosterReconcileOutcome, FriendStatusVerdicts,
@@ -37,8 +37,9 @@ struct FriendBaselineApplyPlan {
     result: FriendBaselineResult,
     active: ActiveRealtimeContext,
     previous_snapshot: Option<RealtimeFriendSnapshot>,
-    schedules: Vec<PendingOfflineSchedule>,
+    schedules: Vec<FriendWake>,
     confirmed_feed_entries: Vec<FeedLiveEntry>,
+    profile_refetch_user_ids: Vec<String>,
     location_time_snapshot: Option<Vec<vrcx_0_application_core::FriendLocationTime>>,
 }
 
@@ -143,6 +144,7 @@ impl RealtimeHostRuntime {
             previous_snapshot,
             schedules: baseline_schedules,
             confirmed_feed_entries,
+            profile_refetch_user_ids,
             location_time_snapshot,
         } = {
             let mut state = self
@@ -316,18 +318,16 @@ impl RealtimeHostRuntime {
                 active.generation,
                 baseline_revision,
                 causal_watermark.map(|watermark| watermark.friend_state_sequence),
+                chrono::Utc::now().timestamp_millis(),
             );
-            let result = baseline_effects.result;
-            let baseline_schedules = baseline_effects.schedules;
-            let confirmed_feed_entries = baseline_effects.confirmed_feed_entries;
-            let location_time_snapshot = baseline_effects.location_time_snapshot;
             FriendBaselineApplyPlan {
-                result,
+                result: baseline_effects.result,
                 active,
                 previous_snapshot,
-                schedules: baseline_schedules,
-                confirmed_feed_entries,
-                location_time_snapshot,
+                schedules: baseline_effects.schedules,
+                confirmed_feed_entries: baseline_effects.confirmed_feed_entries,
+                profile_refetch_user_ids: baseline_effects.profile_refetch_user_ids,
+                location_time_snapshot: baseline_effects.location_time_snapshot,
             }
         };
 
@@ -395,14 +395,10 @@ impl RealtimeHostRuntime {
             result.baseline_revision,
             feed_entries,
         );
-        for schedule in baseline_schedules {
-            let runtime = Arc::clone(self);
-            self.deps.tasks.spawn(async move {
-                tokio::time::sleep(schedule.delay).await;
-                let now = chrono::Utc::now().to_rfc3339();
-                runtime.fire_pending_offline(&schedule.user_id, schedule.token, now);
-            });
+        for wake in baseline_schedules {
+            self.schedule_friend_wake(result.generation, wake);
         }
+        self.schedule_friend_profile_refetches(result.generation, profile_refetch_user_ids);
         drop(owner);
         let final_snapshot = if result.accepted {
             let _owner = self.lock_friend_owner();

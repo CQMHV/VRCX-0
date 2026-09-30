@@ -250,9 +250,10 @@ fn host_watermark_preserves_pending_created_after_capture() -> Result<()> {
         else {
             panic!("friend-offline should produce an output");
         };
-        let PendingOfflineTimerAction::Schedule { token, .. } = pending_output.timer_action else {
-            panic!("friend-offline should schedule a timer");
-        };
+        assert!(
+            pending_output.wake.is_some(),
+            "friend-offline should schedule a timer"
+        );
         runtime.runtime().apply_friend_output(*pending_output);
         runtime.runtime().deps.event_bus.take_events_for_test();
 
@@ -288,7 +289,7 @@ fn host_watermark_preserves_pending_created_after_capture() -> Result<()> {
         let fired = runtime
             .runtime()
             .friends
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
+            .wake("usr_friend", "2026-05-15T00:03:00Z")
             .expect("the original pending timer should remain active");
         assert_eq!(
             fired.persistence.feed_entries[0].to_json()["type"],
@@ -332,9 +333,10 @@ fn host_watermark_preserves_online_cancellation_after_capture() -> Result<()> {
     else {
         panic!("friend-offline should produce an output");
     };
-    let PendingOfflineTimerAction::Schedule { token, .. } = pending_output.timer_action else {
-        panic!("friend-offline should schedule a timer");
-    };
+    assert!(
+        pending_output.wake.is_some(),
+        "friend-offline should schedule a timer"
+    );
     runtime.runtime().apply_friend_output(*pending_output);
     let stale_watermark = runtime.runtime().capture_friend_baseline_watermark()?;
     let active = runtime
@@ -403,7 +405,7 @@ fn host_watermark_preserves_online_cancellation_after_capture() -> Result<()> {
     assert!(runtime
         .runtime()
         .friends
-        .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
+        .wake("usr_friend", "2026-05-15T00:03:00Z")
         .is_none());
     Ok(())
 }

@@ -1,0 +1,297 @@
+use vrcx_0_core::presence::{LeaveTarget, Place};
+
+use super::evidence::{Claim, Evidence, Source};
+use super::model::{Flap, Hop, OnlineState, Phase, Stay};
+
+pub(crate) const PENDING_OFFLINE_DELAY_MS: i64 = 170_000;
+pub(crate) const FLAP_WINDOW_MS: i64 = 180_000;
+pub(crate) const BASELINE_CONFLICT_WINDOW_MS: i64 = 300_000;
+
+#[derive(Clone, Debug, PartialEq)]
+pub(crate) struct Step {
+    pub(crate) next: Phase,
+    pub(crate) wake_at_ms: Option<i64>,
+    pub(crate) refetch: bool,
+}
+
+pub(crate) fn reduce(prev: &Phase, evidence: &Evidence, now_ms: i64) -> Step {
+    let next = match evidence.source {
+        Source::Timer => wake(prev, now_ms),
+        Source::Reconnect => prev.clone(),
+        _ => observe(prev, evidence, now_ms),
+    };
+    let wake_at_ms = wake_at(&next)
+        .filter(|at| evidence.source == Source::Reconnect || wake_at(prev) != Some(*at));
+    let refetch = evidence.refetch_hint || needs_refetch(evidence, &next);
+    Step {
+        next,
+        wake_at_ms,
+        refetch,
+    }
+}
+
+fn observe(prev: &Phase, evidence: &Evidence, now_ms: i64) -> Phase {
+    let baseline = evidence.source == Source::Baseline;
+    match (prev, &evidence.claim) {
+        (_, Claim::Nothing) => prev.clone(),
+        (Phase::Offline { .. } | Phase::Active { .. }, Claim::Online { place, platform }) => {
+            if baseline && changed_recently(prev, now_ms) {
+                return prev.clone();
+            }
+            Phase::Online(OnlineState::arrive(
+                place.clone(),
+                platform.clone(),
+                now_ms,
+                !baseline,
+            ))
+        }
+        (Phase::Active { changed_ms, .. }, Claim::Active { platform }) => Phase::Active {
+            changed_ms: *changed_ms,
+            platform: platform.clone(),
+        },
+        (Phase::Offline { .. }, Claim::Active { platform }) => {
+            Phase::left(LeaveTarget::Active, platform.clone(), now_ms)
+        }
+        (Phase::Active { .. }, Claim::Offline) => {
+            Phase::left(LeaveTarget::Offline, String::new(), now_ms)
+        }
+        (Phase::Offline { .. }, Claim::Offline)
+        | (Phase::Offline { .. } | Phase::Active { .. }, Claim::NotInGame | Claim::Place { .. }) => {
+            prev.clone()
+        }
+        (Phase::Online(state), Claim::Online { place, platform }) => {
+            let arrived = place.instance_tag().is_some()
+                && place.instance_tag() == state.place.traveling_to();
+            let live_recently = state
+                .live_ms
+                .is_some_and(|live_ms| now_ms - live_ms < BASELINE_CONFLICT_WINDOW_MS);
+            if baseline && *place != state.place && !arrived && live_recently {
+                return prev.clone();
+            }
+            let mut next = observe_place(state, place, evidence.source, now_ms);
+            next.platform = platform.clone();
+            Phase::Online(next)
+        }
+        (Phase::Online(state), Claim::Place { place }) => {
+            Phase::Online(observe_place(state, place, evidence.source, now_ms))
+        }
+        (Phase::Online(state), Claim::Active { platform }) => leave(
+            state,
+            LeaveTarget::Active,
+            platform.clone(),
+            evidence.source,
+            now_ms,
+        ),
+        (Phase::Online(state), Claim::Offline | Claim::NotInGame) => leave(
+            state,
+            LeaveTarget::Offline,
+            String::new(),
+            evidence.source,
+            now_ms,
+        ),
+        (Phase::PendingOffline { held, .. }, Claim::Online { place, platform }) => {
+            if baseline {
+                return prev.clone();
+            }
+            let mut next = observe_place(held, place, evidence.source, now_ms);
+            next.platform = platform.clone();
+            Phase::Online(next)
+        }
+        (
+            Phase::PendingOffline {
+                held,
+                target,
+                deadline_ms,
+            },
+            Claim::Place { place },
+        ) => Phase::PendingOffline {
+            held: observe_place(held, place, evidence.source, now_ms),
+            target: *target,
+            deadline_ms: *deadline_ms,
+        },
+        (Phase::PendingOffline { .. }, Claim::NotInGame) => prev.clone(),
+        (Phase::PendingOffline { .. }, Claim::Active { platform }) => match evidence.source {
+            Source::Ws => prev.clone(),
+            _ => Phase::left(LeaveTarget::Active, platform.clone(), now_ms),
+        },
+        (Phase::PendingOffline { .. }, Claim::Offline) => match evidence.source {
+            Source::Ws => prev.clone(),
+            _ => Phase::left(LeaveTarget::Offline, String::new(), now_ms),
+        },
+    }
+}
+
+fn leave(
+    state: &OnlineState,
+    target: LeaveTarget,
+    platform: String,
+    source: Source,
+    now_ms: i64,
+) -> Phase {
+    if source == Source::TrustedAdd {
+        return Phase::left(target, platform, now_ms);
+    }
+    Phase::PendingOffline {
+        held: state.clone(),
+        target,
+        deadline_ms: now_ms + PENDING_OFFLINE_DELAY_MS,
+    }
+}
+
+fn wake(prev: &Phase, now_ms: i64) -> Phase {
+    match prev {
+        Phase::PendingOffline {
+            held,
+            target,
+            deadline_ms,
+        } if now_ms >= *deadline_ms => {
+            let platform = match target {
+                LeaveTarget::Active => held.platform.clone(),
+                LeaveTarget::Offline => String::new(),
+            };
+            Phase::left(*target, platform, now_ms)
+        }
+        Phase::Online(state)
+            if state
+                .flap
+                .as_ref()
+                .is_some_and(|flap| now_ms - flap.last_hop_ms >= FLAP_WINDOW_MS) =>
+        {
+            Phase::Online(settle(state))
+        }
+        _ => prev.clone(),
+    }
+}
+
+fn wake_at(phase: &Phase) -> Option<i64> {
+    match phase {
+        Phase::PendingOffline { deadline_ms, .. } => Some(*deadline_ms),
+        Phase::Online(OnlineState {
+            flap: Some(flap), ..
+        }) => Some(flap.last_hop_ms + FLAP_WINDOW_MS),
+        _ => None,
+    }
+}
+
+fn changed_recently(phase: &Phase, now_ms: i64) -> bool {
+    match phase {
+        Phase::Offline { changed_ms } | Phase::Active { changed_ms, .. } => {
+            changed_ms.is_some_and(|changed_ms| now_ms - changed_ms < BASELINE_CONFLICT_WINDOW_MS)
+        }
+        _ => false,
+    }
+}
+
+fn needs_refetch(evidence: &Evidence, next: &Phase) -> bool {
+    let claimed_place = match &evidence.claim {
+        Claim::Online { place, .. } | Claim::Place { place } => Some(place),
+        _ => None,
+    };
+    let online = next.is_online_section();
+    match next {
+        Phase::Online(state) if evidence.source == Source::Ws && state.place == Place::Unknown => {
+            return true;
+        }
+        _ => {}
+    }
+    if !online && claimed_place.is_some_and(|place| place.instance_tag().is_some()) {
+        return true;
+    }
+    evidence.source == Source::Baseline
+        && matches!(evidence.claim, Claim::Online { .. })
+        && !matches!(next, Phase::Online(_))
+}
+
+fn observe_place(state: &OnlineState, place: &Place, source: Source, now_ms: i64) -> OnlineState {
+    let mut next = advance(state, place, now_ms);
+    next.live_ms = if source != Source::Baseline {
+        Some(now_ms)
+    } else if next.place != state.place {
+        None
+    } else {
+        state.live_ms
+    };
+    next
+}
+
+fn advance(state: &OnlineState, place: &Place, now_ms: i64) -> OnlineState {
+    let mut next = state.clone();
+    next.hops.retain(|hop| now_ms - hop.at_ms <= FLAP_WINDOW_MS);
+    if *place == Place::Unknown {
+        return next;
+    }
+    if let Some(flap) = next.flap.as_mut() {
+        if let Some(tag) = place
+            .instance_tag()
+            .filter(|tag| flap.pair.iter().any(|end| end == tag))
+        {
+            if flap.latest != tag {
+                flap.latest = tag.to_string();
+                flap.latest_since_ms = now_ms;
+                flap.last_hop_ms = now_ms;
+            }
+            return next;
+        }
+        next.flap = None;
+    }
+    if *place == state.place {
+        return next;
+    }
+    match (&state.place, place) {
+        (Place::Traveling { .. }, Place::Traveling { .. }) => {
+            next.place = place.clone();
+            return next;
+        }
+        (_, Place::Traveling { .. }) => {
+            next.travel_from = state.place.instance_tag().map(|tag| Stay {
+                tag: tag.to_string(),
+                since_ms: state.since_ms,
+            });
+            next.place = place.clone();
+            next.since_ms = now_ms;
+            return next;
+        }
+        (Place::Instance(from), Place::Instance(to)) => {
+            let same_pair = |hop: &&Hop| {
+                (hop.from == *from && hop.to == *to) || (hop.from == *to && hop.to == *from)
+            };
+            if next.hops.iter().filter(same_pair).count() >= 2 {
+                next.flap = Some(Flap {
+                    pair: [from.clone(), to.clone()],
+                    latest: to.clone(),
+                    latest_since_ms: now_ms,
+                    last_hop_ms: now_ms,
+                });
+                return next;
+            }
+            next.hops.push(Hop {
+                from: from.clone(),
+                to: to.clone(),
+                at_ms: now_ms,
+            });
+        }
+        _ => {}
+    }
+    let restored = next
+        .travel_from
+        .take()
+        .filter(|stay| place.instance_tag() == Some(stay.tag.as_str()))
+        .map(|stay| stay.since_ms);
+    next.place = place.clone();
+    next.since_ms = restored.unwrap_or(now_ms);
+    next
+}
+
+fn settle(state: &OnlineState) -> OnlineState {
+    let mut next = state.clone();
+    let Some(flap) = next.flap.take() else {
+        return next;
+    };
+    next.hops.clear();
+    if state.place.instance_tag() != Some(flap.latest.as_str()) {
+        next.place = Place::Instance(flap.latest);
+        next.since_ms = flap.latest_since_ms;
+        next.travel_from = None;
+    }
+    next
+}

@@ -186,7 +186,7 @@ mod tests {
     }
 
     #[test]
-    fn refetched_offline_profile_emits_offline_without_status_feed() {
+    fn refetched_offline_profile_enters_pending_without_status_feed() {
         let runtime = RealtimeFriendsRuntime::default();
         runtime.set_baseline(
             FriendRosterBaseline {
@@ -233,22 +233,19 @@ mod tests {
             panic!("refetched friend profile should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "offline");
-        assert_eq!(output.persistence.feed_entries.len(), 1);
-        let entry = output.persistence.feed_entries[0].to_json();
+        assert_eq!(output.projection.patches[0].patch.state, "online");
+        assert_eq!(
+            output.projection.patches[0].patch.extra["pendingOffline"],
+            true
+        );
+        assert!(output.persistence.feed_entries.is_empty());
+        assert!(output.wake.is_some());
+        let fired = runtime
+            .wake("usr_friend", "2026-05-15T00:03:00Z")
+            .expect("pending finalizes");
+        let entry = fired.persistence.feed_entries[0].to_json();
         assert_eq!(entry["type"], "Offline");
         assert_eq!(entry["location"], "wrld_old:123");
-        assert_eq!(output.projection.feed_entries.len(), 1);
-        assert_eq!(
-            runtime
-                .snapshot()
-                .unwrap()
-                .friends_by_id
-                .get("usr_friend")
-                .unwrap()
-                .state,
-            "offline"
-        );
     }
 
     #[test]
@@ -297,9 +294,10 @@ mod tests {
         else {
             panic!("friend-location should produce an output");
         };
-        let PendingOfflineTimerAction::Schedule { token, .. } = location_output.timer_action else {
-            panic!("offline location should schedule pending timer");
-        };
+        assert!(
+            location_output.wake.is_some(),
+            "offline location should schedule pending timer"
+        );
 
         let sequence = runtime
             .friend_state_sequence_for_user(1, "usr_friend")
@@ -332,9 +330,7 @@ mod tests {
             output.projection.patches[0].patch.extra["pendingOffline"],
             false
         );
-        assert!(runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .is_none());
+        assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_none());
     }
 
     #[test]
@@ -381,9 +377,10 @@ mod tests {
         else {
             panic!("friend-location should produce an output");
         };
-        let PendingOfflineTimerAction::Schedule { token, .. } = location_output.timer_action else {
-            panic!("offline location should schedule pending timer");
-        };
+        assert!(
+            location_output.wake.is_some(),
+            "offline location should schedule pending timer"
+        );
 
         let sequence = runtime
             .friend_state_sequence_for_user(1, "usr_friend")
@@ -406,14 +403,18 @@ mod tests {
         };
 
         assert_eq!(output.projection.patches[0].patch.state, "online");
-        assert!(output.persistence.feed_entries.is_empty());
+        let feed_types = output
+            .persistence
+            .feed_entries
+            .iter()
+            .map(|entry| entry.to_json()["type"].clone())
+            .collect::<Vec<_>>();
+        assert_eq!(feed_types, vec![json!("GPS")]);
         assert_eq!(
             output.projection.patches[0].patch.extra["pendingOffline"],
             false
         );
-        assert!(runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .is_none());
+        assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_none());
     }
 
     #[test]

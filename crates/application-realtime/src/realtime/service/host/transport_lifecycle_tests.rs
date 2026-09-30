@@ -351,9 +351,10 @@ fn fresh_baseline_reconnect_preserves_location_time_without_new_game_logs() -> R
     else {
         panic!("friend-offline should produce an output");
     };
-    let PendingOfflineTimerAction::Schedule { token, .. } = output.timer_action else {
-        panic!("friend-offline should schedule a pending timer");
-    };
+    assert!(
+        output.wake.is_some(),
+        "friend-offline should schedule a pending timer"
+    );
     runtime.runtime().finish_realtime_transport(
         old_transport,
         RealtimeTransportTermination::UnexpectedExit {
@@ -392,18 +393,11 @@ fn fresh_baseline_reconnect_preserves_location_time_without_new_game_logs() -> R
         projection.payload["locationTimeSnapshot"],
         serde_json::to_value(expected_times).unwrap()
     );
-    assert!(
-        !runtime.runtime().friend_snapshot().unwrap().friends_by_id["usr_friend"]
-            .extra
-            .get("pendingOffline")
-            .and_then(serde_json::Value::as_bool)
-            .unwrap_or(false)
+    assert_eq!(
+        runtime.runtime().friend_snapshot().unwrap().friends_by_id["usr_friend"].extra
+            ["pendingOffline"],
+        true
     );
-    assert!(runtime
-        .runtime()
-        .friends
-        .fire_pending_offline("usr_friend", token, "2026-07-20T00:03:00Z".into(),)
-        .is_none());
 
     for location in ["traveling", "wrld_old:123"] {
         runtime.handle_active_friend_ws_message_for_test(&RealtimeWsMessagePayload {
@@ -428,7 +422,8 @@ fn fresh_baseline_reconnect_preserves_location_time_without_new_game_logs() -> R
 }
 
 #[test]
-fn fresh_placeholder_baseline_clears_pending_offline_before_syncing_location_time() -> Result<()> {
+fn fresh_placeholder_baseline_confirms_pending_offline_before_syncing_location_time() -> Result<()>
+{
     let (_dir, runtime, active_session) =
         runtime_with_active_session("reconnect-placeholder-offline")?;
     let old_transport = active_transport(&runtime);
@@ -476,7 +471,7 @@ fn fresh_placeholder_baseline_clears_pending_offline_before_syncing_location_tim
     let snapshot = runtime.runtime().friend_snapshot().unwrap();
     let friend = &snapshot.friends_by_id["usr_friend"];
     assert_eq!(friend.state, "offline");
-    assert!(!friend.extra.contains_key("pendingOffline"));
+    assert_eq!(friend.extra["pendingOffline"], false);
     assert_eq!(
         runtime.runtime().deps.instance_dwell.snapshot()[0].since_ms,
         None
@@ -1015,7 +1010,7 @@ fn reconnect_without_a_fresh_baseline_preserves_the_latest_canonical_roster() ->
 }
 
 #[test]
-fn reconnect_without_a_fresh_baseline_clears_pending_offline_runtime_state() -> Result<()> {
+fn reconnect_without_a_fresh_baseline_keeps_pending_offline() -> Result<()> {
     let (_dir, runtime, active_session) =
         runtime_with_active_session("unexpected-exit-pending-offline")?;
     let old_transport = active_transport(&runtime);
@@ -1035,9 +1030,10 @@ fn reconnect_without_a_fresh_baseline_clears_pending_offline_runtime_state() -> 
     else {
         panic!("friend-offline should produce an output");
     };
-    let PendingOfflineTimerAction::Schedule { token, .. } = output.timer_action else {
-        panic!("friend-offline should schedule a pending timer");
-    };
+    assert!(
+        output.wake.is_some(),
+        "friend-offline should schedule a pending timer"
+    );
     assert_eq!(
         runtime.runtime().friend_snapshot().unwrap().friends_by_id["usr_friend"]
             .extra
@@ -1067,14 +1063,19 @@ fn reconnect_without_a_fresh_baseline_clears_pending_offline_runtime_state() -> 
     )?;
 
     let snapshot = runtime.runtime().friend_snapshot().unwrap();
-    assert!(!snapshot.friends_by_id["usr_friend"]
-        .extra
-        .contains_key("pendingOffline"));
-    assert!(runtime
+    assert_eq!(
+        snapshot.friends_by_id["usr_friend"].extra["pendingOffline"],
+        true
+    );
+    let fired = runtime
         .runtime()
         .friends
-        .fire_pending_offline("usr_friend", token, "2026-07-20T00:03:00Z".into())
-        .is_none());
+        .wake("usr_friend", "2026-07-20T00:03:00Z")
+        .expect("the preserved pending still finalizes");
+    assert_eq!(
+        fired.persistence.feed_entries[0].to_json()["type"],
+        "Offline"
+    );
     Ok(())
 }
 
@@ -1083,7 +1084,8 @@ fn pending_offline_timer_firing_while_disconnected_keeps_preserved_baseline() ->
     let (_dir, runtime, active_session) =
         runtime_with_active_session("disconnected-pending-offline-fire")?;
     let old_transport = active_transport(&runtime);
-    seed_online_friend(&runtime, &active_session, old_transport.generation)?;
+    let old_generation = old_transport.generation;
+    seed_online_friend(&runtime, &active_session, old_generation)?;
     let RealtimeFriendApplyResult::Output(output) =
         runtime
             .runtime()
@@ -1099,9 +1101,10 @@ fn pending_offline_timer_firing_while_disconnected_keeps_preserved_baseline() ->
     else {
         panic!("friend-offline should produce an output");
     };
-    let PendingOfflineTimerAction::Schedule { token, .. } = output.timer_action else {
-        panic!("friend-offline should schedule a pending timer");
-    };
+    assert!(
+        output.wake.is_some(),
+        "friend-offline should schedule a pending timer"
+    );
     runtime.runtime().finish_realtime_transport(
         old_transport,
         RealtimeTransportTermination::UnexpectedExit {
@@ -1110,9 +1113,7 @@ fn pending_offline_timer_firing_while_disconnected_keeps_preserved_baseline() ->
         },
     );
 
-    runtime
-        .runtime()
-        .fire_pending_offline("usr_friend", token, "2026-07-20T00:03:00Z".into());
+    runtime.runtime().wake_friend(old_generation, "usr_friend");
 
     assert!(runtime.runtime().friend_snapshot().is_some());
     runtime

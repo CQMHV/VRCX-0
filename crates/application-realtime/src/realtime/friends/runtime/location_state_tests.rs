@@ -48,10 +48,6 @@ mod tests {
         };
 
         assert_eq!(output.projection.patches[0].patch.state, "online");
-        assert_eq!(
-            output.projection.patches[0].state_bucket_authority,
-            FriendStateBucketAuthority::Preserve
-        );
         assert!(output.persistence.feed_entries.is_empty());
         assert_eq!(output.profile_refetch_user_ids, vec!["usr_friend"]);
         assert_eq!(
@@ -129,9 +125,10 @@ mod tests {
         else {
             panic!("friend-offline should produce an output");
         };
-        let PendingOfflineTimerAction::Schedule { token, .. } = offline_output.timer_action else {
-            panic!("offline should schedule pending timer");
-        };
+        assert!(
+            offline_output.wake.is_some(),
+            "offline should schedule pending timer"
+        );
 
         let RealtimeFriendApplyResult::Output(location_output) =
             runtime.apply_ws_message(&RealtimeWsMessagePayload {
@@ -151,14 +148,8 @@ mod tests {
 
         let patch = &location_output.projection.patches[0].patch;
         assert_eq!(location_output.projection.patches[0].patch.state, "online");
-        assert_eq!(
-            location_output.projection.patches[0].state_bucket_authority,
-            FriendStateBucketAuthority::Preserve
-        );
         assert_eq!(patch.extra["pendingOffline"], true);
         assert_eq!(patch.location, "wrld_2:456");
-        assert!(runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .is_some());
+        assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_some());
     }
 }

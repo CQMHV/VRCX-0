@@ -114,17 +114,14 @@ mod tests {
         );
         assert_eq!(first.projection.feed_entries[0].to_json()["type"], "Status");
 
-        let RealtimeFriendApplyResult::Output(second) =
+        assert!(matches!(
             runtime.apply_ws_message(&RealtimeWsMessagePayload {
                 json: payload,
                 raw: "{}".into(),
                 received_at: "2026-05-15T00:01:01Z".into(),
-            })
-        else {
-            panic!("duplicate friend-update should still produce a projection output");
-        };
-        assert!(second.persistence.feed_entries.is_empty());
-        assert!(second.projection.feed_entries.is_empty());
+            }),
+            RealtimeFriendApplyResult::Ignored
+        ));
     }
 
     #[test]

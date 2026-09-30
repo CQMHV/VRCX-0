@@ -15,17 +15,7 @@ pub(super) fn string_or_previous(patch: &Value, previous: &FriendRecord, key: &s
 
 pub(super) use vrcx_0_core::json::JsonExt;
 
-pub(super) fn first_string(values: [Option<&str>; 2]) -> String {
-    values
-        .into_iter()
-        .flatten()
-        .find(|value| !value.trim().is_empty())
-        .unwrap_or("")
-        .trim()
-        .to_string()
-}
-
-pub(super) use vrcx_0_core::text::{first_non_empty, first_owned};
+pub(super) use vrcx_0_core::text::first_owned;
 
 pub(super) use vrcx_0_core::location::parse_location;
 

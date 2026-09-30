@@ -1,57 +1,60 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex, MutexGuard};
-use std::time::Duration;
 use vrcx_0_application_core::{FriendLocationTime, InstanceDwellRegistry};
 use vrcx_0_core::derived_keys;
 
-use chrono::Utc;
-use compact_str::CompactString;
+use chrono::{TimeZone, Utc};
 use serde_json::{json, Value};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
-use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline, StateBucket};
+use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
 use vrcx_0_core::realtime::{RealtimeSessionContext, RealtimeWsMessagePayload};
 use vrcx_0_core::vrchat_endpoints::normalize_vrchat_api_endpoint;
+use vrcx_0_core::OwnerId;
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
+use crate::realtime::friends::presence::{
+    presence_feed, reduce, Claim, Evidence, OnlineState, Phase,
+};
 use crate::realtime::{
-    FriendBaselineCausalWatermark, FriendBaselineResult, FriendStateBucketAuthority,
-    RealtimeFriendApplyResult, RealtimeFriendOutput, RealtimeFriendRecordSnapshot,
-    RealtimeFriendRosterSnapshot, RealtimeFriendSnapshot,
+    FriendBaselineCausalWatermark, FriendBaselineResult, FriendWake, RealtimeFriendApplyResult,
+    RealtimeFriendOutput, RealtimeFriendRecordSnapshot, RealtimeFriendRosterSnapshot,
+    RealtimeFriendSnapshot,
 };
 
 use super::event_patch::{
-    apply_friend_event, apply_record_patch_to_state, apply_refetched_friend_profile_event,
-    apply_trusted_friend_add_event, FriendEventKind, FriendRecordPatch,
+    apply_friend_event, apply_presence_evidence, apply_refetched_friend_profile_event,
+    apply_trusted_friend_add_event, FriendEventKind,
 };
-use super::persistence::{is_online_state, presence_transition_feed_entry, OfflineFeedPrevious};
+use super::presence_projection::{project_presence, strip_record_presence};
 use super::utils::EventTime;
 
-pub(super) use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY;
-use vrcx_0_core::OwnerId;
-
-#[derive(Clone, Debug, Default)]
-pub(super) struct RecentGps {
-    pub(super) locations_by_tag: HashMap<String, i64>,
+#[derive(Clone, Debug)]
+pub(super) struct FriendEntry {
+    pub(super) record: FriendRecord,
+    pub(super) presence: Phase,
 }
 
 #[derive(Clone, Debug)]
-pub(super) struct PendingOffline {
-    pub(super) token: u64,
-    pub(super) patch: FriendRecordPatch,
-    pub(super) state_bucket: CompactString,
-    pub(super) previous: OfflineFeedPrevious,
+pub(super) struct Roster {
+    pub(super) current_user_id: String,
+    pub(super) endpoint: String,
+    pub(super) websocket: String,
+    pub(super) generation: u64,
+    pub(super) baseline_revision: u64,
+    pub(super) entries: HashMap<String, FriendEntry>,
 }
 
-pub(crate) struct PendingOfflineSchedule {
-    pub(crate) user_id: String,
-    pub(crate) token: u64,
-    pub(crate) delay: Duration,
+impl Roster {
+    fn is_session(&self, user_id: &str, endpoint: &str, websocket: &str) -> bool {
+        self.current_user_id == user_id && self.endpoint == endpoint && self.websocket == websocket
+    }
 }
 
 pub(crate) struct FriendBaselineEffects {
     pub(crate) result: FriendBaselineResult,
-    pub(crate) schedules: Vec<PendingOfflineSchedule>,
+    pub(crate) schedules: Vec<FriendWake>,
     pub(crate) confirmed_feed_entries: Vec<FeedLiveEntry>,
+    pub(crate) profile_refetch_user_ids: Vec<String>,
     pub(crate) location_time_snapshot: Option<Vec<FriendLocationTime>>,
 }
 
@@ -71,28 +74,29 @@ struct ExpectedFriendScope<'a> {
     endpoint: &'a str,
 }
 
-struct OfflineBaselineTransition {
-    user_id: String,
-    next: FriendRecord,
-    previous: OfflineFeedPrevious,
-}
-
-#[derive(Clone, Debug, Default)]
+#[derive(Debug, Default)]
 pub(super) struct RealtimeFriendState {
-    pub(super) generation: u64,
-    pub(super) timer_token: u64,
     pub(super) friend_state_sequence: u64,
     pub(super) friend_state_sequence_by_user: HashMap<String, u64>,
-    pub(super) baseline: Option<RealtimeFriendSnapshot>,
+    pub(super) roster: Option<Roster>,
     pub(super) friend_user_ids_snapshot: Option<Arc<HashSet<String>>>,
-    pub(super) pending_offline: HashMap<String, PendingOffline>,
-    pub(super) recent_gps: HashMap<String, RecentGps>,
     pub(super) instance_dwell: Arc<InstanceDwellRegistry>,
 }
 
 impl RealtimeFriendState {
     pub(super) fn invalidate_friend_user_ids_snapshot(&mut self) {
         self.friend_user_ids_snapshot = None;
+    }
+
+    pub(super) fn entry(&self, user_id: &str) -> Option<&FriendEntry> {
+        self.roster.as_ref()?.entries.get(user_id)
+    }
+
+    fn sequence_of(&self, user_id: &str) -> u64 {
+        self.friend_state_sequence_by_user
+            .get(user_id)
+            .copied()
+            .unwrap_or_default()
     }
 }
 
@@ -114,11 +118,8 @@ impl RealtimeFriendsRuntime {
     pub fn baseline_causal_watermark(&self) -> FriendBaselineCausalWatermark {
         let state = self.lock_state();
         FriendBaselineCausalWatermark {
-            generation: state.baseline.as_ref().map(|baseline| baseline.generation),
-            baseline_revision: state
-                .baseline
-                .as_ref()
-                .map(|baseline| baseline.baseline_revision),
+            generation: state.roster.as_ref().map(|roster| roster.generation),
+            baseline_revision: state.roster.as_ref().map(|roster| roster.baseline_revision),
             friend_state_sequence: state.friend_state_sequence,
             friend_log_sequence: 0,
         }
@@ -130,215 +131,157 @@ impl RealtimeFriendsRuntime {
         realtime_generation: u64,
         baseline_revision: u64,
     ) -> FriendBaselineResult {
-        self.apply_baseline(baseline, realtime_generation, baseline_revision, None)
-            .result
+        self.set_baseline_with_effects(
+            baseline,
+            realtime_generation,
+            baseline_revision,
+            None,
+            Utc::now().timestamp_millis(),
+        )
+        .result
     }
 
     pub(crate) fn set_baseline_with_effects(
         &self,
         baseline: FriendRosterBaseline,
-        realtime_generation: u64,
+        generation: u64,
         baseline_revision: u64,
         friend_state_sequence_watermark: Option<u64>,
+        now_ms: i64,
     ) -> FriendBaselineEffects {
-        self.apply_baseline(
-            baseline,
-            realtime_generation,
-            baseline_revision,
-            friend_state_sequence_watermark,
-        )
-    }
-
-    fn apply_baseline(
-        &self,
-        baseline: FriendRosterBaseline,
-        realtime_generation: u64,
-        baseline_revision: u64,
-        friend_state_sequence_watermark: Option<u64>,
-    ) -> FriendBaselineEffects {
-        let mut baseline = baseline.normalized();
+        let baseline = baseline.normalized();
         let mut state = self.lock_state();
-        let generation = realtime_generation;
-        let same_generation = state
-            .baseline
+        let now_iso = Utc
+            .timestamp_millis_opt(now_ms)
+            .single()
+            .map(|time| time.to_rfc3339())
+            .unwrap_or_default();
+        let watermark = friend_state_sequence_watermark.unwrap_or(0);
+        let replaced = state.roster.take();
+        let previous_ids = replaced
             .as_ref()
-            .is_some_and(|snapshot| snapshot.generation == generation);
-        state.generation = state.generation.max(generation);
-        let mut pending_to_create = Vec::new();
-        let mut resolved_pending_ids = HashSet::new();
-        let confirmed_at = Utc::now();
-        let confirmed_at_iso = confirmed_at.to_rfc3339();
-        let mut confirmed_feed_entries = Vec::new();
-        let friend_state_sequence_watermark = friend_state_sequence_watermark.unwrap_or(0);
-        let mut stale_incoming_ids = HashSet::new();
-        let mut newer_missing_records = Vec::new();
-        if let Some(existing_snapshot) = state.baseline.as_ref() {
-            if same_generation {
-                newer_missing_records = existing_snapshot
-                    .friends_by_id
-                    .iter()
-                    .filter(|(user_id, _record)| {
-                        !baseline.friends_by_id.contains_key(*user_id)
-                            && state
-                                .friend_state_sequence_by_user
-                                .get(*user_id)
-                                .is_some_and(|sequence| *sequence > friend_state_sequence_watermark)
-                    })
-                    .map(|(user_id, record)| (user_id.clone(), record.clone()))
-                    .collect();
-            }
-            for (user_id, record) in baseline.friends_by_id.iter_mut() {
-                let existing_record = existing_snapshot.friends_by_id.get(user_id);
-                if same_generation
-                    && state
-                        .friend_state_sequence_by_user
-                        .get(user_id)
-                        .is_some_and(|sequence| *sequence > friend_state_sequence_watermark)
-                {
-                    if let Some(existing_record) = existing_record {
-                        *record = existing_record.clone();
-                    } else {
-                        stale_incoming_ids.insert(user_id.clone());
-                    }
-                    continue;
-                }
-                let Some(existing_record) = existing_record else {
-                    continue;
-                };
-                if record.is_placeholder() {
-                    preserve_fields_over_placeholder(record, existing_record);
-                }
-                if (record.display_name.is_empty() || record.display_name == record.id)
-                    && !existing_record.display_name.is_empty()
-                    && existing_record.display_name != existing_record.id
-                {
-                    record.display_name = existing_record.display_name.clone();
-                }
-                if !same_generation {
-                    continue;
-                }
-                let pending = state.pending_offline.get(user_id);
-                if pending.is_some() {
-                    resolved_pending_ids.insert(user_id.clone());
-                    record
-                        .extra
-                        .insert("pendingOffline".into(), Value::Bool(false));
-                } else if StateBucket::Online.matches(&existing_record.state)
-                    && leaves_online(&record.state)
-                {
-                    pending_to_create.push(OfflineBaselineTransition {
-                        user_id: user_id.clone(),
-                        next: record.clone(),
-                        previous: OfflineFeedPrevious::from_record(existing_record),
-                    });
-                    *record = existing_record.clone();
-                    record
-                        .extra
-                        .insert("pendingOffline".into(), Value::Bool(true));
-                }
-                if let Some(entry) = presence_transition_feed_entry(
-                    user_id,
-                    existing_record,
-                    record,
-                    pending.map(|pending| &pending.previous),
-                    &confirmed_at_iso,
-                    confirmed_at.timestamp_millis(),
-                ) {
-                    confirmed_feed_entries.push(entry);
-                }
-            }
-        }
-        for user_id in stale_incoming_ids {
-            baseline.friends_by_id.remove(&user_id);
-        }
-        for (user_id, record) in newer_missing_records {
-            baseline.friends_by_id.insert(user_id, record);
-        }
-        let mut schedules = Vec::new();
-        for transition in pending_to_create {
-            state.timer_token = state.timer_token.saturating_add(1);
-            let token = state.timer_token;
-            state.pending_offline.insert(
-                transition.user_id.clone(),
-                PendingOffline {
-                    token,
-                    patch: FriendRecordPatch::from_record(&transition.next),
-                    state_bucket: transition.next.state.clone(),
-                    previous: transition.previous,
-                },
-            );
-            schedules.push(PendingOfflineSchedule {
-                user_id: transition.user_id,
-                token,
-                delay: PENDING_OFFLINE_DELAY,
-            });
-        }
-        if same_generation {
-            state.pending_offline.retain(|user_id, _pending| {
-                if resolved_pending_ids.contains(user_id) {
-                    return false;
-                }
-                let Some(record) = baseline.friends_by_id.get_mut(user_id) else {
-                    return false;
-                };
-                if !is_online_state(record) {
-                    return false;
-                }
-                record
-                    .extra
-                    .insert("pendingOffline".into(), Value::Bool(true));
-                true
-            });
-            state
-                .recent_gps
-                .retain(|user_id, _recent| baseline.friends_by_id.contains_key(user_id));
-        } else {
-            state.pending_offline.clear();
-            for record in baseline.friends_by_id.values_mut() {
-                record.extra.remove("pendingOffline");
-            }
-            state.recent_gps.clear();
+            .map(|roster| roster.entries.keys().cloned().collect::<HashSet<_>>())
+            .unwrap_or_default();
+        let existing = replaced.filter(|roster| {
+            roster.is_session(
+                &baseline.current_user_id,
+                &baseline.endpoint,
+                &baseline.websocket,
+            )
+        });
+        let new_generation = existing
+            .as_ref()
+            .is_none_or(|roster| roster.generation != generation);
+        if new_generation {
             state.friend_state_sequence_by_user.clear();
         }
-        let mut changed_user_ids = HashSet::new();
-        if same_generation {
-            if let Some(existing_snapshot) = state.baseline.as_ref() {
-                for (user_id, record) in &baseline.friends_by_id {
-                    if existing_snapshot.friends_by_id.get(user_id) != Some(record) {
-                        changed_user_ids.insert(user_id.clone());
-                    }
+        let mut confirmed_feed_entries = Vec::new();
+        let mut schedules = Vec::new();
+        let mut profile_refetch_user_ids = Vec::new();
+        let mut entries = HashMap::with_capacity(baseline.friends_by_id.len());
+        for (user_id, mut record) in baseline.friends_by_id {
+            let existing_entry = existing
+                .as_ref()
+                .and_then(|roster| roster.entries.get(&user_id));
+            if existing.is_some() && state.sequence_of(&user_id) > watermark {
+                if let Some(entry) = existing_entry {
+                    entries.insert(user_id, entry.clone());
                 }
-                for user_id in existing_snapshot.friends_by_id.keys() {
-                    if !baseline.friends_by_id.contains_key(user_id) {
-                        changed_user_ids.insert(user_id.clone());
+                continue;
+            }
+            if let Some(entry) = existing_entry {
+                if record.is_placeholder() {
+                    preserve_fields_over_placeholder(&mut record, &entry.record);
+                }
+                if (record.display_name.is_empty() || record.display_name == record.id)
+                    && !entry.record.display_name.is_empty()
+                    && entry.record.display_name != entry.record.id
+                {
+                    record.display_name = entry.record.display_name.clone();
+                }
+            }
+            let evidence = Evidence::from_baseline(&record);
+            strip_record_presence(&mut record);
+            let presence = match existing_entry {
+                Some(entry) => {
+                    let step = reduce(&entry.presence, &evidence, now_ms);
+                    confirmed_feed_entries.extend(
+                        presence_feed(
+                            &user_id,
+                            &record,
+                            &entry.presence,
+                            &step.next,
+                            now_ms,
+                            &now_iso,
+                        )
+                        .into_iter()
+                        .filter(|entry| !matches!(entry, FeedLiveEntry::OnPlayerJoining { .. })),
+                    );
+                    if let Some(wake_at_ms) = step.wake_at_ms {
+                        schedules.push(FriendWake::at(&user_id, wake_at_ms, now_ms));
                     }
+                    if step.refetch {
+                        profile_refetch_user_ids.push(user_id.clone());
+                    }
+                    step.next
+                }
+                None => initial_phase(&evidence, now_ms),
+            };
+            project_presence(&mut record, &presence);
+            entries.insert(user_id, FriendEntry { record, presence });
+        }
+        if let Some(existing) = existing.as_ref() {
+            for (user_id, entry) in &existing.entries {
+                if !entries.contains_key(user_id) && state.sequence_of(user_id) > watermark {
+                    entries.insert(user_id.clone(), entry.clone());
                 }
             }
         }
-        let friend_membership_changed = state.baseline.as_ref().map_or(
-            !baseline.friends_by_id.is_empty(),
-            |existing_snapshot| {
-                existing_snapshot.friends_by_id.len() != baseline.friends_by_id.len()
-                    || existing_snapshot
-                        .friends_by_id
-                        .keys()
-                        .any(|user_id| !baseline.friends_by_id.contains_key(user_id))
-            },
-        );
-        let friend_count = baseline.friends_by_id.len();
-        state.baseline = Some(RealtimeFriendSnapshot {
+
+        let changed_user_ids = existing
+            .as_ref()
+            .filter(|_| !new_generation)
+            .map(|existing| {
+                entries
+                    .iter()
+                    .filter(|(user_id, entry)| {
+                        existing
+                            .entries
+                            .get(*user_id)
+                            .is_none_or(|previous| previous.record != entry.record)
+                    })
+                    .map(|(user_id, _)| user_id.clone())
+                    .chain(
+                        existing
+                            .entries
+                            .keys()
+                            .filter(|user_id| !entries.contains_key(*user_id))
+                            .cloned(),
+                    )
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+        let membership_changed = previous_ids.len() != entries.len()
+            || previous_ids
+                .iter()
+                .any(|user_id| !entries.contains_key(user_id));
+        let friend_count = entries.len();
+        let roster = Roster {
             current_user_id: baseline.current_user_id,
             endpoint: baseline.endpoint,
             websocket: baseline.websocket,
             generation,
             baseline_revision,
-            friends_by_id: baseline.friends_by_id,
-        });
-        let instance_dwell = Arc::clone(&state.instance_dwell);
-        let location_time_snapshot = state.baseline.as_ref().and_then(|snapshot| {
-            instance_dwell.sync_friends(&snapshot.friends_by_id, confirmed_at.timestamp_millis())
-        });
-        if friend_membership_changed {
+            entries,
+        };
+        let records = roster
+            .entries
+            .iter()
+            .map(|(user_id, entry)| (user_id.clone(), entry.record.clone()))
+            .collect::<HashMap<_, _>>();
+        state.roster = Some(roster);
+        let location_time_snapshot = state.instance_dwell.sync_friends(&records, now_ms);
+        if membership_changed {
             state.invalidate_friend_user_ids_snapshot();
         }
         if !changed_user_ids.is_empty() {
@@ -360,69 +303,65 @@ impl RealtimeFriendsRuntime {
             },
             schedules,
             confirmed_feed_entries,
+            profile_refetch_user_ids,
             location_time_snapshot,
         }
     }
 
-    pub fn clear(&self) -> u64 {
+    pub fn clear(&self) {
         let mut state = self.lock_state();
-        state.generation = state.generation.saturating_add(1);
-        state.baseline = None;
+        state.roster = None;
         state.invalidate_friend_user_ids_snapshot();
-        state.pending_offline.clear();
-        state.recent_gps.clear();
         state.friend_state_sequence_by_user.clear();
         state.instance_dwell.clear();
-        state.generation
     }
 
     pub(crate) fn restart_preserving_baseline(
         &self,
         session: &RealtimeSessionContext,
         generation: u64,
-    ) -> Option<Vec<String>> {
+    ) -> Option<(Vec<String>, Vec<FriendWake>)> {
         let mut state = self.lock_state();
-        {
-            let baseline = state.baseline.as_ref()?;
-            if baseline.current_user_id != session.user_id
-                || baseline.endpoint != session.endpoint
-                || baseline.websocket != session.websocket
-            {
-                return None;
-            }
-        }
-        let pending_offline = std::mem::take(&mut state.pending_offline);
-        let baseline = state
-            .baseline
-            .as_mut()
-            .expect("friend baseline was validated while holding the state lock");
-        baseline.generation = generation;
-        baseline.baseline_revision = 0;
-        for user_id in pending_offline.keys() {
-            if let Some(record) = baseline.friends_by_id.get_mut(user_id) {
-                record.extra.remove("pendingOffline");
-            }
-        }
-        let friend_user_ids = baseline.friends_by_id.keys().cloned().collect();
-        state.generation = state.generation.max(generation);
-        state.recent_gps.clear();
+        let roster = state.roster.as_mut().filter(|roster| {
+            roster.is_session(&session.user_id, &session.endpoint, &session.websocket)
+        })?;
+        roster.generation = generation;
+        roster.baseline_revision = 0;
+        let now_ms = Utc::now().timestamp_millis();
+        let schedules = roster
+            .entries
+            .iter()
+            .filter_map(|(user_id, entry)| {
+                reduce(&entry.presence, &Evidence::reconnect(), now_ms)
+                    .wake_at_ms
+                    .map(|wake_at_ms| FriendWake::at(user_id, wake_at_ms, now_ms))
+            })
+            .collect();
+        let friend_user_ids = roster.entries.keys().cloned().collect();
         state.friend_state_sequence_by_user.clear();
-        Some(friend_user_ids)
+        Some((friend_user_ids, schedules))
     }
 
     pub fn snapshot(&self) -> Option<RealtimeFriendSnapshot> {
-        self.lock_state().baseline.clone()
+        let state = self.lock_state();
+        let roster = state.roster.as_ref()?;
+        Some(RealtimeFriendSnapshot {
+            current_user_id: roster.current_user_id.clone(),
+            endpoint: roster.endpoint.clone(),
+            websocket: roster.websocket.clone(),
+            generation: roster.generation,
+            baseline_revision: roster.baseline_revision,
+            friends_by_id: roster
+                .entries
+                .iter()
+                .map(|(user_id, entry)| (user_id.clone(), entry.record.clone()))
+                .collect(),
+        })
     }
 
     pub fn is_current_friend(&self, user_id: &str) -> bool {
         let user_id = user_id.trim();
-        if user_id.is_empty() {
-            return false;
-        }
-        self.lock_state()
-            .baseline
-            .as_ref()
-            .is_some_and(|baseline| baseline.friends_by_id.contains_key(user_id))
+        !user_id.is_empty() && self.lock_state().entry(user_id).is_some()
     }
 
     pub fn current_friend_record(&self, user_id: &str) -> Option<RealtimeFriendRecordSnapshot> {
@@ -431,11 +370,10 @@ impl RealtimeFriendsRuntime {
             return None;
         }
         let state = self.lock_state();
-        let baseline = state.baseline.as_ref()?;
-        let record = baseline.friends_by_id.get(user_id)?.clone();
+        let roster = state.roster.as_ref()?;
         Some(RealtimeFriendRecordSnapshot {
-            endpoint: baseline.endpoint.clone(),
-            record,
+            endpoint: roster.endpoint.clone(),
+            record: roster.entries.get(user_id)?.record.clone(),
         })
     }
 
@@ -446,9 +384,9 @@ impl RealtimeFriendsRuntime {
         }
         let snapshot = Arc::new(
             state
-                .baseline
+                .roster
                 .as_ref()
-                .map(|baseline| baseline.friends_by_id.keys().cloned().collect())
+                .map(|roster| roster.entries.keys().cloned().collect())
                 .unwrap_or_default(),
         );
         state.friend_user_ids_snapshot = Some(Arc::clone(&snapshot));
@@ -457,11 +395,12 @@ impl RealtimeFriendsRuntime {
 
     pub(crate) fn with_user_cache_records<R>(
         &self,
-        visit: impl FnOnce(&str, &HashMap<String, FriendRecord>) -> R,
+        visit: impl FnOnce(&str, &mut dyn Iterator<Item = &FriendRecord>) -> R,
     ) -> Option<R> {
         let state = self.lock_state();
-        let baseline = state.baseline.as_ref()?;
-        Some(visit(&baseline.endpoint, &baseline.friends_by_id))
+        let roster = state.roster.as_ref()?;
+        let mut records = roster.entries.values().map(|entry| &entry.record);
+        Some(visit(&roster.endpoint, &mut records))
     }
 
     pub fn roster_snapshot(
@@ -469,44 +408,39 @@ impl RealtimeFriendsRuntime {
         previous_order: &[String],
     ) -> serde_json::Result<Option<RealtimeFriendRosterSnapshot>> {
         let state = self.lock_state();
-        let Some(baseline) = state.baseline.as_ref() else {
+        let Some(roster) = state.roster.as_ref() else {
             return Ok(None);
         };
-        let snapshot = current_friend_roster_snapshot(
-            &baseline.current_user_id,
-            &baseline.friends_by_id,
-            previous_order,
-        )?;
+        let snapshot = current_friend_roster_snapshot(roster, previous_order)?;
         Ok(Some(RealtimeFriendRosterSnapshot {
-            current_user_id: baseline.current_user_id.clone(),
-            endpoint: baseline.endpoint.clone(),
-            websocket: baseline.websocket.clone(),
-            friend_count: baseline.friends_by_id.len(),
+            current_user_id: roster.current_user_id.clone(),
+            endpoint: roster.endpoint.clone(),
+            websocket: roster.websocket.clone(),
+            friend_count: roster.entries.len(),
             snapshot: snapshot.into(),
         }))
     }
 
     pub fn session_context(&self) -> Option<RealtimeSessionContext> {
         self.lock_state()
-            .baseline
+            .roster
             .as_ref()
-            .map(|baseline| RealtimeSessionContext {
-                user_id: baseline.current_user_id.clone(),
-                endpoint: baseline.endpoint.clone(),
-                websocket: baseline.websocket.clone(),
+            .map(|roster| RealtimeSessionContext {
+                user_id: roster.current_user_id.clone(),
+                endpoint: roster.endpoint.clone(),
+                websocket: roster.websocket.clone(),
             })
     }
 
     pub fn has_friend(&self, generation: u64, user_id: &str) -> bool {
-        let normalized_user_id = user_id.trim();
-        if normalized_user_id.is_empty() {
-            return false;
-        }
-        self.lock_state()
-            .baseline
-            .as_ref()
-            .filter(|baseline| baseline.generation == generation)
-            .is_some_and(|baseline| baseline.friends_by_id.contains_key(normalized_user_id))
+        let user_id = user_id.trim();
+        !user_id.is_empty()
+            && self
+                .lock_state()
+                .roster
+                .as_ref()
+                .filter(|roster| roster.generation == generation)
+                .is_some_and(|roster| roster.entries.contains_key(user_id))
     }
 
     pub(crate) fn friend_state_sequence_for_user(
@@ -514,18 +448,16 @@ impl RealtimeFriendsRuntime {
         generation: u64,
         user_id: &str,
     ) -> Option<u64> {
-        let normalized_user_id = user_id.trim();
-        if normalized_user_id.is_empty() {
-            return None;
-        }
+        let user_id = user_id.trim();
         let state = self.lock_state();
-        let baseline = state.baseline.as_ref()?;
-        if baseline.generation != generation
-            || !baseline.friends_by_id.contains_key(normalized_user_id)
+        let roster = state.roster.as_ref()?;
+        if user_id.is_empty()
+            || roster.generation != generation
+            || !roster.entries.contains_key(user_id)
         {
             return None;
         }
-        Some(current_friend_state_sequence(&state, normalized_user_id))
+        Some(state.sequence_of(user_id))
     }
 
     pub fn apply_ws_message(
@@ -543,7 +475,17 @@ impl RealtimeFriendsRuntime {
         event_kind: &RealtimeWsEventKind,
         payload: &RealtimeWsMessagePayload,
     ) -> RealtimeFriendApplyResult {
-        self.apply_friend_message(event_kind, payload)
+        let Some(event_kind) = FriendEventKind::from_ws_event_kind(event_kind) else {
+            return RealtimeFriendApplyResult::Ignored;
+        };
+        let content = payload.json.get("content").unwrap_or(&Value::Null);
+        self.apply_friend_content(
+            event_kind,
+            content,
+            &payload.received_at,
+            None,
+            FriendEventTrust::Untrusted,
+        )
     }
 
     pub(crate) fn apply_scoped_synthetic_event(
@@ -577,24 +519,6 @@ impl RealtimeFriendsRuntime {
         )
     }
 
-    fn apply_friend_message(
-        &self,
-        ws_event_kind: &RealtimeWsEventKind,
-        payload: &RealtimeWsMessagePayload,
-    ) -> RealtimeFriendApplyResult {
-        let Some(event_kind) = FriendEventKind::from_ws_event_kind(ws_event_kind) else {
-            return RealtimeFriendApplyResult::Ignored;
-        };
-        let content = payload.json.get("content").unwrap_or(&Value::Null);
-        self.apply_friend_content(
-            event_kind,
-            content,
-            &payload.received_at,
-            None,
-            FriendEventTrust::Untrusted,
-        )
-    }
-
     fn apply_friend_content(
         &self,
         event_kind: FriendEventKind,
@@ -605,12 +529,12 @@ impl RealtimeFriendsRuntime {
     ) -> RealtimeFriendApplyResult {
         let now = EventTime::from_received_at(received_at);
         let mut state = self.lock_state();
-        let Some(baseline) = state.baseline.as_ref() else {
+        let Some(roster) = state.roster.as_ref() else {
             return RealtimeFriendApplyResult::MissingBaseline;
         };
         if expected_scope.is_some_and(|expected| {
-            baseline.current_user_id != expected.owner_user_id.as_str().trim()
-                || normalize_vrchat_api_endpoint(Some(&baseline.endpoint))
+            roster.current_user_id != expected.owner_user_id.as_str().trim()
+                || normalize_vrchat_api_endpoint(Some(&roster.endpoint))
                     != normalize_vrchat_api_endpoint(Some(expected.endpoint))
         }) {
             return RealtimeFriendApplyResult::MissingBaseline;
@@ -623,11 +547,7 @@ impl RealtimeFriendsRuntime {
                 apply_friend_event(&mut state, event_kind, content, &now)
             }
         };
-        let Some(output) = output else {
-            return RealtimeFriendApplyResult::Ignored;
-        };
-        record_output_friend_state_sequence(&mut state, &output);
-        RealtimeFriendApplyResult::Output(Box::new(output))
+        finish_output(&mut state, output)
     }
 
     pub(crate) fn apply_refetched_user_profile_if_sequence(
@@ -635,104 +555,31 @@ impl RealtimeFriendsRuntime {
         generation: u64,
         user_id: &str,
         expected_sequence: u64,
-        profile: serde_json::Value,
-        received_at: &str,
-    ) -> RealtimeFriendApplyResult {
-        self.apply_refetched_user_profile_inner(
-            generation,
-            user_id,
-            Some(expected_sequence),
-            profile,
-            received_at,
-        )
-    }
-
-    fn apply_refetched_user_profile_inner(
-        &self,
-        generation: u64,
-        user_id: &str,
-        expected_sequence: Option<u64>,
-        profile: serde_json::Value,
+        profile: Value,
         received_at: &str,
     ) -> RealtimeFriendApplyResult {
         let mut state = self.lock_state();
-        let Some(baseline) = state.baseline.as_ref() else {
+        let Some(roster) = state.roster.as_ref() else {
             return RealtimeFriendApplyResult::MissingBaseline;
         };
-        if baseline.generation != generation {
+        let user_id = user_id.trim();
+        if roster.generation != generation
+            || user_id.is_empty()
+            || !roster.entries.contains_key(user_id)
+            || state.sequence_of(user_id) != expected_sequence
+        {
             return RealtimeFriendApplyResult::Ignored;
         }
-        let normalized_user_id = user_id.trim();
-        if normalized_user_id.is_empty() {
-            return RealtimeFriendApplyResult::Ignored;
-        }
-        if !baseline.friends_by_id.contains_key(normalized_user_id) {
-            return RealtimeFriendApplyResult::Ignored;
-        }
-        if expected_sequence.is_some_and(|expected_sequence| {
-            current_friend_state_sequence(&state, normalized_user_id) != expected_sequence
-        }) {
-            return RealtimeFriendApplyResult::Ignored;
-        }
-        let content = json!({
-            "userId": normalized_user_id,
-            "user": profile
-        });
+        let content = json!({ "userId": user_id, "user": profile });
         let now = EventTime::from_received_at(received_at);
-        let Some(output) = apply_refetched_friend_profile_event(&mut state, &content, &now) else {
-            return RealtimeFriendApplyResult::Ignored;
-        };
-        record_output_friend_state_sequence(&mut state, &output);
-        RealtimeFriendApplyResult::Output(Box::new(output))
+        let output = apply_refetched_friend_profile_event(&mut state, &content, &now);
+        finish_output(&mut state, output)
     }
 
-    pub fn fire_pending_offline(
-        &self,
-        user_id: &str,
-        token: u64,
-        now_iso: String,
-    ) -> Option<RealtimeFriendOutput> {
+    pub fn wake(&self, user_id: &str, now_iso: &str) -> Option<RealtimeFriendOutput> {
         let mut state = self.lock_state();
-        let baseline = state.baseline.as_ref()?;
-        let owner_user_id = baseline.current_user_id.clone();
-        let generation = baseline.generation;
-        let baseline_revision = baseline.baseline_revision;
-        let pending = state.pending_offline.get(user_id)?;
-        if pending.token != token {
-            return None;
-        }
-        let patch = pending.patch.clone();
-        let state_bucket = pending.state_bucket.clone();
-        state.recent_gps.remove(user_id);
-        let superseded = state
-            .baseline
-            .as_ref()
-            .and_then(|baseline| baseline.friends_by_id.get(user_id))
-            .is_none_or(|current| {
-                is_online_state(current)
-                    && !current
-                        .extra
-                        .get("pendingOffline")
-                        .and_then(Value::as_bool)
-                        .unwrap_or(false)
-            });
-        if superseded {
-            state.pending_offline.remove(user_id);
-            return None;
-        }
-
-        let mut output =
-            RealtimeFriendOutput::new(OwnerId::new(owner_user_id), generation, baseline_revision);
-        apply_record_patch_to_state(
-            &mut state,
-            &mut output,
-            user_id,
-            patch,
-            &state_bucket,
-            FriendStateBucketAuthority::Explicit,
-            &now_iso,
-        );
-        output.projection.feed_entries = output.persistence.feed_entries.clone();
+        let now = EventTime::from_received_at(now_iso);
+        let output = apply_presence_evidence(&mut state, user_id, &Evidence::wake(), &now)?;
         record_output_friend_state_sequence(&mut state, &output);
         Some(output)
     }
@@ -743,14 +590,14 @@ impl RealtimeFriendsRuntime {
         feed_entry: FeedLiveEntry,
     ) -> Option<RealtimeFriendOutput> {
         let state = self.lock_state();
-        let baseline = state
-            .baseline
+        let roster = state
+            .roster
             .as_ref()
-            .filter(|baseline| baseline.generation == generation)?;
+            .filter(|roster| roster.generation == generation)?;
         let mut output = RealtimeFriendOutput::new(
-            OwnerId::new(baseline.current_user_id.clone()),
-            baseline.generation,
-            baseline.baseline_revision,
+            OwnerId::new(roster.current_user_id.clone()),
+            roster.generation,
+            roster.baseline_revision,
         );
         output.persistence.feed_entries.push(feed_entry.clone());
         output.projection.feed_entries.push(feed_entry);
@@ -762,25 +609,45 @@ impl RealtimeFriendsRuntime {
     }
 }
 
-fn leaves_online(state_bucket: &str) -> bool {
-    matches!(
-        StateBucket::from_exact(state_bucket),
-        Some(StateBucket::Offline | StateBucket::Active)
-    )
+fn finish_output(
+    state: &mut RealtimeFriendState,
+    output: Option<RealtimeFriendOutput>,
+) -> RealtimeFriendApplyResult {
+    let Some(output) = output else {
+        return RealtimeFriendApplyResult::Ignored;
+    };
+    record_output_friend_state_sequence(state, &output);
+    RealtimeFriendApplyResult::Output(Box::new(output))
+}
+
+fn initial_phase(evidence: &Evidence, now_ms: i64) -> Phase {
+    match &evidence.claim {
+        Claim::Online { place, platform } => Phase::Online(OnlineState::arrive(
+            place.clone(),
+            platform.clone(),
+            now_ms,
+            false,
+        )),
+        Claim::Active { platform } => Phase::Active {
+            changed_ms: None,
+            platform: platform.clone(),
+        },
+        _ => Phase::offline(),
+    }
 }
 
 fn current_friend_roster_snapshot(
-    user_id: &str,
-    friends_by_id: &HashMap<String, FriendRecord>,
+    roster: &Roster,
     previous_order: &[String],
 ) -> serde_json::Result<Value> {
+    let entries = &roster.entries;
     let mut ordered_friend_ids = previous_order
         .iter()
-        .filter(|friend_id| friends_by_id.contains_key(*friend_id))
+        .filter(|friend_id| entries.contains_key(*friend_id))
         .cloned()
         .collect::<Vec<_>>();
     let mut seen = ordered_friend_ids.iter().cloned().collect::<HashSet<_>>();
-    let mut added = friends_by_id
+    let mut added = entries
         .keys()
         .filter(|friend_id| seen.insert((*friend_id).clone()))
         .cloned()
@@ -792,9 +659,9 @@ fn current_friend_roster_snapshot(
         ordered_friend_ids
             .iter()
             .filter(|friend_id| {
-                friends_by_id
-                    .get(*friend_id)
-                    .is_some_and(|friend| friend_snapshot_state_bucket(friend) == bucket)
+                entries.get(*friend_id).is_some_and(|entry| {
+                    super::event_patch::section_bucket(&entry.presence) == bucket
+                })
             })
             .cloned()
             .collect::<Vec<_>>()
@@ -808,33 +675,20 @@ fn current_friend_roster_snapshot(
         .chain(&offline_ids)
         .cloned()
         .collect::<Vec<_>>();
-    let friends_by_id = serde_json::to_value(friends_by_id)?;
+    let friends_by_id = entries
+        .iter()
+        .map(|(user_id, entry)| (user_id.clone(), &entry.record))
+        .collect::<HashMap<_, _>>();
 
     Ok(json!({
-        "currentUserId": user_id,
-        "friendsById": friends_by_id,
+        "currentUserId": roster.current_user_id,
+        "friendsById": serde_json::to_value(friends_by_id)?,
         "orderedFriendIds": ordered_friend_ids,
         "onlineIds": online_ids,
         "activeIds": active_ids,
         "offlineIds": offline_ids,
         "detail": "",
     }))
-}
-
-fn friend_snapshot_state_bucket(friend: &FriendRecord) -> &str {
-    match friend.state.as_str() {
-        "online" => "online",
-        "active" => "active",
-        _ => "offline",
-    }
-}
-
-fn current_friend_state_sequence(state: &RealtimeFriendState, user_id: &str) -> u64 {
-    state
-        .friend_state_sequence_by_user
-        .get(user_id)
-        .copied()
-        .unwrap_or_default()
 }
 
 fn record_output_friend_state_sequence(
@@ -861,24 +715,11 @@ fn record_output_friend_state_sequence(
 }
 
 fn preserve_fields_over_placeholder(incoming: &mut FriendRecord, existing: &FriendRecord) {
-    incoming.location = existing.location.clone();
-    incoming.traveling_to_location = existing.traveling_to_location.clone();
-    incoming.world_id = existing.world_id.clone();
-    incoming.platform = existing.platform.clone();
     incoming.last_platform = existing.last_platform.clone();
     incoming.status = existing.status.clone();
     incoming.status_description = existing.status_description.clone();
 
     for key in [
-        "pendingOffline",
-        derived_keys::LOCATION_PROJECTION,
-        "locationUpdatedAt",
-        "instanceId",
-        "travelingToWorld",
-        "travelingToInstance",
-        derived_keys::TRAVELING_TO_LOCATION_PROJECTION,
-        derived_keys::TRAVELING_TO_TIME,
-        "travelingToLocation",
         "tags",
         "developerType",
         "trustLevel",

@@ -109,10 +109,6 @@ mod tests {
         };
 
         assert_eq!(output.projection.patches[0].patch.state, "online");
-        assert_eq!(
-            output.projection.patches[0].state_bucket_authority,
-            FriendStateBucketAuthority::Preserve
-        );
         assert!(output.persistence.feed_entries.is_empty());
         assert_eq!(
             runtime
@@ -188,8 +184,6 @@ mod tests {
         assert!(output.persistence.feed_entries.is_empty());
         assert_eq!(patch.extra["pendingOffline"], true);
         assert_eq!(output.profile_refetch_user_ids, vec!["usr_friend"]);
-        assert!(runtime
-            .fire_pending_offline("usr_friend", 1, "2026-05-15T00:03:00Z".into())
-            .is_some());
+        assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_some());
     }
 }

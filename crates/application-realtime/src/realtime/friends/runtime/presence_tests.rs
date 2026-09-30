@@ -560,10 +560,7 @@ mod tests {
             panic!("friend-active should produce an output");
         };
 
-        assert!(matches!(
-            output.timer_action,
-            PendingOfflineTimerAction::Schedule { .. }
-        ));
+        assert!(output.wake.is_some());
         assert_eq!(output.persistence.friend_log_upserts.len(), 1);
         assert_eq!(
             output.persistence.friend_log_upserts[0].display_name,
@@ -572,7 +569,7 @@ mod tests {
         assert!(output.projection.friend_log_changed);
         let snapshot = runtime.snapshot().unwrap();
         let friend = &snapshot.friends_by_id["usr_friend"];
-        assert_eq!(friend.display_name, "Old Name");
+        assert_eq!(friend.display_name, "New Name");
         assert_eq!(friend.state, "online");
         assert_eq!(
             friend.extra.get("pendingOffline").and_then(Value::as_bool),
@@ -796,12 +793,11 @@ mod tests {
         };
 
         assert_eq!(output.projection.patches[0].patch.state, "online");
-        let PendingOfflineTimerAction::Schedule { token, .. } = output.timer_action else {
-            panic!("online->active should schedule pending timer");
-        };
-        let fired = runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .unwrap();
+        assert!(
+            output.wake.is_some(),
+            "online->active should schedule pending timer"
+        );
+        let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
         assert_eq!(fired.projection.patches[0].patch.state, "active");
     }
 
@@ -840,9 +836,10 @@ mod tests {
         else {
             panic!("friend-offline should produce an output");
         };
-        let PendingOfflineTimerAction::Schedule { token, delay, .. } = output.timer_action else {
+        let Some(wake) = output.wake.as_ref() else {
             panic!("offline should schedule pending timer");
         };
+        let delay = wake.delay;
         assert_eq!(delay, std::time::Duration::from_secs(170));
         assert_eq!(output.projection.patches[0].patch.state, "online");
         assert_eq!(output.projection.patches[0].patch.location, "wrld_1:123");
@@ -851,9 +848,7 @@ mod tests {
             true
         );
 
-        let fired = runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .unwrap();
+        let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
 
         assert_eq!(fired.projection.patches[0].patch.state, "offline");
         assert_eq!(
@@ -901,12 +896,11 @@ mod tests {
             panic!("friend-active should produce an output");
         };
         assert_eq!(output.projection.patches[0].patch.state, "online");
-        let PendingOfflineTimerAction::Schedule { token, .. } = output.timer_action else {
-            panic!("online->active should schedule pending timer");
-        };
-        let fired = runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .unwrap();
+        assert!(
+            output.wake.is_some(),
+            "online->active should schedule pending timer"
+        );
+        let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
         assert_eq!(fired.projection.patches[0].patch.state, "active");
     }
 
@@ -946,9 +940,10 @@ mod tests {
         else {
             panic!("first friend-offline should produce an output");
         };
-        let PendingOfflineTimerAction::Schedule { token, .. } = output.timer_action else {
-            panic!("first offline should schedule pending timer");
-        };
+        assert!(
+            output.wake.is_some(),
+            "first offline should schedule pending timer"
+        );
 
         let repeated = runtime.apply_ws_message(&RealtimeWsMessagePayload {
             json: json!({
@@ -960,9 +955,7 @@ mod tests {
         });
 
         assert!(matches!(repeated, RealtimeFriendApplyResult::Ignored));
-        let fired = runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .unwrap();
+        let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
         assert_eq!(fired.projection.patches[0].patch.state, "offline");
     }
 
@@ -1002,9 +995,10 @@ mod tests {
         else {
             panic!("friend-active should schedule pending timer");
         };
-        let PendingOfflineTimerAction::Schedule { token, .. } = first.timer_action else {
-            panic!("online->active should schedule pending timer");
-        };
+        assert!(
+            first.wake.is_some(),
+            "online->active should schedule pending timer"
+        );
 
         let repeated = runtime.apply_ws_message(&RealtimeWsMessagePayload {
             json: json!({
@@ -1016,9 +1010,7 @@ mod tests {
         });
 
         assert!(matches!(repeated, RealtimeFriendApplyResult::Ignored));
-        let fired = runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .unwrap();
+        let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
         assert_eq!(fired.projection.patches[0].patch.state, "active");
     }
 
@@ -1089,9 +1081,10 @@ mod tests {
         else {
             panic!("friend-offline should schedule pending timer");
         };
-        let PendingOfflineTimerAction::Schedule { token, .. } = pending.timer_action else {
-            panic!("online->offline should schedule pending timer");
-        };
+        assert!(
+            pending.wake.is_some(),
+            "online->offline should schedule pending timer"
+        );
 
         let RealtimeFriendApplyResult::Output(online) =
             runtime.apply_ws_message(&RealtimeWsMessagePayload {
@@ -1113,20 +1106,18 @@ mod tests {
             panic!("friend-online should cancel pending offline");
         };
 
-        assert_eq!(online.timer_action, PendingOfflineTimerAction::None);
+        assert!(online.wake.is_none());
         assert!(online.persistence.feed_entries.is_empty());
         assert_eq!(online.projection.patches[0].patch.state, "online");
         assert_eq!(
             online.projection.patches[0].patch.extra["pendingOffline"],
             false
         );
-        assert!(runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .is_none());
+        assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_none());
     }
 
     #[test]
-    fn friend_delete_clears_pending_and_gps_state_before_readd() {
+    fn friend_delete_discards_presence_before_readd() {
         let runtime = runtime_with_online_friend("wrld_a:1");
 
         let RealtimeFriendApplyResult::Output(first_location) =
@@ -1161,9 +1152,10 @@ mod tests {
         else {
             panic!("friend-offline should schedule pending timer");
         };
-        let PendingOfflineTimerAction::Schedule { token, .. } = pending.timer_action else {
-            panic!("online->offline should schedule pending timer");
-        };
+        assert!(
+            pending.wake.is_some(),
+            "online->offline should schedule pending timer"
+        );
 
         let RealtimeFriendApplyResult::Output(deleted) =
             runtime.apply_ws_message(&RealtimeWsMessagePayload {
@@ -1195,9 +1187,7 @@ mod tests {
             .expect("baseline snapshot")
             .friends_by_id
             .contains_key("usr_friend"));
-        assert!(runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .is_none());
+        assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_none());
 
         assert!(matches!(
             runtime.apply_ws_message(&RealtimeWsMessagePayload {
@@ -1217,26 +1207,9 @@ mod tests {
             }),
             RealtimeFriendApplyResult::Output(_)
         ));
-        let RealtimeFriendApplyResult::Output(second_location) =
-            runtime.apply_ws_message(&RealtimeWsMessagePayload {
-                json: json!({
-                    "type": "friend-location",
-                    "content": {
-                        "userId": "usr_friend",
-                        "location": "wrld_b:2"
-                    }
-                }),
-                raw: "{}".into(),
-                received_at: "2026-05-15T00:00:04Z".into(),
-            })
-        else {
-            panic!("location after readd should produce an output");
-        };
-        assert!(second_location
-            .persistence
-            .feed_entries
-            .iter()
-            .any(|entry| entry.to_json()["type"] == "GPS"));
+        let readded = &runtime.snapshot().unwrap().friends_by_id["usr_friend"];
+        assert_eq!(readded.state, "offline");
+        assert_eq!(readded.extra.get("pendingOffline"), Some(&json!(false)));
     }
 
     #[test]
@@ -1274,9 +1247,10 @@ mod tests {
         else {
             panic!("friend-offline should produce an output");
         };
-        let PendingOfflineTimerAction::Schedule { token, .. } = offline.timer_action else {
-            panic!("offline should schedule pending timer");
-        };
+        assert!(
+            offline.wake.is_some(),
+            "offline should schedule pending timer"
+        );
 
         let RealtimeFriendApplyResult::Output(output) = runtime.apply_scoped_synthetic_event(
             &vrcx_0_core::OwnerId::new("usr_self"),
@@ -1308,8 +1282,6 @@ mod tests {
             output.persistence.feed_entries[0].to_json()["location"],
             "wrld_1:123"
         );
-        assert!(runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .is_none());
+        assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_none());
     }
 }

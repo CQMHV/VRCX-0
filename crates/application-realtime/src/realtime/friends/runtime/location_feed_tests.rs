@@ -61,7 +61,7 @@ mod tests {
     }
 
     #[test]
-    fn duplicate_friend_location_payload_after_repeat_window_does_not_write_gps_again() {
+    fn duplicate_friend_location_payload_is_ignored() {
         let runtime = RealtimeFriendsRuntime::default();
         runtime.set_baseline(
             FriendRosterBaseline {
@@ -108,17 +108,14 @@ mod tests {
         };
         assert_eq!(first.persistence.feed_entries[0].to_json()["type"], "GPS");
 
-        let RealtimeFriendApplyResult::Output(second) =
+        assert!(matches!(
             runtime.apply_ws_message(&RealtimeWsMessagePayload {
                 json: payload,
                 raw: "{}".into(),
                 received_at: "2026-05-15T00:06:01Z".into(),
-            })
-        else {
-            panic!("duplicate friend-location should still produce a projection output");
-        };
-        assert!(second.persistence.feed_entries.is_empty());
-        assert!(second.projection.feed_entries.is_empty());
+            }),
+            RealtimeFriendApplyResult::Ignored
+        ));
     }
 
     #[test]
@@ -311,16 +308,13 @@ mod tests {
         };
 
         assert_eq!(output.projection.patches[0].patch.state, "online");
-        assert_eq!(output.projection.patches[0].patch.location, "offline");
+        assert_eq!(output.projection.patches[0].patch.location, "wrld_1:123");
         assert_eq!(
             output.projection.patches[0].patch.extra["pendingOffline"],
             true
         );
         assert!(output.persistence.feed_entries.is_empty());
-        assert!(matches!(
-            output.timer_action,
-            PendingOfflineTimerAction::Schedule { .. }
-        ));
+        assert!(output.wake.is_some());
         assert_eq!(output.profile_refetch_user_ids, vec!["usr_friend"]);
 
         let friend = runtime
@@ -331,7 +325,7 @@ mod tests {
             .cloned()
             .unwrap();
         assert_eq!(friend.state, "online");
-        assert_eq!(friend.location, "offline");
+        assert_eq!(friend.location, "wrld_1:123");
         assert_eq!(friend.extra["pendingOffline"], true);
     }
 
@@ -394,10 +388,10 @@ mod tests {
             "wrld_current:456"
         );
 
-        let RealtimeFriendApplyResult::Output(second) = apply("2026-07-13T10:00:01Z") else {
-            panic!("repeated traveling should still produce a projection output");
-        };
-        assert!(second.projection.feed_entries.is_empty());
+        assert!(matches!(
+            apply("2026-07-13T10:00:01Z"),
+            RealtimeFriendApplyResult::Ignored
+        ));
     }
 
     #[test]

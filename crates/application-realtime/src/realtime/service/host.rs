@@ -17,8 +17,8 @@ use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 use crate::realtime::connection::RealtimeMessageSink;
 #[cfg(test)]
 use crate::realtime::{
-    PendingOfflineTimerAction, RealtimeFriendApplyResult, RealtimeFriendOutput,
-    RealtimeTransportStartResult, RealtimeTransportTermination,
+    RealtimeFriendApplyResult, RealtimeFriendOutput, RealtimeTransportStartResult,
+    RealtimeTransportTermination,
 };
 #[cfg(test)]
 use crate::social_baseline::service::{reconcile_friend_roster_records, FriendStatusVerdicts};

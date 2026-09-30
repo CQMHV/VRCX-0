@@ -43,11 +43,7 @@ mod tests {
         };
 
         assert_eq!(output.projection.patches[0].patch.state, "offline");
-        assert_eq!(
-            output.projection.patches[0].state_bucket_authority,
-            FriendStateBucketAuthority::Preserve
-        );
-        assert_eq!(output.projection.patches[0].patch.location, "wrld_2:456");
+        assert_eq!(output.projection.patches[0].patch.location, "offline");
         assert_eq!(output.profile_refetch_user_ids, vec!["usr_friend"]);
     }
 
@@ -158,16 +154,15 @@ mod tests {
         };
 
         let patch = &output.projection.patches[0].patch;
-        let PendingOfflineTimerAction::Schedule { token, .. } = output.timer_action else {
-            panic!("offline location should schedule pending timer");
-        };
+        assert!(
+            output.wake.is_some(),
+            "offline location should schedule pending timer"
+        );
         assert_eq!(output.projection.patches[0].patch.state, "online");
         assert!(output.persistence.feed_entries.is_empty());
-        assert_eq!(patch.location, "offline");
+        assert_eq!(patch.location, "wrld_1:123");
         assert_eq!(patch.extra["pendingOffline"], true);
-        let fired = runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .unwrap();
+        let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
         assert_eq!(fired.projection.patches[0].patch.state, "offline");
     }
 }

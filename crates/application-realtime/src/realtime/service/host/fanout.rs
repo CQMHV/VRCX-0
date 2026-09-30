@@ -9,9 +9,9 @@ use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_core::user_facts::UserFactMergeOptions;
 
 use crate::realtime::{
-    FriendProjection, PendingOfflineTimerAction, RealtimeCurrentUserOutput,
-    RealtimeCurrentUserProjection, RealtimeFriendOutput, RealtimeInstanceClosedOutput,
-    RealtimeNotificationOutput, RealtimeSessionContext,
+    FriendProjection, RealtimeCurrentUserOutput, RealtimeCurrentUserProjection,
+    RealtimeFriendOutput, RealtimeInstanceClosedOutput, RealtimeNotificationOutput,
+    RealtimeSessionContext,
 };
 
 use super::RealtimeHostRuntime;
@@ -119,7 +119,7 @@ impl RealtimeHostRuntime {
         _owner: &FriendOwnerGuard<'_>,
         mut output: RealtimeFriendOutput,
     ) -> FriendOutputApplyOutcome {
-        let timer_action = output.timer_action.clone();
+        let wake = output.wake.take();
         let profile_refetch_user_ids = output.profile_refetch_user_ids.clone();
         let icon_changes = std::mem::take(&mut output.icon_changes);
         let mut projection = output.projection.clone();
@@ -193,18 +193,8 @@ impl RealtimeHostRuntime {
         self.emit_friend_projection(projection);
         self.emit_feed_entries(projection_generation, &output.owner_user_id, feed_entries);
 
-        if let PendingOfflineTimerAction::Schedule {
-            user_id,
-            token,
-            delay,
-        } = timer_action
-        {
-            let runtime = Arc::clone(self);
-            self.deps.tasks.spawn(async move {
-                tokio::time::sleep(delay).await;
-                let now = chrono::Utc::now().to_rfc3339();
-                runtime.fire_pending_offline(&user_id, token, now);
-            });
+        if let Some(wake) = wake {
+            self.schedule_friend_wake(projection_generation, wake);
         }
         self.schedule_friend_profile_refetches(projection_generation, profile_refetch_user_ids);
         self.schedule_friend_icon_changes(projection_generation, icon_changes);

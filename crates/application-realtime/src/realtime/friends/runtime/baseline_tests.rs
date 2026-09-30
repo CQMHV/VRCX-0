@@ -350,6 +350,7 @@ mod tests {
             1,
             1,
             None,
+            1_800_000_000_000,
         );
 
         let snapshot = runtime.snapshot().expect("baseline present");
@@ -417,7 +418,7 @@ mod tests {
     }
 
     #[test]
-    fn rest_online_baseline_cancels_pending_offline_without_feed() {
+    fn rest_online_baseline_keeps_a_live_pending_and_requests_refetch() {
         let runtime = RealtimeFriendsRuntime::default();
         runtime.set_baseline(
             FriendRosterBaseline {
@@ -452,9 +453,10 @@ mod tests {
         else {
             panic!("friend-offline should produce an output");
         };
-        let PendingOfflineTimerAction::Schedule { token, .. } = output.timer_action else {
-            panic!("offline should schedule pending timer");
-        };
+        assert!(
+            output.wake.is_some(),
+            "offline should schedule pending timer"
+        );
         let watermark = runtime.baseline_causal_watermark().friend_state_sequence;
 
         let effects = runtime.set_baseline_with_effects(
@@ -477,18 +479,23 @@ mod tests {
             1,
             1,
             Some(watermark),
+            1_800_000_000_000,
         );
 
         let snapshot = runtime.snapshot().unwrap();
         let friend = snapshot.friends_by_id.get("usr_friend").unwrap();
         assert_eq!(friend.state, "online");
-        assert_eq!(friend.location, "wrld_2:456");
-        assert_eq!(friend.extra.get("pendingOffline"), Some(&json!(false)));
-        assert!(effects.schedules.is_empty());
+        assert_eq!(friend.location, "wrld_1:123");
+        assert_eq!(friend.extra.get("pendingOffline"), Some(&json!(true)));
         assert!(effects.confirmed_feed_entries.is_empty());
-        assert!(runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .is_none());
+        assert_eq!(effects.profile_refetch_user_ids, vec!["usr_friend"]);
+        let fired = runtime
+            .wake("usr_friend", "2026-05-15T00:03:00Z")
+            .expect("the live pending still finalizes");
+        assert_eq!(
+            fired.persistence.feed_entries[0].to_json()["type"],
+            "Offline"
+        );
     }
 
     fn single_friend_baseline(state: &str, location: &str) -> FriendRosterBaseline {
@@ -521,6 +528,7 @@ mod tests {
                 1,
                 1,
                 None,
+                1_800_000_000_000,
             );
 
             let snapshot = runtime.snapshot().unwrap();
@@ -537,7 +545,24 @@ mod tests {
     }
 
     #[test]
-    fn new_generation_baseline_does_not_emit_presence_feed() {
+    fn baseline_for_another_session_rebuilds_without_presence_feed() {
+        let runtime = RealtimeFriendsRuntime::default();
+        runtime.set_baseline(single_friend_baseline("offline", "offline"), 1, 0);
+        let mut other_account = single_friend_baseline("online", "wrld_2:456");
+        other_account.current_user_id = "usr_other".into();
+
+        let effects =
+            runtime.set_baseline_with_effects(other_account, 2, 0, None, 1_800_000_000_000);
+
+        assert_eq!(
+            runtime.snapshot().unwrap().friends_by_id["usr_friend"].state,
+            "online"
+        );
+        assert!(effects.confirmed_feed_entries.is_empty());
+    }
+
+    #[test]
+    fn same_session_baseline_after_reconnect_merges_as_evidence() {
         let runtime = RealtimeFriendsRuntime::default();
         runtime.set_baseline(single_friend_baseline("offline", "offline"), 1, 0);
 
@@ -546,12 +571,13 @@ mod tests {
             2,
             0,
             None,
+            1_800_000_000_000,
         );
 
+        assert_eq!(effects.confirmed_feed_entries.len(), 1);
         assert_eq!(
-            runtime.snapshot().unwrap().friends_by_id["usr_friend"].state,
-            "online"
+            effects.confirmed_feed_entries[0].to_json()["type"],
+            "Online"
         );
-        assert!(effects.confirmed_feed_entries.is_empty());
     }
 }

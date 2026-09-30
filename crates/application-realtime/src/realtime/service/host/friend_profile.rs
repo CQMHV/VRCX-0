@@ -174,7 +174,7 @@ impl RealtimeHostRuntime {
     pub(super) fn record_baseline_friends_into_cache(&self) {
         let Some(changed) = self.friends.with_user_cache_records(|endpoint, records| {
             self.collect_friend_record_cache_changes(
-                records.values(),
+                records,
                 &UserFactMergeOptions {
                     endpoint: endpoint.to_string(),
                     source: "friend".into(),

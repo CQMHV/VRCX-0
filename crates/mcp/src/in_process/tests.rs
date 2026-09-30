@@ -342,7 +342,7 @@ async fn online_friends_tool_filters_sorts_and_projects_live_presence() {
     let mut alpha = friend(
         "usr_alpha",
         "Alpha",
-        "active",
+        "online",
         "wrld_alpha:123~group(grp_alpha)",
     );
     alpha.last_platform = "android".into();

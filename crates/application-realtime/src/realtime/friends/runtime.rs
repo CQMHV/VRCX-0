@@ -6,13 +6,11 @@ use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
 use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 
 #[cfg(test)]
-use super::super::{
-    FriendStateBucketAuthority, PendingOfflineTimerAction, RealtimeFriendApplyResult,
-    RealtimeFriendOutput,
-};
+use super::super::{FriendStateBucketAuthority, RealtimeFriendApplyResult, RealtimeFriendOutput};
 
 mod event_patch;
 mod persistence;
+mod presence_projection;
 mod state;
 mod utils;
 
@@ -40,4 +38,4 @@ mod ws_trace_replay_test;
 pub use event_patch::is_friend_event_type;
 pub(crate) use persistence::{player_joining_feed_entry, trust_level_feed_entry};
 pub use state::RealtimeFriendsRuntime;
-pub(crate) use state::{PendingOfflineSchedule, SyntheticFriendEvent};
+pub(crate) use state::SyntheticFriendEvent;

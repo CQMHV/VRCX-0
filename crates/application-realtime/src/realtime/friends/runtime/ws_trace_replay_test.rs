@@ -2,6 +2,7 @@
 mod tests {
     use super::super::utils::EventTime;
     use super::super::*;
+    use crate::realtime::FriendWake;
     use chrono::{TimeZone, Utc};
     use std::collections::{BTreeMap, HashMap};
     use std::env;
@@ -12,7 +13,6 @@ mod tests {
     struct PendingTimer {
         deadline_ms: i64,
         uid: String,
-        token: u64,
     }
 
     fn observe_all(runtime: &RealtimeFriendsRuntime) -> BTreeMap<String, Value> {
@@ -53,7 +53,7 @@ mod tests {
             .map(|time| time.to_rfc3339())
             .unwrap_or_default();
         runtime
-            .fire_pending_offline(&timer.uid, timer.token, at)
+            .wake(&timer.uid, &at)
             .map(|output| output.persistence.feed_entries)
             .unwrap_or_default()
     }
@@ -113,11 +113,11 @@ mod tests {
         Some((uid, record))
     }
 
-    fn schedule(timers: &mut Vec<PendingTimer>, uid: &str, token: u64, deadline_ms: i64) {
+    fn schedule(timers: &mut Vec<PendingTimer>, wake: &FriendWake, now_ms: i64) {
+        let delay_ms = i64::try_from(wake.delay.as_millis()).unwrap_or(i64::MAX);
         timers.push(PendingTimer {
-            deadline_ms,
-            uid: uid.to_string(),
-            token,
+            deadline_ms: now_ms + delay_ms,
+            uid: wake.user_id.clone(),
         });
     }
 
@@ -210,10 +210,10 @@ mod tests {
                     entry.get("generation").and_then(Value::as_u64).unwrap_or(0),
                     entry.get("revision").and_then(Value::as_u64).unwrap_or(0),
                     None,
+                    at_ms,
                 );
-                for timer in &effects.schedules {
-                    let delay_ms = i64::try_from(timer.delay.as_millis()).unwrap_or(i64::MAX);
-                    schedule(&mut timers, &timer.user_id, timer.token, at_ms + delay_ms);
+                for wake in &effects.schedules {
+                    schedule(&mut timers, wake, at_ms);
                 }
                 emit(
                     &mut observed,
@@ -234,14 +234,8 @@ mod tests {
             };
             let feeds = match runtime.apply_ws_message(&payload) {
                 RealtimeFriendApplyResult::Output(output) => {
-                    if let PendingOfflineTimerAction::Schedule {
-                        user_id,
-                        token,
-                        delay,
-                    } = &output.timer_action
-                    {
-                        let delay_ms = i64::try_from(delay.as_millis()).unwrap_or(i64::MAX);
-                        schedule(&mut timers, user_id, *token, at_ms + delay_ms);
+                    if let Some(wake) = &output.wake {
+                        schedule(&mut timers, wake, at_ms);
                     }
                     output.projection.feed_entries
                 }

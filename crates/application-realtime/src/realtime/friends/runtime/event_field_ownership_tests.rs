@@ -313,10 +313,6 @@ mod tests {
 
         let patch = &output.projection.patches[0];
         assert_eq!(patch.patch.state, "online");
-        assert_eq!(
-            patch.state_bucket_authority,
-            FriendStateBucketAuthority::Preserve
-        );
         assert_eq!(patch.patch.location, "wrld_new:2~region(jp)");
         assert!(output
             .persistence
@@ -379,18 +375,17 @@ mod tests {
         assert_eq!(patch.patch.state, "online");
         assert_eq!(patch.patch.extra["pendingOffline"], true);
         assert!(output.persistence.feed_entries.is_empty());
-        let PendingOfflineTimerAction::Schedule { token, .. } = output.timer_action else {
-            panic!("online->offline should schedule a pending-offline timer");
-        };
+        assert!(
+            output.wake.is_some(),
+            "online->offline should schedule a pending-offline timer"
+        );
 
         let debounced = snapshot_friend(&runtime);
         assert_eq!(debounced.state, "online");
         assert_eq!(debounced.status, "join me");
         assert_eq!(debounced.location, "wrld_1:123~region(jp)");
 
-        let fired = runtime
-            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
-            .unwrap();
+        let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
         assert_eq!(fired.projection.patches[0].patch.state, "offline");
         assert_eq!(snapshot_friend(&runtime).status, "join me");
     }

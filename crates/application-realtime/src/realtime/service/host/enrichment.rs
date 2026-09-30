@@ -13,6 +13,7 @@ use super::{
     RealtimeNotificationOutput, RealtimeNotificationProjection, RealtimeNotificationUpsert,
     RealtimePersistenceBatch, Value,
 };
+use vrcx_0_core::friends::FriendRecord;
 use vrcx_0_core::json::JsonExt;
 use vrcx_0_core::OwnerId;
 
@@ -108,16 +109,12 @@ impl RealtimeHostRuntime {
     }
 
     fn cached_user_display_name(&self, endpoint: &str, user_id: &str) -> Option<String> {
-        if let Some(display_name) = self
-            .friends
-            .with_user_cache_records(|friend_endpoint, records| {
-                if friend_endpoint.trim() != endpoint.trim() {
-                    return None;
-                }
-                let display_name = records.get(user_id.trim())?.display_name.trim();
-                is_meaningful_actor_name(display_name).then(|| display_name.to_string())
-            })
-            .flatten()
+        if let Some(display_name) =
+            self.cached_friend_record(endpoint, user_id)
+                .and_then(|record| {
+                    let display_name = record.display_name.trim();
+                    is_meaningful_actor_name(display_name).then(|| display_name.to_string())
+                })
         {
             return Some(display_name);
         }
@@ -134,15 +131,16 @@ impl RealtimeHostRuntime {
     }
 
     fn cached_friend_image_url(&self, endpoint: &str, user_id: &str) -> Option<String> {
+        let record = self.cached_friend_record(endpoint, user_id)?;
+        let url = record.icon_url.trim();
+        (!url.is_empty()).then(|| url.to_string())
+    }
+
+    fn cached_friend_record(&self, endpoint: &str, user_id: &str) -> Option<FriendRecord> {
         self.friends
-            .with_user_cache_records(|friend_endpoint, records| {
-                if friend_endpoint.trim() != endpoint.trim() {
-                    return None;
-                }
-                let record = records.get(user_id.trim())?;
-                let url = record.icon_url.trim();
-                (!url.is_empty()).then(|| url.to_string())
-            })?
+            .current_friend_record(user_id)
+            .filter(|snapshot| snapshot.endpoint.trim() == endpoint.trim())
+            .map(|snapshot| snapshot.record)
     }
 
     pub fn cached_user_notification_image_url(

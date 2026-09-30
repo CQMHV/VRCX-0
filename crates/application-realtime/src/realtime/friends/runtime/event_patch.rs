@@ -1,42 +1,38 @@
+use std::time::Duration;
+
 use serde_json::{json, Value};
+use vrcx_0_application_core::{FriendProjectionPatch, FriendStateBucketAuthority};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_contracts::realtime::FriendLogDelete;
 use vrcx_0_core::derived_keys;
 use vrcx_0_core::files::extract_file_id;
-use vrcx_0_core::friends::{FriendRecord, StateBucket};
+use vrcx_0_core::friends::FriendRecord;
 use vrcx_0_core::trust::{trust_level_changed, trust_level_differs};
+use vrcx_0_core::OwnerId;
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
-use crate::realtime::{
-    FriendIconChange, FriendStateBucketAuthority, PendingOfflineTimerAction, RealtimeFriendOutput,
+use crate::realtime::friends::presence::{
+    presence_feed, reduce, Claim, Evidence, OnlineState, Phase, Source, WsPresenceEvent,
 };
+use crate::realtime::{FriendIconChange, FriendWake, RealtimeFriendOutput};
 
 use super::persistence::{
     add_profile_diff_feed_entries, display_name, friend_log_upsert, friend_relationship_feed_entry,
-    gps_feed_entry, is_online_state, is_private_location, meaningful_name, meaningful_record_name,
-    patch_field_changed, player_joining_feed_entry, presence_transition_feed_entry,
-    trust_level_feed_entry, FriendRelationshipFeedKind, OfflineFeedPrevious,
+    meaningful_name, meaningful_record_name, trust_level_feed_entry, FriendRelationshipFeedKind,
 };
-use super::state::{PendingOffline, RealtimeFriendState, PENDING_OFFLINE_DELAY};
-use super::utils::{first_owned, parse_location, EventTime, JsonExt};
-use vrcx_0_core::OwnerId;
+use super::presence_projection::{project_presence, strip_presence_keys};
+use super::state::{FriendEntry, RealtimeFriendState};
+use super::utils::{first_owned, EventTime, JsonExt};
 
 mod event_split;
 mod patch_builders;
 mod record_transition;
 
-use event_split::{location_presence, profile_patch, EventSource};
+use event_split::{profile_patch, EventSource};
 #[cfg(test)]
 use patch_builders::event_user_patch;
-use patch_builders::{
-    event_user_id, is_online_location_proof, normalize_friend_update_location_patch,
-    normalize_patch_trust, offline_like_patch, online_patch, resolve_state_bucket,
-    state_bucket_changed,
-};
-use record_transition::apply_friend_patch;
-pub(super) use record_transition::{record_string, FriendRecordPatch};
-
-const GPS_REPEAT_WINDOW_MS: i64 = 5 * 60 * 1000;
+use patch_builders::{event_user_id, normalize_patch_trust};
+pub(super) use record_transition::{merge_profile, record_string};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum FriendEventKind {
@@ -105,6 +101,43 @@ pub(super) fn apply_trusted_friend_add_event(
     )
 }
 
+pub(super) fn apply_presence_evidence(
+    state: &mut RealtimeFriendState,
+    user_id: &str,
+    evidence: &Evidence,
+    now: &EventTime,
+) -> Option<RealtimeFriendOutput> {
+    let mut output = new_output(state)?;
+    let previous = state.entry(user_id)?.clone();
+    let step = reduce(&previous.presence, evidence, now.timestamp_ms);
+    if step.next == previous.presence && step.wake_at_ms.is_none() {
+        return None;
+    }
+    push_feed(
+        &mut output,
+        presence_feed(
+            user_id,
+            &previous.record,
+            &previous.presence,
+            &step.next,
+            now.timestamp_ms,
+            &now.iso,
+        ),
+    );
+    arm_wake(&mut output, user_id, step.wake_at_ms, now);
+    commit(
+        state,
+        &mut output,
+        user_id,
+        FriendEntry {
+            record: previous.record,
+            presence: step.next,
+        },
+        now,
+    );
+    Some(finish(output))
+}
+
 fn apply_friend_event_with_source(
     state: &mut RealtimeFriendState,
     event_kind: FriendEventKind,
@@ -112,77 +145,154 @@ fn apply_friend_event_with_source(
     now: &EventTime,
     source: EventSource,
 ) -> Option<RealtimeFriendOutput> {
-    let baseline = state.baseline.as_ref()?;
-    let owner_user_id = baseline.current_user_id.clone();
-    let generation = baseline.generation;
-    let baseline_revision = baseline.baseline_revision;
-    let mut output =
-        RealtimeFriendOutput::new(OwnerId::new(owner_user_id), generation, baseline_revision);
-
+    let mut output = new_output(state)?;
     match event_kind {
-        FriendEventKind::Add => apply_add(state, &mut output, content, now, source)?,
         FriendEventKind::Delete => apply_delete(state, &mut output, content, now)?,
-        FriendEventKind::Update => apply_update(state, &mut output, content, now, source)?,
-        FriendEventKind::Online => apply_online(state, &mut output, content, now)?,
-        FriendEventKind::Active | FriendEventKind::Offline => {
-            let next_state = match event_kind {
-                FriendEventKind::Active => StateBucket::Active.as_str(),
-                FriendEventKind::Offline => StateBucket::Offline.as_str(),
-                _ => unreachable!("matched active or offline event"),
-            };
-            apply_active_offline(state, &mut output, content, now, next_state)?
-        }
-        FriendEventKind::Location => apply_location(state, &mut output, content, now)?,
+        _ => apply_change(state, &mut output, event_kind, content, now, source)?,
     }
+    Some(finish(output))
+}
 
+fn new_output(state: &RealtimeFriendState) -> Option<RealtimeFriendOutput> {
+    let roster = state.roster.as_ref()?;
+    Some(RealtimeFriendOutput::new(
+        OwnerId::new(roster.current_user_id.clone()),
+        roster.generation,
+        roster.baseline_revision,
+    ))
+}
+
+fn finish(mut output: RealtimeFriendOutput) -> RealtimeFriendOutput {
     let mut feed_entries = output.persistence.feed_entries.clone();
     feed_entries.append(&mut output.projection.feed_entries);
     output.projection.feed_entries = feed_entries;
-    if output.projection.patches.is_empty()
-        && output.projection.removals.is_empty()
-        && output.projection.location_time_snapshot.is_none()
-        && output.persistence.is_empty()
-    {
-        return None;
-    }
-    Some(output)
+    output
 }
 
-fn apply_add(
+fn evidence_for(event_kind: FriendEventKind, content: &Value, source: EventSource) -> Evidence {
+    let user = content.get("user").unwrap_or(&Value::Null);
+    match (event_kind, source) {
+        (_, EventSource::ApiProfile) => Evidence::from_profile(Source::Api, user),
+        (_, EventSource::TrustedFriendAdd) => Evidence::from_profile(Source::TrustedAdd, user),
+        (FriendEventKind::Online, _) => Evidence::from_ws(WsPresenceEvent::Online, content),
+        (FriendEventKind::Active, _) => Evidence::from_ws(WsPresenceEvent::Active, content),
+        (FriendEventKind::Offline, _) => Evidence::from_ws(WsPresenceEvent::Offline, content),
+        (FriendEventKind::Location, _) => Evidence::from_ws(WsPresenceEvent::Location, content),
+        (FriendEventKind::Update, _) => Evidence::from_ws(WsPresenceEvent::Update, content),
+        (FriendEventKind::Add | FriendEventKind::Delete, _) => {
+            Evidence::new(Source::Ws, Claim::Nothing)
+        }
+    }
+}
+
+fn apply_change(
     state: &mut RealtimeFriendState,
     output: &mut RealtimeFriendOutput,
+    event_kind: FriendEventKind,
     content: &Value,
     now: &EventTime,
     source: EventSource,
 ) -> Option<()> {
     let user_id = event_user_id(content)?;
     let mut patch = profile_patch(content, &user_id);
-    let previous = get_friend_record(state, &user_id);
-    normalize_patch_trust(&mut patch, previous.as_ref());
-    let state_bucket = resolve_state_bucket(
-        content,
-        previous.as_ref(),
-        source.trusts_embedded_state(),
-        StateBucket::Offline.as_str(),
+    strip_presence_keys(&mut patch);
+    let evidence = evidence_for(event_kind, content, source);
+    let previous = state.entry(&user_id).cloned();
+    if event_kind == FriendEventKind::Update
+        && source == EventSource::Websocket
+        && evidence.claim == Claim::Nothing
+        && patch.as_object().map_or(0, |object| object.len()) <= 1
+    {
+        return None;
+    }
+    normalize_patch_trust(&mut patch, previous.as_ref().map(|entry| &entry.record));
+    let Some(previous) = previous else {
+        return create_entry(state, output, event_kind, &user_id, &patch, &evidence, now);
+    };
+    let record = merge_profile(Some(&previous.record), &user_id, &patch);
+    let step = reduce(&previous.presence, &evidence, now.timestamp_ms);
+    let feeds = presence_feed(
+        &user_id,
+        &record,
+        &previous.presence,
+        &step.next,
+        now.timestamp_ms,
+        &now.iso,
     );
-    let already_friend = previous.is_some();
-    apply_patch_to_state(
+    let mut projected = record.clone();
+    project_presence(&mut projected, &step.next);
+    if event_kind != FriendEventKind::Add
+        && projected == previous.record
+        && step.wake_at_ms.is_none()
+        && !step.refetch
+        && feeds.is_empty()
+    {
+        if let Some(entry) = state
+            .roster
+            .as_mut()
+            .and_then(|roster| roster.entries.get_mut(&user_id))
+        {
+            entry.presence = step.next;
+        }
+        return None;
+    }
+    record_profile_identity_change(output, &user_id, &patch, &previous.record, &step.next, now);
+    push_feed(output, feeds);
+    if event_kind == FriendEventKind::Update && source == EventSource::Websocket {
+        add_profile_diff_feed_entries(output, &user_id, &patch, Some(&previous.record), &now.iso);
+        if let Some(change) = friend_icon_change(&user_id, &patch, &previous.record, &now.iso) {
+            output.icon_changes.push(change);
+        }
+    }
+    arm_wake(output, &user_id, step.wake_at_ms, now);
+    if step.refetch {
+        push_profile_refetch_user_id(output, &user_id);
+    }
+    commit(
         state,
         output,
         &user_id,
-        patch.clone(),
-        &state_bucket,
-        &now.iso,
+        FriendEntry {
+            record: projected,
+            presence: step.next,
+        },
+        now,
     );
-    if !already_friend {
+    Some(())
+}
+
+fn create_entry(
+    state: &mut RealtimeFriendState,
+    output: &mut RealtimeFriendOutput,
+    event_kind: FriendEventKind,
+    user_id: &str,
+    patch: &Value,
+    evidence: &Evidence,
+    now: &EventTime,
+) -> Option<()> {
+    let presence = match &evidence.claim {
+        Claim::Online { place, platform } => Phase::Online(OnlineState::arrive(
+            place.clone(),
+            platform.clone(),
+            now.timestamp_ms,
+            true,
+        )),
+        _ if event_kind == FriendEventKind::Location => return None,
+        Claim::Active { platform } => Phase::Active {
+            changed_ms: None,
+            platform: platform.clone(),
+        },
+        _ => Phase::offline(),
+    };
+    if event_kind == FriendEventKind::Add {
         output
             .persistence
             .friend_log_upserts
             .push(friend_log_upsert(
-                &user_id,
-                &patch,
-                previous.as_ref(),
-                &state_bucket,
+                user_id,
+                patch,
+                None,
+                section_bucket(&presence),
                 &now.iso,
             ));
         output
@@ -190,13 +300,33 @@ fn apply_add(
             .feed_entries
             .push(friend_relationship_feed_entry(
                 FriendRelationshipFeedKind::Friend,
-                &user_id,
-                &patch,
-                previous.as_ref(),
+                user_id,
+                patch,
+                None,
                 &now.iso,
             ));
         output.projection.friend_log_changed = true;
     }
+    let record = merge_profile(None, user_id, patch);
+    output.projection.feed_entries.extend(
+        presence_feed(
+            user_id,
+            &record,
+            &Phase::offline(),
+            &presence,
+            now.timestamp_ms,
+            &now.iso,
+        )
+        .into_iter()
+        .filter(|entry| matches!(entry, FeedLiveEntry::OnPlayerJoining { .. })),
+    );
+    commit(
+        state,
+        output,
+        user_id,
+        FriendEntry { record, presence },
+        now,
+    );
     Some(())
 }
 
@@ -207,15 +337,11 @@ fn apply_delete(
     now: &EventTime,
 ) -> Option<()> {
     let user_id = event_user_id(content)?;
-    let previous = get_friend_record(state, &user_id);
-    state.pending_offline.remove(&user_id);
-    state.recent_gps.remove(&user_id);
-    let friend_was_removed = state
-        .baseline
+    let removed = state
+        .roster
         .as_mut()
-        .and_then(|baseline| baseline.friends_by_id.remove(&user_id))
-        .is_some();
-    if friend_was_removed {
+        .and_then(|roster| roster.entries.remove(&user_id));
+    if removed.is_some() {
         state.invalidate_friend_user_ids_snapshot();
     }
     output.projection.removals.push(user_id.clone());
@@ -223,16 +349,15 @@ fn apply_delete(
         target_user_id: user_id.clone(),
         created_at: now.iso.clone(),
     });
-    if let Some(previous) = previous.as_ref() {
-        let patch = json!({ "id": user_id.clone() });
+    if let Some(previous) = removed.as_ref() {
         output
             .persistence
             .feed_entries
             .push(friend_relationship_feed_entry(
                 FriendRelationshipFeedKind::Unfriend,
                 &user_id,
-                &patch,
-                Some(previous),
+                &json!({ "id": user_id.clone() }),
+                Some(&previous.record),
                 &now.iso,
             ));
     }
@@ -241,78 +366,65 @@ fn apply_delete(
     Some(())
 }
 
-fn apply_update(
+fn push_feed(output: &mut RealtimeFriendOutput, entries: Vec<FeedLiveEntry>) {
+    for entry in entries {
+        match entry {
+            FeedLiveEntry::OnPlayerJoining { .. } => output.projection.feed_entries.push(entry),
+            _ => output.persistence.feed_entries.push(entry),
+        }
+    }
+}
+
+fn arm_wake(
+    output: &mut RealtimeFriendOutput,
+    user_id: &str,
+    wake_at_ms: Option<i64>,
+    now: &EventTime,
+) {
+    if let Some(wake_at_ms) = wake_at_ms {
+        let delay_ms = u64::try_from(wake_at_ms - now.timestamp_ms).unwrap_or(0);
+        output.wake = Some(FriendWake {
+            user_id: user_id.to_string(),
+            delay: Duration::from_millis(delay_ms),
+        });
+    }
+}
+
+fn commit(
     state: &mut RealtimeFriendState,
     output: &mut RealtimeFriendOutput,
-    content: &Value,
+    user_id: &str,
+    mut entry: FriendEntry,
     now: &EventTime,
-    source: EventSource,
-) -> Option<()> {
-    let user_id = event_user_id(content)?;
-    let mut patch = profile_patch(content, &user_id);
-    if !source.trusts_embedded_state()
-        && patch.as_object().map(|object| object.len()).unwrap_or(0) <= 1
+) {
+    project_presence(&mut entry.record, &entry.presence);
+    if let Some(snapshot) =
+        state
+            .instance_dwell
+            .observe_friend_record(user_id, &entry.record, now.timestamp_ms)
     {
-        return None;
+        output.projection.location_time_snapshot = Some(snapshot);
     }
-    let previous = get_friend_record(state, &user_id);
-    normalize_patch_trust(&mut patch, previous.as_ref());
-    let location_changed = previous
-        .as_ref()
-        .is_some_and(|previous| patch_field_changed(&patch, previous, "location"));
-    if location_changed {
-        normalize_friend_update_location_patch(&mut patch, previous.as_ref(), now);
+    output.projection.patches.push(FriendProjectionPatch {
+        user_id: user_id.to_string(),
+        patch: entry.record.clone(),
+        state_bucket_authority: FriendStateBucketAuthority::Explicit,
+    });
+    let added = state
+        .roster
+        .as_mut()
+        .is_some_and(|roster| roster.entries.insert(user_id.to_string(), entry).is_none());
+    if added {
+        state.invalidate_friend_user_ids_snapshot();
     }
-    let state_bucket = if source.trusts_embedded_state() {
-        resolve_state_bucket(
-            content,
-            previous.as_ref(),
-            source.trusts_embedded_state(),
-            StateBucket::Offline.as_str(),
-        )
-    } else {
-        previous
-            .as_ref()
-            .map(|previous| previous.state.trim())
-            .filter(|state_bucket| !state_bucket.is_empty())
-            .map(ToString::to_string)
-            .unwrap_or_else(|| StateBucket::Offline.as_str().to_string())
-    };
-    if source.trusts_embedded_state()
-        && StateBucket::Online.matches(&state_bucket)
-        && state.pending_offline.remove(&user_id).is_some()
-    {
-        if let Some(patch_object) = patch.as_object_mut() {
-            patch_object.insert("pendingOffline".into(), Value::Bool(false));
-        }
+}
+
+pub(super) fn section_bucket(phase: &Phase) -> &'static str {
+    match phase {
+        Phase::Online(_) | Phase::PendingOffline { .. } => "online",
+        Phase::Active { .. } => "active",
+        Phase::Offline { .. } => "offline",
     }
-    record_profile_identity_change(
-        output,
-        &user_id,
-        &patch,
-        previous.as_ref(),
-        &state_bucket,
-        now,
-    );
-    if source.emits_profile_diff_feed() {
-        if location_changed {
-            if let Some(previous) = previous.as_ref() {
-                add_gps_feed_entry_if_not_repeated(
-                    state, output, &user_id, &patch, previous, now, false,
-                );
-            }
-        }
-        add_profile_diff_feed_entries(output, &user_id, &patch, previous.as_ref(), &now.iso);
-        if let Some(change) = previous
-            .as_ref()
-            .and_then(|previous| friend_icon_change(&user_id, &patch, previous, &now.iso))
-        {
-            output.icon_changes.push(change);
-        }
-    }
-    request_profile_refetch_for_impossible_location(output, &user_id, &patch, &state_bucket);
-    apply_patch_to_state(state, output, &user_id, patch, &state_bucket, &now.iso);
-    Some(())
 }
 
 fn friend_icon_change(
@@ -336,286 +448,6 @@ fn friend_icon_change(
     })
 }
 
-fn apply_online(
-    state: &mut RealtimeFriendState,
-    output: &mut RealtimeFriendOutput,
-    content: &Value,
-    now: &EventTime,
-) -> Option<()> {
-    let user_id = event_user_id(content)?;
-    let canceled_pending = state.pending_offline.remove(&user_id).is_some();
-    let previous_record = state
-        .baseline
-        .as_ref()?
-        .friends_by_id
-        .get(&user_id)
-        .cloned();
-    let user_patch = profile_patch(content, &user_id);
-    let mut patch = online_patch(
-        content,
-        user_patch,
-        previous_record.as_ref(),
-        now,
-        StateBucket::Online.as_str(),
-    );
-    normalize_patch_trust(&mut patch, previous_record.as_ref());
-    record_profile_identity_change(
-        output,
-        &user_id,
-        &patch,
-        previous_record.as_ref(),
-        StateBucket::Online.as_str(),
-        now,
-    );
-    if let Some(previous) = previous_record
-        .as_ref()
-        .filter(|previous| canceled_pending || is_online_state(previous))
-    {
-        add_gps_feed_entry_if_not_repeated(
-            state,
-            output,
-            &user_id,
-            &patch,
-            previous,
-            now,
-            state_bucket_changed(previous, StateBucket::Online.as_str()),
-        );
-    }
-    apply_patch_to_state(
-        state,
-        output,
-        &user_id,
-        patch,
-        StateBucket::Online.as_str(),
-        &now.iso,
-    );
-    Some(())
-}
-
-fn apply_active_offline(
-    state: &mut RealtimeFriendState,
-    output: &mut RealtimeFriendOutput,
-    content: &Value,
-    now: &EventTime,
-    next_state: &str,
-) -> Option<()> {
-    let user_id = event_user_id(content)?;
-    let previous_record = state
-        .baseline
-        .as_ref()?
-        .friends_by_id
-        .get(&user_id)
-        .cloned();
-    let mut patch = offline_like_patch(content, &user_id, next_state);
-    normalize_patch_trust(&mut patch, previous_record.as_ref());
-    if let Some(previous) = previous_record
-        .as_ref()
-        .filter(|previous| is_online_state(previous))
-    {
-        if state.pending_offline.contains_key(&user_id) {
-            return None;
-        }
-        record_profile_identity_change(
-            output,
-            &user_id,
-            &patch,
-            previous_record.as_ref(),
-            StateBucket::Online.as_str(),
-            now,
-        );
-        state.timer_token = state.timer_token.saturating_add(1);
-        let token = state.timer_token;
-        state.pending_offline.insert(
-            user_id.clone(),
-            PendingOffline {
-                token,
-                patch: FriendRecordPatch::from_value(&patch),
-                state_bucket: next_state.into(),
-                previous: OfflineFeedPrevious::from_record(previous),
-            },
-        );
-        let pending_patch = json!({
-            "id": user_id,
-            "pendingOffline": true,
-        });
-        apply_patch_to_state(
-            state,
-            output,
-            &user_id,
-            pending_patch,
-            StateBucket::Online.as_str(),
-            &now.iso,
-        );
-        output.timer_action = PendingOfflineTimerAction::Schedule {
-            user_id,
-            token,
-            delay: PENDING_OFFLINE_DELAY,
-        };
-    } else {
-        state.recent_gps.remove(&user_id);
-        record_profile_identity_change(
-            output,
-            &user_id,
-            &patch,
-            previous_record.as_ref(),
-            next_state,
-            now,
-        );
-        apply_patch_to_state(state, output, &user_id, patch, next_state, &now.iso);
-    }
-    Some(())
-}
-
-fn apply_location(
-    state: &mut RealtimeFriendState,
-    output: &mut RealtimeFriendOutput,
-    content: &Value,
-    now: &EventTime,
-) -> Option<()> {
-    let user_id = event_user_id(content)?;
-    let user_patch = profile_patch(content, &user_id);
-    let previous_record = state
-        .baseline
-        .as_ref()?
-        .friends_by_id
-        .get(&user_id)
-        .cloned();
-    let presence = location_presence(content, &user_patch, previous_record.as_ref())?;
-    let has_embedded_user = presence.has_embedded_user;
-    let has_online_location = presence.has_online_location;
-    let has_offline_location = presence.has_offline_location;
-    let state_bucket = presence.state_bucket;
-    let state_bucket_authority = presence.authority;
-    let preserve_pending_offline =
-        !has_online_location && state.pending_offline.contains_key(&user_id);
-    if has_embedded_user && has_online_location {
-        state.pending_offline.remove(&user_id);
-    }
-    let mut patch = online_patch(
-        content,
-        user_patch,
-        previous_record.as_ref(),
-        now,
-        &state_bucket,
-    );
-    normalize_patch_trust(&mut patch, previous_record.as_ref());
-    let start_pending_offline = !preserve_pending_offline
-        && !has_online_location
-        && has_offline_location
-        && previous_record
-            .as_ref()
-            .map(is_online_state)
-            .unwrap_or(false);
-    if start_pending_offline {
-        state.timer_token = state.timer_token.saturating_add(1);
-        let token = state.timer_token;
-        state.pending_offline.insert(
-            user_id.clone(),
-            PendingOffline {
-                token,
-                patch: FriendRecordPatch::from_value(&offline_like_patch(
-                    content,
-                    &user_id,
-                    StateBucket::Offline.as_str(),
-                )),
-                state_bucket: StateBucket::Offline.as_str().into(),
-                previous: OfflineFeedPrevious::from_record(
-                    previous_record.as_ref().expect("checked previous record"),
-                ),
-            },
-        );
-        if let Some(patch_object) = patch.as_object_mut() {
-            patch_object.insert("pendingOffline".into(), Value::Bool(true));
-        }
-        output.timer_action = PendingOfflineTimerAction::Schedule {
-            user_id: user_id.clone(),
-            token,
-            delay: PENDING_OFFLINE_DELAY,
-        };
-    } else if preserve_pending_offline {
-        if let Some(patch_object) = patch.as_object_mut() {
-            patch_object.insert("pendingOffline".into(), Value::Bool(true));
-        }
-    } else if !has_embedded_user {
-        if let Some(patch_object) = patch.as_object_mut() {
-            patch_object.remove("pendingOffline");
-        }
-    }
-    record_profile_identity_change(
-        output,
-        &user_id,
-        &patch,
-        previous_record.as_ref(),
-        &state_bucket,
-        now,
-    );
-    if let Some(previous) = previous_record.as_ref() {
-        add_gps_feed_entry_if_not_repeated(
-            state,
-            output,
-            &user_id,
-            &patch,
-            previous,
-            now,
-            state_bucket_changed(previous, &state_bucket),
-        );
-    }
-    if !StateBucket::Online.matches(&state_bucket) {
-        state.recent_gps.remove(&user_id);
-    }
-    request_profile_refetch_for_location_event(
-        output,
-        &user_id,
-        &patch,
-        &state_bucket,
-        has_embedded_user,
-        has_online_location,
-    );
-    apply_patch_to_state_with_authority(
-        state,
-        output,
-        &user_id,
-        patch,
-        &state_bucket,
-        state_bucket_authority,
-        &now.iso,
-    );
-    Some(())
-}
-
-fn request_profile_refetch_for_impossible_location(
-    output: &mut RealtimeFriendOutput,
-    user_id: &str,
-    patch: &Value,
-    state_bucket: &str,
-) {
-    if !StateBucket::Online.matches(state_bucket) && is_real_instance_patch(patch) {
-        push_profile_refetch_user_id(output, user_id);
-    }
-}
-
-fn request_profile_refetch_for_location_event(
-    output: &mut RealtimeFriendOutput,
-    user_id: &str,
-    patch: &Value,
-    state_bucket: &str,
-    has_embedded_user: bool,
-    has_online_location: bool,
-) {
-    let embedded_user_without_online_proof = has_embedded_user && !has_online_location;
-    let online_with_missing_or_offline_location =
-        StateBucket::Online.matches(state_bucket) && !patch_has_online_location(patch);
-    let non_online_with_real_instance_location =
-        !StateBucket::Online.matches(state_bucket) && is_real_instance_patch(patch);
-
-    if embedded_user_without_online_proof
-        || online_with_missing_or_offline_location
-        || non_online_with_real_instance_location
-    {
-        push_profile_refetch_user_id(output, user_id);
-    }
-}
-
 fn push_profile_refetch_user_id(output: &mut RealtimeFriendOutput, user_id: &str) {
     if output
         .profile_refetch_user_ids
@@ -627,65 +459,14 @@ fn push_profile_refetch_user_id(output: &mut RealtimeFriendOutput, user_id: &str
     output.profile_refetch_user_ids.push(user_id.to_string());
 }
 
-fn patch_has_online_location(patch: &Value) -> bool {
-    [
-        patch.get("location").and_then(Value::as_str),
-        patch.get("travelingToLocation").and_then(Value::as_str),
-    ]
-    .iter()
-    .flatten()
-    .any(|value| is_online_location_proof(value))
-}
-
-fn is_real_instance_patch(patch: &Value) -> bool {
-    let location = patch.text_field("location");
-    let parsed = parse_location(&location);
-    parsed.world_id.starts_with("wrld_") && !parsed.instance_id.is_empty()
-}
-
-fn recent_enough(previous_ms: i64, now_ms: i64) -> bool {
-    previous_ms > 0 && now_ms.saturating_sub(previous_ms) <= GPS_REPEAT_WINDOW_MS
-}
-
-fn should_suppress_repeated_gps(
-    state: &mut RealtimeFriendState,
-    user_id: &str,
-    location: &str,
-    now_ms: i64,
-) -> bool {
-    let Some(recent) = state.recent_gps.get_mut(user_id) else {
-        return false;
-    };
-    recent
-        .locations_by_tag
-        .retain(|_, observed_at_ms| recent_enough(*observed_at_ms, now_ms));
-    if recent.locations_by_tag.contains_key(location) {
-        recent.locations_by_tag.insert(location.to_string(), now_ms);
-        return true;
-    }
-    false
-}
-
-fn remember_gps_event(state: &mut RealtimeFriendState, user_id: &str, location: &str, now_ms: i64) {
-    state
-        .recent_gps
-        .entry(user_id.to_string())
-        .or_default()
-        .locations_by_tag
-        .insert(location.to_string(), now_ms);
-}
-
 fn record_profile_identity_change(
     output: &mut RealtimeFriendOutput,
     user_id: &str,
     patch: &Value,
-    previous: Option<&FriendRecord>,
-    state_bucket: &str,
+    previous: &FriendRecord,
+    next: &Phase,
     now: &EventTime,
 ) {
-    let Some(previous) = previous else {
-        return;
-    };
     let next_name = meaningful_name(patch, user_id);
     let name_changed =
         !next_name.is_empty() && next_name != meaningful_record_name(previous, user_id);
@@ -699,7 +480,13 @@ fn record_profile_identity_change(
     if !name_changed && !trust_differs {
         return;
     }
-    let upsert = friend_log_upsert(user_id, patch, Some(previous), state_bucket, &now.iso);
+    let upsert = friend_log_upsert(
+        user_id,
+        patch,
+        Some(previous),
+        section_bucket(next),
+        &now.iso,
+    );
     if trust_changed {
         output.persistence.feed_entries.push(trust_level_feed_entry(
             &now.iso,
@@ -714,209 +501,13 @@ fn record_profile_identity_change(
     output.projection.friend_log_changed = true;
 }
 
-fn add_gps_feed_entry_if_not_repeated(
-    state: &mut RealtimeFriendState,
-    output: &mut RealtimeFriendOutput,
-    user_id: &str,
-    patch: &Value,
-    previous: &FriendRecord,
-    now: &EventTime,
-    state_bucket_changed: bool,
-) {
-    if state_bucket_changed {
-        return;
-    }
-    let Some(entry) = gps_feed_entry(user_id, patch, previous, &now.iso) else {
-        return;
-    };
-    let FeedLiveEntry::Gps {
-        location,
-        previous_location,
-        ..
-    } = &entry
-    else {
-        return;
-    };
-    let (location, previous_location) = (location.clone(), previous_location.clone());
-    let crosses_private_boundary =
-        is_private_location(&location) || is_private_location(&previous_location);
-    if !crosses_private_boundary
-        && should_suppress_repeated_gps(state, user_id, &location, now.timestamp_ms)
-    {
-        return;
-    }
-    remember_gps_event(state, user_id, &location, now.timestamp_ms);
-    output.persistence.feed_entries.push(entry);
-}
-
-pub(super) fn apply_patch_to_state(
-    state: &mut RealtimeFriendState,
-    output: &mut RealtimeFriendOutput,
-    user_id: &str,
-    patch: serde_json::Value,
-    state_bucket: &str,
-    created_at: &str,
-) {
-    apply_patch_to_state_with_authority(
-        state,
-        output,
-        user_id,
-        patch,
-        state_bucket,
-        FriendStateBucketAuthority::Explicit,
-        created_at,
-    );
-}
-
-pub(super) fn apply_patch_to_state_with_authority(
-    state: &mut RealtimeFriendState,
-    output: &mut RealtimeFriendOutput,
-    user_id: &str,
-    patch: serde_json::Value,
-    state_bucket: &str,
-    state_bucket_authority: FriendStateBucketAuthority,
-    created_at: &str,
-) {
-    let patch = FriendRecordPatch::from_value(&patch);
-    apply_record_patch_to_state(
-        state,
-        output,
-        user_id,
-        patch,
-        state_bucket,
-        state_bucket_authority,
-        created_at,
-    );
-}
-
-pub(super) fn apply_record_patch_to_state(
-    state: &mut RealtimeFriendState,
-    output: &mut RealtimeFriendOutput,
-    user_id: &str,
-    mut patch: FriendRecordPatch,
-    state_bucket: &str,
-    state_bucket_authority: FriendStateBucketAuthority,
-    created_at: &str,
-) {
-    let previous = state
-        .baseline
-        .as_ref()
-        .and_then(|baseline| baseline.friends_by_id.get(user_id))
-        .cloned();
-    let finalized_pending = if StateBucket::Online.matches(state_bucket) {
-        None
-    } else {
-        state.pending_offline.remove(user_id)
-    };
-    if finalized_pending.is_some() {
-        patch.set_pending_offline(false);
-    }
-    let transition = apply_friend_patch(
-        previous.as_ref(),
-        user_id,
-        &patch,
-        state_bucket,
-        state_bucket_authority,
-    );
-    let observed_ms = EventTime::from_received_at(created_at).timestamp_ms;
-    if let Some(entry) = previous.as_ref().and_then(|previous| {
-        presence_transition_feed_entry(
-            user_id,
-            previous,
-            &transition.next,
-            finalized_pending.as_ref().map(|pending| &pending.previous),
-            created_at,
-            observed_ms,
-        )
-    }) {
-        output.persistence.feed_entries.push(entry);
-    }
-    if let Some(snapshot) =
-        state
-            .instance_dwell
-            .observe_friend_record(user_id, &transition.next, observed_ms)
-    {
-        output.projection.location_time_snapshot = Some(snapshot);
-    }
-    if let Some(entry) = player_joining_feed_entry(
-        user_id,
-        transition.was_traveling,
-        &transition.next,
-        created_at,
-    ) {
-        output.projection.feed_entries.push(entry);
-    }
-
-    let friend_was_added = match state.baseline.as_mut() {
-        Some(baseline) => baseline
-            .friends_by_id
-            .insert(user_id.to_string(), transition.next)
-            .is_none(),
-        None => false,
-    };
-    if friend_was_added {
-        state.invalidate_friend_user_ids_snapshot();
-    }
-    output.projection.patches.push(transition.projection);
-}
-
-pub(super) fn get_friend_record(
-    state: &RealtimeFriendState,
-    user_id: &str,
-) -> Option<FriendRecord> {
-    state
-        .baseline
-        .as_ref()
-        .and_then(|baseline| baseline.friends_by_id.get(user_id))
-        .cloned()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use serde_json::json;
 
     #[test]
-    fn online_patch_emits_full_location_projection() {
-        let now = EventTime {
-            iso: "2026-06-25T00:00:00Z".into(),
-            timestamp_ms: 1_772_000_000_000,
-        };
-        let tag = "wrld_a:1~hidden(usr_owner)~region(jp)";
-        let patch = online_patch(
-            &json!({ "location": tag }),
-            json!({ "id": "usr_friend" }),
-            None,
-            &now,
-            "online",
-        );
-
-        assert_eq!(patch["location"], json!(tag));
-        assert_eq!(patch["$location"]["tag"], json!(tag));
-        assert_eq!(patch["$location"]["worldId"], json!("wrld_a"));
-        assert_eq!(
-            patch["$location"]["instanceId"],
-            json!("1~hidden(usr_owner)~region(jp)")
-        );
-        assert_eq!(patch["$location"]["accessType"], json!("friends+"));
-        assert_eq!(patch["$location"]["userId"], json!("usr_owner"));
-        assert_eq!(patch["$location"]["region"], json!("jp"));
-    }
-
-    #[test]
-    fn offline_like_patch_emits_structured_offline_locations() {
-        let patch = offline_like_patch(&json!({}), "usr_friend", "offline");
-
-        assert_eq!(patch["location"], json!("offline"));
-        assert_eq!(patch["travelingToLocation"], json!("offline"));
-        assert_eq!(patch["$location"]["tag"], json!("offline"));
-        assert_eq!(patch["$location"]["isOffline"], json!(true));
-        assert_eq!(patch["$travelingToLocation"]["tag"], json!("offline"));
-        assert_eq!(patch["$travelingToLocation"]["isOffline"], json!(true));
-    }
-
-    #[test]
-    fn event_user_patch_strips_state_and_state_bucket_uses_trust_gate() {
+    fn event_user_patch_strips_embedded_state() {
         let content = json!({
             "userId": "usr_friend",
             "user": {
@@ -930,19 +521,5 @@ mod tests {
         assert_eq!(patch["id"], json!("usr_friend"));
         assert_eq!(patch["displayName"], json!("Friend"));
         assert!(patch.get("state").is_none());
-
-        let previous = FriendRecord {
-            id: "usr_friend".into(),
-            state: "active".into(),
-            ..FriendRecord::default()
-        };
-        assert_eq!(
-            resolve_state_bucket(&content, Some(&previous), false, "offline"),
-            "active"
-        );
-        assert_eq!(
-            resolve_state_bucket(&content, Some(&previous), true, "offline"),
-            "online"
-        );
     }
 }

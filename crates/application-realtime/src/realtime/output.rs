@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_contracts::realtime::RealtimePersistenceBatch;
 
@@ -17,12 +19,27 @@ pub struct FriendIconChange {
     pub created_at: String,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct FriendWake {
+    pub user_id: String,
+    pub delay: Duration,
+}
+
+impl FriendWake {
+    pub(crate) fn at(user_id: &str, wake_at_ms: i64, now_ms: i64) -> Self {
+        Self {
+            user_id: user_id.to_string(),
+            delay: Duration::from_millis(u64::try_from(wake_at_ms - now_ms).unwrap_or(0)),
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct RealtimeFriendOutput {
     pub owner_user_id: OwnerId,
     pub projection: FriendProjection,
     pub persistence: RealtimePersistenceBatch,
-    pub timer_action: PendingOfflineTimerAction,
+    pub wake: Option<FriendWake>,
     pub profile_refetch_user_ids: Vec<String>,
     pub icon_changes: Vec<FriendIconChange>,
 }
@@ -40,7 +57,7 @@ impl RealtimeFriendOutput {
             owner_user_id,
             projection,
             persistence: RealtimePersistenceBatch::default(),
-            timer_action: PendingOfflineTimerAction::None,
+            wake: None,
             profile_refetch_user_ids: Vec::new(),
             icon_changes: Vec::new(),
         }
