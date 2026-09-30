@@ -339,7 +339,7 @@ export function StaticSidebarLocation({
             className={cn(
                 'x-location inline-flex max-w-full min-w-0 flex-nowrap items-center truncate overflow-hidden text-left',
                 isLocationLink
-                    ? 'hover:text-foreground cursor-pointer text-inherit underline-offset-4 hover:underline'
+                    ? 'hover:text-foreground cursor-pointer text-inherit'
                     : 'cursor-default'
             )}
         >
@@ -366,7 +366,7 @@ export function StaticSidebarLocation({
                             <span
                                 role="button"
                                 tabIndex={0}
-                                className="hover:text-foreground focus-visible:ring-ring/50 ml-0.5 cursor-pointer text-left font-normal text-inherit underline-offset-4 hover:underline focus-visible:ring-[3px] focus-visible:outline-none"
+                                className="hover:text-foreground focus-visible:ring-ring/50 ml-0.5 cursor-pointer text-left font-normal text-inherit focus-visible:ring-[3px] focus-visible:outline-none"
                                 onClick={openGroup}
                                 onKeyDown={openGroupFromKeyboard}
                             >

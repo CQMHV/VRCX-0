@@ -212,7 +212,7 @@ export function InstanceLocationSummary({
                 <Button
                     type="button"
                     variant="ghost"
-                    className="hover:text-foreground h-auto min-w-0 shrink justify-start gap-1.5 p-0 text-left font-normal text-inherit underline-offset-4 hover:bg-transparent hover:underline"
+                    className="hover:text-foreground h-auto min-w-0 shrink justify-start gap-1.5 p-0 text-left font-normal text-inherit hover:bg-transparent"
                     onClick={openLocationWorldDialog}
                 >
                     {isUnlocked ? (
@@ -252,7 +252,7 @@ export function InstanceLocationSummary({
                         <Button
                             type="button"
                             variant="ghost"
-                            className="hover:text-foreground ml-0.5 h-auto min-w-0 shrink justify-start p-0 text-left font-normal text-inherit underline-offset-4 hover:bg-transparent hover:underline"
+                            className="hover:text-foreground ml-0.5 h-auto min-w-0 shrink justify-start p-0 text-left font-normal text-inherit hover:bg-transparent"
                             onClick={openLocationGroupDialog}
                         >
                             <span className="truncate">({groupName})</span>

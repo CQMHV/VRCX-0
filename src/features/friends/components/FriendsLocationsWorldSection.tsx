@@ -252,7 +252,7 @@ function InstanceRow({
                             <span
                                 role="button"
                                 tabIndex={0}
-                                className="min-w-0 cursor-pointer truncate underline-offset-4 hover:underline"
+                                className="hover:text-foreground min-w-0 cursor-pointer truncate"
                                 onClick={() => onOpenGroup(instance.groupId)}
                                 onKeyDown={(event) => {
                                     if (

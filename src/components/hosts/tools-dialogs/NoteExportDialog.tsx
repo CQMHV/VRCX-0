@@ -497,7 +497,7 @@ export function NoteExportDialog({
                                             <Button
                                                 type="button"
                                                 variant="ghost"
-                                                className="h-auto min-w-0 justify-start truncate p-0 font-medium underline-offset-4 hover:bg-transparent hover:underline"
+                                                className="h-auto min-w-0 justify-start truncate p-0 font-medium hover:bg-transparent"
                                                 onClick={() =>
                                                     openUserDialog({
                                                         userId: row.id,
