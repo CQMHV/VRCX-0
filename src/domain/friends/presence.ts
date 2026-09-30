@@ -64,6 +64,12 @@ export function isPresenceView(value: unknown): value is PresenceView {
     );
 }
 
+export function presenceOf(value: unknown): PresenceView | null {
+    return isRecord(value) && isPresenceView(value.$presence)
+        ? value.$presence
+        : null;
+}
+
 function isPresenceEntry(value: unknown): value is PresenceEntry {
     return (
         isRecord(value) &&

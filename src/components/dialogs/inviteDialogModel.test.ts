@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+    offlinePresence,
+    onlinePresence,
+    pendingPresence
+} from '@/test/presenceFixtures';
+
+import {
     buildFavoriteGroupItems,
     buildFavoriteGroupLabelsByUserId,
     buildFriendsInCurrentInstanceIds,
@@ -13,26 +19,26 @@ describe('inviteDialogModel', () => {
     const friendsById = {
         usr_online_display: {
             id: 'usr_online_display',
-            state: 'online',
+            $presence: onlinePresence(),
             ref: {
                 displayName: 'Online Display'
             }
         },
         usr_online_username: {
             id: 'usr_online_username',
-            state: 'online',
+            $presence: pendingPresence(),
             ref: {
                 username: 'Online Username'
             }
         },
         usr_offline: {
             id: 'usr_offline',
-            state: 'offline',
+            $presence: offlinePresence,
             name: 'Offline Friend'
         },
         usr_name_only: {
             id: 'usr_name_only',
-            state: 'online',
+            $presence: onlinePresence(),
             name: 'Name Only'
         }
     };

@@ -1,3 +1,5 @@
+import { presenceOf } from '@/domain/friends/presence';
+
 import {
     compareByLastActive,
     compareByLastSeen,
@@ -20,9 +22,7 @@ type FriendSortMethod =
     | 'Sort by Location'
     | 'None';
 
-type FriendSortItem = ComparableRecord & {
-    pendingOffline?: unknown;
-};
+type FriendSortItem = ComparableRecord;
 type FriendComparator = (a: FriendSortItem, b: FriendSortItem) => number;
 
 function getFriendsSortFunction(
@@ -54,16 +54,16 @@ function getFriendsSortFunction(
                     ) {
                         return 0;
                     }
-                    if (a.pendingOffline && !b.pendingOffline) {
-                        return 1;
+                    const aPending = presenceOf(a)?.kind === 'pendingOffline';
+                    const bPending = presenceOf(b)?.kind === 'pendingOffline';
+                    if (aPending !== bPending) {
+                        return aPending ? 1 : -1;
                     }
-                    if (a.pendingOffline && b.pendingOffline) {
-                        return 0;
-                    }
-                    if (!a.pendingOffline && b.pendingOffline) {
-                        return -1;
-                    }
-                    if (a.state !== 'online' || b.state !== 'online') {
+                    if (
+                        aPending ||
+                        presenceOf(a)?.kind !== 'online' ||
+                        presenceOf(b)?.kind !== 'online'
+                    ) {
                         return 0;
                     }
 

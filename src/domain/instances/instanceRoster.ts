@@ -16,6 +16,7 @@ export interface MergeInstanceUserOptions {
 }
 
 const INSTANCE_USER_PRESENCE_FIELDS = [
+    '$presence',
     'location',
     '$location',
     'worldId',

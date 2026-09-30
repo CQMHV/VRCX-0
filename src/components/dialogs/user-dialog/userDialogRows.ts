@@ -1,3 +1,4 @@
+import { presenceOf, presenceSection } from '@/domain/friends/presence';
 import { formatDateFilterOrFallback, timeToText } from '@/lib/dateTime';
 import { hasGroupIdPrefix } from '@/shared/constants/vrchatIds';
 import {
@@ -325,7 +326,10 @@ export function formatCountText(count: number, max: unknown) {
 export function resolveStatusStateText(
     profile: UserDialogRow | null | undefined
 ) {
-    const state = normalizedText(profile?.state);
+    const presence = presenceOf(profile);
+    const state = presence
+        ? presenceSection(presence)
+        : normalizedText(profile?.state);
     const status = normalizedText(profile?.status);
     if (state && status && state.toLowerCase() !== status.toLowerCase()) {
         return `${state} / ${status}`;

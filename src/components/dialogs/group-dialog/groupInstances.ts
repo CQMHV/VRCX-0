@@ -3,6 +3,7 @@ import type {
     GroupInstanceRecord
 } from '@/domain/entities/group';
 import type { EntityRecord } from '@/domain/entities/shared';
+import { presenceLiveInstanceTag, presenceOf } from '@/domain/friends/presence';
 import type { FriendRosterById } from '@/domain/friends/types';
 import { groupInstanceLocation } from '@/domain/instances/groupInstanceFacts';
 import { parseLocation } from '@/shared/utils/location';
@@ -48,6 +49,10 @@ export function normalizeLocation(value: unknown) {
 }
 
 export function userGroupLocation(user: InstanceUser | null | undefined) {
+    const presence = presenceOf(user);
+    if (presence) {
+        return presenceLiveInstanceTag(presence);
+    }
     const location = normalizeLocation(user?.location);
     if (location === 'traveling') {
         return normalizeLocation(user?.travelingToLocation);

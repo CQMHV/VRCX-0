@@ -9,6 +9,7 @@ import type {
     PlatformFileAnalysis,
     WorldProfileRecord
 } from '@/domain/entities/world';
+import { localGamePresence } from '@/domain/friends/presence';
 import { convertFileUrlToImageUrl } from '@/services/entityMediaService';
 import { normalizeUserStatus } from '@/shared/utils/friendStatus';
 import { parseLocation } from '@/shared/utils/location';
@@ -94,9 +95,7 @@ function resolveStatusIndicatorSource(row: PlayerStatusSource) {
 
     const status = normalizeUserStatus(row.status);
     return {
-        location: row.location,
-        state: 'online',
-        stateBucket: 'online',
+        $presence: localGamePresence(parseLocation(row.location), ''),
         status: status && status !== 'offline' ? status : 'active'
     };
 }

@@ -105,6 +105,7 @@ function normalizeUserRef(
 }
 
 const PROFILE_PRESENCE_REFRESH_FIELDS = [
+    '$presence',
     'status',
     'statusDescription',
     'state',

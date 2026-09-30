@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { onlinePresence, travelingPresence } from '@/test/presenceFixtures';
+
 import {
     compareByLastActive,
     compareByLastSeen,
@@ -142,28 +144,49 @@ describe('compareByLastActive', () => {
 
 describe('compareByLocationAt', () => {
     it('returns 0 when both are traveling', () => {
-        const a = { location: 'traveling', $location_at: '' };
-        const b = { location: 'traveling', $location_at: '2024-01-01' };
+        const a = { $presence: travelingPresence(), $location_at: '' };
+        const b = {
+            $presence: travelingPresence(),
+            $location_at: '2024-01-01'
+        };
         expect(compareByLocationAt(a, b)).toBe(0);
     });
 
     it('sorts traveling after non-traveling', () => {
-        const traveling = { location: 'traveling', $location_at: '2024-01-01' };
-        const real = { location: 'wrld_abc:12345', $location_at: '2024-01-01' };
+        const traveling = {
+            $presence: travelingPresence(),
+            $location_at: '2024-01-01'
+        };
+        const real = {
+            $presence: onlinePresence('wrld_abc:12345'),
+            $location_at: '2024-01-01'
+        };
         expect(compareByLocationAt(traveling, real)).toBeGreaterThan(0);
         expect(compareByLocationAt(real, traveling)).toBeLessThan(0);
     });
 
     it('sorts by $location_at ascending when neither is traveling', () => {
-        const earlier = { location: 'wrld_abc:1', $location_at: '2024-01-01' };
-        const later = { location: 'wrld_abc:2', $location_at: '2024-01-02' };
+        const earlier = {
+            $presence: onlinePresence('wrld_abc:1'),
+            $location_at: '2024-01-01'
+        };
+        const later = {
+            $presence: onlinePresence('wrld_abc:2'),
+            $location_at: '2024-01-02'
+        };
         expect(compareByLocationAt(earlier, later)).toBeLessThan(0);
         expect(compareByLocationAt(later, earlier)).toBeGreaterThan(0);
     });
 
     it('returns 0 for equal $location_at', () => {
-        const a = { location: 'wrld_abc:1', $location_at: '2024-01-01' };
-        const b = { location: 'wrld_abc:2', $location_at: '2024-01-01' };
+        const a = {
+            $presence: onlinePresence('wrld_abc:1'),
+            $location_at: '2024-01-01'
+        };
+        const b = {
+            $presence: onlinePresence('wrld_abc:2'),
+            $location_at: '2024-01-01'
+        };
         expect(compareByLocationAt(a, b)).toBe(0);
     });
 });
@@ -171,25 +194,30 @@ describe('compareByLocationAt', () => {
 describe('compareByPrivate', () => {
     it('returns 0 when either ref is undefined', () => {
         expect(compareByPrivate({}, {})).toBe(0);
-        expect(compareByPrivate({ ref: { location: 'private' } }, {})).toBe(0);
+        expect(
+            compareByPrivate(
+                { ref: { $presence: onlinePresence('private') } },
+                {}
+            )
+        ).toBe(0);
     });
 
     it('sorts private location after non-private', () => {
-        const priv = { ref: { location: 'private' } };
-        const pub = { ref: { location: 'wrld_abc:12345' } };
+        const priv = { ref: { $presence: onlinePresence('private') } };
+        const pub = { ref: { $presence: onlinePresence('wrld_abc:12345') } };
         expect(compareByPrivate(priv, pub)).toBeGreaterThan(0);
         expect(compareByPrivate(pub, priv)).toBeLessThan(0);
     });
 
     it('returns 0 when both are private', () => {
-        const a = { ref: { location: 'private' } };
-        const b = { ref: { location: 'private' } };
+        const a = { ref: { $presence: onlinePresence('private') } };
+        const b = { ref: { $presence: onlinePresence('private') } };
         expect(compareByPrivate(a, b)).toBe(0);
     });
 
     it('returns 0 when neither is private', () => {
-        const a = { ref: { location: 'wrld_abc:1' } };
-        const b = { ref: { location: 'wrld_abc:2' } };
+        const a = { ref: { $presence: onlinePresence('wrld_abc:1') } };
+        const b = { ref: { $presence: onlinePresence('wrld_abc:2') } };
         expect(compareByPrivate(a, b)).toBe(0);
     });
 });

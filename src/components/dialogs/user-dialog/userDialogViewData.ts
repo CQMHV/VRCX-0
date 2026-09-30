@@ -1,3 +1,4 @@
+import { presenceOf, presenceSection } from '@/domain/friends/presence';
 import { normalizeUserRelationshipHistory } from '@/services/userDialogSessionCacheService';
 
 import {
@@ -89,8 +90,10 @@ function validTimestampMs(value: unknown) {
 }
 
 function isCurrentlyOnline(profile: DialogRecord) {
-    const state = normalizedText(profile?.state).toLowerCase();
-    return state === 'online';
+    const presence = presenceOf(profile);
+    return presence
+        ? presenceSection(presence) === 'online'
+        : normalizedText(profile?.state).toLowerCase() === 'online';
 }
 
 function estimatedOnlineDuration(profile: DialogRecord, nowMs?: number) {

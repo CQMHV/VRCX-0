@@ -12,6 +12,7 @@ import {
     type SidebarFriendRecord
 } from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
 import { UserDetailTile } from '@/components/UserDetailTile';
+import { presenceOf } from '@/domain/friends/presence';
 import {
     createInstanceUserRow,
     firstText,
@@ -224,6 +225,7 @@ export function InstanceUserTiles({
                     id: user.id,
                     userId: user.userId,
                     displayName: user.displayName,
+                    $presence: presenceOf(user) ?? undefined,
                     location:
                         typeof user.location === 'string'
                             ? user.location

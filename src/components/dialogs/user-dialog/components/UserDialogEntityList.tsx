@@ -12,6 +12,7 @@ import { FadeInImage } from '@/components/media/FadeInImage';
 import { resolveSidebarStatusDotClassName } from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
 import { UserDetailTile } from '@/components/UserDetailTile';
 import type { EntityRecord } from '@/domain/entities/shared';
+import { presenceOf, presencePlace } from '@/domain/friends/presence';
 import { useNowMs } from '@/lib/useNowMs';
 import { cn } from '@/lib/utils';
 import {
@@ -119,9 +120,13 @@ export function EntityList({
                 const RowFallbackIcon =
                     kind === 'avatar' ? PersonStandingIcon : UserIcon;
                 const userId = kind === 'user' ? userIdForRow(row) : '';
+                const rowPresence = kind === 'user' ? presenceOf(row) : null;
                 const isTraveling =
                     kind === 'user' &&
-                    locationSentinel(row.location) === 'traveling';
+                    (rowPresence
+                        ? presencePlace(rowPresence)?.location.isTraveling ===
+                          true
+                        : locationSentinel(row.location) === 'traveling');
                 const timerLocation =
                     kind === 'user'
                         ? isTraveling

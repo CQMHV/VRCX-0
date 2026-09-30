@@ -38,6 +38,7 @@ const SNAPSHOT_DEFAULT_FIELDS = [
 ];
 
 const FRIEND_PRESENCE_OVERRIDE_FIELDS = [
+    '$presence',
     'state',
     'stateBucket',
     'location',
@@ -53,6 +54,7 @@ const FRIEND_PRESENCE_OVERRIDE_FIELDS = [
 const ACTIVITY_TIMESTAMP_FIELDS = ['last_activity', 'last_login'];
 
 const LOCAL_SNAPSHOT_REFRESH_FIELDS = [
+    '$presence',
     'friendNumber',
     '$friendNumber',
     'status',

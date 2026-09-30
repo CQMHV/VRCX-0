@@ -1,3 +1,4 @@
+import { presenceOf } from '@/domain/friends/presence';
 import {
     isExplicitlyOfflineFriend,
     resolveObservedPlayerUserId
@@ -26,10 +27,13 @@ function shouldIncludeUserDialogLocationFriend({
         friendRecord.userId,
         friendRecord.user_id
     );
-    const friendState = firstText(
-        friendRecord.stateBucket,
-        friendRecord.state
-    ).toLowerCase();
+    const presence = presenceOf(friendRecord);
+    const isOnline = presence
+        ? presence.kind === 'online'
+        : firstText(
+              friendRecord.stateBucket,
+              friendRecord.state
+          ).toLowerCase() === 'online';
     const observedInCurrentInstance = Boolean(
         currentLocationMatches &&
         friendId &&
@@ -40,7 +44,7 @@ function shouldIncludeUserDialogLocationFriend({
     }
     return Boolean(
         observedInCurrentInstance ||
-        friendState === 'online' ||
+        isOnline ||
         !parseLocation(resolvePresenceLocation(friend)).isPrivate
     );
 }

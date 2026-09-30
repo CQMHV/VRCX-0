@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { activePresence, pendingPresence } from '@/test/presenceFixtures';
+
 import {
     buildFriendListFavoriteIdSet,
     buildFriendListUserStatsById,
@@ -112,6 +114,24 @@ describe('friendListRows', () => {
                 notes
             )
         ).toBe(true);
+        expect(
+            matchesFriendListSearch(
+                { ...friend, $presence: pendingPresence() },
+                'online',
+                new Set(['status']),
+                memos,
+                notes
+            )
+        ).toBe(true);
+        expect(
+            matchesFriendListSearch(
+                { ...friend, $presence: activePresence() },
+                'online',
+                new Set(['status']),
+                memos,
+                notes
+            )
+        ).toBe(false);
         expect(
             matchesFriendListSearch(
                 friend,

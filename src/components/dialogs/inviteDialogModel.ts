@@ -1,4 +1,5 @@
 import type { FavoriteGroup, FavoriteGroupMap } from '@/domain/favorites/types';
+import { presenceSection } from '@/domain/friends/presence';
 import type {
     FriendRecordInput,
     FriendRosterInputById
@@ -24,7 +25,8 @@ export function onlineFriendIdsFromGroup(
         return (
             userId &&
             source.indexOf(userId) === index &&
-            friend?.state === 'online'
+            friend?.$presence !== undefined &&
+            presenceSection(friend.$presence) === 'online'
         );
     });
 }

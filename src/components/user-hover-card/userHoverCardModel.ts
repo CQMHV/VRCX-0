@@ -8,6 +8,12 @@ import {
     resolveSidebarStatusDotClassName,
     type SidebarFriendRecord
 } from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
+import {
+    presenceLocationTag,
+    presenceOf,
+    presenceSection,
+    presenceTravelingTag
+} from '@/domain/friends/presence';
 import type {
     FriendProfileFields,
     FriendRecordInput
@@ -149,20 +155,26 @@ export function buildUserHoverCardModel({
     const profileRecord = recordOrEmpty(profile);
     const identity = profile ? profileRecord : ref;
 
-    const state = normalizeStateBucket(
-        statusSource?.state || profileRecord?.state
-    );
+    const presence = presenceOf(statusSource) ?? presenceOf(profileRecord);
+    const state = presence
+        ? presenceSection(presence)
+        : normalizeStateBucket(statusSource?.state || profileRecord?.state);
     const hasPresence = Boolean(statusSource) && Boolean(state);
 
-    const rawLocation = normalizeId(
-        statusSource?.location ||
-            locationTag(statusSource?.$location) ||
-            profileRecord?.location
-    );
+    const rawLocation = presence
+        ? presenceLocationTag(presence, { preferTraveling: false })
+        : normalizeId(
+              statusSource?.location ||
+                  locationTag(statusSource?.$location) ||
+                  profileRecord?.location
+          );
     const isTraveling = locationSentinel(rawLocation) === 'traveling';
-    const travelingTo = normalizeId(
-        statusSource?.travelingToLocation || statusSource?.$travelingToLocation
-    );
+    const travelingTo = presence
+        ? presenceTravelingTag(presence)
+        : normalizeId(
+              statusSource?.travelingToLocation ||
+                  statusSource?.$travelingToLocation
+          );
     const effectiveLocation = isTraveling ? travelingTo : rawLocation;
     const parsed = parseLocation(effectiveLocation);
     const locationStatus = normalizeLocationStatus(effectiveLocation);

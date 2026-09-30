@@ -116,9 +116,6 @@ function FeedUserLink({
         (state) => state.auth.currentUserEndpoint
     );
     const currentUserId = useRuntimeStore((state) => state.auth.currentUserId);
-    const currentUserSnapshot = useRuntimeStore(
-        (state) => state.auth.currentUserSnapshot
-    );
     const friend = useFriendRosterStore((state) =>
         userId ? state.friendsById[userId] || null : null
     );
@@ -147,10 +144,7 @@ function FeedUserLink({
     const isCurrentUser = Boolean(
         userId && userId === normalizeId(currentUserId)
     );
-    const canRequestInvite = canRequestInviteFromFeedFriend(
-        friend,
-        currentUserSnapshot
-    );
+    const canRequestInvite = canRequestInviteFromFeedFriend(friend);
     const canUseFriendLocation = Boolean(
         !isCurrentUser &&
         parsedLocation.isRealInstance &&

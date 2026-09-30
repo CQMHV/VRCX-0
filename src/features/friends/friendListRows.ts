@@ -1,9 +1,9 @@
 import type { FavoriteGroupMap } from '@/domain/favorites/types';
+import { presenceSection } from '@/domain/friends/presence';
 import type {
     FriendPatchEntry,
     FriendProfileFields,
-    FriendRecordInput,
-    FriendRosterBucket
+    FriendRecordInput
 } from '@/domain/friends/types';
 import type { GameLogAllUserStatsRow } from '@/repositories/gameLogPersistenceRepository';
 import removeConfusables, { removeWhitespace } from '@/services/confusables';
@@ -26,8 +26,6 @@ export type FriendListRow = FriendRecordInput &
         friendNumber?: number;
         memo?: string;
         note?: string;
-        state?: FriendRosterBucket;
-        stateBucket?: FriendRosterBucket;
     };
 
 export type FriendListUserStatsRow = GameLogAllUserStatsRow;
@@ -214,7 +212,7 @@ export function matchesFriendListSearch(
 
     if (
         filters.has('status') &&
-        `${friend?.statusDescription || ''} ${friend?.status || ''} ${friend?.stateBucket || ''}`
+        `${friend?.statusDescription || ''} ${friend?.status || ''} ${friend?.$presence ? presenceSection(friend.$presence) : ''}`
             .toLowerCase()
             .includes(loweredQuery)
     ) {

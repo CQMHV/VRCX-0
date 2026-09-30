@@ -268,7 +268,7 @@ export function useFeedFriendActions(): FeedFriendActions {
             if (!friendId || friendId === normalizedCurrentUserId) {
                 return;
             }
-            if (!canRequestInviteFromFeedFriend(friend, currentUserSnapshot)) {
+            if (!canRequestInviteFromFeedFriend(friend)) {
                 toast.add({
                     type: 'error',
                     title: t(
@@ -307,7 +307,7 @@ export function useFeedFriendActions(): FeedFriendActions {
                 });
             }
         },
-        [confirm, currentUserSnapshot, normalizedCurrentUserId, t]
+        [confirm, normalizedCurrentUserId, t]
     );
 
     const sendFeedFriendBoop = useCallback(

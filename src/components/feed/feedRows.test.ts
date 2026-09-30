@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { onlinePresence, pendingPresence } from '@/test/presenceFixtures';
+
 import {
     buildFeedFavoriteIdSet,
     canExpandFeedRow,
@@ -11,7 +13,6 @@ import {
     resolveDisplayNameCandidate,
     resolveFeedCurrentInviteLocation,
     resolveFeedLocationForDisplay,
-    resolveFeedFriendStateBucket,
     resolveFeedStatusMeta,
     resolveFeedUserDisplayName,
     resolveFeedUserId,
@@ -58,25 +59,20 @@ describe('feed row helpers', () => {
         ).toBe(`GPS:2026-05-15T00:00:00Z:${USER_ID}:wrld_1:instance`);
     });
 
-    it('resolves friend state and current invite location from visible session data', () => {
+    it('resolves invite requests from presence and the current invite location', () => {
         expect(
-            resolveFeedFriendStateBucket(
-                { id: USER_ID, state: 'offline:offline' },
-                {}
-            )
-        ).toBe('offline');
-        expect(
-            resolveFeedFriendStateBucket(
-                { id: USER_ID },
-                { onlineFriends: [USER_ID] }
-            )
-        ).toBe('online');
-        expect(
-            canRequestInviteFromFeedFriend(
-                { id: USER_ID },
-                { onlineFriends: [USER_ID] }
-            )
+            canRequestInviteFromFeedFriend({
+                id: USER_ID,
+                $presence: onlinePresence()
+            })
         ).toBe(true);
+        expect(
+            canRequestInviteFromFeedFriend({
+                id: USER_ID,
+                $presence: pendingPresence()
+            })
+        ).toBe(false);
+        expect(canRequestInviteFromFeedFriend({ id: USER_ID })).toBe(false);
         expect(
             resolveFeedCurrentInviteLocation(
                 {
