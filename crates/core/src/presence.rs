@@ -95,16 +95,13 @@ impl PresencePlace {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, specta::Type)]
-#[serde(
-    tag = "kind",
-    rename_all = "camelCase",
-    rename_all_fields = "camelCase"
-)]
+#[serde(tag = "kind", rename_all = "camelCase")]
 pub enum PresenceView {
     Online {
         place: PresencePlace,
         platform: String,
     },
+    #[serde(rename_all = "camelCase")]
     PendingOffline {
         place: PresencePlace,
         platform: String,
@@ -116,6 +113,14 @@ pub enum PresenceView {
         platform: String,
     },
     Offline,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PresenceEntry {
+    #[specta(type = f64)]
+    pub rev: u64,
+    pub view: PresenceView,
 }
 
 #[cfg(test)]

@@ -2,6 +2,7 @@ use serde::Serialize;
 pub use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_core::friends::FriendRecord;
 use vrcx_0_core::json::{RawJson, RawJsonObject};
+use vrcx_0_core::presence::PresenceEntry;
 
 use crate::FriendLocationTime;
 
@@ -23,6 +24,7 @@ pub enum FriendStateBucketAuthority {
 pub struct FriendProjectionPatch {
     pub user_id: String,
     pub patch: FriendRecord,
+    pub presence: PresenceEntry,
     pub state_bucket_authority: FriendStateBucketAuthority,
 }
 

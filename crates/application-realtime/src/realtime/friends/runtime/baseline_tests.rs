@@ -580,4 +580,32 @@ mod tests {
             "Online"
         );
     }
+
+    #[test]
+    fn patches_and_roster_snapshots_carry_versioned_presence_views() {
+        let runtime = RealtimeFriendsRuntime::default();
+        runtime.set_baseline(single_friend_baseline("offline", "offline"), 1, 0);
+
+        let RealtimeFriendApplyResult::Output(output) =
+            runtime.apply_ws_message(&RealtimeWsMessagePayload {
+                json: json!({
+                    "type": "friend-online",
+                    "content": { "userId": "usr_friend", "location": "wrld_a:1", "platform": "android" }
+                }),
+                raw: "{}".into(),
+                received_at: "2026-05-15T00:00:00Z".into(),
+            })
+        else {
+            panic!("friend-online should produce an output");
+        };
+        let presence = serde_json::to_value(&output.projection.patches[0].presence).unwrap();
+        assert!(presence["rev"].as_u64().unwrap() > 0);
+        assert_eq!(presence["view"]["kind"], "online");
+        assert_eq!(presence["view"]["place"]["location"]["tag"], "wrld_a:1");
+        assert_eq!(presence["view"]["platform"], "android");
+
+        let snapshot = runtime.roster_snapshot(&[]).unwrap().unwrap().snapshot;
+        let snapshot = serde_json::to_value(&snapshot).unwrap();
+        assert_eq!(snapshot["presenceById"]["usr_friend"], presence);
+    }
 }

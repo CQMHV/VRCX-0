@@ -16,7 +16,7 @@ use vrcx_0_core::vrchat_endpoints::normalize_vrchat_api_endpoint;
 
 use super::feed::FeedLiveCache;
 use crate::realtime::current_user::RealtimeCurrentUserRuntime;
-use crate::realtime::friends::RealtimeFriendsRuntime;
+use crate::realtime::friends::{baseline_presence_entry, RealtimeFriendsRuntime};
 use crate::realtime::invite_automation::runtime::InviteAutomationState;
 use crate::realtime::user_cache::UserCacheRuntime;
 use crate::realtime::user_query_cache::UserQueryCache;
@@ -102,6 +102,10 @@ impl ScopedFriendLogMutation {
                     .patches
                     .push(crate::realtime::FriendProjectionPatch {
                         user_id,
+                        presence: baseline_presence_entry(
+                            &record,
+                            chrono::Utc::now().timestamp_millis(),
+                        ),
                         patch: record,
                         state_bucket_authority: FriendStateBucketAuthority::Explicit,
                     });

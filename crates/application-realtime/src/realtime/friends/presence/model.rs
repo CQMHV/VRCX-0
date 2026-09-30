@@ -1,5 +1,7 @@
 use vrcx_0_core::presence::{LeaveTarget, Place};
 
+use super::evidence::Claim;
+
 #[derive(Clone, Debug, PartialEq)]
 pub(crate) enum Phase {
     Offline {
@@ -52,6 +54,22 @@ pub(crate) struct Flap {
 impl Phase {
     pub(crate) fn offline() -> Self {
         Self::Offline { changed_ms: None }
+    }
+
+    pub(crate) fn initial(claim: &Claim, now_ms: i64, live: bool) -> Self {
+        match claim {
+            Claim::Online { place, platform } => Self::Online(OnlineState::arrive(
+                place.clone(),
+                platform.clone(),
+                now_ms,
+                live,
+            )),
+            Claim::Active { platform } => Self::Active {
+                changed_ms: None,
+                platform: platform.clone(),
+            },
+            _ => Self::offline(),
+        }
     }
 
     pub(crate) fn is_online_section(&self) -> bool {

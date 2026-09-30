@@ -4,6 +4,7 @@ use std::time::Duration;
 use serde::Serialize;
 use vrcx_0_core::friends::FriendRecord;
 use vrcx_0_core::json::RawJson;
+use vrcx_0_core::presence::PresenceEntry;
 pub use vrcx_0_core::realtime::{
     RealtimeSessionContext, RealtimeWsMessagePayload, RealtimeWsStatus, RealtimeWsStatusPayload,
 };
@@ -27,6 +28,7 @@ pub struct RealtimeFriendSnapshot {
     pub generation: u64,
     pub baseline_revision: u64,
     pub friends_by_id: HashMap<String, FriendRecord>,
+    pub presence_by_id: HashMap<String, PresenceEntry>,
 }
 
 #[derive(Clone, Debug, PartialEq)]

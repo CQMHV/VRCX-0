@@ -4274,6 +4274,7 @@ export type FriendProjection = {
 export type FriendProjectionPatch = {
     userId: string;
     patch: FriendRecord;
+    presence: PresenceEntry;
     stateBucketAuthority: FriendStateBucketAuthority;
 };
 export type FriendRecord = Partial<{
@@ -5026,6 +5027,7 @@ export type InviteMessageType =
     | 'requestResponse'
     | 'response';
 export type JsonValue = unknown;
+export type LeaveTarget = 'offline' | 'active';
 export type LegacyVrcxMigrationStatus = {
     detected: boolean;
     available: boolean;
@@ -5631,6 +5633,23 @@ export type PlayerState = {
     joinTimeMs: number | null;
 };
 export type PresenceAutomationRuleKind = 'time' | 'context';
+export type PresenceEntry = { rev: number; view: PresenceView };
+export type PresencePlace = {
+    location: ParsedLocation;
+    travelingTo: ParsedLocation | null;
+    sinceMs: number;
+};
+export type PresenceView =
+    | { kind: 'online'; place: PresencePlace; platform: string }
+    | {
+          kind: 'pendingOffline';
+          place: PresencePlace;
+          platform: string;
+          target: LeaveTarget;
+          deadlineMs: number;
+      }
+    | { kind: 'active'; platform: string }
+    | { kind: 'offline' };
 export type PrintAutoCleanupEvent = {
     deleted: number;
     remaining: number;

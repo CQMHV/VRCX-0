@@ -7,12 +7,13 @@ use vrcx_0_contracts::realtime::FriendLogDelete;
 use vrcx_0_core::derived_keys;
 use vrcx_0_core::files::extract_file_id;
 use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::presence::PresenceEntry;
 use vrcx_0_core::trust::{trust_level_changed, trust_level_differs};
 use vrcx_0_core::OwnerId;
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
 use crate::realtime::friends::presence::{
-    dwell_place, presence_feed, reduce, Claim, Evidence, OnlineState, Phase, Source,
+    dwell_place, presence_feed, presence_view, reduce, Claim, Evidence, Phase, Source,
     WsPresenceEvent,
 };
 use crate::realtime::{FriendIconChange, FriendWake, RealtimeFriendOutput};
@@ -269,20 +270,10 @@ fn create_entry(
     evidence: &Evidence,
     now: &EventTime,
 ) -> Option<()> {
-    let presence = match &evidence.claim {
-        Claim::Online { place, platform } => Phase::Online(OnlineState::arrive(
-            place.clone(),
-            platform.clone(),
-            now.timestamp_ms,
-            true,
-        )),
-        _ if event_kind == FriendEventKind::Location => return None,
-        Claim::Active { platform } => Phase::Active {
-            changed_ms: None,
-            platform: platform.clone(),
-        },
-        _ => Phase::offline(),
-    };
+    if event_kind == FriendEventKind::Location && !matches!(evidence.claim, Claim::Online { .. }) {
+        return None;
+    }
+    let presence = Phase::initial(&evidence.claim, now.timestamp_ms, true);
     if event_kind == FriendEventKind::Add {
         output
             .persistence
@@ -399,6 +390,10 @@ fn commit(
     output.projection.patches.push(FriendProjectionPatch {
         user_id: user_id.to_string(),
         patch: entry.record.clone(),
+        presence: PresenceEntry {
+            rev: 0,
+            view: presence_view(&entry.presence),
+        },
         state_bucket_authority: FriendStateBucketAuthority::Explicit,
     });
     let added = state

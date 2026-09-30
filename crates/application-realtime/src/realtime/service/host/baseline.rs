@@ -8,8 +8,9 @@ use serde_json::Value;
 use vrcx_0_application_core::{Error, Result};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
+use vrcx_0_core::presence::PresenceEntry;
 
-use crate::realtime::friends::player_joining_feed_entry;
+use crate::realtime::friends::{baseline_presence_entry, player_joining_feed_entry};
 use crate::realtime::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendBaselineSyncOutcome,
     FriendProjection, FriendStateBucketAuthority, FriendWake, RealtimeFriendOutput,
@@ -196,6 +197,7 @@ impl RealtimeHostRuntime {
                     websocket: requested_session.websocket.clone(),
                     generation: 0,
                     baseline_revision: 0,
+                    presence_by_id: baseline_presence_entries(&friends_by_id),
                     friends_by_id: friends_by_id.clone(),
                 };
                 state.friend_baseline.pending = Some(PendingFriendBaseline {
@@ -436,6 +438,16 @@ impl RealtimeHostRuntime {
     }
 }
 
+fn baseline_presence_entries(
+    friends_by_id: &HashMap<String, FriendRecord>,
+) -> HashMap<String, PresenceEntry> {
+    let now_ms = chrono::Utc::now().timestamp_millis();
+    friends_by_id
+        .iter()
+        .map(|(user_id, record)| (user_id.clone(), baseline_presence_entry(record, now_ms)))
+        .collect()
+}
+
 fn friend_snapshot_diff_projection(
     previous: Option<&crate::realtime::RealtimeFriendSnapshot>,
     next: &crate::realtime::RealtimeFriendSnapshot,
@@ -461,8 +473,17 @@ fn friend_snapshot_diff_projection(
             continue;
         };
         let previous_record = previous.and_then(|snapshot| snapshot.friends_by_id.get(&user_id));
-        let changed = !previous_record.is_some_and(|previous_record| previous_record == record);
-        if !changed {
+        let presence = next
+            .presence_by_id
+            .get(&user_id)
+            .cloned()
+            .unwrap_or_else(|| {
+                baseline_presence_entry(record, chrono::Utc::now().timestamp_millis())
+            });
+        let previous_presence = previous.and_then(|snapshot| snapshot.presence_by_id.get(&user_id));
+        let unchanged = previous_record == Some(record)
+            && previous_presence.is_some_and(|previous| previous.view == presence.view);
+        if unchanged {
             continue;
         }
         let was_traveling = previous_record.is_some_and(|record| {
@@ -474,6 +495,7 @@ fn friend_snapshot_diff_projection(
             .push(crate::realtime::FriendProjectionPatch {
                 user_id,
                 patch: record.clone(),
+                presence,
                 state_bucket_authority: FriendStateBucketAuthority::Explicit,
             });
         if let Some(entry) = joining_entry {

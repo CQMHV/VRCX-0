@@ -7,13 +7,14 @@ use chrono::{TimeZone, Utc};
 use serde_json::{json, Value};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
+use vrcx_0_core::presence::PresenceEntry;
 use vrcx_0_core::realtime::{RealtimeSessionContext, RealtimeWsMessagePayload};
 use vrcx_0_core::vrchat_endpoints::normalize_vrchat_api_endpoint;
 use vrcx_0_core::OwnerId;
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
 use crate::realtime::friends::presence::{
-    dwell_place, presence_feed, reduce, Claim, Evidence, OnlineState, Phase,
+    dwell_place, presence_feed, presence_view, reduce, Evidence, Phase,
 };
 use crate::realtime::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendWake, RealtimeFriendApplyResult,
@@ -225,7 +226,7 @@ impl RealtimeFriendsRuntime {
                     }
                     step.next
                 }
-                None => initial_phase(&evidence, now_ms),
+                None => Phase::initial(&evidence.claim, now_ms, false),
             };
             project_presence(&mut record, &presence);
             entries.insert(user_id, FriendEntry { record, presence });
@@ -356,6 +357,7 @@ impl RealtimeFriendsRuntime {
                 .iter()
                 .map(|(user_id, entry)| (user_id.clone(), entry.record.clone()))
                 .collect(),
+            presence_by_id: presence_entries(&state, roster),
         })
     }
 
@@ -411,7 +413,7 @@ impl RealtimeFriendsRuntime {
         let Some(roster) = state.roster.as_ref() else {
             return Ok(None);
         };
-        let snapshot = current_friend_roster_snapshot(roster, previous_order)?;
+        let snapshot = current_friend_roster_snapshot(&state, roster, previous_order)?;
         Ok(Some(RealtimeFriendRosterSnapshot {
             current_user_id: roster.current_user_id.clone(),
             endpoint: roster.endpoint.clone(),
@@ -579,8 +581,8 @@ impl RealtimeFriendsRuntime {
     pub fn wake(&self, user_id: &str, now_iso: &str) -> Option<RealtimeFriendOutput> {
         let mut state = self.lock_state();
         let now = EventTime::from_received_at(now_iso);
-        let output = apply_presence_evidence(&mut state, user_id, &Evidence::wake(), &now)?;
-        record_output_friend_state_sequence(&mut state, &output);
+        let mut output = apply_presence_evidence(&mut state, user_id, &Evidence::wake(), &now)?;
+        record_output_friend_state_sequence(&mut state, &mut output);
         Some(output)
     }
 
@@ -613,30 +615,34 @@ fn finish_output(
     state: &mut RealtimeFriendState,
     output: Option<RealtimeFriendOutput>,
 ) -> RealtimeFriendApplyResult {
-    let Some(output) = output else {
+    let Some(mut output) = output else {
         return RealtimeFriendApplyResult::Ignored;
     };
-    record_output_friend_state_sequence(state, &output);
+    record_output_friend_state_sequence(state, &mut output);
     RealtimeFriendApplyResult::Output(Box::new(output))
 }
 
-fn initial_phase(evidence: &Evidence, now_ms: i64) -> Phase {
-    match &evidence.claim {
-        Claim::Online { place, platform } => Phase::Online(OnlineState::arrive(
-            place.clone(),
-            platform.clone(),
-            now_ms,
-            false,
-        )),
-        Claim::Active { platform } => Phase::Active {
-            changed_ms: None,
-            platform: platform.clone(),
-        },
-        _ => Phase::offline(),
-    }
+fn presence_entries(
+    state: &RealtimeFriendState,
+    roster: &Roster,
+) -> HashMap<String, PresenceEntry> {
+    roster
+        .entries
+        .iter()
+        .map(|(user_id, entry)| {
+            (
+                user_id.clone(),
+                PresenceEntry {
+                    rev: state.sequence_of(user_id),
+                    view: presence_view(&entry.presence),
+                },
+            )
+        })
+        .collect()
 }
 
 fn current_friend_roster_snapshot(
+    state: &RealtimeFriendState,
     roster: &Roster,
     previous_order: &[String],
 ) -> serde_json::Result<Value> {
@@ -683,6 +689,7 @@ fn current_friend_roster_snapshot(
     Ok(json!({
         "currentUserId": roster.current_user_id,
         "friendsById": serde_json::to_value(friends_by_id)?,
+        "presenceById": serde_json::to_value(presence_entries(state, roster))?,
         "orderedFriendIds": ordered_friend_ids,
         "onlineIds": online_ids,
         "activeIds": active_ids,
@@ -693,14 +700,14 @@ fn current_friend_roster_snapshot(
 
 fn record_output_friend_state_sequence(
     state: &mut RealtimeFriendState,
-    output: &RealtimeFriendOutput,
+    output: &mut RealtimeFriendOutput,
 ) {
     let user_ids = output
         .projection
         .patches
         .iter()
-        .map(|patch| patch.user_id.as_str())
-        .chain(output.projection.removals.iter().map(String::as_str))
+        .map(|patch| patch.user_id.clone())
+        .chain(output.projection.removals.iter().cloned())
         .collect::<HashSet<_>>();
     if user_ids.is_empty() {
         return;
@@ -710,7 +717,10 @@ fn record_output_friend_state_sequence(
     for user_id in user_ids {
         state
             .friend_state_sequence_by_user
-            .insert(user_id.to_string(), sequence);
+            .insert(user_id, sequence);
+    }
+    for patch in &mut output.projection.patches {
+        patch.presence.rev = sequence;
     }
 }
 

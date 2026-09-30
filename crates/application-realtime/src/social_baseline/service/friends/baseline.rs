@@ -10,6 +10,7 @@ use vrcx_0_core::friends::FriendRecord;
 use vrcx_0_core::trust::{trust_level_changed, trust_level_differs};
 
 use crate::realtime::friends::trust_level_feed_entry;
+use crate::realtime::RealtimeFriendSnapshot;
 
 use super::super::{
     auth_scope_matches, execute_vrchat_json_request, extend_unique,
@@ -371,12 +372,13 @@ async fn reconcile_friend_roster_baseline(
 
 fn replace_friend_roster_baseline_snapshot(
     output: &mut SocialFriendRosterBaselineOutput,
-    friends_by_id: &HashMap<String, FriendRecord>,
+    snapshot: &RealtimeFriendSnapshot,
 ) -> Result<()> {
-    output.count = u32::try_from(friends_by_id.len()).unwrap_or(u32::MAX);
+    output.count = u32::try_from(snapshot.friends_by_id.len()).unwrap_or(u32::MAX);
     output.snapshot = Some(RawJson::from(build_roster_snapshot_from_records(
         &output.user_id,
-        friends_by_id,
+        &snapshot.friends_by_id,
+        &snapshot.presence_by_id,
     )?));
     Ok(())
 }
@@ -404,7 +406,7 @@ pub(crate) fn apply_friend_roster_baseline_sync_outcome_and_take_friends(
         output.detail = "Superseded friend roster baseline.".into();
         return Ok(None);
     };
-    replace_friend_roster_baseline_snapshot(output, &snapshot.friends_by_id)?;
+    replace_friend_roster_baseline_snapshot(output, &snapshot)?;
     output.friend_log_changed = friend_log_changed;
     Ok(Some(snapshot.friends_by_id))
 }
