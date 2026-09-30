@@ -744,7 +744,11 @@ function getFriendsLocations(
     return resolveCurrentFriendLocationValue(friendsArr[0]);
 }
 
-export { getFriendsLocations, resolveFriendPresenceLocation };
+export {
+    getFriendsLocations,
+    isLastLocationFriend,
+    resolveFriendPresenceLocation
+};
 
 /**
  * Get the display text for a location — synchronous, pure function.

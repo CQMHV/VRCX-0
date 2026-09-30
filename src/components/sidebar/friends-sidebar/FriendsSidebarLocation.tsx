@@ -12,6 +12,12 @@ import { useTranslation } from 'react-i18next';
 import { LocationPendingText } from '@/components/location/LocationPendingText';
 import { RegionCodeBadge } from '@/components/location/RegionCodeBadge';
 import type { LocationMetadata } from '@/components/location/useLocationMetadata';
+import {
+    isPresenceView,
+    presenceLocationTag,
+    presenceSection,
+    presenceTravelingTag
+} from '@/domain/friends/presence';
 import { normalizeStateBucket } from '@/domain/users/userFacts';
 import { cn } from '@/lib/utils';
 import { openGroupDialog, openWorldDialog } from '@/services/dialogService';
@@ -97,6 +103,9 @@ export function resolveFriendRowLocationState({
 }) {
     const displaySource = readFriendRef(friend);
     const statusSource = readFriendStatusSource(friend);
+    const presence = isPresenceView(statusSource?.$presence)
+        ? statusSource.$presence
+        : null;
     const localLocation =
         !isCurrentUser &&
         isGroupByInstance &&
@@ -105,11 +114,14 @@ export function resolveFriendRowLocationState({
             : '';
     const friendState = localLocation
         ? 'online'
-        : normalizeStateBucket(statusSource?.state);
-    const friendStateBucket = friendState;
-    const apiFriendLocation = isCurrentUser
-        ? resolvePresenceLocation(friend)
-        : readFriendRefLocation(friend);
+        : presence
+          ? presenceSection(presence)
+          : normalizeStateBucket(statusSource?.state);
+    const apiFriendLocation = presence
+        ? presenceLocationTag(presence, { preferTraveling: false })
+        : isCurrentUser
+          ? resolvePresenceLocation(friend)
+          : readFriendRefLocation(friend);
     const projectedFriendLocation = normalizeId(locationTime?.location);
     const useProjectedFriendLocation = Boolean(
         !isCurrentUser &&
@@ -129,19 +141,21 @@ export function resolveFriendRowLocationState({
     const isTraveling = locationSentinel(friendLocation) === 'traveling';
     const displayLocation = isTraveling ? 'traveling' : friendLocation;
     const displayTraveling = isTraveling
-        ? readFriendRefTravelingLocation(friend) || undefined
+        ? (presence
+              ? presenceTravelingTag(presence)
+              : readFriendRefTravelingLocation(friend)) || undefined
         : undefined;
+    const isPendingOffline = presence
+        ? presence.kind === 'pendingOffline'
+        : Boolean(statusSource?.pendingOffline);
     const isActiveOrOffline =
-        friendState === 'active' ||
-        friendState === 'offline' ||
-        friendStateBucket === 'active' ||
-        friendStateBucket === 'offline';
+        friendState === 'active' || friendState === 'offline';
     const groupByInstanceTimerVisible = Boolean(
         isGroupByInstance && !isActiveOrOffline
     );
     const showLocationSubline = Boolean(
         displayLocation &&
-        !statusSource?.pendingOffline &&
+        !isPendingOffline &&
         !groupByInstanceTimerVisible &&
         (!isActiveOrOffline ||
             parsedFriendLocation.isRealInstance ||
@@ -150,7 +164,7 @@ export function resolveFriendRowLocationState({
 
     return {
         displaySource,
-        statusSource,
+        isPendingOffline,
         friendState,
         friendLocation,
         parsedFriendLocation,

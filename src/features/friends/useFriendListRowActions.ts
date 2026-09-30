@@ -134,8 +134,7 @@ export function useFriendListRowActions({
                             ? Number(metadata?.totalCount)
                             : linkCount,
                         $mutualOptedOut: Boolean(metadata?.optedOut)
-                    },
-                    stateBucketAuthority: 'preserve'
+                    }
                 });
             }
         },

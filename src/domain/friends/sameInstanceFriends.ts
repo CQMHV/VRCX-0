@@ -1,3 +1,7 @@
+import {
+    isPresenceView,
+    presenceLiveInstanceTag
+} from '@/domain/friends/presence';
 import type {
     FriendProfileFields,
     FriendRecordInput,
@@ -7,6 +11,7 @@ import { hasUserIdPrefix } from '@/shared/constants/vrchatIds';
 import { isRealInstance } from '@/shared/utils/instance';
 import {
     getFriendsLocations,
+    isLastLocationFriend,
     normalizeLocationValue,
     type FriendListMembership
 } from '@/shared/utils/location';
@@ -146,11 +151,20 @@ function resolveObservedPlayerUserIds(
 
 function isOnlineSameInstanceFriend(friend: unknown): boolean {
     const source = friendPresenceSource(friend);
+    if (isPresenceView(source?.$presence)) {
+        return source.$presence.kind === 'online';
+    }
     return normalizeFriendState(source?.state) === 'online';
 }
 
 function isExplicitlyOfflineFriend(friend: unknown): boolean {
     const source = friendPresenceSource(friend);
+    if (isPresenceView(source?.$presence)) {
+        return (
+            source.$presence.kind === 'offline' ||
+            source.$presence.kind === 'pendingOffline'
+        );
+    }
     return Boolean(
         source?.pendingOffline ||
         normalizeFriendState(source?.state) === 'offline'
@@ -164,6 +178,19 @@ function resolveSameInstanceFriendLocation(
     const source = friendPresenceSource(friend);
     if (!source) {
         return '';
+    }
+    if (isPresenceView(source.$presence)) {
+        const liveLocation = presenceLiveInstanceTag(source.$presence);
+        if (liveLocation || source.$presence.kind !== 'online') {
+            return liveLocation;
+        }
+        const lastLocationValue = normalizeLocationValue(
+            lastLocation?.location
+        );
+        return isRealInstance(lastLocationValue) &&
+            isLastLocationFriend(lastLocation, source)
+            ? lastLocationValue
+            : '';
     }
     const location = normalizeLocationValue(
         getFriendsLocations([source], lastLocation)

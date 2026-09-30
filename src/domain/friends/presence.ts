@@ -166,3 +166,34 @@ export function presenceLocationTag(
         ? ''
         : location.tag;
 }
+
+export function presenceLiveInstanceTag(
+    view: PresenceView,
+    { preferTraveling = true }: { preferTraveling?: boolean } = {}
+): string {
+    return view.kind === 'online'
+        ? presenceLocationTag(view, { preferTraveling, requireInstance: true })
+        : '';
+}
+
+export function presenceTravelingTag(view: PresenceView): string {
+    const place = presencePlace(view);
+    return place?.location.isTraveling && place.travelingTo?.isRealInstance
+        ? place.travelingTo.tag
+        : '';
+}
+
+export function presenceCanRequestInvite(view: PresenceView): boolean {
+    return view.kind === 'online';
+}
+
+export function localGamePresence(
+    location: ParsedLocation,
+    platform: string
+): PresenceView {
+    return {
+        kind: 'online',
+        place: { location, travelingTo: null },
+        platform
+    };
+}

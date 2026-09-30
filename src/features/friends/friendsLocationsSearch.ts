@@ -2,7 +2,8 @@ import type { FavoriteGroupMap } from '@/domain/favorites/types';
 
 import {
     normalizeFriendsLocationId,
-    resolveLocationSummary
+    resolveLocationSummary,
+    resolveLocationTarget
 } from './friendsLocationsRows';
 
 export function buildFriendsLocationsFavoriteIdSet(
@@ -40,6 +41,7 @@ export function matchesFriendLocationSearch(
     }
 
     const location = resolveLocationSummary(friend);
+    const target = resolveLocationTarget(friend);
     const query = searchQuery.trim().toLowerCase();
     if (!query) {
         return true;
@@ -55,12 +57,8 @@ export function matchesFriendLocationSearch(
         String(friend?.statusDescription || '')
             .toLowerCase()
             .includes(query) ||
-        String(friend?.worldId || '')
-            .toLowerCase()
-            .includes(query) ||
-        String(friend?.location || '')
-            .toLowerCase()
-            .includes(query) ||
+        target.worldId.toLowerCase().includes(query) ||
+        target.rawLocation.toLowerCase().includes(query) ||
         String(location.label || '')
             .toLowerCase()
             .includes(query) ||

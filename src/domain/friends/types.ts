@@ -4,7 +4,6 @@ import type { LoadStatus } from '../shared/types';
 import type { PresenceEntry, PresenceView } from './presence';
 
 export type FriendRosterBucket = 'online' | 'active' | 'offline';
-export type FriendStateBucketAuthority = 'explicit' | 'preserve';
 type FriendRosterLoadStatus = LoadStatus;
 
 export type FriendLocationProjection = Record<string, unknown> &
@@ -60,8 +59,6 @@ export type FriendRecordInput = Record<string, unknown> & {
     platform?: string;
     last_platform?: string;
     lastPlatform?: string;
-    location?: string;
-    state?: string;
     $trustLevel?: string;
     $friendNumber?: number;
     $trustClass?: string;
@@ -79,7 +76,7 @@ export type FriendRecord = FriendRecordInput &
         id: string;
         displayName: string;
         tags: string[];
-        state: FriendRosterBucket;
+        $presence: PresenceView;
         $trustLevel: string;
         $friendNumber: number;
         $trustClass: string;
@@ -108,17 +105,11 @@ type FriendRosterSnapshot = FriendRosterOrdering & {
 
 export type FriendPresenceById = Record<string, PresenceEntry>;
 
-export type FriendRosterSnapshotInput = Partial<FriendRosterOrdering> & {
+export type FriendRosterSnapshotInput = {
     currentUserId?: string | null;
     friendsById?: FriendRosterInputById | null;
     presenceById?: FriendPresenceById | null;
     generation?: number | null;
-    detail?: string;
-};
-
-export type FriendRosterSeedSnapshot = {
-    currentUserId?: string | null;
-    friendsById?: FriendRosterInputById | null;
     detail?: string;
 };
 
@@ -127,7 +118,6 @@ export type FriendPatchEntry = {
     patch?: FriendRecordInput | null;
     presence?: PresenceEntry;
     generation?: number;
-    stateBucketAuthority?: FriendStateBucketAuthority;
 };
 
 export type FriendRosterState = FriendRosterSnapshot & {
@@ -141,7 +131,6 @@ export type FriendRosterState = FriendRosterSnapshot & {
 export type FriendRosterStore = FriendRosterState & {
     setRosterLoading(currentUserId: string, detail?: string): void;
     setRosterReady(detail?: string): void;
-    setRosterSeedSnapshot(snapshot: FriendRosterSeedSnapshot): void;
     setRosterSnapshot(snapshot: FriendRosterSnapshotInput): void;
     setRosterError(detail: string): void;
     applyFriendPatch(entry: FriendPatchEntry & { detail?: string }): void;

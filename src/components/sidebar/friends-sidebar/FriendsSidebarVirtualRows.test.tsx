@@ -73,7 +73,6 @@ function renderFriendRow({
             currentUser: null,
             currentUserId: 'usr_current',
             gameState: { isGameRunning: false, currentLocationStartedAt },
-            onlineIdSet: new Set(),
             instanceActionGatesByUserId: new Map([
                 [
                     'usr_friend',

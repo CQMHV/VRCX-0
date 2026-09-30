@@ -11,7 +11,11 @@ import { LaunchModeContextMenuGroup } from '@/components/launch/LaunchModeContex
 import { Location } from '@/components/Location';
 import { UserHoverCard } from '@/components/user-hover-card/UserHoverCard';
 import { UserStatusDot } from '@/components/UserStatusDot';
-import { presenceDotClassName } from '@/domain/friends/presence';
+import {
+    presenceDotClassName,
+    presenceLocationTag,
+    presenceTravelingTag
+} from '@/domain/friends/presence';
 import type { FriendRecord } from '@/domain/friends/types';
 import { useFriendLocationTimeEpoch } from '@/lib/useFriendLocationTimeEpoch';
 import { cn } from '@/lib/utils';
@@ -46,30 +50,10 @@ import {
     DropdownMenuTrigger
 } from '@/ui/shadcn/dropdown-menu';
 
-import type { FriendLocationRecord } from '../friends-locations-rows/types';
 import type {
     FriendsLocationsCardContentMode,
     getFriendsLocationsDensityConfig
 } from '../friendsLocationsDensity';
-
-type FriendLocationCardSource = Pick<
-    FriendLocationRecord,
-    | 'id'
-    | 'userId'
-    | 'location'
-    | 'state'
-    | 'stateBucket'
-    | 'status'
-    | 'travelingToLocation'
-    | '$travelingToLocation'
-    | '$presence'
-> & { pendingOffline?: boolean };
-
-export type FriendLocationCardFriend = FriendRecord & {
-    ref?: FriendLocationCardSource | null;
-    pendingOffline?: boolean;
-    travelingToLocation?: string | null;
-};
 
 type FriendLocationCardDensity = Pick<
     ReturnType<typeof getFriendsLocationsDensityConfig>,
@@ -85,89 +69,6 @@ type FriendLocationCardDensity = Pick<
     | 'statusLineClamp'
     | 'showStatusDescription'
 >;
-
-function normalizeStatusText(value: unknown) {
-    const status = normalizeUserStatus(value);
-    if (status === 'private:private') {
-        return 'private';
-    }
-    if (status === 'traveling:traveling') {
-        return 'traveling';
-    }
-    return status;
-}
-
-function readFriendRef(friend: FriendLocationCardFriend) {
-    return friend?.ref && typeof friend.ref === 'object' ? friend.ref : friend;
-}
-
-function hasFriendRef(friend: FriendLocationCardFriend) {
-    return Boolean(friend?.ref && typeof friend.ref === 'object');
-}
-
-function isLiveBucketState(value: unknown) {
-    const state = normalizeStatusText(value);
-    return state === 'online' || state === 'active';
-}
-
-function isStaleOfflineLocationForLiveState(location: unknown, state: unknown) {
-    return (
-        isLiveBucketState(state) &&
-        normalizeLocationStatus(location) === 'offline'
-    );
-}
-
-function resolveRawCardLocation(
-    rawLocation: unknown,
-    friend: FriendLocationCardFriend
-) {
-    const source = readFriendRef(friend);
-    return (
-        normalizeLocationValue(source?.location) ||
-        (hasFriendRef(friend) ? '' : normalizeLocationValue(rawLocation)) ||
-        ''
-    );
-}
-
-function resolveCardLocation(
-    rawLocation: unknown,
-    friend: FriendLocationCardFriend
-) {
-    const source = readFriendRef(friend);
-    const state = normalizeStatusText(source?.stateBucket || source?.state);
-    const explicitLocation = resolveRawCardLocation(rawLocation, friend);
-    if (isStaleOfflineLocationForLiveState(explicitLocation, state)) {
-        return '';
-    }
-    const parsedExplicitLocation = parseLocation(explicitLocation);
-    if (parsedExplicitLocation.isOffline) {
-        return 'offline';
-    }
-    if (parsedExplicitLocation.isPrivate) {
-        return 'private';
-    }
-    if (parsedExplicitLocation.isTraveling) {
-        return 'traveling';
-    }
-    if (explicitLocation) {
-        return explicitLocation;
-    }
-    return '';
-}
-
-function normalizeLocationStatus(value: unknown) {
-    const parsedLocation = parseLocation(value);
-    if (parsedLocation.isOffline) {
-        return 'offline';
-    }
-    if (parsedLocation.isPrivate) {
-        return 'private';
-    }
-    if (parsedLocation.isTraveling) {
-        return 'traveling';
-    }
-    return normalizeStatusText(value);
-}
 
 const DEFAULT_CARD_DENSITY_CONFIG: FriendLocationCardDensity = {
     value: 'compact',
@@ -192,8 +93,6 @@ export interface FriendLocationCardLocationModel {
     label?: string;
     groupHint?: string;
     raw?: string | null;
-    traveling?: boolean;
-    travelingTo?: string | null;
     timerLocation?: string | null;
 }
 
@@ -221,7 +120,7 @@ interface FriendLocationCardActions {
 }
 
 export interface FriendLocationCardProps {
-    friend: FriendLocationCardFriend;
+    friend: FriendRecord;
     location?: FriendLocationCardLocationModel;
     presentation?: FriendLocationCardPresentation;
     capabilities?: FriendLocationCardCapabilities;
@@ -242,8 +141,6 @@ export function FriendLocationCard({
         label: locationLabel = '',
         groupHint = '',
         raw: rawLocation = '',
-        traveling: isTraveling = false,
-        travelingTo: travelingLocation = '',
         timerLocation = ''
     } = location;
     const {
@@ -268,44 +165,23 @@ export function FriendLocationCard({
     } = actions;
 
     const avatarUrl = userImage(friend);
-    const statusSource = readFriendRef(friend);
+    const presence = friend.$presence;
     const statusDotClassName =
-        presenceDotClassName(statusSource?.$presence, statusSource?.status) ||
-        'hidden';
+        presenceDotClassName(presence, friend.status) || 'hidden';
     const canOpenUser = typeof onOpenUser === 'function';
     const canOpenWorld = typeof onOpenWorld === 'function';
     const localLocation =
         location.source === 'gameLog'
             ? normalizeLocationValue(rawLocation)
             : '';
-    const cardLocation =
-        localLocation || resolveCardLocation(rawLocation, friend);
-    const source = readFriendRef(friend);
-    const hasRef = hasFriendRef(friend);
-    const sourceState = normalizeStatusText(
-        source?.stateBucket || source?.state
-    );
-    const rawSourceLocation =
-        localLocation || resolveRawCardLocation(rawLocation, friend);
-    const sourceLocation = isStaleOfflineLocationForLiveState(
-        rawSourceLocation,
-        sourceState
-    )
-        ? ''
-        : rawSourceLocation;
-    const sourceTravelingLocation =
-        normalizeLocationValue(
-            source?.travelingToLocation || source?.$travelingToLocation
-        ) ||
-        (hasRef ? '' : normalizeLocationValue(travelingLocation)) ||
-        '';
-    const isCardTraveling =
-        normalizeLocationStatus(sourceLocation) === 'traveling' ||
-        (!hasRef && Boolean(isTraveling));
-    const locationValue = isCardTraveling ? 'traveling' : cardLocation;
-    const travelingValue = isCardTraveling
-        ? sourceTravelingLocation || undefined
-        : undefined;
+    const locationValue =
+        localLocation ||
+        (presence.kind === 'active'
+            ? ''
+            : presenceLocationTag(presence, { preferTraveling: false }));
+    const travelingValue = localLocation
+        ? undefined
+        : presenceTravelingTag(presence) || undefined;
     const resolvedDensityConfig = densityConfig || DEFAULT_CARD_DENSITY_CONFIG;
     const isDense = resolvedDensityConfig.layout === 'item';
     const resolvedWorldActionLabel =
@@ -324,18 +200,18 @@ export function FriendLocationCard({
         displayInstanceInfo &&
         (Boolean(locationValue) ||
             (Boolean(locationLabel) &&
-                normalizeStatusText(locationLabel) !== 'offline'));
+                normalizeUserStatus(locationLabel) !== 'offline'));
     const showStatusDescription =
         contentMode !== 'identity' &&
         resolvedDensityConfig.showStatusDescription &&
         Boolean(friend.statusDescription);
-    const hoverUserId = normalizeString(source?.id || friend?.id);
+    const hoverUserId = normalizeString(friend.id);
     const instanceEpoch = useFriendLocationTimeEpoch(
         hoverUserId,
         timerLocation || ''
     );
     const avatarNode = (
-        <UserHoverCard userId={hoverUserId} seed={source}>
+        <UserHoverCard userId={hoverUserId} seed={friend}>
             <Avatar className="size-[var(--friend-card-avatar-size)]">
                 {avatarUrl ? (
                     <AvatarImage
@@ -383,7 +259,7 @@ export function FriendLocationCard({
                 isDense ? 'items-center gap-2' : 'flex-col items-start'
             )}
         >
-            <UserHoverCard userId={hoverUserId} seed={source}>
+            <UserHoverCard userId={hoverUserId} seed={friend}>
                 <CardTitle
                     className={cn(
                         'min-w-0 truncate text-[length:var(--friend-card-title-font-size)]',

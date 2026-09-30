@@ -12,7 +12,6 @@ import {
     normalizeDisplayText,
     normalizeFriendsLocationId,
     resolveDisplayWorldName,
-    resolveWorldIdCandidate,
     sourceFromFriend
 } from './normalization';
 import type {
@@ -33,27 +32,6 @@ export function resolveFriendWorldName(
         source?.$location?.world?.name,
         source?.world?.name,
         source?.locationName
-    );
-}
-
-export function resolveFriendTravelingWorldName(
-    friend: FriendLocationFriend | null | undefined
-) {
-    const source = sourceFromFriend(friend);
-    return resolveDisplayWorldName(
-        source?.travelingToWorld,
-        source?.$travelingToWorld,
-        resolveFriendWorldName(friend)
-    );
-}
-
-export function resolveFriendTravelingWorldId(
-    friend: FriendLocationFriend | null | undefined
-) {
-    const source = sourceFromFriend(friend);
-    return resolveWorldIdCandidate(
-        source?.travelingToWorld,
-        source?.$travelingToWorld
     );
 }
 
@@ -98,12 +76,6 @@ export function resolvePresenceLocation(
     friend: FriendLocationFriend | null | undefined
 ) {
     return resolveFriendPresenceLocation(friend);
-}
-
-export function isOnlineFriend(
-    friend: FriendLocationFriend | null | undefined
-) {
-    return Boolean(isRecord(friend) && friend.state === 'online');
 }
 
 export function isShareableInstanceLocation(location: unknown) {

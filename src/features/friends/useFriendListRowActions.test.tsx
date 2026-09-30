@@ -215,7 +215,7 @@ describe('useFriendListRowActions', () => {
         expect(mocks.toastSuccess).not.toHaveBeenCalled();
     });
 
-    it('preserves current presence when applying completed mutual stats', async () => {
+    it('applies completed mutual stats as a profile-only patch', async () => {
         mocks.runtimeState.mutualGraph = {
             runId: 1,
             status: 'completed',
@@ -239,8 +239,7 @@ describe('useFriendListRowActions', () => {
             patch: {
                 $mutualCount: 1,
                 $mutualOptedOut: false
-            },
-            stateBucketAuthority: 'preserve'
+            }
         });
     });
 

@@ -415,8 +415,7 @@ describe('Feed compound search', { timeout: 10_000 }, () => {
         useFriendRosterStore.getState().setRosterSnapshot({
             friendsById: {
                 usr_alpha: { id: 'usr_alpha', displayName: 'Alpha' }
-            },
-            orderedFriendIds: ['usr_alpha']
+            }
         });
         renderFilters();
         const calendar = await selectDateRange(user);

@@ -5,9 +5,16 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import type { PresenceView } from '@/domain/friends/presence';
 import type { FriendRecord } from '@/domain/friends/types';
 import { getFriendsLocationsDensityConfig } from '@/features/friends/friendsLocationsDensity';
 import { useFriendLocationTimeStore } from '@/state/friendLocationTimeStore';
+import {
+    offlinePresence,
+    onlinePresence,
+    pendingPresence,
+    travelingPresence
+} from '@/test/presenceFixtures';
 
 import type { FriendLocationCardLocationModel } from './FriendLocationCard';
 
@@ -32,7 +39,6 @@ vi.mock('./FriendLocationCard', () => ({
             data-timer-location={String(location?.timerLocation ?? '')}
             data-location={location?.raw}
             data-source={location?.source}
-            data-traveling={String(Boolean(location?.traveling))}
             data-can-use-location={String(Boolean(capabilities?.useLocation))}
             data-can-send-invite={String(Boolean(capabilities?.sendInvite))}
             data-can-request-invite={String(
@@ -49,15 +55,12 @@ import {
     FriendsLocationsSectionHeader
 } from './FriendsLocationsViewParts';
 
-function friendAt(location: string): FriendRecord {
+function friendAt(place: string | PresenceView): FriendRecord {
     return {
         id: 'usr_friend',
         displayName: 'Friend',
         tags: [],
-        state: 'online',
-        stateBucket: 'online',
-        location,
-        $location_at: 1_700_000_000_000,
+        $presence: typeof place === 'string' ? onlinePresence(place) : place,
         $trustLevel: '',
         $friendNumber: 0,
         $trustClass: '',
@@ -122,15 +125,15 @@ describe('FriendsLocationCardItem', () => {
         useFriendLocationTimeStore.getState().reset();
     });
 
-    it.each(['offline', 'traveling', 'wrld_remote:2'])(
+    it.each([
+        ['offline', offlinePresence],
+        ['traveling', travelingPresence('wrld_remote:2')],
+        ['wrld_remote:2', onlinePresence('wrld_remote:2')]
+    ])(
         'uses the local location and timer over remote %s until the local mode ends',
-        (remoteLocation) => {
+        (remoteLocation, remotePresence) => {
             const location = 'wrld_local:1';
-            const friend: FriendRecord & { travelingToLocation: string } = {
-                ...friendAt(remoteLocation),
-                state: remoteLocation === 'offline' ? 'offline' : 'online',
-                travelingToLocation: 'wrld_remote:2'
-            };
+            const friend = friendAt(remotePresence);
             useFriendLocationTimeStore.getState().replaceSnapshot([
                 {
                     userId: friend.id,
@@ -169,7 +172,6 @@ describe('FriendsLocationCardItem', () => {
             expect(card?.getAttribute('data-timer-location')).toBe(location);
             expect(card?.getAttribute('data-location')).toBe(location);
             expect(card?.getAttribute('data-source')).toBe('gameLog');
-            expect(card?.getAttribute('data-traveling')).toBe('false');
 
             act(() =>
                 useFriendLocationTimeStore.getState().replaceSnapshot([
@@ -188,10 +190,6 @@ describe('FriendsLocationCardItem', () => {
                 remoteLocation === 'offline' ? '' : 'wrld_remote:2'
             );
             expect(card?.getAttribute('data-source')).toBe('realtime');
-            expect(card?.getAttribute('data-traveling')).toBe(
-                String(remoteLocation === 'traveling')
-            );
-            expect(friend.location).toBe(remoteLocation);
         }
     );
 
@@ -266,16 +264,9 @@ describe('FriendsLocationCardItem', () => {
         expect(html).toContain('data-can-use-location="false"');
     });
 
-    it('keeps the section timer while the online friend is pending offline', () => {
+    it('keeps the section timer but withholds invite requests while the friend is pending offline', () => {
         const location = 'wrld_test:123';
-        const friend = {
-            ...friendAt('private'),
-            pendingOffline: true,
-            ref: {
-                location: 'private',
-                pendingOffline: true
-            }
-        };
+        const friend = friendAt(pendingPresence('private'));
         const html = renderToStaticMarkup(
             <FriendsLocationCardItem
                 section={{
@@ -304,6 +295,7 @@ describe('FriendsLocationCardItem', () => {
         );
 
         expect(html).toContain('data-timer-location="wrld_test:123"');
+        expect(html).toContain('data-can-request-invite="false"');
     });
 
     it('disables every social and location action for the current user', () => {

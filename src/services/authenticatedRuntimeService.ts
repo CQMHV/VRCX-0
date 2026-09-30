@@ -11,10 +11,7 @@ import { useFriendRosterStore } from '@/state/friendRosterStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
 import { useSessionStore } from '@/state/sessionStore';
 
-import {
-    normalizeFriendsById,
-    normalizeStringArray
-} from './friendBootstrapModel';
+import { normalizeFriendsById } from './friendBootstrapModel';
 import { signalFriendLogChanged } from './friendLogMutationService';
 import { flushRealtimeRosterUpdates } from './realtimeRosterUpdateQueue';
 import { syncStartupServicesTask } from './startupServicesStatus';
@@ -104,10 +101,6 @@ function applyFriendStep(snapshot: AuthenticatedRuntimePhaseSnapshot): void {
             typeof baseline.generation === 'number'
                 ? baseline.generation
                 : null,
-        orderedFriendIds: normalizeStringArray(baseline.orderedFriendIds),
-        onlineIds: normalizeStringArray(baseline.onlineIds),
-        activeIds: normalizeStringArray(baseline.activeIds),
-        offlineIds: normalizeStringArray(baseline.offlineIds),
         detail: output?.detail || snapshot.friends.detail
     });
     useSessionStore.getState().setFriendsLoaded(true);

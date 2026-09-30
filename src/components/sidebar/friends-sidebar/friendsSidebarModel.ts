@@ -398,10 +398,10 @@ export function toLegacyFriendSortRow(
     } as FriendSortItem;
 }
 
-export function sortRows(
-    rows: readonly SidebarFriendRecord[],
+export function sortRows<TRow extends SidebarFriendRecord>(
+    rows: readonly TRow[],
     prefs: SidebarPreferences
-) {
+): readonly TRow[] {
     const methods = [
         prefs.sidebarSortMethod1,
         prefs.sidebarSortMethod2,
@@ -416,10 +416,10 @@ export function sortRows(
     );
 }
 
-export function sortActiveRows(
-    rows: readonly SidebarFriendRecord[],
+export function sortActiveRows<TRow extends SidebarFriendRecord>(
+    rows: readonly TRow[],
     prefs: SidebarPreferences
-) {
+): TRow[] {
     const sortedRows = sortRows(rows, prefs);
     return [...sortedRows].sort(compareByActiveStatus);
 }

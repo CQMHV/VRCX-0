@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { FavoriteGroup, FavoriteGroupMap } from '@/domain/favorites/types';
+import { localGamePresence } from '@/domain/friends/presence';
 import { resolveObservedPlayerUserIds } from '@/domain/friends/sameInstanceFriends';
 import type { FriendRecord, FriendRosterById } from '@/domain/friends/types';
 import type { CurrentInstanceRosterPlayer } from '@/domain/instances/currentInstanceRoster';
@@ -15,6 +16,7 @@ import {
     type InviteLocationCurrentUserSnapshot,
     type InviteLocationGameState
 } from '@/shared/utils/invite';
+import { parseLocation } from '@/shared/utils/location';
 import {
     computeTrustLevel,
     computeUserPlatform
@@ -368,9 +370,10 @@ export function useFriendsLocationsPageDerivedState({
             id: currentUserId,
             displayName: normalizeId(profile.displayName) || currentUserId,
             tags,
-            state: 'online',
-            stateBucket: 'online',
-            location: currentInviteLocation,
+            $presence: localGamePresence(
+                parseLocation(currentInviteLocation),
+                normalizeId(profile.last_platform)
+            ),
             $friendNumber: 0,
             $trustLevel: trust.trustLevel,
             $trustClass: trust.trustClass,

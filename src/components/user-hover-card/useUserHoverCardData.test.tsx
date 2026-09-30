@@ -1,6 +1,8 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { offlinePresence, onlinePresence } from '@/test/presenceFixtures';
+
 type FriendRosterStoreState = {
     friendsById: Record<string, Record<string, unknown>>;
 };
@@ -95,7 +97,8 @@ describe('useUserHoverCardData', () => {
                     displayName: 'Alice',
                     state: 'offline',
                     stateBucket: 'offline',
-                    location: 'offline'
+                    location: 'offline',
+                    $presence: offlinePresence
                 }
             }
         };
@@ -118,7 +121,8 @@ describe('useUserHoverCardData', () => {
                     displayName: 'Alice',
                     state: 'online',
                     stateBucket: 'online',
-                    location: 'wrld_test:1'
+                    location: 'wrld_test:1',
+                    $presence: onlinePresence('wrld_test:1')
                 }
             }
         };

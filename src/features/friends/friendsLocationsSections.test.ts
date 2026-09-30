@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { travelingPresence } from '@/test/presenceFixtures';
+
 import {
     buildFavoriteGroupLabelsByFriendId,
     buildFriendSections,
@@ -108,8 +110,7 @@ describe('friends locations section helpers', () => {
             {
                 id: 'usr_traveling',
                 displayName: 'Traveling',
-                location: 'traveling',
-                travelingToWorld: 'wrld_next'
+                $presence: travelingPresence()
             }
         ];
 
@@ -133,7 +134,7 @@ describe('friends locations section helpers', () => {
             (section) => section.key === 'instance:traveling:traveling'
         );
         expect(travelingSection?.title).toBe('Traveling');
-        expect(travelingSection?.worldId).toBe('wrld_next');
+        expect(travelingSection?.worldId).toBe('');
     });
 
     it('sorts friends by sidebar preferences without mutating the input array', () => {

@@ -212,8 +212,7 @@ function handleRealtimeFriendProjection(
             ),
             patch,
             presence: patchEntry.presence,
-            generation: payload.generation,
-            stateBucketAuthority: patchEntry.stateBucketAuthority
+            generation: payload.generation
         };
     });
     queueRealtimeFriendRosterUpdate(

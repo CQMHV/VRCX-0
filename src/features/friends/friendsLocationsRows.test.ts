@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { isOnlineFriend } from './friends-locations-rows/presence';
+import { travelingPresence } from '@/test/presenceFixtures';
+
 import {
     buildSameInstanceGroups,
     isFriendInPrivateLocation,
@@ -61,7 +62,7 @@ describe('friends locations row helpers', () => {
         ]);
     });
 
-    it('resolves invite location and online status from session-visible fields', () => {
+    it('resolves the invite location from session-visible fields', () => {
         expect(
             resolveFriendsLocationsCurrentInviteLocation(
                 {
@@ -78,16 +79,6 @@ describe('friends locations row helpers', () => {
                 { $locationTag: 'wrld_profile:456' }
             )
         ).toBe('wrld_profile:456');
-        expect(isOnlineFriend({ state: 'online' })).toBe(true);
-        expect(isOnlineFriend({ state: 'active' })).toBe(false);
-        expect(
-            isOnlineFriend({
-                state: 'offline',
-                status: 'active',
-                location: 'wrld_stale:123'
-            })
-        ).toBe(false);
-        expect(isOnlineFriend({ state: 'offline' })).toBe(false);
     });
 
     it('combines remote and local favorite friend ids without empty entries', () => {
@@ -206,9 +197,8 @@ describe('friends locations row helpers', () => {
         );
 
         const travelingWithDestination = resolveLocationSummary({
-            location: 'traveling',
-            travelingToLocation: 'wrld_456:789~region(use)',
-            travelingToWorld: 'New World'
+            $presence: travelingPresence('wrld_456:789~region(use)'),
+            worldName: 'New World'
         });
         expect(travelingWithDestination).toEqual({
             label: 'New World',
@@ -224,11 +214,16 @@ describe('friends locations row helpers', () => {
         });
 
         const travelingTarget = resolveLocationTarget({
-            location: 'traveling',
-            travelingToWorld: 'wrld_456'
+            $presence: travelingPresence('wrld_456:789')
         });
-        expect(travelingTarget.isTraveling).toBe(true);
+        expect(travelingTarget.isTraveling).toBe(false);
+        expect(travelingTarget.rawLocation).toBe('wrld_456:789');
         expect(travelingTarget.worldId).toBe('wrld_456');
+        const unknownDestination = resolveLocationTarget({
+            $presence: travelingPresence()
+        });
+        expect(unknownDestination.isTraveling).toBe(true);
+        expect(unknownDestination.worldId).toBe('');
     });
 
     it('separates private locations from visible or unknown locations', () => {

@@ -48,7 +48,6 @@ export type FriendListStatsPatch = FriendPatchEntry & {
         $mutualOptedOut: boolean;
         $timeSpent?: number;
     };
-    stateBucketAuthority: 'preserve';
 };
 
 type FriendNumberSource = {

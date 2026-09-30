@@ -3,68 +3,24 @@ import {
     commands,
     type SocialFriendRosterBaselineOutput
 } from '@/platform/tauri/bindings';
-import friendLogRepository from '@/repositories/friendLogRepository';
 import { useFriendRosterStore } from '@/state/friendRosterStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
 import { useSessionStore } from '@/state/sessionStore';
 
 import {
-    buildFriendStateMap,
-    buildSeedRosterFriendsById,
     getDisplayName,
-    hasCompleteFriendStateSnapshot,
     isRecord,
     normalizeFriendsById,
-    normalizeStringArray,
     normalizeUserId,
     type FriendBootstrapOptions,
     type FriendBootstrapResult,
-    type FriendBootstrapSnapshot,
-    type FriendLogBootstrapRow
+    type FriendBootstrapSnapshot
 } from './friendBootstrapModel';
 import { signalFriendLogChanged } from './friendLogMutationService';
 import { flushRealtimeRosterUpdates } from './realtimeRosterUpdateQueue';
 import { syncStartupServicesTask } from './startupServicesStatus';
 
 const activeBootstraps = new Map<string, Promise<FriendBootstrapResult>>();
-
-async function seedFriendRosterFromCurrentUserSnapshot({
-    normalizedUserId,
-    endpoint,
-    websocket,
-    currentUserSnapshot,
-    detail
-}: {
-    normalizedUserId: string;
-    endpoint: string;
-    websocket: string;
-    currentUserSnapshot: unknown;
-    detail: string;
-}) {
-    if (!hasCompleteFriendStateSnapshot(currentUserSnapshot)) {
-        return false;
-    }
-
-    const stateById = buildFriendStateMap(currentUserSnapshot);
-    let friendLogRows: FriendLogBootstrapRow[] = [];
-    try {
-        friendLogRows =
-            await friendLogRepository.getFriendLogCurrent(normalizedUserId);
-    } catch (error) {
-        console.warn('Failed to seed friend roster from friend log:', error);
-    }
-
-    if (!isCurrentBootstrapTarget(normalizedUserId, endpoint, websocket)) {
-        return false;
-    }
-
-    useFriendRosterStore.getState().setRosterSeedSnapshot({
-        currentUserId: normalizedUserId,
-        friendsById: buildSeedRosterFriendsById(stateById, friendLogRows),
-        detail
-    });
-    return true;
-}
 
 function bootstrapTargetKey(
     userId: string,
@@ -130,13 +86,6 @@ async function runFriendBootstrap({
         );
     if (!preserveLoadedState) {
         useSessionStore.getState().setFriendsLoaded(false);
-        await seedFriendRosterFromCurrentUserSnapshot({
-            normalizedUserId,
-            endpoint: normalizedEndpoint,
-            websocket: realtimeWebsocket,
-            currentUserSnapshot: currentSnapshot,
-            detail: `Loading the full friend roster baseline for ${displayName}.`
-        });
     }
 
     const result: SocialFriendRosterBaselineOutput =
@@ -157,12 +106,6 @@ async function runFriendBootstrap({
                   typeof result.snapshot.generation === 'number'
                       ? result.snapshot.generation
                       : null,
-              orderedFriendIds: normalizeStringArray(
-                  result.snapshot.orderedFriendIds
-              ),
-              onlineIds: normalizeStringArray(result.snapshot.onlineIds),
-              activeIds: normalizeStringArray(result.snapshot.activeIds),
-              offlineIds: normalizeStringArray(result.snapshot.offlineIds),
               detail: normalizeUserId(result.snapshot.detail)
           }
         : null;
@@ -217,10 +160,6 @@ async function runFriendBootstrap({
             friendsById: snapshot.friendsById ?? {},
             presenceById: snapshot.presenceById,
             generation: snapshot.generation,
-            orderedFriendIds: snapshot.orderedFriendIds ?? [],
-            onlineIds: snapshot.onlineIds ?? [],
-            activeIds: snapshot.activeIds ?? [],
-            offlineIds: snapshot.offlineIds ?? [],
             detail
         });
     }

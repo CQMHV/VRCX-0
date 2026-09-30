@@ -188,7 +188,7 @@ export function FriendRow({
         { isGameRunning }
     );
     const {
-        statusSource,
+        isPendingOffline,
         friendLocation,
         parsedFriendLocation,
         isTraveling,
@@ -212,7 +212,7 @@ export function FriendRow({
         parsedFriendLocation.worldId &&
         parsedFriendLocation.instanceId
     );
-    const subline = statusSource?.pendingOffline
+    const subline = isPendingOffline
         ? t('side_panel.pending_offline')
         : String(displaySource?.statusDescription || '');
 

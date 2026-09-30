@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useFriendLocationTimeStore } from '@/state/friendLocationTimeStore';
 import { useFriendRosterStore } from '@/state/friendRosterStore';
+import { onlinePresence } from '@/test/presenceFixtures';
 
 type QueryOptions = {
     enabled?: boolean;
@@ -275,13 +276,12 @@ describe('InstanceUserTiles', () => {
     it('shows the timer for a friend creator', () => {
         useFriendRosterStore.getState().applyFriendPatch({
             userId: 'usr_friend_owner',
+            presence: { rev: 1, view: onlinePresence('wrld_test:123') },
             patch: {
                 id: 'usr_friend_owner',
                 displayName: 'Friend Owner',
-                state: 'online',
                 location: 'wrld_test:123'
-            },
-            stateBucketAuthority: 'explicit'
+            }
         });
         useFriendLocationTimeStore.getState().replaceSnapshot([
             {
@@ -349,13 +349,12 @@ describe('InstanceUserTiles', () => {
     it('shows the instance timer instead of the status signature', () => {
         useFriendRosterStore.getState().applyFriendPatch({
             userId: 'usr_friend',
+            presence: { rev: 1, view: onlinePresence('wrld_test:123') },
             patch: {
                 id: 'usr_friend',
                 displayName: 'Friend',
-                state: 'online',
                 location: 'wrld_test:123'
-            },
-            stateBucketAuthority: 'explicit'
+            }
         });
         useFriendLocationTimeStore.getState().replaceSnapshot([
             {
@@ -389,13 +388,12 @@ describe('InstanceUserTiles', () => {
     it('uses the displayed instance for an online friend with a hidden presence location', () => {
         useFriendRosterStore.getState().applyFriendPatch({
             userId: 'usr_friend',
+            presence: { rev: 1, view: onlinePresence('private') },
             patch: {
                 id: 'usr_friend',
                 displayName: 'Friend',
-                state: 'online',
                 location: 'private'
-            },
-            stateBucketAuthority: 'explicit'
+            }
         });
         useFriendLocationTimeStore.getState().replaceSnapshot([
             {

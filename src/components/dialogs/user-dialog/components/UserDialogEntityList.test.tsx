@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useFriendLocationTimeStore } from '@/state/friendLocationTimeStore';
 import { useFriendRosterStore } from '@/state/friendRosterStore';
+import { onlinePresence } from '@/test/presenceFixtures';
 
 const mocks = vi.hoisted(() => ({
     openRow: vi.fn()
@@ -79,12 +80,11 @@ import { EntityList } from './UserDialogEntityList';
 function seedInstanceDwell(userId: string) {
     useFriendRosterStore.getState().applyFriendPatch({
         userId,
+        presence: { rev: 1, view: onlinePresence('wrld_test:1') },
         patch: {
             id: userId,
-            state: 'online',
             location: 'wrld_test:1'
-        },
-        stateBucketAuthority: 'explicit'
+        }
     });
     useFriendLocationTimeStore.getState().replaceSnapshot([
         {
@@ -161,13 +161,12 @@ describe('UserDialog EntityList', () => {
     it('shows the instance timer instead of the status signature', () => {
         useFriendRosterStore.getState().applyFriendPatch({
             userId: 'usr_friend',
+            presence: { rev: 1, view: onlinePresence('wrld_test:1') },
             patch: {
                 id: 'usr_friend',
                 displayName: 'Friend',
-                state: 'online',
                 location: 'wrld_test:1'
-            },
-            stateBucketAuthority: 'explicit'
+            }
         });
         useFriendLocationTimeStore.getState().replaceSnapshot([
             {
@@ -200,13 +199,12 @@ describe('UserDialog EntityList', () => {
     it('uses the displayed instance for an online friend with a hidden presence location', () => {
         useFriendRosterStore.getState().applyFriendPatch({
             userId: 'usr_friend',
+            presence: { rev: 1, view: onlinePresence('private') },
             patch: {
                 id: 'usr_friend',
                 displayName: 'Friend',
-                state: 'online',
                 location: 'private'
-            },
-            stateBucketAuthority: 'explicit'
+            }
         });
         useFriendLocationTimeStore.getState().replaceSnapshot([
             {

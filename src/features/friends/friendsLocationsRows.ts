@@ -10,8 +10,6 @@ export {
     buildSameInstanceGroups,
     isShareableInstanceLocation,
     resolveFriendGroupName,
-    resolveFriendTravelingWorldId,
-    resolveFriendTravelingWorldName,
     resolveFriendWorldName,
     resolvePresenceLocation,
     uniqueFriendsById

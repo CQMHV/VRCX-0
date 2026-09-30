@@ -261,8 +261,7 @@ export function useFriendListRows({
                         ) {
                             patches.push({
                                 userId: friendId,
-                                patch,
-                                stateBucketAuthority: 'preserve'
+                                patch
                             });
                         }
                     }

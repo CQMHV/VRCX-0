@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { onlineFeedEntry } from '@/components/feed/feedLiveTestEntries';
+import { onlinePresence } from '@/test/presenceFixtures';
 
 const serviceMocks = vi.hoisted(() => ({
     configRepository: {
@@ -107,12 +108,10 @@ describe('realtimePresenceService projection boundary', () => {
             patches: [
                 {
                     userId: 'usr_friend',
-                    presence: { rev: 1, view: { kind: 'offline' } },
+                    presence: { rev: 1, view: onlinePresence('wrld_1:123') },
                     patch: {
                         id: 'usr_friend',
-                        displayName: 'Friend',
-                        state: 'online',
-                        location: 'wrld_1:123'
+                        displayName: 'Friend'
                     },
                     stateBucketAuthority: 'explicit'
                 }
@@ -129,9 +128,9 @@ describe('realtimePresenceService projection boundary', () => {
             friendLogChanged: true
         });
 
-        expect(
-            useFriendRosterStore.getState().friendsById.usr_friend.state
-        ).toBe('online');
+        expect(useFriendRosterStore.getState().onlineIds).toEqual([
+            'usr_friend'
+        ]);
         expect(
             useRuntimeStore.getState().auth.currentUserSnapshot
         ).toMatchObject({
@@ -286,11 +285,7 @@ describe('realtimePresenceService projection boundary', () => {
                     displayName: 'Friend',
                     state: 'online'
                 }
-            },
-            orderedFriendIds: ['usr_friend'],
-            onlineIds: ['usr_friend'],
-            activeIds: [],
-            offlineIds: []
+            }
         });
 
         handleRealtimeFriendProjection({
@@ -326,11 +321,7 @@ describe('realtimePresenceService projection boundary', () => {
                     displayName: 'Friend',
                     state: 'online'
                 }
-            },
-            orderedFriendIds: ['usr_friend'],
-            onlineIds: ['usr_friend'],
-            activeIds: [],
-            offlineIds: []
+            }
         });
 
         for (const displayName of ['Leading', 'Buffered']) {
@@ -364,60 +355,6 @@ describe('realtimePresenceService projection boundary', () => {
         expect(
             useFriendRosterStore.getState().friendsById.usr_friend
         ).toBeUndefined();
-    });
-
-    it('preserves roster bucket for location-only friend projections', async () => {
-        const { useFriendRosterStore } =
-            await import('@/state/friendRosterStore');
-        const { handleRealtimeFriendProjection } =
-            await import('./realtimePresenceService');
-
-        useFriendRosterStore.getState().setRosterSnapshot({
-            currentUserId: 'usr_self',
-            friendsById: {
-                usr_friend: {
-                    id: 'usr_friend',
-                    displayName: 'Friend',
-                    state: 'online',
-                    location: 'wrld_old:1'
-                }
-            },
-            orderedFriendIds: ['usr_friend'],
-            onlineIds: ['usr_friend'],
-            activeIds: [],
-            offlineIds: []
-        });
-
-        handleRealtimeFriendProjection({
-            generation: 7,
-            baselineRevision: 1,
-            patches: [
-                {
-                    userId: 'usr_friend',
-                    patch: {
-                        id: 'usr_friend',
-                        state: 'offline',
-                        location: 'wrld_new:2'
-                    },
-                    presence: { rev: 1, view: { kind: 'offline' } },
-                    stateBucketAuthority: 'preserve'
-                }
-            ],
-            removals: [],
-            feedEntries: [],
-            friendLogChanged: false
-        });
-
-        expect(useFriendRosterStore.getState()).toMatchObject({
-            onlineIds: ['usr_friend'],
-            offlineIds: [],
-            friendsById: {
-                usr_friend: {
-                    state: 'online',
-                    location: 'wrld_new:2'
-                }
-            }
-        });
     });
 
     it('stores a notification projection upsert and flags the notification menu', async () => {

@@ -198,8 +198,7 @@ export function useUserDialogMemoState({
             if (useFriendRosterStore.getState().friendsById[targetUserId]) {
                 useFriendRosterStore.getState().applyFriendPatch({
                     userId: targetUserId,
-                    patch: savedFields,
-                    stateBucketAuthority: 'preserve'
+                    patch: savedFields
                 });
             }
         }

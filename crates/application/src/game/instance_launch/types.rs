@@ -88,7 +88,7 @@ pub struct InstanceActionGateTarget {
     #[serde(default)]
     pub location: String,
     #[serde(default)]
-    pub state_bucket: String,
+    pub presence_kind: String,
     #[serde(default)]
     pub is_current_user: bool,
 }

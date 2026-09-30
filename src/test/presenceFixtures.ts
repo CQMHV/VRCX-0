@@ -12,6 +12,17 @@ export function onlinePresence(
     };
 }
 
+export function travelingPresence(destination = ''): PresenceView {
+    return {
+        kind: 'online',
+        place: {
+            location: parseLocation('traveling'),
+            travelingTo: destination ? parseLocation(destination) : null
+        },
+        platform: 'standalonewindows'
+    };
+}
+
 export function pendingPresence(tag = 'wrld_friend:123'): PresenceView {
     return {
         kind: 'pendingOffline',

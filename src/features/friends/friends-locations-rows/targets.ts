@@ -1,11 +1,14 @@
 import {
+    isPresenceView,
+    presenceTravelingTag
+} from '@/domain/friends/presence';
+import {
     parseLocation,
     resolveFriendPresenceLocation
 } from '@/shared/utils/location';
 
 import {
     isRecord,
-    isSentinelLocationValue,
     localized,
     normalizeFriendsLocationId,
     resolveWorldIdCandidate,
@@ -13,8 +16,6 @@ import {
 } from './normalization';
 import {
     resolveFriendGroupName,
-    resolveFriendTravelingWorldId,
-    resolveFriendTravelingWorldName,
     resolveFriendWorldName,
     resolvePresenceLocation
 } from './presence';
@@ -30,16 +31,13 @@ export function resolveLocationTarget(
     const rawLocation = resolvePresenceLocation(friend);
     const parsed = parseLocation(rawLocation);
     const parsedWorldId = resolveWorldIdCandidate(parsed.worldId);
-    const travelingWorldId = parsed.isTraveling
-        ? resolveFriendTravelingWorldId(friend)
-        : '';
     const explicitWorldId = resolveWorldIdCandidate(
         isRecord(friend) ? friend.worldId : ''
     );
     const worldId =
         !rawLocation || parsed.isOffline || parsed.isPrivate
             ? ''
-            : parsedWorldId || travelingWorldId || explicitWorldId;
+            : parsedWorldId || explicitWorldId;
 
     return {
         rawLocation,
@@ -80,18 +78,16 @@ export function resolveLocationSummary(
     friend: FriendLocationFriend | null | undefined,
     t: TranslationFn | null = null
 ) {
-    const source = sourceFromFriend(friend);
-    const travelingToLocation = [
-        source?.travelingToLocation,
-        source?.$travelingToLocation
-    ]
-        .map(normalizeFriendsLocationId)
-        .find((value) => value && !isSentinelLocationValue(value));
-    if (travelingToLocation && !isSentinelLocationValue(travelingToLocation)) {
-        const parsedTraveling = parseLocation(travelingToLocation);
+    const presence = sourceFromFriend(friend).$presence;
+    const travelingToLocation = isPresenceView(presence)
+        ? presenceTravelingTag(presence)
+        : '';
+    if (travelingToLocation) {
         return {
-            label: resolveFriendTravelingWorldName(friend),
-            meta: parsedTraveling.instanceName || travelingToLocation
+            label: resolveFriendWorldName(friend),
+            meta:
+                parseLocation(travelingToLocation).instanceName ||
+                travelingToLocation
         };
     }
 
@@ -117,7 +113,7 @@ export function resolveLocationSummary(
     if (parsedLocation.isTraveling) {
         return {
             label: localized(t, 'location.traveling', 'Traveling'),
-            meta: resolveFriendTravelingWorldName(friend) || location
+            meta: resolveFriendWorldName(friend) || location
         };
     }
 

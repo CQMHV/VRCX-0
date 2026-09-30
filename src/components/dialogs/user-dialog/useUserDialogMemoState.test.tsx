@@ -42,6 +42,7 @@ vi.mock('@/repositories/vrchatToolsRepository', () => ({
 }));
 
 import { useFriendRosterStore } from '@/state/friendRosterStore';
+import { offlinePresence } from '@/test/presenceFixtures';
 
 import { useUserDialogMemoState } from './useUserDialogMemoState';
 
@@ -203,7 +204,7 @@ describe('useUserDialogMemoState', () => {
         expect(value().memoDialog.open).toBe(false);
     });
 
-    it('preserves current presence when saving a friend note', async () => {
+    it('patches the saved notes onto the roster friend', async () => {
         const applyFriendPatch = vi.fn();
         useFriendRosterStore.setState({
             applyFriendPatch,
@@ -212,8 +213,7 @@ describe('useUserDialogMemoState', () => {
                     id: 'usr_friend',
                     displayName: 'Friend User',
                     tags: [],
-                    state: 'online',
-                    stateBucket: 'online',
+                    $presence: offlinePresence,
                     $trustLevel: 'Visitor',
                     $friendNumber: 0,
                     $trustClass: 'x-tag-untrusted',
@@ -247,8 +247,7 @@ describe('useUserDialogMemoState', () => {
                 note: 'Updated VRChat note',
                 memo: 'Updated local note',
                 $nickName: 'Updated local note'
-            },
-            stateBucketAuthority: 'preserve'
+            }
         });
     });
 });

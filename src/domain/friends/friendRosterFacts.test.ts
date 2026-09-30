@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { offlinePresence } from '@/test/presenceFixtures';
+
 import {
     applyFactDerivedFields,
     mergeRosterFriendFacts
@@ -13,8 +15,7 @@ function friend(patch: Partial<FriendRecord> = {}): FriendRecord {
         id: 'usr_1',
         displayName: 'Friend',
         tags: [],
-        state: 'offline',
-        stateBucket: 'offline',
+        $presence: offlinePresence,
         $trustLevel: 'Visitor',
         $friendNumber: 0,
         $trustClass: 'x-tag-untrusted',

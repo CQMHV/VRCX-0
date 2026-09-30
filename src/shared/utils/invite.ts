@@ -36,7 +36,7 @@ export type LocalInstanceActionGateTarget = {
     key: string;
     userId: string;
     location: string;
-    stateBucket?: string;
+    presenceKind?: string;
     isCurrentUser?: boolean;
 };
 
@@ -255,7 +255,7 @@ function evaluateLocalInstanceActionGates({
                 canSelfInvite,
                 canRequestInvite:
                     normalizeInviteLocationValue(
-                        target.stateBucket
+                        target.presenceKind
                     ).toLowerCase() === 'online' && !isCurrentUser,
                 canInvite: Boolean(
                     isGameRunning &&

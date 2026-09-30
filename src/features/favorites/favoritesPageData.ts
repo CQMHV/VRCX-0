@@ -5,6 +5,10 @@ import type {
     FavoriteKind,
     FavoriteRecord
 } from '@/domain/favorites/types';
+import {
+    presenceSection,
+    presenceTravelingTag
+} from '@/domain/friends/presence';
 import type {
     FriendProfileFields,
     FriendRecordInput
@@ -38,18 +42,13 @@ export type FavoritePageEntityDetail = FavoriteEntityDetail & {
     displayName?: string;
     groupName?: string;
     occupants?: number;
-    state?: string;
-    stateBucket?: string;
     status?: string | null;
-    travelingToWorld?: string;
     worldName?: string;
 };
 type FavoriteProfileRecord = FriendRecordInput &
     Partial<FriendProfileFields> & {
         $userColour?: string;
         isFriend?: boolean;
-        stateBucket?: string;
-        travelingToLocation?: string;
     };
 type FavoriteGroupSourceMap = FavoriteGroupMap;
 type FavoriteDetailMap = Record<string, FavoritePageEntityDetail | undefined>;
@@ -81,11 +80,8 @@ function favoriteSeedData(
         groupName: textValue(value.groupName) || undefined,
         id: textValue(value.id) || undefined,
         releaseStatus: textValue(value.releaseStatus) || undefined,
-        state: textValue(value.state) || undefined,
-        stateBucket: textValue(value.stateBucket) || undefined,
         status:
             value.status === null ? null : textValue(value.status) || undefined,
-        travelingToWorld: textValue(value.travelingToWorld) || undefined,
         worldName: textValue(value.worldName) || undefined
     };
 }
@@ -230,7 +226,8 @@ function buildFriendFavoriteItem({
               username: friend.username || knownUser?.username
           }
         : knownUser || null;
-    const status = profile?.stateBucket || profile?.state || 'offline';
+    const presence = profile?.$presence ?? null;
+    const status = presence ? presenceSection(presence) : 'offline';
     const location = resolveFavoritePresenceLocation(profile);
 
     return {
@@ -247,7 +244,7 @@ function buildFriendFavoriteItem({
         subtitle: resolveFavoriteSubtitle(profile, location),
         detailText: '',
         location,
-        travelingToLocation: textValue(profile?.travelingToLocation),
+        travelingToLocation: presence ? presenceTravelingTag(presence) : '',
         imageUrl: profile ? userImage(profile, 64) : '',
         statusLabel: textValue(status),
         statusVariant:

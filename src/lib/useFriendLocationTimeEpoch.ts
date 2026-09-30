@@ -1,9 +1,10 @@
+import { presenceSection, type PresenceView } from '@/domain/friends/presence';
 import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
 import { useFriendLocationTimeStore } from '@/state/friendLocationTimeStore';
 import { useFriendRosterStore } from '@/state/friendRosterStore';
 
 export function resolveFriendLocationTimeEpoch(
-    friend: { state?: string } | null | undefined,
+    friend: { $presence: PresenceView } | null | undefined,
     entry: FriendLocationTimeEntry | null | undefined,
     location: string
 ): number {
@@ -11,7 +12,8 @@ export function resolveFriendLocationTimeEpoch(
     if (
         !friend ||
         !entry ||
-        (entry.source !== 'gameLog' && friend.state !== 'online') ||
+        (entry.source !== 'gameLog' &&
+            presenceSection(friend.$presence) !== 'online') ||
         entry.location !== expectedLocation ||
         !entry.sinceMs
     ) {
