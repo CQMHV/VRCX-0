@@ -102,8 +102,6 @@ impl RealtimeHostRuntime {
         let mut projection = FriendProjection::new(generation, baseline_revision);
         projection.feed_entries = feed_entries;
         if !self.is_friend_projection_current(&projection) {
-            self.friends
-                .clear_baseline_if_revision(projection.generation, projection.baseline_revision);
             return;
         }
         if let Some(activity_sink) = &self.deps.activity_sink {
@@ -127,8 +125,6 @@ impl RealtimeHostRuntime {
         let mut projection = output.projection.clone();
         let projection_generation = projection.generation;
         if !self.is_friend_projection_current(&projection) {
-            self.friends
-                .clear_baseline_if_revision(projection.generation, projection.baseline_revision);
             return FriendOutputApplyOutcome::Stale;
         }
         self.retain_current_instance_joining_entries(

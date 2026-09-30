@@ -376,27 +376,6 @@ impl RealtimeFriendsRuntime {
         state.generation
     }
 
-    pub fn clear_baseline_if_revision(&self, generation: u64, baseline_revision: u64) -> bool {
-        let mut state = self.lock_state();
-        let should_clear = state
-            .baseline
-            .as_ref()
-            .map(|baseline| {
-                baseline.generation == generation && baseline.baseline_revision == baseline_revision
-            })
-            .unwrap_or(false);
-        if should_clear {
-            state.generation = state.generation.saturating_add(1);
-            state.baseline = None;
-            state.invalidate_friend_user_ids_snapshot();
-            state.pending_offline.clear();
-            state.recent_gps.clear();
-            state.friend_state_sequence_by_user.clear();
-            state.instance_dwell.clear();
-        }
-        should_clear
-    }
-
     pub(crate) fn restart_preserving_baseline(
         &self,
         session: &RealtimeSessionContext,

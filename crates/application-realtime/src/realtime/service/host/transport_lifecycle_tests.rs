@@ -1079,6 +1079,64 @@ fn reconnect_without_a_fresh_baseline_clears_pending_offline_runtime_state() -> 
 }
 
 #[test]
+fn pending_offline_timer_firing_while_disconnected_keeps_preserved_baseline() -> Result<()> {
+    let (_dir, runtime, active_session) =
+        runtime_with_active_session("disconnected-pending-offline-fire")?;
+    let old_transport = active_transport(&runtime);
+    seed_online_friend(&runtime, &active_session, old_transport.generation)?;
+    let RealtimeFriendApplyResult::Output(output) =
+        runtime
+            .runtime()
+            .friends
+            .apply_ws_message(&RealtimeWsMessagePayload {
+                json: json!({
+                    "type": "friend-offline",
+                    "content": { "userId": "usr_friend" }
+                }),
+                raw: "{}".into(),
+                received_at: "2026-07-20T00:00:00Z".into(),
+            })
+    else {
+        panic!("friend-offline should produce an output");
+    };
+    let PendingOfflineTimerAction::Schedule { token, .. } = output.timer_action else {
+        panic!("friend-offline should schedule a pending timer");
+    };
+    runtime.runtime().finish_realtime_transport(
+        old_transport,
+        RealtimeTransportTermination::UnexpectedExit {
+            reason: "websocket stream ended".into(),
+            connected_secs: None,
+        },
+    );
+
+    runtime
+        .runtime()
+        .fire_pending_offline("usr_friend", token, "2026-07-20T00:03:00Z".into());
+
+    assert!(runtime.runtime().friend_snapshot().is_some());
+    runtime
+        .runtime()
+        .deps
+        .tasks
+        .set_executor(DiscardTaskExecutor);
+    runtime.runtime().start_from_friend_baseline(
+        active_session.user_id.clone(),
+        active_session.endpoint.clone(),
+        active_session.websocket.clone(),
+        2,
+        json!({"id": active_session.user_id}),
+    )?;
+    assert!(runtime
+        .runtime()
+        .friend_snapshot()
+        .unwrap()
+        .friends_by_id
+        .contains_key("usr_friend"));
+    Ok(())
+}
+
+#[test]
 fn friend_ws_dispatch_fans_out_one_canonical_output() -> Result<()> {
     let (_dir, runtime, active_session) = runtime_with_active_session("friend-dispatch-fanout")?;
     let active = runtime
