@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
+import {
+    activePresence,
+    onlinePresence,
+    pendingPresence
+} from '@/test/presenceFixtures';
+
 import { resolveUserPresenceStatus, userStatusSortRank } from './userStatus';
 
 describe('userStatus', () => {
@@ -67,5 +73,35 @@ describe('userStatus', () => {
         expect(userStatusSortRank('busy')).toBe(3);
         expect(userStatusSortRank('private')).toBe(4);
         expect(userStatusSortRank('offline')).toBe(5);
+    });
+
+    it('resolves from the presence view before raw presence fields', () => {
+        expect(
+            resolveUserPresenceStatus({
+                state: 'online',
+                location: 'offline',
+                $presence: onlinePresence()
+            })
+        ).toBe('active');
+        expect(
+            resolveUserPresenceStatus({
+                status: 'join me',
+                $presence: pendingPresence()
+            })
+        ).toBe('offline');
+        expect(
+            resolveUserPresenceStatus({
+                status: 'join me',
+                $presence: activePresence()
+            })
+        ).toBe('join me');
+        expect(resolveUserPresenceStatus({ $presence: activePresence() })).toBe(
+            'state-active'
+        );
+        expect(
+            resolveUserPresenceStatus({
+                ref: { status: 'busy', $presence: onlinePresence() }
+            })
+        ).toBe('busy');
     });
 });

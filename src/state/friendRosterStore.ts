@@ -477,10 +477,19 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
         detail = ''
     }: FriendRosterSnapshotInput) {
         set((state) => {
+            const nextPresenceById: FriendPresenceById = { ...presenceById };
             const sourceFriendsById = normalizeFriendRecordMap(friendsById);
+            for (const [userId, friend] of Object.entries(sourceFriendsById)) {
+                const presence = nextPresenceById[userId];
+                if (presence) {
+                    sourceFriendsById[userId] = {
+                        ...friend,
+                        $presence: presence.view
+                    };
+                }
+            }
             const nextFriendsById =
                 normalizeRosterSnapshotFriends(sourceFriendsById);
-            const nextPresenceById: FriendPresenceById = { ...presenceById };
             let keptNewerEntries = false;
             if (
                 generation !== undefined &&
@@ -577,9 +586,12 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
             let presenceGeneration = state.presenceGeneration;
 
             for (const entry of patches) {
-                const patch: FriendRecordInput = isRecord(entry?.patch)
+                const basePatch: FriendRecordInput = isRecord(entry?.patch)
                     ? entry.patch
                     : {};
+                const patch: FriendRecordInput = entry.presence
+                    ? { ...basePatch, $presence: entry.presence.view }
+                    : basePatch;
                 const normalizedUserId = normalizeUserId(
                     entry?.userId || patch?.id
                 );

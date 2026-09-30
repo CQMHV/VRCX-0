@@ -8,6 +8,7 @@ import {
 import { isRecord } from '@/shared/utils/record';
 import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
 export { resolveCurrentInviteLocation } from '@/shared/utils/invite';
+import { presenceDotClassName } from '@/domain/friends/presence';
 import {
     buildSameInstanceFriendGroups,
     type SameInstanceLastLocation
@@ -273,6 +274,51 @@ export function resolveSidebarStatusDotClassName(
         return '';
     }
     const userId = normalizeId(source?.id || source?.userId);
+
+    if (isCurrentUser || userId === currentUser?.id) {
+        const currentSource = readFriendStatusSource(currentUser) || source;
+        const currentStatus = normalizeLocationStatus(
+            currentSource?.status || userStatusFromValue(source?.status)
+        );
+        const currentLocation = normalizeLocationStatus(
+            currentSource?.location ||
+                locationProjection(currentSource?.$location)?.tag ||
+                source?.location ||
+                locationProjection(source?.$location)?.tag
+        );
+        if (isGameRunning === true) {
+            return (
+                legacyStatusDotClassName(currentStatus) ||
+                SOLID_USER_STATUS_DOT_CLASS_NAMES.active
+            );
+        }
+        if (currentLocation && currentLocation !== 'offline') {
+            return (
+                legacyStatusDotClassName(currentStatus) ||
+                SOLID_USER_STATUS_DOT_CLASS_NAMES.active
+            );
+        }
+        return activeStatusDotClassName(currentStatus);
+    }
+
+    if (
+        hideNonFriend &&
+        source?.isFriend === false &&
+        friend?.isFriend === false
+    ) {
+        return '';
+    }
+    if (source.$presence) {
+        return presenceDotClassName(source.$presence, source.status);
+    }
+    return legacyFriendDotClassName(source, currentUser);
+}
+
+function legacyFriendDotClassName(
+    source: SidebarFriendRecord,
+    currentUser: SidebarFriendRecord | null | undefined
+) {
+    const userId = normalizeId(source?.id || source?.userId);
     const status = userStatusFromValue(source?.status);
     const location = normalizeLocationStatus(
         source?.location || locationProjection(source?.$location)?.tag
@@ -296,42 +342,8 @@ export function resolveSidebarStatusDotClassName(
     const state = normalizeStateBucket(source?.state || snapshotState);
     const stateBucket = state;
 
-    if (isCurrentUser || userId === currentUser?.id) {
-        const currentSource = readFriendStatusSource(currentUser) || source;
-        const currentStatus = normalizeLocationStatus(
-            currentSource?.status || status
-        );
-        const currentLocation = normalizeLocationStatus(
-            currentSource?.location ||
-                locationProjection(currentSource?.$location)?.tag ||
-                source?.location ||
-                locationProjection(source?.$location)?.tag
-        );
-        if (isGameRunning === true) {
-            return (
-                legacyStatusDotClassName(currentStatus) ||
-                SOLID_USER_STATUS_DOT_CLASS_NAMES.active
-            );
-        }
-        if (currentLocation && currentLocation !== 'offline') {
-            return (
-                legacyStatusDotClassName(currentStatus) ||
-                SOLID_USER_STATUS_DOT_CLASS_NAMES.active
-            );
-        }
-        return activeStatusDotClassName(currentStatus);
-    }
-
     if (source?.pendingOffline) {
         return SOLID_USER_STATUS_DOT_CLASS_NAMES.offline;
-    }
-
-    if (
-        hideNonFriend &&
-        source?.isFriend === false &&
-        friend?.isFriend === false
-    ) {
-        return '';
     }
 
     if (state === 'offline' || stateBucket === 'offline') {

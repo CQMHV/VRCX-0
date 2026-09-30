@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
+import type { PresenceView } from '@/domain/friends/presence';
+import {
+    activePresence,
+    onlinePresence,
+    pendingPresence
+} from '@/test/presenceFixtures';
+
 import {
     displayLocation,
     getFriendsLocations,
@@ -347,5 +354,53 @@ describe('location parser', () => {
         };
 
         expect(translateAccessType('groupPlus', t, keyMap)).toBe('Group+');
+    });
+});
+
+describe('resolveFriendPresenceLocation with presence views', () => {
+    const traveling: PresenceView = {
+        kind: 'online',
+        place: {
+            location: parseLocation('traveling'),
+            travelingTo: parseLocation('wrld_dest:2')
+        },
+        platform: 'android'
+    };
+
+    it('reads the place from the presence view instead of raw fields', () => {
+        expect(
+            resolveFriendPresenceLocation({
+                location: 'offline',
+                $presence: onlinePresence('wrld_a:1')
+            })
+        ).toBe('wrld_a:1');
+        expect(
+            resolveFriendPresenceLocation({
+                $presence: pendingPresence('wrld_a:1')
+            })
+        ).toBe('wrld_a:1');
+        expect(
+            resolveFriendPresenceLocation({ $presence: activePresence() })
+        ).toBe('offline');
+        expect(
+            resolveFriendPresenceLocation(
+                { $presence: activePresence() },
+                { requireInstance: true }
+            )
+        ).toBe('');
+        expect(
+            resolveFriendPresenceLocation({
+                $presence: onlinePresence('private')
+            })
+        ).toBe('private');
+        expect(
+            resolveFriendPresenceLocation({ ref: { $presence: traveling } })
+        ).toBe('wrld_dest:2');
+        expect(
+            resolveFriendPresenceLocation(
+                { $presence: traveling },
+                { preferTraveling: false }
+            )
+        ).toBe('traveling');
     });
 });

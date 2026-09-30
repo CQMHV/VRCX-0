@@ -1,3 +1,4 @@
+import { isPresenceView, presenceStatusKey } from '@/domain/friends/presence';
 import { hasWorldIdPrefix } from '@/shared/constants/vrchatIds';
 
 type UserStatusSource = Record<string, unknown>;
@@ -50,6 +51,10 @@ function resolveUserPresenceStatus(value: unknown) {
     const source = asUserStatusSource(
         record.ref && typeof record.ref === 'object' ? record.ref : record
     );
+    const presence = record.$presence ?? source.$presence;
+    if (isPresenceView(presence)) {
+        return presenceStatusKey(presence, record.status || source.status);
+    }
     if (record.pendingOffline || source?.pendingOffline) {
         return 'offline';
     }

@@ -465,4 +465,29 @@ describe('friendRosterStore', () => {
         expect(state.presenceById.usr_a).toEqual(active(5));
         expect(state.friendsById.usr_a.memo).toBe('note');
     });
+
+    it('exposes the current presence view on each friend record', () => {
+        const store = useFriendRosterStore.getState();
+        store.applyFriendPatches([
+            {
+                userId: 'usr_a',
+                patch: { id: 'usr_a', state: 'active' },
+                presence: active(5),
+                generation: 1
+            }
+        ]);
+        expect(
+            useFriendRosterStore.getState().friendsById.usr_a.$presence
+        ).toEqual(active(5).view);
+
+        store.setRosterSnapshot({
+            currentUserId: 'usr_self',
+            friendsById: { usr_b: { id: 'usr_b', state: 'offline' } },
+            presenceById: { usr_b: offline(1) },
+            generation: 2
+        });
+        expect(
+            useFriendRosterStore.getState().friendsById.usr_b.$presence
+        ).toEqual(offline(1).view);
+    });
 });

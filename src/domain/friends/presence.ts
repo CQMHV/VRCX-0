@@ -1,3 +1,8 @@
+import {
+    SOLID_USER_STATUS_DOT_CLASS_NAMES,
+    USER_STATUS_INDICATOR_CLASS_NAMES,
+    userStatusFromValue
+} from '@/shared/utils/friendStatus';
 import type { ParsedLocation } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 
@@ -51,13 +56,19 @@ const PRESENCE_KINDS = new Set([
     'offline'
 ]);
 
+export function isPresenceView(value: unknown): value is PresenceView {
+    return (
+        isRecord(value) &&
+        typeof value.kind === 'string' &&
+        PRESENCE_KINDS.has(value.kind)
+    );
+}
+
 function isPresenceEntry(value: unknown): value is PresenceEntry {
     return (
         isRecord(value) &&
         typeof value.rev === 'number' &&
-        isRecord(value.view) &&
-        typeof value.view.kind === 'string' &&
-        PRESENCE_KINDS.has(value.view.kind)
+        isPresenceView(value.view)
     );
 }
 
@@ -73,4 +84,85 @@ export function parsePresenceById(
                 isPresenceEntry(entry[1])
         )
     );
+}
+
+function hollowStatusDotClassName(status: string): string {
+    switch (status) {
+        case 'join me':
+            return `${USER_STATUS_INDICATOR_CLASS_NAMES['join me']} border-[var(--status-joinme)] bg-background`;
+        case 'ask me':
+            return `${USER_STATUS_INDICATOR_CLASS_NAMES['ask me']} border-[var(--status-askme)] bg-background`;
+        case 'busy':
+            return `${USER_STATUS_INDICATOR_CLASS_NAMES.busy} border-[var(--status-busy)] bg-background`;
+        default:
+            return `${USER_STATUS_INDICATOR_CLASS_NAMES.active} border-[var(--status-online)] bg-background`;
+    }
+}
+
+export function presenceDotClassName(
+    view: PresenceView | null | undefined,
+    status: unknown
+): string {
+    const friendStatus = userStatusFromValue(status);
+    switch (view?.kind) {
+        case 'offline':
+        case 'pendingOffline':
+            return SOLID_USER_STATUS_DOT_CLASS_NAMES.offline;
+        case 'active':
+            return hollowStatusDotClassName(friendStatus);
+        case 'online':
+            return friendStatus && friendStatus !== 'offline'
+                ? SOLID_USER_STATUS_DOT_CLASS_NAMES[friendStatus]
+                : '';
+        default:
+            return '';
+    }
+}
+
+export function presenceStatusKey(view: PresenceView, status: unknown): string {
+    const friendStatus = userStatusFromValue(status);
+    if (
+        view.kind === 'offline' ||
+        view.kind === 'pendingOffline' ||
+        friendStatus === 'offline'
+    ) {
+        return 'offline';
+    }
+    if (
+        friendStatus === 'join me' ||
+        friendStatus === 'ask me' ||
+        friendStatus === 'busy'
+    ) {
+        return friendStatus;
+    }
+    return view.kind === 'active' ? 'state-active' : 'active';
+}
+
+export function presenceLocationTag(
+    view: PresenceView,
+    {
+        preferTraveling = true,
+        requireInstance = false
+    }: { preferTraveling?: boolean; requireInstance?: boolean } = {}
+): string {
+    const place = presencePlace(view);
+    if (!place) {
+        return requireInstance ? '' : 'offline';
+    }
+    const { location, travelingTo } = place;
+    if (location.isPrivate) {
+        return requireInstance ? '' : 'private';
+    }
+    if (location.isTraveling) {
+        if (preferTraveling && travelingTo?.isRealInstance) {
+            return travelingTo.tag;
+        }
+        return requireInstance ? '' : 'traveling';
+    }
+    if (!location.isRealInstance) {
+        return '';
+    }
+    return requireInstance && !(location.worldId && location.instanceId)
+        ? ''
+        : location.tag;
 }

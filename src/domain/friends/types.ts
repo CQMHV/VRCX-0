@@ -1,7 +1,7 @@
 import type { ParsedLocation } from '@/shared/utils/location';
 
 import type { LoadStatus } from '../shared/types';
-import type { PresenceEntry } from './presence';
+import type { PresenceEntry, PresenceView } from './presence';
 
 export type FriendRosterBucket = 'online' | 'active' | 'offline';
 export type FriendStateBucketAuthority = 'explicit' | 'preserve';
@@ -71,6 +71,7 @@ export type FriendRecordInput = Record<string, unknown> & {
     $isProbableTroll?: boolean;
     $platform?: string;
     $profileSource?: string;
+    $presence?: PresenceView;
 };
 
 export type FriendRecord = FriendRecordInput &

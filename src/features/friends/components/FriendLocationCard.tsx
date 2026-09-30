@@ -11,20 +11,15 @@ import { LaunchModeContextMenuGroup } from '@/components/launch/LaunchModeContex
 import { Location } from '@/components/Location';
 import { UserHoverCard } from '@/components/user-hover-card/UserHoverCard';
 import { UserStatusDot } from '@/components/UserStatusDot';
+import { presenceDotClassName } from '@/domain/friends/presence';
 import type { FriendRecord } from '@/domain/friends/types';
 import { useFriendLocationTimeEpoch } from '@/lib/useFriendLocationTimeEpoch';
 import { cn } from '@/lib/utils';
 import type { FriendLocationTimeSource } from '@/platform/tauri/bindings';
 import { userImage } from '@/services/entityMediaService';
-import {
-    normalizeUserStatus,
-    SOLID_USER_STATUS_DOT_CLASS_NAMES,
-    USER_STATUS_INDICATOR_CLASS_NAMES
-} from '@/shared/utils/friendStatus';
+import { normalizeUserStatus } from '@/shared/utils/friendStatus';
 import { normalizeLocationValue, parseLocation } from '@/shared/utils/location';
 import { normalizeString } from '@/shared/utils/string';
-import { useRuntimeStore } from '@/state/runtimeStore';
-import type { CurrentUserSnapshotState } from '@/state/runtimeStore';
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar';
 import { Button } from '@/ui/shadcn/button';
 import {
@@ -67,6 +62,7 @@ type FriendLocationCardSource = Pick<
     | 'status'
     | 'travelingToLocation'
     | '$travelingToLocation'
+    | '$presence'
 > & { pendingOffline?: boolean };
 
 export type FriendLocationCardFriend = FriendRecord & {
@@ -173,133 +169,6 @@ function normalizeLocationStatus(value: unknown) {
     return normalizeStatusText(value);
 }
 
-function resolveFriendLocationStatus(
-    friend: FriendLocationCardFriend,
-    currentUser: CurrentUserSnapshotState | null
-) {
-    const source = readFriendRef(friend);
-    if (!source) {
-        return '';
-    }
-    const userId = normalizeStatusText(source.id || source.userId);
-    const rawStatus = normalizeStatusText(source.status);
-    const friendStatus = normalizeStatusText(source.status);
-    const state = normalizeStatusText(source.stateBucket || source.state);
-    const location = normalizeLocationStatus(source.location);
-    const isOnlineByCurrentSnapshot = (
-        currentUser?.onlineFriends || []
-    ).includes(userId);
-    const isActiveByCurrentSnapshot = (
-        currentUser?.activeFriends || []
-    ).includes(userId);
-
-    if (friend?.pendingOffline || source?.pendingOffline) {
-        return 'offline';
-    }
-    if (
-        rawStatus !== 'active' &&
-        location === 'private' &&
-        state === '' &&
-        userId &&
-        !isOnlineByCurrentSnapshot
-    ) {
-        return isActiveByCurrentSnapshot ? 'active-state' : 'offline';
-    }
-    if (state === 'active') {
-        if (friendStatus === 'join me') {
-            return 'active-join';
-        }
-        if (friendStatus === 'ask me') {
-            return 'active-ask';
-        }
-        if (friendStatus === 'busy') {
-            return 'active-busy';
-        }
-        return 'active-state';
-    }
-    if (state === 'offline' || (location === 'offline' && state !== 'online')) {
-        return 'offline';
-    }
-    if (rawStatus === 'active') {
-        return 'online';
-    }
-    if (rawStatus === 'join me') {
-        return 'join me';
-    }
-    if (rawStatus === 'ask me') {
-        return 'ask me';
-    }
-    if (rawStatus === 'busy') {
-        return 'busy';
-    }
-    return '';
-}
-
-function resolveStatusTone(
-    friend: FriendLocationCardFriend,
-    currentUser: CurrentUserSnapshotState | null
-) {
-    const status = resolveFriendLocationStatus(friend, currentUser);
-
-    if (status === 'join me') {
-        return {
-            dotClassName: SOLID_USER_STATUS_DOT_CLASS_NAMES['join me']
-        };
-    }
-
-    if (status === 'ask me') {
-        return {
-            dotClassName: SOLID_USER_STATUS_DOT_CLASS_NAMES['ask me']
-        };
-    }
-
-    if (status === 'busy') {
-        return {
-            dotClassName: SOLID_USER_STATUS_DOT_CLASS_NAMES.busy
-        };
-    }
-
-    if (status === 'online') {
-        return {
-            dotClassName: SOLID_USER_STATUS_DOT_CLASS_NAMES.active
-        };
-    }
-
-    if (
-        status === 'active-state' ||
-        status === 'active-join' ||
-        status === 'active-ask' ||
-        status === 'active-busy'
-    ) {
-        const colorClassName =
-            status === 'active-join'
-                ? 'border-[var(--status-joinme)]'
-                : status === 'active-ask'
-                  ? 'border-[var(--status-askme)]'
-                  : status === 'active-busy'
-                    ? 'border-[var(--status-busy)]'
-                    : 'border-[var(--status-online)]';
-        let statusClassName = USER_STATUS_INDICATOR_CLASS_NAMES.active;
-        if (status === 'active-join') {
-            statusClassName = USER_STATUS_INDICATOR_CLASS_NAMES['join me'];
-        } else if (status === 'active-ask') {
-            statusClassName = USER_STATUS_INDICATOR_CLASS_NAMES['ask me'];
-        } else if (status === 'active-busy') {
-            statusClassName = USER_STATUS_INDICATOR_CLASS_NAMES.busy;
-        }
-        return {
-            dotClassName: cn(statusClassName, 'bg-background', colorClassName)
-        };
-    }
-
-    return {
-        dotClassName:
-            status === 'offline'
-                ? SOLID_USER_STATUS_DOT_CLASS_NAMES.offline
-                : 'hidden'
-    };
-}
-
 const DEFAULT_CARD_DENSITY_CONFIG: FriendLocationCardDensity = {
     value: 'compact',
     layout: 'card',
@@ -398,11 +267,11 @@ export function FriendLocationCard({
         sendBoop: onSendBoop
     } = actions;
 
-    const currentUserSnapshot = useRuntimeStore(
-        (state) => state.auth.currentUserSnapshot
-    );
     const avatarUrl = userImage(friend);
-    const tone = resolveStatusTone(friend, currentUserSnapshot);
+    const statusSource = readFriendRef(friend);
+    const statusDotClassName =
+        presenceDotClassName(statusSource?.$presence, statusSource?.status) ||
+        'hidden';
     const canOpenUser = typeof onOpenUser === 'function';
     const canOpenWorld = typeof onOpenWorld === 'function';
     const localLocation =
@@ -449,7 +318,7 @@ export function FriendLocationCard({
     const statusLineClampClass = resolveLineClampClass(
         resolvedDensityConfig.statusLineClamp
     );
-    const showStatusDot = !tone.dotClassName.includes('hidden');
+    const showStatusDot = statusDotClassName !== 'hidden';
     const showLocationInfo =
         contentMode === 'full' &&
         displayInstanceInfo &&
@@ -486,7 +355,7 @@ export function FriendLocationCard({
                 </AvatarFallback>
                 {showStatusDot ? (
                     <UserStatusDot
-                        statusDotClassName={tone.dotClassName}
+                        statusDotClassName={statusDotClassName}
                         className="absolute -right-0.5 -bottom-0.5 z-10 size-[var(--friend-card-dot-size)]"
                     />
                 ) : null}

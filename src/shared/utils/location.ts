@@ -1,3 +1,5 @@
+import { isPresenceView, presenceLocationTag } from '@/domain/friends/presence';
+
 import { isRealInstance } from './instance';
 import { normalizeString } from './string';
 
@@ -647,6 +649,14 @@ function resolveFriendPresenceLocation(
         lastLocation = null
     }: ResolveFriendPresenceOptions = {}
 ): string {
+    const direct = getObject(friend);
+    const presence = direct?.$presence ?? getObject(direct?.ref)?.$presence;
+    if (isPresenceView(presence)) {
+        return presenceLocationTag(presence, {
+            preferTraveling,
+            requireInstance
+        });
+    }
     const currentLocation = resolveCurrentFriendLocationValue(friend);
     const currentSentinel = resolveCurrentFriendLocationSentinel(friend);
     if (currentSentinel === 'offline' || currentSentinel === 'private') {

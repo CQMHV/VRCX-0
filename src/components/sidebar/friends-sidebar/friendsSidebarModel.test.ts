@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { onlinePresence, pendingPresence } from '@/test/presenceFixtures';
+
 import {
     buildSameInstanceGroups,
     readFriendRefLocation,
@@ -221,8 +223,7 @@ describe('friendsSidebarModel ordinary friend status dot', () => {
         const friend = {
             id: 'usr_friend',
             status: 'busy',
-            state: 'online',
-            location: 'wrld_friend:123'
+            $presence: onlinePresence()
         };
 
         expect(
@@ -241,9 +242,7 @@ describe('friendsSidebarModel ordinary friend status dot', () => {
         const friend = {
             id: 'usr_friend',
             status: 'join me',
-            state: 'online',
-            location: 'wrld_friend:123',
-            pendingOffline: true
+            $presence: pendingPresence()
         };
 
         expect(
