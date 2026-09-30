@@ -179,10 +179,14 @@ mod tests {
                 .state,
             "online"
         );
+        assert_eq!(output.persistence.feed_entries.len(), 1);
+        let entry = output.persistence.feed_entries[0].to_json();
+        assert_eq!(entry["type"], "Online");
+        assert_eq!(entry["location"], "wrld_2:456");
     }
 
     #[test]
-    fn refetched_friend_profile_does_not_emit_status_feed() {
+    fn refetched_offline_profile_emits_offline_without_status_feed() {
         let runtime = RealtimeFriendsRuntime::default();
         runtime.set_baseline(
             FriendRosterBaseline {
@@ -230,8 +234,11 @@ mod tests {
         };
 
         assert_eq!(output.projection.patches[0].patch.state, "offline");
-        assert!(output.persistence.feed_entries.is_empty());
-        assert!(output.projection.feed_entries.is_empty());
+        assert_eq!(output.persistence.feed_entries.len(), 1);
+        let entry = output.persistence.feed_entries[0].to_json();
+        assert_eq!(entry["type"], "Offline");
+        assert_eq!(entry["location"], "wrld_old:123");
+        assert_eq!(output.projection.feed_entries.len(), 1);
         assert_eq!(
             runtime
                 .snapshot()
@@ -245,7 +252,7 @@ mod tests {
     }
 
     #[test]
-    fn refetched_offline_profile_finalizes_pending_offline_without_status_feed() {
+    fn refetched_offline_profile_finalizes_pending_offline_with_offline_feed() {
         let runtime = RealtimeFriendsRuntime::default();
         runtime.set_baseline(
             FriendRosterBaseline {
@@ -317,7 +324,10 @@ mod tests {
         };
 
         assert_eq!(output.projection.patches[0].patch.state, "offline");
-        assert!(output.persistence.feed_entries.is_empty());
+        assert_eq!(output.persistence.feed_entries.len(), 1);
+        let entry = output.persistence.feed_entries[0].to_json();
+        assert_eq!(entry["type"], "Offline");
+        assert_eq!(entry["location"], "wrld_old:123");
         assert_eq!(
             output.projection.patches[0].patch.extra["pendingOffline"],
             false
@@ -396,6 +406,7 @@ mod tests {
         };
 
         assert_eq!(output.projection.patches[0].patch.state, "online");
+        assert!(output.persistence.feed_entries.is_empty());
         assert_eq!(
             output.projection.patches[0].patch.extra["pendingOffline"],
             false

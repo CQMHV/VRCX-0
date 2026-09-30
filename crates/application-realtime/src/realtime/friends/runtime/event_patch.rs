@@ -14,8 +14,8 @@ use crate::realtime::{
 use super::persistence::{
     add_profile_diff_feed_entries, display_name, friend_log_upsert, friend_relationship_feed_entry,
     gps_feed_entry, is_online_state, is_private_location, meaningful_name, meaningful_record_name,
-    online_feed_entry, patch_field_changed, player_joining_feed_entry, trust_level_feed_entry,
-    FriendRelationshipFeedKind, OfflineFeedPrevious,
+    patch_field_changed, player_joining_feed_entry, presence_transition_feed_entry,
+    trust_level_feed_entry, FriendRelationshipFeedKind, OfflineFeedPrevious,
 };
 use super::state::{PendingOffline, RealtimeFriendState, PENDING_OFFLINE_DELAY};
 use super::utils::{first_owned, parse_location, EventTime, JsonExt};
@@ -278,7 +278,10 @@ fn apply_update(
             .map(ToString::to_string)
             .unwrap_or_else(|| StateBucket::Offline.as_str().to_string())
     };
-    if source.trusts_embedded_state() && state.pending_offline.remove(&user_id).is_some() {
+    if source.trusts_embedded_state()
+        && StateBucket::Online.matches(&state_bucket)
+        && state.pending_offline.remove(&user_id).is_some()
+    {
         if let Some(patch_object) = patch.as_object_mut() {
             patch_object.insert("pendingOffline".into(), Value::Bool(false));
         }
@@ -364,21 +367,10 @@ fn apply_online(
         StateBucket::Online.as_str(),
         now,
     );
-    if !canceled_pending
-        && !previous_record
-            .as_ref()
-            .map(is_online_state)
-            .unwrap_or(false)
+    if let Some(previous) = previous_record
+        .as_ref()
+        .filter(|previous| canceled_pending || is_online_state(previous))
     {
-        output.persistence.feed_entries.push(online_feed_entry(
-            &user_id,
-            &patch,
-            previous_record.as_ref(),
-            &patch.text_field("location"),
-            0,
-            &now.iso,
-        ));
-    } else if let Some(previous) = previous_record.as_ref() {
         add_gps_feed_entry_if_not_repeated(
             state,
             output,
@@ -801,7 +793,7 @@ pub(super) fn apply_record_patch_to_state(
     state: &mut RealtimeFriendState,
     output: &mut RealtimeFriendOutput,
     user_id: &str,
-    patch: FriendRecordPatch,
+    mut patch: FriendRecordPatch,
     state_bucket: &str,
     state_bucket_authority: FriendStateBucketAuthority,
     created_at: &str,
@@ -811,6 +803,14 @@ pub(super) fn apply_record_patch_to_state(
         .as_ref()
         .and_then(|baseline| baseline.friends_by_id.get(user_id))
         .cloned();
+    let finalized_pending = if StateBucket::Online.matches(state_bucket) {
+        None
+    } else {
+        state.pending_offline.remove(user_id)
+    };
+    if finalized_pending.is_some() {
+        patch.set_pending_offline(false);
+    }
     let transition = apply_friend_patch(
         previous.as_ref(),
         user_id,
@@ -819,6 +819,18 @@ pub(super) fn apply_record_patch_to_state(
         state_bucket_authority,
     );
     let observed_ms = EventTime::from_received_at(created_at).timestamp_ms;
+    if let Some(entry) = previous.as_ref().and_then(|previous| {
+        presence_transition_feed_entry(
+            user_id,
+            previous,
+            &transition.next,
+            finalized_pending.as_ref().map(|pending| &pending.previous),
+            created_at,
+            observed_ms,
+        )
+    }) {
+        output.persistence.feed_entries.push(entry);
+    }
     if let Some(snapshot) =
         state
             .instance_dwell

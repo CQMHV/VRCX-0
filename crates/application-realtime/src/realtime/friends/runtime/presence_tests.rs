@@ -1238,4 +1238,78 @@ mod tests {
             .iter()
             .any(|entry| entry.to_json()["type"] == "GPS"));
     }
+
+    #[test]
+    fn trusted_offline_commit_finalizes_pending_offline_with_feed_and_clears_marker() {
+        let runtime = RealtimeFriendsRuntime::default();
+        runtime.set_baseline(
+            FriendRosterBaseline {
+                current_user_id: "usr_self".into(),
+                friends_by_id: [(
+                    "usr_friend".to_string(),
+                    FriendRecord {
+                        id: "usr_friend".into(),
+                        display_name: "Friend".into(),
+                        state: "online".into(),
+                        location: "wrld_1:123".into(),
+                        ..FriendRecord::default()
+                    },
+                )]
+                .into_iter()
+                .collect(),
+                ..FriendRosterBaseline::default()
+            },
+            1,
+            0,
+        );
+        let RealtimeFriendApplyResult::Output(offline) =
+            runtime.apply_ws_message(&RealtimeWsMessagePayload {
+                json: json!({
+                    "type": "friend-offline",
+                    "content": { "userId": "usr_friend" }
+                }),
+                raw: "{}".into(),
+                received_at: "2026-05-15T00:00:00Z".into(),
+            })
+        else {
+            panic!("friend-offline should produce an output");
+        };
+        let PendingOfflineTimerAction::Schedule { token, .. } = offline.timer_action else {
+            panic!("offline should schedule pending timer");
+        };
+
+        let RealtimeFriendApplyResult::Output(output) = runtime.apply_scoped_synthetic_event(
+            &vrcx_0_core::OwnerId::new("usr_self"),
+            "",
+            SyntheticFriendEvent::TrustedAdd {
+                user_id: "usr_friend".into(),
+                profile: json!({
+                    "id": "usr_friend",
+                    "displayName": "Friend",
+                    "state": "offline"
+                }),
+            },
+            "2026-05-15T00:00:10Z",
+        ) else {
+            panic!("trusted friend add should produce an output");
+        };
+
+        let friend = &runtime.snapshot().unwrap().friends_by_id["usr_friend"];
+        assert_eq!(friend.state, "offline");
+        assert_eq!(friend.extra.get("pendingOffline"), Some(&json!(false)));
+        let feed_types = output
+            .persistence
+            .feed_entries
+            .iter()
+            .map(|entry| entry.to_json()["type"].clone())
+            .collect::<Vec<_>>();
+        assert_eq!(feed_types, vec![json!("Offline")]);
+        assert_eq!(
+            output.persistence.feed_entries[0].to_json()["location"],
+            "wrld_1:123"
+        );
+        assert!(runtime
+            .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
+            .is_none());
+    }
 }

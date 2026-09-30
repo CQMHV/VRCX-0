@@ -3,7 +3,7 @@ mod tests {
     use super::super::*;
 
     #[test]
-    fn friend_location_with_state_change_does_not_emit_gps_feed() {
+    fn friend_location_bringing_friend_online_emits_online_instead_of_gps() {
         let runtime = RealtimeFriendsRuntime::default();
         runtime.set_baseline(
             FriendRosterBaseline {
@@ -49,8 +49,15 @@ mod tests {
 
         assert_eq!(output.projection.patches[0].patch.state, "online");
         assert_eq!(output.projection.patches[0].patch.location, "wrld_new:456");
-        assert!(output.persistence.feed_entries.is_empty());
-        assert!(output.projection.feed_entries.is_empty());
+        assert_eq!(output.persistence.feed_entries.len(), 1);
+        let entry = output.persistence.feed_entries[0].to_json();
+        assert_eq!(entry["type"], "Online");
+        assert_eq!(entry["location"], "wrld_new:456");
+        assert_eq!(output.projection.feed_entries.len(), 1);
+        assert_eq!(
+            output.projection.feed_entries[0].to_json()["type"],
+            "Online"
+        );
     }
 
     #[test]

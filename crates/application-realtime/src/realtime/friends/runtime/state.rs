@@ -23,7 +23,7 @@ use super::event_patch::{
     apply_friend_event, apply_record_patch_to_state, apply_refetched_friend_profile_event,
     apply_trusted_friend_add_event, FriendEventKind, FriendRecordPatch,
 };
-use super::persistence::{is_online_state, offline_feed_entry, OfflineFeedPrevious};
+use super::persistence::{is_online_state, presence_transition_feed_entry, OfflineFeedPrevious};
 use super::utils::EventTime;
 
 pub(super) use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY;
@@ -166,7 +166,9 @@ impl RealtimeFriendsRuntime {
         state.generation = state.generation.max(generation);
         let mut pending_to_create = Vec::new();
         let mut resolved_pending_ids = HashSet::new();
-        let mut confirmed_pending = Vec::new();
+        let confirmed_at = Utc::now();
+        let confirmed_at_iso = confirmed_at.to_rfc3339();
+        let mut confirmed_feed_entries = Vec::new();
         let friend_state_sequence_watermark = friend_state_sequence_watermark.unwrap_or(0);
         let mut stale_incoming_ids = HashSet::new();
         let mut newer_missing_records = Vec::new();
@@ -215,18 +217,12 @@ impl RealtimeFriendsRuntime {
                 if !same_generation {
                     continue;
                 }
-                if let Some(pending) = state.pending_offline.get(user_id) {
+                let pending = state.pending_offline.get(user_id);
+                if pending.is_some() {
                     resolved_pending_ids.insert(user_id.clone());
                     record
                         .extra
                         .insert("pendingOffline".into(), Value::Bool(false));
-                    if leaves_online(&record.state) {
-                        confirmed_pending.push(OfflineBaselineTransition {
-                            user_id: user_id.clone(),
-                            next: record.clone(),
-                            previous: pending.previous.clone(),
-                        });
-                    }
                 } else if StateBucket::Online.matches(&existing_record.state)
                     && leaves_online(&record.state)
                 {
@@ -240,6 +236,16 @@ impl RealtimeFriendsRuntime {
                         .extra
                         .insert("pendingOffline".into(), Value::Bool(true));
                 }
+                if let Some(entry) = presence_transition_feed_entry(
+                    user_id,
+                    existing_record,
+                    record,
+                    pending.map(|pending| &pending.previous),
+                    &confirmed_at_iso,
+                    confirmed_at.timestamp_millis(),
+                ) {
+                    confirmed_feed_entries.push(entry);
+                }
             }
         }
         for user_id in stale_incoming_ids {
@@ -248,20 +254,6 @@ impl RealtimeFriendsRuntime {
         for (user_id, record) in newer_missing_records {
             baseline.friends_by_id.insert(user_id, record);
         }
-        let confirmed_at = Utc::now();
-        let confirmed_at_iso = confirmed_at.to_rfc3339();
-        let confirmed_feed_entries = confirmed_pending
-            .into_iter()
-            .map(|transition| {
-                offline_feed_entry(
-                    &transition.user_id,
-                    &transition.next,
-                    &transition.previous,
-                    &confirmed_at_iso,
-                    confirmed_at.timestamp_millis(),
-                )
-            })
-            .collect::<Vec<_>>();
         let mut schedules = Vec::new();
         for transition in pending_to_create {
             state.timer_token = state.timer_token.saturating_add(1);
@@ -730,26 +722,26 @@ impl RealtimeFriendsRuntime {
         if pending.token != token {
             return None;
         }
-        let pending = state.pending_offline.remove(user_id)?;
+        let patch = pending.patch.clone();
+        let state_bucket = pending.state_bucket.clone();
         state.recent_gps.remove(user_id);
-        let current = state
+        let superseded = state
             .baseline
             .as_ref()
-            .and_then(|baseline| baseline.friends_by_id.get(user_id))?;
-        if is_online_state(current)
-            && !current
-                .extra
-                .get("pendingOffline")
-                .and_then(Value::as_bool)
-                .unwrap_or(false)
-        {
+            .and_then(|baseline| baseline.friends_by_id.get(user_id))
+            .is_none_or(|current| {
+                is_online_state(current)
+                    && !current
+                        .extra
+                        .get("pendingOffline")
+                        .and_then(Value::as_bool)
+                        .unwrap_or(false)
+            });
+        if superseded {
+            state.pending_offline.remove(user_id);
             return None;
         }
 
-        let mut patch = pending.patch;
-        patch.set_pending_offline(false);
-        let state_bucket = pending.state_bucket;
-        let previous = pending.previous;
         let mut output =
             RealtimeFriendOutput::new(OwnerId::new(owner_user_id), generation, baseline_revision);
         apply_record_patch_to_state(
@@ -761,17 +753,6 @@ impl RealtimeFriendsRuntime {
             FriendStateBucketAuthority::Explicit,
             &now_iso,
         );
-        let current = state
-            .baseline
-            .as_ref()
-            .and_then(|baseline| baseline.friends_by_id.get(user_id))?;
-        output.persistence.feed_entries.push(offline_feed_entry(
-            user_id,
-            current,
-            &previous,
-            &now_iso,
-            Utc::now().timestamp_millis(),
-        ));
         output.projection.feed_entries = output.persistence.feed_entries.clone();
         record_output_friend_state_sequence(&mut state, &output);
         Some(output)

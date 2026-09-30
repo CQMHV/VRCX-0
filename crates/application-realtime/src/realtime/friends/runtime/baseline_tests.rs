@@ -490,4 +490,68 @@ mod tests {
             .fire_pending_offline("usr_friend", token, "2026-05-15T00:03:00Z".into())
             .is_none());
     }
+
+    fn single_friend_baseline(state: &str, location: &str) -> FriendRosterBaseline {
+        FriendRosterBaseline {
+            current_user_id: "usr_self".into(),
+            friends_by_id: [(
+                "usr_friend".to_string(),
+                FriendRecord {
+                    id: "usr_friend".into(),
+                    display_name: "Friend".into(),
+                    state: state.into(),
+                    location: location.into(),
+                    ..FriendRecord::default()
+                },
+            )]
+            .into_iter()
+            .collect(),
+            ..FriendRosterBaseline::default()
+        }
+    }
+
+    #[test]
+    fn same_generation_baseline_emits_online_for_friend_that_came_online() {
+        for previous_state in ["offline", "active"] {
+            let runtime = RealtimeFriendsRuntime::default();
+            runtime.set_baseline(single_friend_baseline(previous_state, "offline"), 1, 0);
+
+            let effects = runtime.set_baseline_with_effects(
+                single_friend_baseline("online", "wrld_2:456"),
+                1,
+                1,
+                None,
+            );
+
+            let snapshot = runtime.snapshot().unwrap();
+            assert_eq!(snapshot.friends_by_id["usr_friend"].state, "online");
+            assert_eq!(
+                effects.confirmed_feed_entries.len(),
+                1,
+                "{previous_state} -> online"
+            );
+            let entry = effects.confirmed_feed_entries[0].to_json();
+            assert_eq!(entry["type"], "Online");
+            assert_eq!(entry["location"], "wrld_2:456");
+        }
+    }
+
+    #[test]
+    fn new_generation_baseline_does_not_emit_presence_feed() {
+        let runtime = RealtimeFriendsRuntime::default();
+        runtime.set_baseline(single_friend_baseline("offline", "offline"), 1, 0);
+
+        let effects = runtime.set_baseline_with_effects(
+            single_friend_baseline("online", "wrld_2:456"),
+            2,
+            0,
+            None,
+        );
+
+        assert_eq!(
+            runtime.snapshot().unwrap().friends_by_id["usr_friend"].state,
+            "online"
+        );
+        assert!(effects.confirmed_feed_entries.is_empty());
+    }
 }

@@ -243,16 +243,41 @@ pub(crate) fn player_joining_feed_entry(
     })
 }
 
-pub(super) fn online_feed_entry(
+pub(super) fn presence_transition_feed_entry(
     user_id: &str,
-    patch: &Value,
-    previous: Option<&FriendRecord>,
-    location: &str,
-    time: i64,
+    previous: &FriendRecord,
+    next: &FriendRecord,
+    finalized_pending: Option<&OfflineFeedPrevious>,
     created_at: &str,
-) -> FeedLiveEntry {
-    let location_names = if is_real_instance(location) {
-        resolve_location_name(location, patch, previous)
+    timestamp_ms: i64,
+) -> Option<FeedLiveEntry> {
+    match (
+        previous.resolved_state_bucket()?,
+        next.resolved_state_bucket()?,
+    ) {
+        (StateBucket::Offline | StateBucket::Active, StateBucket::Online) => {
+            Some(online_feed_entry(user_id, next, created_at))
+        }
+        (StateBucket::Online, StateBucket::Offline | StateBucket::Active) => {
+            let previous = finalized_pending
+                .cloned()
+                .unwrap_or_else(|| OfflineFeedPrevious::from_record(previous));
+            Some(offline_feed_entry(
+                user_id,
+                next,
+                &previous,
+                created_at,
+                timestamp_ms,
+            ))
+        }
+        _ => None,
+    }
+}
+
+fn online_feed_entry(user_id: &str, current: &FriendRecord, created_at: &str) -> FeedLiveEntry {
+    let location = current.location.clone();
+    let location_names = if is_real_instance(&location) {
+        resolve_record_location_name(&location, current, None)
     } else {
         ResolvedLocationNames {
             world_name: String::new(),
@@ -262,18 +287,21 @@ pub(super) fn online_feed_entry(
     FeedLiveEntry::Online {
         created_at: created_at.to_string(),
         user_id: user_id.to_string(),
-        display_name: display_name(user_id, patch, previous),
-        location: location.to_string(),
+        display_name: first_owned([
+            meaningful_record_name(current, user_id),
+            "Unknown".to_string(),
+        ]),
+        location,
         world_name: location_names.world_name,
         group_name: location_names.group_name,
-        time: feed_duration_ms(time),
+        time: None,
         world_id: None,
         display_location: None,
         owner_user_id: String::new(),
     }
 }
 
-pub(super) fn offline_feed_entry(
+fn offline_feed_entry(
     user_id: &str,
     current: &FriendRecord,
     previous: &OfflineFeedPrevious,
