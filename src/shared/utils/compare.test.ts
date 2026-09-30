@@ -127,67 +127,47 @@ describe('compareByLastActive', () => {
         expect(compareByLastActive(recent, older)).toBeLessThan(0);
     });
 
-    it('compares by $online_for when both are online', () => {
-        const longerOnline = {
-            state: 'online',
-            ref: { $online_for: '2024-01-01T00:00:00Z' }
+    it('ranks online friends by when they came online, unknown last', () => {
+        const onlineSince = (onlineSinceMs: number | null) => {
+            const $presence = { ...onlinePresence(), onlineSinceMs };
+            return { $presence, ref: { $presence } };
         };
-        const shorterOnline = {
-            state: 'online',
-            ref: { $online_for: '2024-01-02T00:00:00Z' }
-        };
-        expect(
-            compareByLastActive(longerOnline, shorterOnline)
-        ).toBeGreaterThan(0);
+        const earlier = onlineSince(1_000);
+        const later = onlineSince(2_000);
+        const unknown = onlineSince(null);
+        expect(compareByLastActive(later, earlier)).toBeLessThan(0);
+        expect(compareByLastActive(earlier, later)).toBeGreaterThan(0);
+        expect(compareByLastActive(earlier, unknown)).toBeLessThan(0);
+        expect(compareByLastActive(unknown, earlier)).toBeGreaterThan(0);
+        expect(compareByLastActive(unknown, onlineSince(null))).toBe(0);
     });
 });
 
 describe('compareByLocationAt', () => {
     it('returns 0 when both are traveling', () => {
-        const a = { $presence: travelingPresence(), $location_at: '' };
-        const b = {
-            $presence: travelingPresence(),
-            $location_at: '2024-01-01'
-        };
-        expect(compareByLocationAt(a, b)).toBe(0);
+        const a = { $presence: travelingPresence() };
+        const b = { $presence: travelingPresence() };
+        expect(compareByLocationAt(a, b, 1_000, 2_000)).toBe(0);
     });
 
     it('sorts traveling after non-traveling', () => {
-        const traveling = {
-            $presence: travelingPresence(),
-            $location_at: '2024-01-01'
-        };
-        const real = {
-            $presence: onlinePresence('wrld_abc:12345'),
-            $location_at: '2024-01-01'
-        };
+        const traveling = { $presence: travelingPresence() };
+        const real = { $presence: onlinePresence('wrld_abc:12345') };
         expect(compareByLocationAt(traveling, real)).toBeGreaterThan(0);
         expect(compareByLocationAt(real, traveling)).toBeLessThan(0);
     });
 
-    it('sorts by $location_at ascending when neither is traveling', () => {
-        const earlier = {
-            $presence: onlinePresence('wrld_abc:1'),
-            $location_at: '2024-01-01'
-        };
-        const later = {
-            $presence: onlinePresence('wrld_abc:2'),
-            $location_at: '2024-01-02'
-        };
-        expect(compareByLocationAt(earlier, later)).toBeLessThan(0);
-        expect(compareByLocationAt(later, earlier)).toBeGreaterThan(0);
+    it('sorts by the stay start ascending when neither is traveling', () => {
+        const a = { $presence: onlinePresence('wrld_abc:1') };
+        const b = { $presence: onlinePresence('wrld_abc:2') };
+        expect(compareByLocationAt(a, b, 1_000, 2_000)).toBeLessThan(0);
+        expect(compareByLocationAt(b, a, 2_000, 1_000)).toBeGreaterThan(0);
     });
 
-    it('returns 0 for equal $location_at', () => {
-        const a = {
-            $presence: onlinePresence('wrld_abc:1'),
-            $location_at: '2024-01-01'
-        };
-        const b = {
-            $presence: onlinePresence('wrld_abc:2'),
-            $location_at: '2024-01-01'
-        };
-        expect(compareByLocationAt(a, b)).toBe(0);
+    it('returns 0 for equal stay starts', () => {
+        const a = { $presence: onlinePresence('wrld_abc:1') };
+        const b = { $presence: onlinePresence('wrld_abc:2') };
+        expect(compareByLocationAt(a, b, 1_000, 1_000)).toBe(0);
     });
 });
 

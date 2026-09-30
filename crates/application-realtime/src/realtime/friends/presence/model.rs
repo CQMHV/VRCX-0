@@ -25,6 +25,7 @@ pub(crate) struct OnlineState {
     pub(crate) since_ms: i64,
     pub(crate) travel_from: Option<Stay>,
     pub(crate) platform: String,
+    pub(crate) online_since_ms: Option<i64>,
     pub(crate) live_ms: Option<i64>,
     pub(crate) hops: Vec<Hop>,
     pub(crate) flap: Option<Flap>,
@@ -63,6 +64,7 @@ impl Phase {
                 platform.clone(),
                 now_ms,
                 live,
+                live.then_some(now_ms),
             )),
             Claim::Active { platform } => Self::Active {
                 changed_ms: None,
@@ -97,12 +99,19 @@ impl Phase {
 }
 
 impl OnlineState {
-    pub(crate) fn arrive(place: Place, platform: String, now_ms: i64, live: bool) -> Self {
+    pub(crate) fn arrive(
+        place: Place,
+        platform: String,
+        now_ms: i64,
+        live: bool,
+        online_since_ms: Option<i64>,
+    ) -> Self {
         Self {
             place,
             since_ms: now_ms,
             travel_from: None,
             platform,
+            online_since_ms,
             live_ms: live.then_some(now_ms),
             hops: Vec::new(),
             flap: None,

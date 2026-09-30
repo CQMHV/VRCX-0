@@ -9,7 +9,6 @@ import { sortStatus } from './friendStatus';
 type ComparableFieldValue = string | number | undefined;
 
 type ComparableRef = Record<string, unknown> & {
-    $online_for?: ComparableFieldValue;
     last_activity?: ComparableFieldValue;
     last_login?: ComparableFieldValue;
     location?: string;
@@ -20,8 +19,6 @@ type ComparableRef = Record<string, unknown> & {
 type ComparableRecord = Record<string, unknown> & {
     $friendNumber?: number;
     $lastSeen?: ComparableFieldValue;
-    $location_at?: ComparableFieldValue;
-    $online_for?: ComparableFieldValue;
     created_at?: string;
     displayName?: string;
     id?: string;
@@ -146,16 +143,26 @@ function compareByStatus(a: ComparableRecord, b: ComparableRecord): number {
     return sortStatus(a.ref.status ?? '', b.ref.status ?? '');
 }
 
+function onlineSince(record: ComparableRecord | ComparableRef) {
+    const presence = presenceOf(record);
+    const since =
+        presence?.kind === 'online' || presence?.kind === 'pendingOffline'
+            ? presence.onlineSinceMs
+            : null;
+    return since ?? 0;
+}
+
 function compareByLastActive(a: ComparableRecord, b: ComparableRecord): number {
     if (isOnlineRecord(a) && isOnlineRecord(b)) {
-        if (
-            a.ref?.$online_for &&
-            b.ref?.$online_for &&
-            a.ref.$online_for === b.ref.$online_for
-        ) {
+        if (typeof a.ref === 'undefined' || typeof b.ref === 'undefined') {
+            return 0;
+        }
+        const aSince = onlineSince(a.ref);
+        const bSince = onlineSince(b.ref);
+        if (aSince && bSince && aSince === bSince) {
             return compareByActivityField(a, b, 'last_login');
         }
-        return compareByActivityField(a, b, '$online_for');
+        return compareActivityValues(aSince, bSince);
     }
 
     return compareByActivityField(a, b, 'last_activity');
@@ -166,10 +173,12 @@ function compareByLastActiveRef(
     b: ComparableRecord
 ): number {
     if (isOnlineRecord(a) && isOnlineRecord(b)) {
-        if (a.$online_for && b.$online_for && a.$online_for === b.$online_for) {
+        const aSince = onlineSince(a);
+        const bSince = onlineSince(b);
+        if (aSince && bSince && aSince === bSince) {
             return isLessThan(a.last_login, b.last_login) ? 1 : -1;
         }
-        return isLessThan(a.$online_for, b.$online_for) ? 1 : -1;
+        return isLessThan(aSince, bSince) ? 1 : -1;
     }
     return isLessThan(a.last_activity, b.last_activity) ? 1 : -1;
 }
@@ -186,9 +195,16 @@ function compareByActivityField(
     if (typeof a.ref === 'undefined' || typeof b.ref === 'undefined') {
         return 0;
     }
-    const aValue = activityValue(a.ref, field);
-    const bValue = activityValue(b.ref, field);
+    return compareActivityValues(
+        activityValue(a.ref, field),
+        activityValue(b.ref, field)
+    );
+}
 
+function compareActivityValues(
+    aValue: ComparableFieldValue,
+    bValue: ComparableFieldValue
+): number {
     // When the field is just and empty string, it means they've been
     // in whatever active state for the longest
     if (isLessThan(aValue, bValue) || (aValue !== '' && bValue === '')) {
@@ -200,7 +216,12 @@ function compareByActivityField(
     return 0;
 }
 
-function compareByLocationAt(a: ComparableRecord, b: ComparableRecord): number {
+function compareByLocationAt(
+    a: ComparableRecord,
+    b: ComparableRecord,
+    aStaySinceMs?: number,
+    bStaySinceMs?: number
+): number {
     const aTraveling = recordPlace(a)?.isTraveling === true;
     const bTraveling = recordPlace(b)?.isTraveling === true;
     if (aTraveling !== bTraveling) {
@@ -209,10 +230,10 @@ function compareByLocationAt(a: ComparableRecord, b: ComparableRecord): number {
     if (aTraveling) {
         return 0;
     }
-    if (isLessThan(a.$location_at, b.$location_at)) {
+    if (isLessThan(aStaySinceMs, bStaySinceMs)) {
         return -1;
     }
-    if (isGreaterThan(a.$location_at, b.$location_at)) {
+    if (isGreaterThan(aStaySinceMs, bStaySinceMs)) {
         return 1;
     }
     return 0;

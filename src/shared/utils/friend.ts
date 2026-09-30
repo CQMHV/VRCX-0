@@ -24,10 +24,14 @@ type FriendSortMethod =
 
 type FriendSortItem = ComparableRecord;
 type FriendComparator = (a: FriendSortItem, b: FriendSortItem) => number;
+type FriendStaySince = (friendId: string) => number | null | undefined;
 
 function getFriendsSortFunction(
-    sortMethods: FriendSortMethod[]
+    sortMethods: FriendSortMethod[],
+    staySince?: FriendStaySince
 ): FriendComparator {
+    const stayStart = (item: FriendSortItem) =>
+        staySince?.(String(item.id ?? '')) ?? undefined;
     const sorts: FriendComparator[] = [];
     for (const sortMethod of sortMethods) {
         switch (sortMethod) {
@@ -67,7 +71,12 @@ function getFriendsSortFunction(
                         return 0;
                     }
 
-                    return compareByLocationAt(b.ref, a.ref);
+                    return compareByLocationAt(
+                        b.ref,
+                        a.ref,
+                        stayStart(b),
+                        stayStart(a)
+                    );
                 });
                 break;
             case 'Sort by Location':
@@ -92,4 +101,4 @@ function getFriendsSortFunction(
 }
 
 export { getFriendsSortFunction, sortStatus };
-export type { FriendSortItem, FriendSortMethod };
+export type { FriendSortItem, FriendSortMethod, FriendStaySince };

@@ -14,11 +14,17 @@ export type PresencePlace = {
 };
 
 export type PresenceView =
-    | { kind: 'online'; place: PresencePlace; platform: string }
+    | {
+          kind: 'online';
+          place: PresencePlace;
+          platform: string;
+          onlineSinceMs: number | null;
+      }
     | {
           kind: 'pendingOffline';
           place: PresencePlace;
           platform: string;
+          onlineSinceMs: number | null;
           target: 'offline' | 'active';
           deadlineMs: number;
       }
@@ -200,6 +206,7 @@ export function localGamePresence(
     return {
         kind: 'online',
         place: { location, travelingTo: null },
-        platform
+        platform,
+        onlineSinceMs: null
     };
 }

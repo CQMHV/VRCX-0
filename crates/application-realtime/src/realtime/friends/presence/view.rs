@@ -46,6 +46,7 @@ pub(crate) fn presence_view(phase: &Phase) -> PresenceView {
         Phase::Online(state) => PresenceView::Online {
             place: PresencePlace::new(&state.place),
             platform: state.platform.clone(),
+            online_since_ms: state.online_since_ms,
         },
         Phase::PendingOffline {
             held,
@@ -54,6 +55,7 @@ pub(crate) fn presence_view(phase: &Phase) -> PresenceView {
         } => PresenceView::PendingOffline {
             place: PresencePlace::new(&held.place),
             platform: held.platform.clone(),
+            online_since_ms: held.online_since_ms,
             target: *target,
             deadline_ms: *deadline_ms,
         },

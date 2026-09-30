@@ -18,7 +18,13 @@ fn inst(tag: &str) -> Place {
 }
 
 fn online(place: Place, since_ms: i64) -> Phase {
-    Phase::Online(OnlineState::arrive(place, PLATFORM.into(), since_ms, true))
+    Phase::Online(OnlineState::arrive(
+        place,
+        PLATFORM.into(),
+        since_ms,
+        true,
+        Some(T),
+    ))
 }
 
 fn seen_online(place: Place) -> Claim {
@@ -98,6 +104,41 @@ fn offline_or_active_friend_coming_online_writes_online() {
             assert_eq!(step.wake_at_ms, None);
         }
     }
+}
+
+#[test]
+fn the_online_clock_starts_at_the_transition_and_survives_moves_and_pending() {
+    let online_since = |phase: &Phase| phase.online_state().and_then(|state| state.online_since_ms);
+    let came_online = reduce(
+        &Phase::offline(),
+        &ev(Source::Ws, seen_online(inst("wrld_a:1"))),
+        T,
+    )
+    .next;
+    assert_eq!(online_since(&came_online), Some(T));
+    let moved = reduce(
+        &came_online,
+        &ev(
+            Source::Ws,
+            Claim::Place {
+                place: inst("wrld_b:2"),
+            },
+        ),
+        T + 1_000,
+    )
+    .next;
+    assert_eq!(online_since(&moved), Some(T));
+    let left = reduce(&moved, &ev(Source::Ws, Claim::Offline), T + 2_000).next;
+    assert_eq!(online_since(&left), Some(T));
+    let back = reduce(
+        &left,
+        &ev(Source::Ws, seen_online(inst("wrld_b:2"))),
+        T + 3_000,
+    )
+    .next;
+    assert_eq!(online_since(&back), Some(T));
+    let rebuilt = Phase::initial(&seen_online(inst("wrld_a:1")), T, false);
+    assert_eq!(online_since(&rebuilt), None);
 }
 
 #[test]

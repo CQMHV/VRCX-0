@@ -5639,11 +5639,17 @@ export type PresencePlace = {
     travelingTo: ParsedLocation | null;
 };
 export type PresenceView =
-    | { kind: 'online'; place: PresencePlace; platform: string }
+    | {
+          kind: 'online';
+          place: PresencePlace;
+          platform: string;
+          onlineSinceMs: number | null;
+      }
     | {
           kind: 'pendingOffline';
           place: PresencePlace;
           platform: string;
+          onlineSinceMs: number | null;
           target: LeaveTarget;
           deadlineMs: number;
       }

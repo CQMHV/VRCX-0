@@ -43,6 +43,7 @@ fn observe(prev: &Phase, evidence: &Evidence, now_ms: i64) -> Phase {
                 platform.clone(),
                 now_ms,
                 !baseline,
+                Some(now_ms),
             ))
         }
         (Phase::Active { changed_ms, .. }, Claim::Active { platform }) => Phase::Active {

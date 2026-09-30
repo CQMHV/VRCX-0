@@ -11,6 +11,7 @@ import {
     positionKnownSizeRows
 } from '@/lib/knownSizeVirtualRows';
 import { buildCurrentUserPresenceView } from '@/shared/utils/currentUserPresence';
+import type { FriendStaySince } from '@/shared/utils/friend';
 import {
     checkCanInvite,
     type InviteLocationCurrentUserSnapshot,
@@ -190,6 +191,14 @@ export function useFriendsLocationsPageDerivedState({
 }: FriendsLocationsPageDerivedStateInput) {
     const { t } = useTranslation();
     const locationTimes = useFriendLocationTimeStore((state) => state.byUserId);
+    const sortsByStay = sidebarSortMethods.includes('Sort by Time in Instance');
+    const staySince = useMemo<FriendStaySince | undefined>(
+        () =>
+            sortsByStay
+                ? (friendId) => locationTimes[friendId]?.sinceMs
+                : undefined,
+        [locationTimes, sortsByStay]
+    );
     const densityConfig = useMemo(
         () => getFriendsLocationsDensityConfig(density),
         [density]
@@ -306,25 +315,28 @@ export function useFriendsLocationsPageDerivedState({
         () =>
             sortFriendsBySidebarPrefs(
                 onlineIds.map((id) => friendsById[id]).filter(isPresent),
-                sidebarSortMethods
+                sidebarSortMethods,
+                staySince
             ),
-        [friendsById, onlineIds, sidebarSortMethods]
+        [friendsById, onlineIds, sidebarSortMethods, staySince]
     );
     const activeFriends = useMemo<FriendRecord[]>(
         () =>
             sortActiveFriendsBySidebarPrefs(
                 activeIds.map((id) => friendsById[id]).filter(isPresent),
-                sidebarSortMethods
+                sidebarSortMethods,
+                staySince
             ),
-        [activeIds, friendsById, sidebarSortMethods]
+        [activeIds, friendsById, sidebarSortMethods, staySince]
     );
     const offlineFriends = useMemo<FriendRecord[]>(
         () =>
             sortFriendsBySidebarPrefs(
                 offlineIds.map((id) => friendsById[id]).filter(isPresent),
-                sidebarSortMethods
+                sidebarSortMethods,
+                staySince
             ),
-        [friendsById, offlineIds, sidebarSortMethods]
+        [friendsById, offlineIds, sidebarSortMethods, staySince]
     );
     const favoriteFriends = useMemo<FriendRecord[]>(
         () =>
@@ -403,7 +415,8 @@ export function useFriendsLocationsPageDerivedState({
         const candidates = localFriends.length
             ? sortFriendsBySidebarPrefs(
                   [...onlineFriends, ...localFriends],
-                  sidebarSortMethods
+                  sidebarSortMethods,
+                  staySince
               )
             : onlineFriends;
         const groups = buildSameInstanceGroups(
@@ -438,7 +451,8 @@ export function useFriendsLocationsPageDerivedState({
         friendsById,
         locationTimes,
         onlineFriends,
-        sidebarSortMethods
+        sidebarSortMethods,
+        staySince
     ]);
     const sameInstanceFriends = useMemo<FriendRecord[]>(
         () => sameInstanceGroups.flatMap((group) => group.friends),
@@ -600,7 +614,8 @@ export function useFriendsLocationsPageDerivedState({
                 description: '',
                 friends: sortFriendsBySidebarPrefs(
                     friendsInGroup,
-                    sidebarSortMethods
+                    sidebarSortMethods,
+                    staySince
                 ),
                 worldId: '',
                 groupId: '',
@@ -626,7 +641,8 @@ export function useFriendsLocationsPageDerivedState({
                 description: '',
                 friends: sortFriendsBySidebarPrefs(
                     friendsInGroup,
-                    sidebarSortMethods
+                    sidebarSortMethods,
+                    staySince
                 ),
                 worldId: '',
                 groupId: '',
@@ -645,7 +661,8 @@ export function useFriendsLocationsPageDerivedState({
                 description: '',
                 friends: sortFriendsBySidebarPrefs(
                     ungrouped,
-                    sidebarSortMethods
+                    sidebarSortMethods,
+                    staySince
                 ),
                 worldId: '',
                 groupId: '',
@@ -666,7 +683,8 @@ export function useFriendsLocationsPageDerivedState({
         sidebarFavoritePrefs.groupOrder,
         sidebarFavoritePrefs.isDivideByGroup,
         sidebarSortMethods,
-        t
+        t,
+        staySince
     ]);
     const visibleSections = useMemo<FriendsLocationsSection[]>(() => {
         if (favoriteGroupSections.length) {
@@ -812,7 +830,8 @@ export function useFriendsLocationsPageDerivedState({
                               favoriteIds
                           )
                       ),
-                      sidebarSortMethods
+                      sidebarSortMethods,
+                      staySince
                   )
                 : [],
         [
@@ -820,7 +839,8 @@ export function useFriendsLocationsPageDerivedState({
             favoriteIds,
             onlineFriends,
             sidebarSortMethods,
-            viewMode
+            viewMode,
+            staySince
         ]
     );
     const worldGroups = useMemo<FriendsLocationsWorldGroup[]>(() => {

@@ -364,7 +364,8 @@ describe('resolveFriendPresenceLocation with presence views', () => {
             location: parseLocation('traveling'),
             travelingTo: parseLocation('wrld_dest:2')
         },
-        platform: 'android'
+        platform: 'android',
+        onlineSinceMs: null
     };
 
     it('reads the place from the presence view instead of raw fields', () => {

@@ -96,14 +96,19 @@ impl PresencePlace {
 #[derive(Clone, Debug, PartialEq, Serialize, specta::Type)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub enum PresenceView {
+    #[serde(rename_all = "camelCase")]
     Online {
         place: PresencePlace,
         platform: String,
+        #[specta(type = Option<f64>)]
+        online_since_ms: Option<i64>,
     },
     #[serde(rename_all = "camelCase")]
     PendingOffline {
         place: PresencePlace,
         platform: String,
+        #[specta(type = Option<f64>)]
+        online_since_ms: Option<i64>,
         target: LeaveTarget,
         #[specta(type = f64)]
         deadline_ms: i64,
@@ -122,6 +127,7 @@ impl PresenceView {
         let online = || Self::Online {
             place: PresencePlace::new(&place),
             platform: platform.clone(),
+            online_since_ms: None,
         };
         match StateBucket::normalize(text("state")) {
             Some(StateBucket::Online) => online(),
@@ -190,7 +196,7 @@ mod tests {
         };
         assert!(matches!(
             view(serde_json::json!({ "state": "online", "location": "wrld_a:1", "platform": "android" })),
-            PresenceView::Online { ref place, ref platform }
+            PresenceView::Online { ref place, ref platform, online_since_ms: None }
                 if place.location.tag == "wrld_a:1" && platform == "android"
         ));
         assert_eq!(
@@ -218,11 +224,13 @@ mod tests {
         let view = PresenceView::PendingOffline {
             place: PresencePlace::new(&Place::Private),
             platform: "standalonewindows".into(),
+            online_since_ms: Some(7),
             target: LeaveTarget::Active,
             deadline_ms: 9,
         };
         let json = serde_json::to_value(view).unwrap();
         assert_eq!(json["kind"], "pendingOffline");
+        assert_eq!(json["onlineSinceMs"], 7);
         assert_eq!(json["target"], "active");
         assert_eq!(json["deadlineMs"], 9);
         assert_eq!(json["place"]["location"]["isPrivate"], true);

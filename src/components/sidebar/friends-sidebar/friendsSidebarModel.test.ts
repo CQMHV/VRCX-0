@@ -8,8 +8,38 @@ import {
     readFriendStatusSource,
     resolveCurrentUserStateBucket,
     resolveSidebarStatusDotClassName,
+    sortRows,
     toLegacyFriendSortRow
 } from './friendsSidebarModel';
+
+describe('friendsSidebarModel time in instance sorting', () => {
+    it('orders online friends by their stay clock and keeps possibly offline friends last', () => {
+        const friend = (id: string, pending = false) => ({
+            id,
+            displayName: id,
+            $presence: pending
+                ? pendingPresence('wrld_a:1')
+                : onlinePresence('wrld_a:1')
+        });
+        const staySince: Record<string, number> = {
+            usr_long: 1_000,
+            usr_short: 5_000,
+            usr_pending: 9_000
+        };
+
+        expect(
+            sortRows(
+                [
+                    friend('usr_long'),
+                    friend('usr_pending', true),
+                    friend('usr_short')
+                ],
+                { sidebarSortMethod1: 'Sort by Time in Instance' },
+                (friendId) => staySince[friendId]
+            ).map((row) => row.id)
+        ).toEqual(['usr_short', 'usr_long', 'usr_pending']);
+    });
+});
 
 describe('friendsSidebarModel same-instance groups', () => {
     it('groups one friend with the current user but not a solo friend elsewhere', () => {

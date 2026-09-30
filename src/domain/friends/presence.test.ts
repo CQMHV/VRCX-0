@@ -20,11 +20,17 @@ const place = {
     travelingTo: null
 };
 
-const online: PresenceView = { kind: 'online', place, platform: 'android' };
+const online: PresenceView = {
+    kind: 'online',
+    place,
+    platform: 'android',
+    onlineSinceMs: null
+};
 const pending: PresenceView = {
     kind: 'pendingOffline',
     place,
     platform: 'android',
+    onlineSinceMs: null,
     target: 'offline',
     deadlineMs: 5_000
 };

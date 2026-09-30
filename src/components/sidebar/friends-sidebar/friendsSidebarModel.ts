@@ -3,7 +3,8 @@ import {
     getFriendsSortFunction,
     sortStatus,
     type FriendSortItem,
-    type FriendSortMethod
+    type FriendSortMethod,
+    type FriendStaySince
 } from '@/shared/utils/friend';
 import { isRecord } from '@/shared/utils/record';
 import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
@@ -400,7 +401,8 @@ export function toLegacyFriendSortRow(
 
 export function sortRows<TRow extends SidebarFriendRecord>(
     rows: readonly TRow[],
-    prefs: SidebarPreferences
+    prefs: SidebarPreferences,
+    staySince?: FriendStaySince
 ): readonly TRow[] {
     const methods = [
         prefs.sidebarSortMethod1,
@@ -410,7 +412,7 @@ export function sortRows<TRow extends SidebarFriendRecord>(
     if (!methods.length) {
         return rows;
     }
-    const sort = getFriendsSortFunction(methods);
+    const sort = getFriendsSortFunction(methods, staySince);
     return [...rows].sort((left, right) =>
         sort(toLegacyFriendSortRow(left), toLegacyFriendSortRow(right))
     );
@@ -418,9 +420,10 @@ export function sortRows<TRow extends SidebarFriendRecord>(
 
 export function sortActiveRows<TRow extends SidebarFriendRecord>(
     rows: readonly TRow[],
-    prefs: SidebarPreferences
+    prefs: SidebarPreferences,
+    staySince?: FriendStaySince
 ): TRow[] {
-    const sortedRows = sortRows(rows, prefs);
+    const sortedRows = sortRows(rows, prefs, staySince);
     return [...sortedRows].sort(compareByActiveStatus);
 }
 
@@ -430,10 +433,15 @@ export function buildSameInstanceGroups(
     lastLocation: LastLocationSnapshot | null | undefined,
     locationTimes?: Readonly<Record<string, FriendLocationTimeEntry>>
 ) {
-    return buildSameInstanceFriendGroups(sortRows(rows, prefs), lastLocation, {
-        includeCurrentUser: true,
-        locationTimes
-    }).map(({ location, friends, isCurrentInstance }): SameInstanceGroup => ({
+    const staySince = (friendId: string) => locationTimes?.[friendId]?.sinceMs;
+    return buildSameInstanceFriendGroups(
+        sortRows(rows, prefs, staySince),
+        lastLocation,
+        {
+            includeCurrentUser: true,
+            locationTimes
+        }
+    ).map(({ location, friends, isCurrentInstance }): SameInstanceGroup => ({
         location,
         rows: friends,
         isCurrentInstance
