@@ -298,6 +298,7 @@ pub(super) fn build_roster_snapshot_from_records(
     user_id: &str,
     records_by_id: &HashMap<String, FriendRecord>,
     presence_by_id: &HashMap<String, PresenceEntry>,
+    generation: u64,
 ) -> Result<Value> {
     let mut friends_by_id = Map::new();
     for (friend_id, record) in records_by_id {
@@ -306,6 +307,7 @@ pub(super) fn build_roster_snapshot_from_records(
     let included_ids = records_by_id.keys().cloned().collect::<Vec<_>>();
     let mut snapshot = build_roster_snapshot(user_id, &included_ids, friends_by_id);
     snapshot["presenceById"] = serde_json::to_value(presence_by_id)?;
+    snapshot["generation"] = generation.into();
     Ok(snapshot)
 }
 

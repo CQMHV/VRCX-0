@@ -690,6 +690,7 @@ fn current_friend_roster_snapshot(
         "currentUserId": roster.current_user_id,
         "friendsById": serde_json::to_value(friends_by_id)?,
         "presenceById": serde_json::to_value(presence_entries(state, roster))?,
+        "generation": roster.generation,
         "orderedFriendIds": ordered_friend_ids,
         "onlineIds": online_ids,
         "activeIds": active_ids,

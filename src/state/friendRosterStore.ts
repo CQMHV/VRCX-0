@@ -6,6 +6,7 @@ import {
     FRIEND_PROFILE_STRING_FIELDS,
     type FriendLocationProjection,
     type FriendPatchEntry,
+    type FriendPresenceById,
     type FriendProfileFields,
     type FriendRecord,
     type FriendRecordInput,
@@ -392,11 +393,32 @@ const initialState: FriendRosterState = {
     detail: '',
     lastLoadedAt: null,
     friendsById: {},
+    presenceById: {},
+    presenceGeneration: null,
     orderedFriendIds: [],
     onlineIds: [],
     activeIds: [],
     offlineIds: []
 };
+
+function isStalePresence(
+    presenceById: FriendPresenceById,
+    presenceGeneration: number | null,
+    userId: string,
+    entry: FriendPatchEntry
+): boolean {
+    if (!entry.presence || entry.generation === undefined) {
+        return false;
+    }
+    if (presenceGeneration === null) {
+        return false;
+    }
+    if (entry.generation !== presenceGeneration) {
+        return entry.generation < presenceGeneration;
+    }
+    const existing = presenceById[userId];
+    return existing !== undefined && existing.rev > entry.presence.rev;
+}
 
 export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
     ...initialState,
@@ -426,6 +448,8 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
                 detail,
                 lastLoadedAt: null,
                 friendsById: {},
+                presenceById: {},
+                presenceGeneration: null,
                 orderedFriendIds: [],
                 onlineIds: [],
                 activeIds: [],
@@ -444,54 +468,64 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
     setRosterSnapshot({
         currentUserId,
         friendsById,
+        presenceById,
+        generation,
         orderedFriendIds,
         onlineIds,
         activeIds,
         offlineIds,
         detail = ''
     }: FriendRosterSnapshotInput) {
-        const normalizedCurrentUserId = normalizeUserId(currentUserId) || null;
-        const sourceFriendsById = normalizeFriendRecordMap(friendsById);
-        // Guard against an empty `[]` ordering blanking a populated roster.
-        const hasPrecomputedOrdering =
-            Array.isArray(orderedFriendIds) &&
-            Array.isArray(onlineIds) &&
-            Array.isArray(activeIds) &&
-            Array.isArray(offlineIds) &&
-            (Object.keys(sourceFriendsById).length === 0 ||
-                orderedFriendIds.length > 0);
-        if (hasPrecomputedOrdering) {
-            const normalizedFriendsById =
+        set((state) => {
+            const sourceFriendsById = normalizeFriendRecordMap(friendsById);
+            const nextFriendsById =
                 normalizeRosterSnapshotFriends(sourceFriendsById);
-            const nextState: FriendRosterState = {
-                currentUserId: normalizedCurrentUserId,
+            const nextPresenceById: FriendPresenceById = { ...presenceById };
+            let keptNewerEntries = false;
+            if (
+                generation !== undefined &&
+                generation !== null &&
+                generation === state.presenceGeneration
+            ) {
+                for (const [userId, existing] of Object.entries(
+                    state.presenceById
+                )) {
+                    const incoming = nextPresenceById[userId];
+                    const existingFriend = state.friendsById[userId];
+                    if (
+                        incoming &&
+                        existingFriend &&
+                        existing.rev > incoming.rev
+                    ) {
+                        nextFriendsById[userId] = existingFriend;
+                        nextPresenceById[userId] = existing;
+                        keptNewerEntries = true;
+                    }
+                }
+            }
+            // Guard against an empty `[]` ordering blanking a populated roster.
+            const hasPrecomputedOrdering =
+                !keptNewerEntries &&
+                Array.isArray(orderedFriendIds) &&
+                Array.isArray(onlineIds) &&
+                Array.isArray(activeIds) &&
+                Array.isArray(offlineIds) &&
+                (Object.keys(sourceFriendsById).length === 0 ||
+                    orderedFriendIds.length > 0);
+            const ordering = hasPrecomputedOrdering
+                ? { orderedFriendIds, onlineIds, activeIds, offlineIds }
+                : buildRosterOrdering(nextFriendsById);
+            return {
+                currentUserId: normalizeUserId(currentUserId) || null,
                 loadStatus: 'ready',
                 detail,
                 lastLoadedAt: new Date().toISOString(),
-                friendsById: normalizedFriendsById,
-                orderedFriendIds,
-                onlineIds,
-                activeIds,
-                offlineIds
+                friendsById: nextFriendsById,
+                presenceById: nextPresenceById,
+                presenceGeneration: generation ?? state.presenceGeneration,
+                ...ordering
             };
-            set(nextState);
-            return;
-        }
-        const normalizedFriendsById =
-            normalizeRosterSnapshotFriends(sourceFriendsById);
-        const ordering = buildRosterOrdering(normalizedFriendsById);
-        const nextState: FriendRosterState = {
-            currentUserId: normalizedCurrentUserId,
-            loadStatus: 'ready',
-            detail,
-            lastLoadedAt: new Date().toISOString(),
-            friendsById: normalizedFriendsById,
-            orderedFriendIds: ordering.orderedFriendIds,
-            onlineIds: ordering.onlineIds,
-            activeIds: ordering.activeIds,
-            offlineIds: ordering.offlineIds
-        };
-        set(nextState);
+        });
     },
     setRosterSeedSnapshot({
         currentUserId,
@@ -507,6 +541,8 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
             detail,
             lastLoadedAt: new Date().toISOString(),
             friendsById: normalizedFriendsById,
+            presenceById: {},
+            presenceGeneration: null,
             orderedFriendIds: ordering.orderedFriendIds,
             onlineIds: ordering.onlineIds,
             activeIds: ordering.activeIds,
@@ -523,61 +559,10 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
         }));
     },
     applyFriendPatch({
-        userId,
-        patch = {},
-        stateBucketAuthority,
-        detail = ''
+        detail = '',
+        ...entry
     }: FriendPatchEntry & { detail?: string }) {
-        set((state) => {
-            const normalizedUserId = normalizeUserId(userId || patch?.id);
-            if (!normalizedUserId) {
-                return state;
-            }
-
-            const existingEntry = state.friendsById[normalizedUserId] ?? null;
-            const nextStateBucket = resolveFriendStateBucket({
-                patch,
-                stateBucketAuthority,
-                existingEntry
-            });
-            const mergedUser: FriendRecordInput = {
-                ...(existingEntry ??
-                    createFallbackFriendUser(normalizedUserId, existingEntry)),
-                ...(isRecord(patch) ? patch : {}),
-                id: normalizedUserId
-            };
-            const normalizedEntry = normalizeFriendEntry(
-                mergedUser,
-                nextStateBucket,
-                existingEntry ?? {
-                    id: normalizedUserId,
-                    userId: normalizedUserId,
-                    displayName: normalizedUserId,
-                    friendNumber: 0
-                }
-            );
-            const orderingDirty = friendEntryNeedsOrderingUpdate(
-                existingEntry,
-                normalizedEntry
-            );
-            if (!orderingDirty && existingEntry === normalizedEntry) {
-                return state;
-            }
-            const friendsById: FriendRosterById = {
-                ...state.friendsById,
-                [normalizedUserId]: normalizedEntry
-            };
-            const nextState = {
-                ...state,
-                ...(orderingDirty ? buildRosterOrdering(friendsById) : {}),
-                friendsById,
-                loadStatus:
-                    state.loadStatus === 'idle' ? 'ready' : state.loadStatus,
-                detail: detail || state.detail,
-                lastLoadedAt: new Date().toISOString()
-            };
-            return nextState;
-        });
+        useFriendRosterStore.getState().applyFriendPatches([entry], detail);
     },
     applyFriendPatches(patches: FriendPatchEntry[] = [], detail = '') {
         set((state) => {
@@ -588,6 +573,8 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
             let changed = false;
             let orderingDirty = false;
             let friendsById = state.friendsById;
+            let presenceById = state.presenceById;
+            let presenceGeneration = state.presenceGeneration;
 
             for (const entry of patches) {
                 const patch: FriendRecordInput = isRecord(entry?.patch)
@@ -596,8 +583,33 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
                 const normalizedUserId = normalizeUserId(
                     entry?.userId || patch?.id
                 );
-                if (!normalizedUserId) {
+                if (
+                    !normalizedUserId ||
+                    isStalePresence(
+                        presenceById,
+                        presenceGeneration,
+                        normalizedUserId,
+                        entry
+                    )
+                ) {
                     continue;
+                }
+                if (entry.presence) {
+                    const existingPresence = presenceById[normalizedUserId];
+                    const nextPresence = replaceEqualDeep(
+                        existingPresence,
+                        entry.presence
+                    );
+                    if (nextPresence !== existingPresence) {
+                        if (presenceById === state.presenceById) {
+                            presenceById = { ...presenceById };
+                        }
+                        presenceById[normalizedUserId] = nextPresence;
+                        changed = true;
+                    }
+                    if (entry.generation !== undefined) {
+                        presenceGeneration = entry.generation;
+                    }
                 }
 
                 const existingEntry = friendsById[normalizedUserId] ?? null;
@@ -632,7 +644,7 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
                 if (!entryOrderingDirty && existingEntry === normalizedEntry) {
                     continue;
                 }
-                if (!changed) {
+                if (friendsById === state.friendsById) {
                     friendsById = { ...friendsById };
                 }
                 if (entryOrderingDirty) {
@@ -650,6 +662,8 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
                 ...state,
                 ...(orderingDirty ? buildRosterOrdering(friendsById) : {}),
                 friendsById,
+                presenceById,
+                presenceGeneration,
                 loadStatus:
                     state.loadStatus === 'idle' ? 'ready' : state.loadStatus,
                 detail: detail || state.detail,
@@ -667,11 +681,16 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
 
             const friendsById: FriendRosterById = { ...state.friendsById };
             delete friendsById[normalizedUserId];
+            const presenceById: FriendPresenceById = {
+                ...state.presenceById
+            };
+            delete presenceById[normalizedUserId];
 
             const nextState = {
                 ...state,
                 ...buildRosterOrdering(friendsById),
                 friendsById,
+                presenceById,
                 detail: detail || state.detail,
                 lastLoadedAt: new Date().toISOString()
             };

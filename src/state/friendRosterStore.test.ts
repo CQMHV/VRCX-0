@@ -1,6 +1,17 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import type { PresenceEntry } from '@/platform/tauri/bindings';
+
 import { useFriendRosterStore } from './friendRosterStore';
+
+const offline = (rev: number): PresenceEntry => ({
+    rev,
+    view: { kind: 'offline' }
+});
+const active = (rev: number): PresenceEntry => ({
+    rev,
+    view: { kind: 'active', platform: 'web' }
+});
 
 describe('friendRosterStore', () => {
     beforeEach(() => {
@@ -333,5 +344,125 @@ describe('friendRosterStore', () => {
             activeIds: ['usr_b'],
             orderedFriendIds: ['usr_b']
         });
+    });
+
+    it('keeps the newest presence revision within a generation', () => {
+        const store = useFriendRosterStore.getState();
+        store.applyFriendPatches([
+            {
+                userId: 'usr_a',
+                patch: { state: 'active' },
+                presence: active(5),
+                generation: 1
+            }
+        ]);
+        store.applyFriendPatches([
+            {
+                userId: 'usr_a',
+                patch: { state: 'offline' },
+                presence: offline(4),
+                generation: 1
+            }
+        ]);
+
+        const state = useFriendRosterStore.getState();
+        expect(state.presenceById.usr_a).toEqual(active(5));
+        expect(state.friendsById.usr_a.state).toBe('active');
+    });
+
+    it('accepts presence from a newer generation even with a lower revision', () => {
+        const store = useFriendRosterStore.getState();
+        store.applyFriendPatches([
+            {
+                userId: 'usr_a',
+                patch: { state: 'active' },
+                presence: active(9),
+                generation: 1
+            }
+        ]);
+        store.applyFriendPatches([
+            {
+                userId: 'usr_a',
+                patch: { state: 'offline' },
+                presence: offline(1),
+                generation: 2
+            }
+        ]);
+
+        const state = useFriendRosterStore.getState();
+        expect(state.presenceById.usr_a).toEqual(offline(1));
+        expect(state.presenceGeneration).toBe(2);
+    });
+
+    it('keeps newer patched friends when a same-generation snapshot is older', () => {
+        const store = useFriendRosterStore.getState();
+        store.applyFriendPatches([
+            {
+                userId: 'usr_a',
+                patch: { id: 'usr_a', state: 'active' },
+                presence: active(9),
+                generation: 2
+            }
+        ]);
+        store.setRosterSnapshot({
+            currentUserId: 'usr_self',
+            friendsById: {
+                usr_a: { id: 'usr_a', state: 'offline' },
+                usr_b: { id: 'usr_b', state: 'offline' }
+            },
+            presenceById: { usr_a: offline(3), usr_b: offline(3) },
+            generation: 2
+        });
+
+        const state = useFriendRosterStore.getState();
+        expect(state.friendsById.usr_a.state).toBe('active');
+        expect(state.presenceById.usr_a).toEqual(active(9));
+        expect(state.presenceById.usr_b).toEqual(offline(3));
+        expect(state.activeIds).toEqual(['usr_a']);
+        expect(state.offlineIds).toEqual(['usr_b']);
+    });
+
+    it('replaces presence from a snapshot of a new generation', () => {
+        const store = useFriendRosterStore.getState();
+        store.applyFriendPatches([
+            {
+                userId: 'usr_a',
+                patch: { id: 'usr_a', state: 'active' },
+                presence: active(9),
+                generation: 2
+            }
+        ]);
+        store.setRosterSnapshot({
+            currentUserId: 'usr_self',
+            friendsById: { usr_a: { id: 'usr_a', state: 'offline' } },
+            presenceById: { usr_a: offline(0) },
+            generation: 3
+        });
+
+        const state = useFriendRosterStore.getState();
+        expect(state.friendsById.usr_a.state).toBe('offline');
+        expect(state.presenceById.usr_a).toEqual(offline(0));
+        expect(state.presenceGeneration).toBe(3);
+    });
+
+    it('leaves presence untouched for local annotation patches', () => {
+        const store = useFriendRosterStore.getState();
+        store.applyFriendPatches([
+            {
+                userId: 'usr_a',
+                patch: { state: 'active' },
+                presence: active(5),
+                generation: 1
+            }
+        ]);
+        store.applyFriendPatch({
+            userId: 'usr_a',
+            patch: { memo: 'note' },
+            stateBucketAuthority: 'preserve'
+        });
+
+        const state = useFriendRosterStore.getState();
+        expect(state.presenceById.usr_a).toEqual(active(5));
+        expect(state.friendsById.usr_a.memo).toBe('note');
     });
 });

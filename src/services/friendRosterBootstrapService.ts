@@ -1,3 +1,4 @@
+import { parsePresenceById } from '@/domain/friends/presence';
 import {
     commands,
     type SocialFriendRosterBaselineOutput
@@ -151,6 +152,11 @@ async function runFriendBootstrap({
         ? {
               ...result.snapshot,
               friendsById: normalizeFriendsById(result.snapshot.friendsById),
+              presenceById: parsePresenceById(result.snapshot.presenceById),
+              generation:
+                  typeof result.snapshot.generation === 'number'
+                      ? result.snapshot.generation
+                      : null,
               orderedFriendIds: normalizeStringArray(
                   result.snapshot.orderedFriendIds
               ),
@@ -209,6 +215,8 @@ async function runFriendBootstrap({
         useFriendRosterStore.getState().setRosterSnapshot({
             currentUserId: normalizedUserId,
             friendsById: snapshot.friendsById ?? {},
+            presenceById: snapshot.presenceById,
+            generation: snapshot.generation,
             orderedFriendIds: snapshot.orderedFriendIds ?? [],
             onlineIds: snapshot.onlineIds ?? [],
             activeIds: snapshot.activeIds ?? [],

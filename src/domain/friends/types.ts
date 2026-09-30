@@ -1,6 +1,7 @@
 import type { ParsedLocation } from '@/shared/utils/location';
 
 import type { LoadStatus } from '../shared/types';
+import type { PresenceEntry } from './presence';
 
 export type FriendRosterBucket = 'online' | 'active' | 'offline';
 export type FriendStateBucketAuthority = 'explicit' | 'preserve';
@@ -104,9 +105,13 @@ type FriendRosterSnapshot = FriendRosterOrdering & {
     detail?: string;
 };
 
+export type FriendPresenceById = Record<string, PresenceEntry>;
+
 export type FriendRosterSnapshotInput = Partial<FriendRosterOrdering> & {
     currentUserId?: string | null;
     friendsById?: FriendRosterInputById | null;
+    presenceById?: FriendPresenceById | null;
+    generation?: number | null;
     detail?: string;
 };
 
@@ -119,10 +124,14 @@ export type FriendRosterSeedSnapshot = {
 export type FriendPatchEntry = {
     userId?: string;
     patch?: FriendRecordInput | null;
+    presence?: PresenceEntry;
+    generation?: number;
     stateBucketAuthority?: FriendStateBucketAuthority;
 };
 
 export type FriendRosterState = FriendRosterSnapshot & {
+    presenceById: FriendPresenceById;
+    presenceGeneration: number | null;
     loadStatus: FriendRosterLoadStatus;
     detail: string;
     lastLoadedAt: string | null;

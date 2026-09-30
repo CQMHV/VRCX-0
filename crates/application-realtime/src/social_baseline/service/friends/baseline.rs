@@ -379,6 +379,7 @@ fn replace_friend_roster_baseline_snapshot(
         &output.user_id,
         &snapshot.friends_by_id,
         &snapshot.presence_by_id,
+        snapshot.generation,
     )?));
     Ok(())
 }

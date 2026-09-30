@@ -1,3 +1,4 @@
+import { parsePresenceById } from '@/domain/friends/presence';
 import type {
     AuthenticatedRuntimePhaseSnapshot,
     RealtimeWsStatusPayload,
@@ -98,6 +99,11 @@ function applyFriendStep(snapshot: AuthenticatedRuntimePhaseSnapshot): void {
     useFriendRosterStore.getState().setRosterSnapshot({
         currentUserId: snapshot.userId,
         friendsById: normalizeFriendsById(baseline.friendsById),
+        presenceById: parsePresenceById(baseline.presenceById),
+        generation:
+            typeof baseline.generation === 'number'
+                ? baseline.generation
+                : null,
         orderedFriendIds: normalizeStringArray(baseline.orderedFriendIds),
         onlineIds: normalizeStringArray(baseline.onlineIds),
         activeIds: normalizeStringArray(baseline.activeIds),

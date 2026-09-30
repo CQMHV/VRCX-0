@@ -607,5 +607,6 @@ mod tests {
         let snapshot = runtime.roster_snapshot(&[]).unwrap().unwrap().snapshot;
         let snapshot = serde_json::to_value(&snapshot).unwrap();
         assert_eq!(snapshot["presenceById"]["usr_friend"], presence);
+        assert_eq!(snapshot["generation"], 1);
     }
 }

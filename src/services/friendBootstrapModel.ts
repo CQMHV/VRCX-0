@@ -1,9 +1,14 @@
-import type { FriendRosterInputById } from '@/domain/friends/types';
+import type {
+    FriendPresenceById,
+    FriendRosterInputById
+} from '@/domain/friends/types';
 import type { FriendLogCurrentRow } from '@/repositories/friendLogRepository';
 import { isRecord } from '@/shared/utils/record';
 
 export type FriendBootstrapSnapshot = Record<string, unknown> & {
     friendsById?: FriendRosterInputById;
+    presenceById?: FriendPresenceById;
+    generation?: number | null;
     orderedFriendIds?: string[];
     onlineIds?: string[];
     activeIds?: string[];

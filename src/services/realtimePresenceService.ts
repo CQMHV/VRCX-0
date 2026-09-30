@@ -211,6 +211,8 @@ function handleRealtimeFriendProjection(
                 patchEntry.userId || patch.id || patch.userId
             ),
             patch,
+            presence: patchEntry.presence,
+            generation: payload.generation,
             stateBucketAuthority: patchEntry.stateBucketAuthority
         };
     });
