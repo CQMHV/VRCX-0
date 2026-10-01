@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { firstNonNegativeLocationNumber } from '@/components/location/locationModel';
 import type { GroupInstanceRecord } from '@/domain/entities/group';
 import {
-    isExplicitlyOfflineFriend,
     resolveObservedPlayerUserId,
     resolveObservedPlayerUserIds,
     resolveSameInstanceFriendLocation
@@ -28,10 +27,7 @@ import {
 } from '@/services/domainIngestionService';
 import { hasUserIdPrefix } from '@/shared/constants/vrchatIds';
 import { checkCanInvite } from '@/shared/utils/invite';
-import {
-    parseLocation,
-    resolveFriendPresenceLocation
-} from '@/shared/utils/location';
+import { parseLocation } from '@/shared/utils/location';
 import { normalizeString } from '@/shared/utils/string';
 
 import {
@@ -275,8 +271,7 @@ export function useUserDialogLocationPanel({
     useEffect(() => {
         let active = true;
 
-        const activeLocation =
-            presenceLocation || resolveFriendPresenceLocation(profile);
+        const activeLocation = presenceLocation;
         const parsedLocation = parseLocation(activeLocation);
         if (
             !profile?.id ||
@@ -362,10 +357,7 @@ export function useUserDialogLocationPanel({
         }
 
         for (const friend of recordValues(friendsById)) {
-            if (
-                !userIsAtLocation(friend) ||
-                isExplicitlyOfflineFriend(friend)
-            ) {
+            if (!userIsAtLocation(friend)) {
                 continue;
             }
             const friendId = locationUserId(friend);
@@ -672,8 +664,7 @@ export function useUserDialogLocationPanel({
     ]);
 
     function refreshLocationPanel(requestLocation: string): void {
-        const activeLocation =
-            presenceLocation || resolveFriendPresenceLocation(profile);
+        const activeLocation = presenceLocation;
         if (
             requestLocation &&
             activeLocation &&

@@ -411,6 +411,28 @@ describe('friendRosterStore', () => {
         expect(state.presenceGeneration).toBe(3);
     });
 
+    it('ignores a snapshot from an older generation', () => {
+        const store = useFriendRosterStore.getState();
+        store.applyFriendPatches([
+            {
+                userId: 'usr_a',
+                patch: { id: 'usr_a' },
+                presence: active(9),
+                generation: 3
+            }
+        ]);
+        store.setRosterSnapshot({
+            currentUserId: 'usr_self',
+            friendsById: { usr_a: { id: 'usr_a' } },
+            presenceById: { usr_a: offline(0) },
+            generation: 2
+        });
+
+        const state = useFriendRosterStore.getState();
+        expect(state.presenceById.usr_a).toEqual(active(9));
+        expect(state.presenceGeneration).toBe(3);
+    });
+
     it('leaves presence untouched for local annotation patches', () => {
         const store = useFriendRosterStore.getState();
         store.applyFriendPatches([

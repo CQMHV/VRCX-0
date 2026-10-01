@@ -1,6 +1,7 @@
 use serde_json::{Map, Value};
 use vrcx_0_core::derived_keys;
 use vrcx_0_core::json::JsonExt;
+use vrcx_0_core::presence::is_offline_location_proof;
 use vrcx_0_core::text::first_owned;
 
 use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY;
@@ -21,8 +22,7 @@ use super::state::{
     RealtimeCurrentUserStateSnapshot, CURRENT_USER_REMOTE_PRESENCE_FIELDS,
 };
 use super::utils::{
-    has_remote_current_user_presence, is_offline_location, normalize_id, resolve_state_bucket,
-    EventTime,
+    has_remote_current_user_presence, normalize_id, resolve_state_bucket, EventTime,
 };
 use vrcx_0_core::OwnerId;
 
@@ -89,7 +89,7 @@ pub(super) fn apply_user_location(
             },
         );
     }
-    if is_offline_location(&patch.text_field("location"))
+    if is_offline_location_proof(&patch.text_field("location"))
         && has_remote_current_user_presence(&state.remote_snapshot)
     {
         if state.pending_offline.is_some() {
@@ -232,10 +232,9 @@ pub(super) fn insert_presence(
     snapshot_map: &mut Map<String, Value>,
 ) {
     let presence = current_user_presence(state, authority);
-    if let Ok(value) = serde_json::to_value(&presence) {
-        projection_patch.insert(derived_keys::PRESENCE.into(), value.clone());
-        snapshot_map.insert(derived_keys::PRESENCE.into(), value);
-    }
+    let value = serde_json::to_value(&presence).expect("PresenceView serializes to JSON");
+    projection_patch.insert(derived_keys::PRESENCE.into(), value.clone());
+    snapshot_map.insert(derived_keys::PRESENCE.into(), value);
     state.presence = Some(presence);
 }
 

@@ -1,6 +1,7 @@
 use vrcx_0_core::presence::{LeaveTarget, Place};
 
 use super::evidence::Claim;
+use super::reduce::FLAP_WINDOW_MS;
 
 #[derive(Clone, Debug, PartialEq)]
 pub(crate) enum Phase {
@@ -71,6 +72,16 @@ impl Phase {
                 platform: platform.clone(),
             },
             _ => Self::offline(),
+        }
+    }
+
+    pub(crate) fn wake_at(&self) -> Option<i64> {
+        match self {
+            Self::PendingOffline { deadline_ms, .. } => Some(*deadline_ms),
+            Self::Online(OnlineState {
+                flap: Some(flap), ..
+            }) => Some(flap.last_hop_ms + FLAP_WINDOW_MS),
+            _ => None,
         }
     }
 

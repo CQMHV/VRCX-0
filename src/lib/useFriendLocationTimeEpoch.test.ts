@@ -20,7 +20,7 @@ describe('resolveFriendLocationTimeEpoch', () => {
         const localEntry = { ...entry, source: 'gameLog' as const };
         expect(
             resolveFriendLocationTimeEpoch(
-                { $presence: offlinePresence },
+                offlinePresence,
                 localEntry,
                 entry.location
             )
@@ -33,7 +33,7 @@ describe('resolveFriendLocationTimeEpoch', () => {
     it('returns the backend time only for an online matching friend', () => {
         expect(
             resolveFriendLocationTimeEpoch(
-                { $presence: onlinePresence(entry.location) },
+                onlinePresence(entry.location),
                 entry,
                 'wrld_test:1'
             )
@@ -43,7 +43,7 @@ describe('resolveFriendLocationTimeEpoch', () => {
     it('rejects mismatched locations', () => {
         expect(
             resolveFriendLocationTimeEpoch(
-                { $presence: onlinePresence(entry.location) },
+                onlinePresence(entry.location),
                 entry,
                 'wrld_other:2'
             )
@@ -51,7 +51,7 @@ describe('resolveFriendLocationTimeEpoch', () => {
     });
 
     it('keeps the backend time while an offline transition is pending', () => {
-        const pendingFriend = { $presence: pendingPresence(entry.location) };
+        const pendingFriend = pendingPresence(entry.location);
 
         expect(
             resolveFriendLocationTimeEpoch(pendingFriend, entry, entry.location)
@@ -61,14 +61,14 @@ describe('resolveFriendLocationTimeEpoch', () => {
     it('rejects offline, active, and removed friends', () => {
         expect(
             resolveFriendLocationTimeEpoch(
-                { $presence: offlinePresence },
+                offlinePresence,
                 entry,
                 entry.location
             )
         ).toBe(0);
         expect(
             resolveFriendLocationTimeEpoch(
-                { $presence: activePresence() },
+                activePresence(),
                 entry,
                 entry.location
             )

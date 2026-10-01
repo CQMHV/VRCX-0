@@ -1,9 +1,11 @@
 use vrcx_0_core::presence::{LeaveTarget, Place};
 
+use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY;
+
 use super::evidence::{Claim, Evidence, Source};
 use super::model::{Flap, Hop, OnlineState, Phase, Stay};
 
-pub(crate) const PENDING_OFFLINE_DELAY_MS: i64 = 170_000;
+pub(crate) const PENDING_OFFLINE_DELAY_MS: i64 = PENDING_OFFLINE_DELAY.as_millis() as i64;
 pub(crate) const FLAP_WINDOW_MS: i64 = 180_000;
 pub(crate) const BASELINE_CONFLICT_WINDOW_MS: i64 = 300_000;
 
@@ -17,11 +19,9 @@ pub(crate) struct Step {
 pub(crate) fn reduce(prev: &Phase, evidence: &Evidence, now_ms: i64) -> Step {
     let next = match evidence.source {
         Source::Timer => wake(prev, now_ms),
-        Source::Reconnect => prev.clone(),
         _ => observe(prev, evidence, now_ms),
     };
-    let wake_at_ms = wake_at(&next)
-        .filter(|at| evidence.source == Source::Reconnect || wake_at(prev) != Some(*at));
+    let wake_at_ms = next.wake_at().filter(|at| prev.wake_at() != Some(*at));
     let refetch = evidence.refetch_hint || needs_refetch(evidence, &next);
     Step {
         next,
@@ -145,13 +145,7 @@ fn wake(prev: &Phase, now_ms: i64) -> Phase {
             held,
             target,
             deadline_ms,
-        } if now_ms >= *deadline_ms => {
-            let platform = match target {
-                LeaveTarget::Active => held.platform.clone(),
-                LeaveTarget::Offline => String::new(),
-            };
-            Phase::left(*target, platform, now_ms)
-        }
+        } if now_ms >= *deadline_ms => Phase::left(*target, held.platform.clone(), now_ms),
         Phase::Online(state)
             if state
                 .flap
@@ -161,16 +155,6 @@ fn wake(prev: &Phase, now_ms: i64) -> Phase {
             Phase::Online(settle(state))
         }
         _ => prev.clone(),
-    }
-}
-
-fn wake_at(phase: &Phase) -> Option<i64> {
-    match phase {
-        Phase::PendingOffline { deadline_ms, .. } => Some(*deadline_ms),
-        Phase::Online(OnlineState {
-            flap: Some(flap), ..
-        }) => Some(flap.last_hop_ms + FLAP_WINDOW_MS),
-        _ => None,
     }
 }
 

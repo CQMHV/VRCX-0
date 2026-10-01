@@ -62,6 +62,19 @@ impl RealtimeFriendOutput {
             icon_changes: Vec::new(),
         }
     }
+
+    pub(crate) fn with_confirmed_feed_entries(
+        owner_user_id: OwnerId,
+        mut projection: FriendProjection,
+        entries: Vec<FeedLiveEntry>,
+    ) -> Self {
+        projection
+            .feed_entries
+            .splice(0..0, entries.iter().cloned());
+        let mut output = Self::from_projection(owner_user_id, projection);
+        output.persistence.feed_entries = entries;
+        output
+    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]

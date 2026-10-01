@@ -383,7 +383,7 @@ mod tests {
 
     fn place_from_record(record: &FriendRecord, observed_ms: i64) -> FriendPlace {
         let parsed = parse_location(&record.location);
-        if !StateBucket::Online.matches(&record.state)
+        if StateBucket::normalize(&record.state) != Some(StateBucket::Online)
             || !(parsed.is_traveling || parsed.is_real_instance)
         {
             return FriendPlace::Elsewhere {

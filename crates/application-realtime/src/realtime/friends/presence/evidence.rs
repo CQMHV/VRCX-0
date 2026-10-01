@@ -9,7 +9,6 @@ pub(crate) enum Source {
     TrustedAdd,
     Baseline,
     Timer,
-    Reconnect,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -49,10 +48,6 @@ impl Evidence {
 
     pub(crate) fn wake() -> Self {
         Self::new(Source::Timer, Claim::Nothing)
-    }
-
-    pub(crate) fn reconnect() -> Self {
-        Self::new(Source::Reconnect, Claim::Nothing)
     }
 
     pub(crate) fn from_ws(event: WsPresenceEvent, content: &Value) -> Self {

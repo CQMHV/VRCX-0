@@ -33,7 +33,6 @@ type PlayerStatusSource = PlayerListRecord & {
     isCurrentUser?: boolean;
     isFavorite?: boolean;
     isFriend?: boolean;
-    location?: string;
     status?: string;
     statusDescription?: string;
 };

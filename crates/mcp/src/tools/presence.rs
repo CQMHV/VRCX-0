@@ -7,7 +7,7 @@ use rmcp::{schemars, tool, tool_router};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use vrcx_0_core::friends::FriendRecord;
-use vrcx_0_core::location::parse_location;
+use vrcx_0_core::location::{parse_location, ParsedLocation};
 use vrcx_0_core::presence::PresenceView;
 
 use crate::server::VrcxMcpServer;
@@ -45,6 +45,21 @@ impl VrcxMcpServer {
     }
 }
 
+pub(super) fn presence_location_and_platform(
+    view: &PresenceView,
+    friend: &FriendRecord,
+) -> (ParsedLocation, CompactString) {
+    let location = view
+        .place()
+        .map_or_else(|| parse_location("offline"), |place| place.location.clone());
+    let platform = if view.platform().is_empty() {
+        friend.last_platform.clone()
+    } else {
+        view.platform().into()
+    };
+    (location, platform)
+}
+
 fn build_online_friends_output(
     friends: Vec<(FriendRecord, PresenceView)>,
     input: OnlineFriendsParams,
@@ -63,9 +78,7 @@ fn build_online_friends_output(
         .into_iter()
         .filter(|(_, view)| normalized_states.contains(view.section().as_str()))
         .map(|(friend, view)| {
-            let parsed = view
-                .place()
-                .map_or_else(|| parse_location("offline"), |place| place.location.clone());
+            let (parsed, platform) = presence_location_and_platform(&view, &friend);
             let display_name = friend.display_name_or_id();
             let world_name = friend
                 .extra
@@ -84,11 +97,7 @@ fn build_online_friends_output(
                 instance_access_type: include_location
                     .then_some(normalize_access_bucket(&parsed.access_type)),
                 status: friend.status,
-                platform: if view.platform().is_empty() {
-                    friend.last_platform
-                } else {
-                    view.platform().into()
-                },
+                platform,
             }
         })
         .collect::<Vec<_>>();

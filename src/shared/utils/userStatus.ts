@@ -1,4 +1,7 @@
-import { isPresenceView, presenceStatusKey } from '@/domain/friends/presence';
+import {
+    presenceOfSelfOrRef,
+    presenceStatusKey
+} from '@/domain/friends/presence';
 
 type UserStatusSource = Record<string, unknown>;
 
@@ -51,8 +54,8 @@ function resolveUserPresenceStatus(value: unknown) {
         record.ref && typeof record.ref === 'object' ? record.ref : record
     );
     const status = record.status || source.status;
-    const presence = record.$presence ?? source.$presence;
-    return isPresenceView(presence)
+    const presence = presenceOfSelfOrRef(record);
+    return presence
         ? presenceStatusKey(presence, status)
         : normalizePresenceText(status);
 }

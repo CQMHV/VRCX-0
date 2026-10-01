@@ -83,10 +83,6 @@ impl StateBucket {
     pub fn normalize(value: &str) -> Option<Self> {
         Self::from_exact(value.trim().to_ascii_lowercase().as_str())
     }
-
-    pub fn matches(self, value: &str) -> bool {
-        value == self.as_str()
-    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, specta::Type)]
@@ -166,10 +162,6 @@ impl FriendRecord {
             .as_str()
             .into();
         Some(self)
-    }
-
-    pub fn resolved_state_bucket(&self) -> Option<StateBucket> {
-        StateBucket::normalize(self.state.as_str())
     }
 
     pub fn is_placeholder(&self) -> bool {

@@ -51,10 +51,6 @@ export function presencePlace(view: PresenceView): PresencePlace | null {
         : null;
 }
 
-export function isPendingOffline(view: PresenceView): boolean {
-    return view.kind === 'pendingOffline';
-}
-
 const PRESENCE_KINDS = new Set([
     'online',
     'pendingOffline',
@@ -74,6 +70,12 @@ export function presenceOf(value: unknown): PresenceView | null {
     return isRecord(value) && isPresenceView(value.$presence)
         ? value.$presence
         : null;
+}
+
+export function presenceOfSelfOrRef(value: unknown): PresenceView | null {
+    return (
+        presenceOf(value) ?? (isRecord(value) ? presenceOf(value.ref) : null)
+    );
 }
 
 function isPresenceEntry(value: unknown): value is PresenceEntry {

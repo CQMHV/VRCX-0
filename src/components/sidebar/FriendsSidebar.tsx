@@ -12,12 +12,8 @@ import {
 } from '@/domain/friends/presence';
 import { resolveObservedPlayerUserIds } from '@/domain/friends/sameInstanceFriends';
 import type { FriendRecord, FriendRosterById } from '@/domain/friends/types';
-import {
-    useFriendStatsById,
-    useFriendStatsHydration
-} from '@/lib/useFriendStats';
+import { useFriendSortContext } from '@/lib/useFriendStats';
 import { subscribeRecentActions } from '@/services/recentActionService';
-import type { FriendSortContext } from '@/shared/utils/friend';
 import {
     buildLocalInstanceActionGateMap,
     checkCanInvite,
@@ -159,35 +155,13 @@ export function FriendsSidebar({
     const locationTimesByUserId = useFriendLocationTimeStore(
         (state) => state.byUserId
     );
-    const sortsByStay = [
-        prefs.sidebarSortMethod1,
-        prefs.sidebarSortMethod2,
-        prefs.sidebarSortMethod3
-    ].includes('Sort by Time in Instance');
-    const sortsByLastSeen = [
-        prefs.sidebarSortMethod1,
-        prefs.sidebarSortMethod2,
-        prefs.sidebarSortMethod3
-    ].includes('Sort by Last Seen');
-    useFriendStatsHydration(sortsByLastSeen);
-    const friendStatsById = useFriendStatsById();
-    const staySinceMs = useMemo(
-        () =>
-            sortsByStay
-                ? (friendId: string) => locationTimesByUserId[friendId]?.sinceMs
-                : undefined,
-        [locationTimesByUserId, sortsByStay]
-    );
-    const lastSeen = useMemo(
-        () =>
-            sortsByLastSeen
-                ? (friendId: string) => friendStatsById[friendId]?.lastSeen
-                : undefined,
-        [friendStatsById, sortsByLastSeen]
-    );
-    const sortContext = useMemo<FriendSortContext>(
-        () => ({ staySinceMs, lastSeen }),
-        [lastSeen, staySinceMs]
+    const sortContext = useFriendSortContext(
+        [
+            prefs.sidebarSortMethod1,
+            prefs.sidebarSortMethod2,
+            prefs.sidebarSortMethod3
+        ],
+        locationTimesByUserId
     );
     const {
         favoriteFriendGroups,

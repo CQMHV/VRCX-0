@@ -16,6 +16,5 @@ pub const PROFILE_SOURCE: &str = "$profileSource";
 pub const PREVIOUS_AVATAR_SWAP_TIME: &str = "$previousAvatarSwapTime";
 pub const PLATFORM: &str = "$platform";
 pub const PRESENCE: &str = "$presence";
-pub const ONLINE_FOR: &str = "$online_for";
 pub const TIME_SPENT: &str = "$timeSpent";
 pub const TAGS: &str = "$tags";

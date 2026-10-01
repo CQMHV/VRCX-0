@@ -1,7 +1,6 @@
 import {
     presenceLiveInstanceTag,
-    presenceOf,
-    type PresenceView
+    presenceOfSelfOrRef
 } from '@/domain/friends/presence';
 import type {
     FriendProfileFields,
@@ -140,16 +139,12 @@ function resolveObservedPlayerUserIds(
     return Array.from(userIds);
 }
 
-function friendPresence(friend: unknown): PresenceView | null {
-    return presenceOf(friendPresenceSource(friend));
-}
-
 function isOnlineSameInstanceFriend(friend: unknown): boolean {
-    return friendPresence(friend)?.kind === 'online';
+    return presenceOfSelfOrRef(friend)?.kind === 'online';
 }
 
 function isExplicitlyOfflineFriend(friend: unknown): boolean {
-    const kind = friendPresence(friend)?.kind;
+    const kind = presenceOfSelfOrRef(friend)?.kind;
     return kind === 'offline' || kind === 'pendingOffline';
 }
 
@@ -157,7 +152,7 @@ function resolveSameInstanceFriendLocation(
     friend: unknown,
     lastLocation: SameInstanceLastLocation | null | undefined
 ): string {
-    const presence = friendPresence(friend);
+    const presence = presenceOfSelfOrRef(friend);
     if (!presence) {
         return '';
     }

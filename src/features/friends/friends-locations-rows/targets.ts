@@ -1,7 +1,4 @@
-import {
-    isPresenceView,
-    presenceTravelingTag
-} from '@/domain/friends/presence';
+import { presenceOf, presenceTravelingTag } from '@/domain/friends/presence';
 import {
     parseLocation,
     resolveFriendPresenceLocation
@@ -70,10 +67,8 @@ export function resolveLocationSummary(
     friend: FriendLocationFriend | null | undefined,
     t: TranslationFn | null = null
 ) {
-    const presence = sourceFromFriend(friend).$presence;
-    const travelingToLocation = isPresenceView(presence)
-        ? presenceTravelingTag(presence)
-        : '';
+    const presence = presenceOf(sourceFromFriend(friend));
+    const travelingToLocation = presence ? presenceTravelingTag(presence) : '';
     if (travelingToLocation) {
         return {
             label: resolveFriendWorldName(friend),

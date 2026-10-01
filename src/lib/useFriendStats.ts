@@ -1,7 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import type { FriendStatsById } from '@/domain/friends/friendStats';
 import { loadFriendStats } from '@/services/friendStatsService';
+import type { FriendSortContext } from '@/shared/utils/friend';
+import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
 import { useFriendRosterStore } from '@/state/friendRosterStore';
 import { useFriendStatsStore } from '@/state/friendStatsStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
@@ -58,4 +60,34 @@ export function useFriendStatsById(): FriendStatsById {
     return useFriendStatsStore((state) =>
         state.ownerUserId === currentUserId ? state.byUserId : NO_FRIEND_STATS
     );
+}
+
+export function useFriendSortContext(
+    sortMethods: readonly (string | undefined)[],
+    locationTimes: Record<string, FriendLocationTimeEntry>
+): FriendSortContext {
+    const sortsByStay = sortMethods.includes('Sort by Time in Instance');
+    const sortsByLastSeen = sortMethods.includes('Sort by Last Seen');
+    useFriendStatsHydration(sortsByLastSeen);
+    const currentUserId = useRuntimeStore((state) => state.auth.currentUserId);
+    const friendStatsById = useFriendStatsStore((state) =>
+        sortsByLastSeen && state.ownerUserId === currentUserId
+            ? state.byUserId
+            : NO_FRIEND_STATS
+    );
+    const staySinceMs = useMemo(
+        () =>
+            sortsByStay
+                ? (friendId: string) => locationTimes[friendId]?.sinceMs
+                : undefined,
+        [locationTimes, sortsByStay]
+    );
+    const lastSeen = useMemo(
+        () =>
+            sortsByLastSeen
+                ? (friendId: string) => friendStatsById[friendId]?.lastSeen
+                : undefined,
+        [friendStatsById, sortsByLastSeen]
+    );
+    return useMemo(() => ({ staySinceMs, lastSeen }), [lastSeen, staySinceMs]);
 }

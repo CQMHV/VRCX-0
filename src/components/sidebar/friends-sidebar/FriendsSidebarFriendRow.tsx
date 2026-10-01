@@ -115,7 +115,6 @@ type FriendRowAppearance = {
     randomUserColours?: boolean;
     isDarkMode?: boolean;
     trustColor?: TrustColorMap;
-    isGameRunning?: boolean | null;
     recentActionVersion?: number;
     locationMetadata?: LocationMetadata | null;
     showInstanceIdInLocation?: boolean;

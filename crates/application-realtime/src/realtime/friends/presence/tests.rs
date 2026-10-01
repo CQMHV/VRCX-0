@@ -402,15 +402,10 @@ fn timer_finalizes_pending_only_at_its_deadline() {
 }
 
 #[test]
-fn reconnect_keeps_pending_and_rearms_its_timer() {
+fn pending_wakes_at_its_deadline() {
     let prev = pending(online(inst("wrld_a:1"), T), LeaveTarget::Offline, T + 100);
-    let step = reduce(&prev, &Evidence::reconnect(), T + 20);
-    assert_eq!(step.next, prev);
-    assert_eq!(step.wake_at_ms, Some(T + 100));
-    assert_eq!(
-        reduce(&Phase::offline(), &Evidence::reconnect(), T).wake_at_ms,
-        None
-    );
+    assert_eq!(prev.wake_at(), Some(T + 100));
+    assert_eq!(Phase::offline().wake_at(), None);
 }
 
 #[test]
@@ -670,15 +665,12 @@ fn hops_older_than_the_window_do_not_count_as_flapping() {
 }
 
 #[test]
-fn reconnect_rearms_a_flap_settle_timer() {
+fn flapping_wakes_to_settle() {
     let mut phase = online(inst("wrld_a:1"), T);
     for (tag, at) in [("wrld_b:2", 1), ("wrld_a:1", 2), ("wrld_b:2", 3)] {
         phase = hop(&phase, tag, T + at).next;
     }
-    assert_eq!(
-        reduce(&phase, &Evidence::reconnect(), T + 10).wake_at_ms,
-        Some(T + 3 + FLAP_WINDOW_MS)
-    );
+    assert_eq!(phase.wake_at(), Some(T + 3 + FLAP_WINDOW_MS));
 }
 
 #[test]

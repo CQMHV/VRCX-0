@@ -8,7 +8,12 @@ export type FriendStats = {
 
 export type FriendStatsById = Record<string, FriendStats>;
 
-export type FriendUserStatsRow = {
+export type FriendMutualStats = Pick<
+    FriendStats,
+    'mutualCount' | 'mutualOptedOut'
+>;
+
+type FriendUserStatsRow = {
     userId: string;
     displayName: string;
     lastSeen: string;

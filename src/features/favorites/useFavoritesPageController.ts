@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { FavoriteKind } from '@/domain/favorites/types';
-import {
-    isPresenceView,
-    presenceLiveInstanceTag
-} from '@/domain/friends/presence';
+import { presenceOf, presenceLiveInstanceTag } from '@/domain/friends/presence';
 import { reconcilePendingFavoriteRevision } from '@/services/favoriteRevisionReconciliationService';
 import {
     buildLocalInstanceActionGateMap,
@@ -34,8 +31,8 @@ export function buildFavoriteGateTarget(item: {
     kind: FavoriteKind;
     seedData?: FavoriteSeedData | null;
 }): LocalInstanceActionGateTarget | null {
-    const presence = item.seedData?.$presence;
-    if (item.kind !== 'friend' || !isPresenceView(presence)) {
+    const presence = presenceOf(item.seedData);
+    if (item.kind !== 'friend' || !presence) {
         return null;
     }
     const location = presenceLiveInstanceTag(presence);

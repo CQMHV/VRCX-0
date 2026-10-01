@@ -218,7 +218,12 @@ impl RealtimeFriendsRuntime {
                         .into_iter()
                         .filter(|entry| !matches!(entry, FeedLiveEntry::OnPlayerJoining { .. })),
                     );
-                    if let Some(wake_at_ms) = step.wake_at_ms {
+                    let wake_at_ms = if new_generation {
+                        step.next.wake_at()
+                    } else {
+                        step.wake_at_ms
+                    };
+                    if let Some(wake_at_ms) = wake_at_ms {
                         schedules.push(FriendWake::at(&user_id, wake_at_ms, now_ms));
                     }
                     if step.refetch {
@@ -333,8 +338,9 @@ impl RealtimeFriendsRuntime {
             .entries
             .iter()
             .filter_map(|(user_id, entry)| {
-                reduce(&entry.presence, &Evidence::reconnect(), now_ms)
-                    .wake_at_ms
+                entry
+                    .presence
+                    .wake_at()
                     .map(|wake_at_ms| FriendWake::at(user_id, wake_at_ms, now_ms))
             })
             .collect();

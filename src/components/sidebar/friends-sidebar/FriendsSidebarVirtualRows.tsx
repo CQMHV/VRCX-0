@@ -32,7 +32,6 @@ type RuntimeView = {
         | null;
     currentUserId?: string | null;
     gameState: {
-        isGameRunning?: boolean | null;
         currentLocationStartedAt?: string | number | null;
     };
     instanceActionGatesByUserId: Map<string, LocalInstanceActionGates>;
@@ -161,7 +160,6 @@ function FriendVirtualRow({
                 randomUserColours: appearance.randomUserColours,
                 isDarkMode: appearance.isDarkMode,
                 trustColor: appearance.trustColor,
-                isGameRunning: runtime.gameState.isGameRunning,
                 currentLocationStartedAt:
                     runtime.gameState.currentLocationStartedAt,
                 recentActionVersion: appearance.recentActionVersion,

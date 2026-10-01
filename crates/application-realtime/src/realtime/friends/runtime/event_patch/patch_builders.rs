@@ -75,10 +75,12 @@ pub(super) fn event_user_id(content: &Value) -> Option<String> {
     (!user_id.is_empty()).then_some(user_id)
 }
 
-pub(super) fn event_user_patch(content: &Value, user_id: &str) -> Option<Value> {
-    let user = content.get("user")?.as_object()?;
-    let mut patch = user.clone();
+pub(super) fn event_user_patch(content: &Value, user_id: &str) -> Value {
+    let mut patch = content
+        .get("user")
+        .and_then(Value::as_object)
+        .cloned()
+        .unwrap_or_default();
     patch.insert("id".into(), Value::String(user_id.to_string()));
-    patch.remove("state");
-    Some(Value::Object(patch))
+    Value::Object(patch)
 }

@@ -397,6 +397,13 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
         detail = ''
     }: FriendRosterSnapshotInput) {
         set((state) => {
+            if (
+                generation != null &&
+                state.presenceGeneration != null &&
+                generation < state.presenceGeneration
+            ) {
+                return state;
+            }
             const nextPresenceById: FriendPresenceById = { ...presenceById };
             const sourceFriendsById = normalizeFriendRecordMap(friendsById);
             for (const [userId, friend] of Object.entries(sourceFriendsById)) {
@@ -510,10 +517,7 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
                 const existingEntry = friendsById[normalizedUserId] ?? null;
                 const mergedUser: FriendRecordInput = {
                     ...(existingEntry ??
-                        createFallbackFriendUser(
-                            normalizedUserId,
-                            existingEntry
-                        )),
+                        createFallbackFriendUser(normalizedUserId)),
                     ...patch,
                     id: normalizedUserId
                 };

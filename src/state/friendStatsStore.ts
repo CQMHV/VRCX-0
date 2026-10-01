@@ -2,11 +2,9 @@ import { replaceEqualDeep } from '@tanstack/react-query';
 import { create } from 'zustand';
 
 import type {
-    FriendStats,
+    FriendMutualStats,
     FriendStatsById
 } from '@/domain/friends/friendStats';
-
-type FriendMutualStats = Pick<FriendStats, 'mutualCount' | 'mutualOptedOut'>;
 
 type FriendStatsState = {
     ownerUserId: string | null;

@@ -8,7 +8,6 @@ use serde_json::Value;
 use vrcx_0_application_core::{Error, Result};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
-use vrcx_0_core::presence::PresenceEntry;
 
 use crate::realtime::friends::{baseline_presence_entry, player_joining_feed_entry};
 use crate::realtime::{
@@ -197,7 +196,10 @@ impl RealtimeHostRuntime {
                     websocket: requested_session.websocket.clone(),
                     generation: 0,
                     baseline_revision: 0,
-                    presence_by_id: baseline_presence_entries(&friends_by_id),
+                    presence_by_id: friends_by_id
+                        .iter()
+                        .map(|(user_id, record)| (user_id.clone(), baseline_presence_entry(record)))
+                        .collect(),
                     friends_by_id: friends_by_id.clone(),
                 };
                 state.friend_baseline.pending = Some(PendingFriendBaseline {
@@ -373,17 +375,14 @@ impl RealtimeHostRuntime {
         };
         drop(canonical_snapshot);
         if baseline_projection.is_some() || !confirmed_feed_entries.is_empty() {
-            let mut projection = baseline_projection.unwrap_or_else(|| {
+            let projection = baseline_projection.unwrap_or_else(|| {
                 FriendProjection::new(result.generation, result.baseline_revision)
             });
-            let mut feed_entries = confirmed_feed_entries.clone();
-            feed_entries.append(&mut projection.feed_entries);
-            projection.feed_entries = feed_entries;
-            let mut output = RealtimeFriendOutput::from_projection(
+            let output = RealtimeFriendOutput::with_confirmed_feed_entries(
                 OwnerId::new(active.session.user_id.clone()),
                 projection,
+                confirmed_feed_entries,
             );
-            output.persistence.feed_entries = confirmed_feed_entries;
             self.apply_friend_output_owned(&owner, output);
         }
         let FriendRosterReconcileOutcome {
@@ -438,16 +437,6 @@ impl RealtimeHostRuntime {
     }
 }
 
-fn baseline_presence_entries(
-    friends_by_id: &HashMap<String, FriendRecord>,
-) -> HashMap<String, PresenceEntry> {
-    let now_ms = chrono::Utc::now().timestamp_millis();
-    friends_by_id
-        .iter()
-        .map(|(user_id, record)| (user_id.clone(), baseline_presence_entry(record, now_ms)))
-        .collect()
-}
-
 fn friend_snapshot_diff_projection(
     previous: Option<&crate::realtime::RealtimeFriendSnapshot>,
     next: &crate::realtime::RealtimeFriendSnapshot,
@@ -469,17 +458,13 @@ fn friend_snapshot_diff_projection(
     let mut user_ids = next.friends_by_id.keys().cloned().collect::<Vec<_>>();
     user_ids.sort();
     for user_id in user_ids {
-        let Some(record) = next.friends_by_id.get(&user_id) else {
+        let (Some(record), Some(presence)) = (
+            next.friends_by_id.get(&user_id),
+            next.presence_by_id.get(&user_id).cloned(),
+        ) else {
             continue;
         };
         let previous_record = previous.and_then(|snapshot| snapshot.friends_by_id.get(&user_id));
-        let presence = next
-            .presence_by_id
-            .get(&user_id)
-            .cloned()
-            .unwrap_or_else(|| {
-                baseline_presence_entry(record, chrono::Utc::now().timestamp_millis())
-            });
         let previous_presence = previous.and_then(|snapshot| snapshot.presence_by_id.get(&user_id));
         let unchanged = previous_record == Some(record)
             && previous_presence.is_some_and(|previous| previous.view == presence.view);

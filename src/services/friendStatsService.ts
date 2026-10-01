@@ -1,13 +1,11 @@
 import {
     aggregateFriendUserStats,
     type FriendIdentity,
-    type FriendStats,
+    type FriendMutualStats,
     type FriendStatsById
 } from '@/domain/friends/friendStats';
 import gameLogRepository from '@/repositories/gameLogRepository';
 import mutualGraphPersistenceRepository from '@/repositories/mutualGraphPersistenceRepository';
-
-type FriendMutualStats = Pick<FriendStats, 'mutualCount' | 'mutualOptedOut'>;
 
 export async function loadFriendMutualStats(
     ownerUserId: string,

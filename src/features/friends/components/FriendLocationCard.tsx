@@ -166,8 +166,7 @@ export function FriendLocationCard({
 
     const avatarUrl = userImage(friend);
     const presence = friend.$presence;
-    const statusDotClassName =
-        presenceDotClassName(presence, friend.status) || 'hidden';
+    const statusDotClassName = presenceDotClassName(presence, friend.status);
     const canOpenUser = typeof onOpenUser === 'function';
     const canOpenWorld = typeof onOpenWorld === 'function';
     const localLocation =
@@ -194,7 +193,6 @@ export function FriendLocationCard({
     const statusLineClampClass = resolveLineClampClass(
         resolvedDensityConfig.statusLineClamp
     );
-    const showStatusDot = statusDotClassName !== 'hidden';
     const showLocationInfo =
         contentMode === 'full' &&
         displayInstanceInfo &&
@@ -229,12 +227,10 @@ export function FriendLocationCard({
                 <AvatarFallback>
                     <UserIcon aria-hidden="true" />
                 </AvatarFallback>
-                {showStatusDot ? (
-                    <UserStatusDot
-                        statusDotClassName={statusDotClassName}
-                        className="absolute -right-0.5 -bottom-0.5 z-10 size-[var(--friend-card-dot-size)]"
-                    />
-                ) : null}
+                <UserStatusDot
+                    statusDotClassName={statusDotClassName}
+                    className="absolute -right-0.5 -bottom-0.5 z-10 size-[var(--friend-card-dot-size)]"
+                />
             </Avatar>
         </UserHoverCard>
     );

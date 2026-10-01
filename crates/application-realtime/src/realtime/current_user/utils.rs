@@ -40,13 +40,6 @@ pub(super) fn first_positive(values: impl IntoIterator<Item = i64>) -> i64 {
     values.into_iter().find(|value| *value > 0).unwrap_or(0)
 }
 
-pub(super) fn is_offline_location(location: &str) -> bool {
-    matches!(
-        location.trim().to_ascii_lowercase().as_str(),
-        "offline" | "offline:offline"
-    )
-}
-
 pub(super) fn has_remote_current_user_presence(
     snapshot: &RealtimeCurrentUserStateSnapshot,
 ) -> bool {

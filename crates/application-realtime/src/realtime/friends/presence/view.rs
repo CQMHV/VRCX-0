@@ -5,12 +5,12 @@ use vrcx_0_core::presence::{Place, PresenceEntry, PresencePlace, PresenceView};
 use super::evidence::Evidence;
 use super::model::Phase;
 
-pub(crate) fn baseline_presence_entry(record: &FriendRecord, now_ms: i64) -> PresenceEntry {
+pub(crate) fn baseline_presence_entry(record: &FriendRecord) -> PresenceEntry {
     PresenceEntry {
         rev: 0,
         view: presence_view(&Phase::initial(
             &Evidence::from_baseline(record).claim,
-            now_ms,
+            0,
             false,
         )),
     }

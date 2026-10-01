@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use serde_json::{json, Value};
 use vrcx_0_application_core::FriendProjectionPatch;
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
@@ -26,14 +24,10 @@ use super::presence_keys::strip_presence_keys;
 use super::state::{FriendEntry, RealtimeFriendState};
 use super::utils::{first_owned, EventTime, JsonExt};
 
-mod event_split;
 mod patch_builders;
 mod record_transition;
 
-use event_split::{profile_patch, EventSource};
-#[cfg(test)]
-use patch_builders::event_user_patch;
-use patch_builders::{event_user_id, normalize_patch_trust};
+use patch_builders::{event_user_id, event_user_patch, normalize_patch_trust};
 pub(super) use record_transition::{merge_profile, record_string};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -72,7 +66,7 @@ pub(super) fn apply_friend_event(
     content: &Value,
     now: &EventTime,
 ) -> Option<RealtimeFriendOutput> {
-    apply_friend_event_with_source(state, event_kind, content, now, EventSource::Websocket)
+    apply_friend_event_with_source(state, event_kind, content, now, Source::Ws)
 }
 
 pub(super) fn apply_refetched_friend_profile_event(
@@ -80,13 +74,7 @@ pub(super) fn apply_refetched_friend_profile_event(
     content: &Value,
     now: &EventTime,
 ) -> Option<RealtimeFriendOutput> {
-    apply_friend_event_with_source(
-        state,
-        FriendEventKind::Update,
-        content,
-        now,
-        EventSource::ApiProfile,
-    )
+    apply_friend_event_with_source(state, FriendEventKind::Update, content, now, Source::Api)
 }
 
 pub(super) fn apply_trusted_friend_add_event(
@@ -99,7 +87,7 @@ pub(super) fn apply_trusted_friend_add_event(
         FriendEventKind::Add,
         content,
         now,
-        EventSource::TrustedFriendAdd,
+        Source::TrustedAdd,
     )
 }
 
@@ -126,7 +114,9 @@ pub(super) fn apply_presence_evidence(
             &now.iso,
         ),
     );
-    arm_wake(&mut output, user_id, step.wake_at_ms, now);
+    if let Some(wake_at_ms) = step.wake_at_ms {
+        output.wake = Some(FriendWake::at(user_id, wake_at_ms, now.timestamp_ms));
+    }
     commit(
         state,
         &mut output,
@@ -144,7 +134,7 @@ fn apply_friend_event_with_source(
     event_kind: FriendEventKind,
     content: &Value,
     now: &EventTime,
-    source: EventSource,
+    source: Source,
 ) -> Option<RealtimeFriendOutput> {
     let mut output = new_output(state)?;
     match event_kind {
@@ -170,11 +160,10 @@ fn finish(mut output: RealtimeFriendOutput) -> RealtimeFriendOutput {
     output
 }
 
-fn evidence_for(event_kind: FriendEventKind, content: &Value, source: EventSource) -> Evidence {
+fn evidence_for(event_kind: FriendEventKind, content: &Value, source: Source) -> Evidence {
     let user = content.get("user").unwrap_or(&Value::Null);
     match (event_kind, source) {
-        (_, EventSource::ApiProfile) => Evidence::from_profile(Source::Api, user),
-        (_, EventSource::TrustedFriendAdd) => Evidence::from_profile(Source::TrustedAdd, user),
+        (_, Source::Api | Source::TrustedAdd) => Evidence::from_profile(source, user),
         (FriendEventKind::Online, _) => Evidence::from_ws(WsPresenceEvent::Online, content),
         (FriendEventKind::Active, _) => Evidence::from_ws(WsPresenceEvent::Active, content),
         (FriendEventKind::Offline, _) => Evidence::from_ws(WsPresenceEvent::Offline, content),
@@ -192,15 +181,15 @@ fn apply_change(
     event_kind: FriendEventKind,
     content: &Value,
     now: &EventTime,
-    source: EventSource,
+    source: Source,
 ) -> Option<()> {
     let user_id = event_user_id(content)?;
-    let mut patch = profile_patch(content, &user_id);
+    let mut patch = event_user_patch(content, &user_id);
     strip_presence_keys(&mut patch);
     let evidence = evidence_for(event_kind, content, source);
     let previous = state.entry(&user_id).cloned();
     if event_kind == FriendEventKind::Update
-        && source == EventSource::Websocket
+        && source == Source::Ws
         && evidence.claim == Claim::Nothing
         && patch.as_object().map_or(0, |object| object.len()) <= 1
     {
@@ -236,9 +225,9 @@ fn apply_change(
         }
         return None;
     }
-    record_profile_identity_change(output, &user_id, &patch, &previous.record, &step.next, now);
+    record_profile_identity_change(output, &user_id, &patch, &previous.record, now);
     push_feed(output, feeds);
-    if event_kind == FriendEventKind::Update && source == EventSource::Websocket {
+    if event_kind == FriendEventKind::Update && source == Source::Ws {
         add_profile_diff_feed_entries(
             output,
             &user_id,
@@ -251,7 +240,9 @@ fn apply_change(
             output.icon_changes.push(change);
         }
     }
-    arm_wake(output, &user_id, step.wake_at_ms, now);
+    if let Some(wake_at_ms) = step.wake_at_ms {
+        output.wake = Some(FriendWake::at(&user_id, wake_at_ms, now.timestamp_ms));
+    }
     if step.refetch {
         push_profile_refetch_user_id(output, &user_id);
     }
@@ -284,13 +275,7 @@ fn create_entry(
         output
             .persistence
             .friend_log_upserts
-            .push(friend_log_upsert(
-                user_id,
-                patch,
-                None,
-                section_bucket(&presence),
-                &now.iso,
-            ));
+            .push(friend_log_upsert(user_id, patch, None, &now.iso));
         output
             .persistence
             .feed_entries
@@ -365,21 +350,6 @@ fn push_feed(output: &mut RealtimeFriendOutput, entries: Vec<FeedLiveEntry>) {
     }
 }
 
-fn arm_wake(
-    output: &mut RealtimeFriendOutput,
-    user_id: &str,
-    wake_at_ms: Option<i64>,
-    now: &EventTime,
-) {
-    if let Some(wake_at_ms) = wake_at_ms {
-        let delay_ms = u64::try_from(wake_at_ms - now.timestamp_ms).unwrap_or(0);
-        output.wake = Some(FriendWake {
-            user_id: user_id.to_string(),
-            delay: Duration::from_millis(delay_ms),
-        });
-    }
-}
-
 fn commit(
     state: &mut RealtimeFriendState,
     output: &mut RealtimeFriendOutput,
@@ -406,14 +376,6 @@ fn commit(
         .is_some_and(|roster| roster.entries.insert(user_id.to_string(), entry).is_none());
     if added {
         state.invalidate_friend_user_ids_snapshot();
-    }
-}
-
-pub(super) fn section_bucket(phase: &Phase) -> &'static str {
-    match phase {
-        Phase::Online(_) | Phase::PendingOffline { .. } => "online",
-        Phase::Active { .. } => "active",
-        Phase::Offline { .. } => "offline",
     }
 }
 
@@ -454,7 +416,6 @@ fn record_profile_identity_change(
     user_id: &str,
     patch: &Value,
     previous: &FriendRecord,
-    next: &Phase,
     now: &EventTime,
 ) {
     let next_name = meaningful_name(patch, user_id);
@@ -470,13 +431,7 @@ fn record_profile_identity_change(
     if !name_changed && !trust_differs {
         return;
     }
-    let upsert = friend_log_upsert(
-        user_id,
-        patch,
-        Some(previous),
-        section_bucket(next),
-        &now.iso,
-    );
+    let upsert = friend_log_upsert(user_id, patch, Some(previous), &now.iso);
     if trust_changed {
         output.persistence.feed_entries.push(trust_level_feed_entry(
             &now.iso,
@@ -489,27 +444,4 @@ fn record_profile_identity_change(
     }
     output.persistence.friend_log_upserts.push(upsert);
     output.projection.friend_log_changed = true;
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use serde_json::json;
-
-    #[test]
-    fn event_user_patch_strips_embedded_state() {
-        let content = json!({
-            "userId": "usr_friend",
-            "user": {
-                "id": "usr_friend",
-                "displayName": "Friend",
-                "state": "online"
-            }
-        });
-
-        let patch = event_user_patch(&content, "usr_friend").expect("user patch");
-        assert_eq!(patch["id"], json!("usr_friend"));
-        assert_eq!(patch["displayName"], json!("Friend"));
-        assert!(patch.get("state").is_none());
-    }
 }

@@ -99,10 +99,7 @@ impl ScopedFriendLogMutation {
                     .patches
                     .push(crate::realtime::FriendProjectionPatch {
                         user_id,
-                        presence: baseline_presence_entry(
-                            &record,
-                            chrono::Utc::now().timestamp_millis(),
-                        ),
+                        presence: baseline_presence_entry(&record),
                         patch: record,
                     });
             }

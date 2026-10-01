@@ -10,11 +10,7 @@ import {
     getVisibleKnownSizeRows,
     positionKnownSizeRows
 } from '@/lib/knownSizeVirtualRows';
-import {
-    useFriendStatsById,
-    useFriendStatsHydration
-} from '@/lib/useFriendStats';
-import type { FriendSortContext } from '@/shared/utils/friend';
+import { useFriendSortContext } from '@/lib/useFriendStats';
 import {
     checkCanInvite,
     type InviteLocationCurrentUserSnapshot,
@@ -193,28 +189,7 @@ export function useFriendsLocationsPageDerivedState({
 }: FriendsLocationsPageDerivedStateInput) {
     const { t } = useTranslation();
     const locationTimes = useFriendLocationTimeStore((state) => state.byUserId);
-    const sortsByStay = sidebarSortMethods.includes('Sort by Time in Instance');
-    const sortsByLastSeen = sidebarSortMethods.includes('Sort by Last Seen');
-    useFriendStatsHydration(sortsByLastSeen);
-    const friendStatsById = useFriendStatsById();
-    const staySinceMs = useMemo(
-        () =>
-            sortsByStay
-                ? (friendId: string) => locationTimes[friendId]?.sinceMs
-                : undefined,
-        [locationTimes, sortsByStay]
-    );
-    const lastSeen = useMemo(
-        () =>
-            sortsByLastSeen
-                ? (friendId: string) => friendStatsById[friendId]?.lastSeen
-                : undefined,
-        [friendStatsById, sortsByLastSeen]
-    );
-    const sortContext = useMemo<FriendSortContext>(
-        () => ({ staySinceMs, lastSeen }),
-        [lastSeen, staySinceMs]
-    );
+    const sortContext = useFriendSortContext(sidebarSortMethods, locationTimes);
     const densityConfig = useMemo(
         () => getFriendsLocationsDensityConfig(density),
         [density]
@@ -383,20 +358,20 @@ export function useFriendsLocationsPageDerivedState({
         ) {
             return null;
         }
-        const profile = currentUserSnapshot;
-        const tags = Array.isArray(profile.tags)
-            ? profile.tags.filter(
+        const tags = Array.isArray(currentUserSnapshot.tags)
+            ? currentUserSnapshot.tags.filter(
                   (tag): tag is string => typeof tag === 'string'
               )
             : [];
         const trust = computeTrustLevel(
             tags,
-            normalizeId(profile.developerType)
+            normalizeId(currentUserSnapshot.developerType)
         );
         return {
-            ...profile,
+            ...currentUserSnapshot,
             id: currentUserId,
-            displayName: normalizeId(profile.displayName) || currentUserId,
+            displayName:
+                normalizeId(currentUserSnapshot.displayName) || currentUserId,
             tags,
             $presence: presence,
             $friendNumber: 0,
@@ -406,7 +381,9 @@ export function useFriendsLocationsPageDerivedState({
             $isModerator: trust.isModerator,
             $isTroll: trust.isTroll,
             $isProbableTroll: trust.isProbableTroll,
-            $platform: computeUserPlatform(normalizeId(profile.last_platform))
+            $platform: computeUserPlatform(
+                normalizeId(currentUserSnapshot.last_platform)
+            )
         };
     }, [currentUserId, currentUserSnapshot]);
     const sameInstanceGroups = useMemo<

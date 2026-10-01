@@ -185,7 +185,7 @@ fn resolve_field(raw: &str) -> Option<&'static str> {
     }
 }
 
-pub fn normalize_fact_text(value: &Value) -> String {
+fn normalize_fact_text(value: &Value) -> String {
     match value {
         Value::String(text) => text.trim().to_string(),
         Value::Null => String::new(),
@@ -380,10 +380,6 @@ pub fn merge_user_fact_owned(
     }
 
     UserFactMergeResult { fact, changed }
-}
-
-pub fn number_value(value: i64) -> Value {
-    Value::Number(Number::from(value))
 }
 
 #[cfg(test)]

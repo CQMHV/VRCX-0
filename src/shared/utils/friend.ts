@@ -67,16 +67,13 @@ function getFriendsSortFunction(
                     ) {
                         return 0;
                     }
-                    const aPending = presenceOf(a)?.kind === 'pendingOffline';
-                    const bPending = presenceOf(b)?.kind === 'pendingOffline';
-                    if (aPending !== bPending) {
+                    const aKind = presenceOf(a)?.kind;
+                    const bKind = presenceOf(b)?.kind;
+                    const aPending = aKind === 'pendingOffline';
+                    if (aPending !== (bKind === 'pendingOffline')) {
                         return aPending ? 1 : -1;
                     }
-                    if (
-                        aPending ||
-                        presenceOf(a)?.kind !== 'online' ||
-                        presenceOf(b)?.kind !== 'online'
-                    ) {
+                    if (aKind !== 'online' || bKind !== 'online') {
                         return 0;
                     }
 

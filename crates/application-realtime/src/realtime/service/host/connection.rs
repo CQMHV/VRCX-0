@@ -273,14 +273,11 @@ impl RealtimeHostRuntime {
             .unwrap_or(0);
         pending_projection.generation = generation;
         pending_projection.baseline_revision = baseline_revision;
-        pending_projection
-            .feed_entries
-            .splice(0..0, start_feed_entries.iter().cloned());
-        let mut start_output = RealtimeFriendOutput::from_projection(
+        let start_output = RealtimeFriendOutput::with_confirmed_feed_entries(
             OwnerId::new(session.user_id.clone()),
             pending_projection,
+            start_feed_entries,
         );
-        start_output.persistence.feed_entries = start_feed_entries;
         self.apply_friend_output_owned(&friend_owner, start_output);
         self.apply_reconciled_friend_feed_entries_owned(
             &friend_owner,

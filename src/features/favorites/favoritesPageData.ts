@@ -228,7 +228,7 @@ function buildFriendFavoriteItem({
         : knownUser || null;
     const presence = profile?.$presence ?? null;
     const status = presence ? presenceSection(presence) : 'offline';
-    const location = resolveFavoritePresenceLocation(profile);
+    const location = resolveFriendPresenceLocation(profile);
 
     return {
         key: `${source}:${groupKey}:${normalizedId}`,
@@ -254,10 +254,6 @@ function buildFriendFavoriteItem({
         seedData: favoriteSeedData(profile),
         orderIndex: favoritesSortIndex?.[normalizedId] ?? index
     };
-}
-
-export function resolveFavoritePresenceLocation(profile: unknown) {
-    return resolveFriendPresenceLocation(profile);
 }
 
 export function getFavoritesPageConfig(kind: FavoriteKind, t: unknown) {

@@ -1,4 +1,7 @@
-import { isPresenceView, presenceLocationTag } from '@/domain/friends/presence';
+import {
+    presenceLocationTag,
+    presenceOfSelfOrRef
+} from '@/domain/friends/presence';
 
 import { normalizeString } from './string';
 
@@ -579,11 +582,8 @@ function resolveFriendPresenceLocation(
     friend: unknown,
     options: ResolveFriendPresenceOptions = {}
 ): string {
-    const direct = getObject(friend);
-    const presence = direct?.$presence ?? getObject(direct?.ref)?.$presence;
-    return isPresenceView(presence)
-        ? presenceLocationTag(presence, options)
-        : '';
+    const presence = presenceOfSelfOrRef(friend);
+    return presence ? presenceLocationTag(presence, options) : '';
 }
 
 export { isLastLocationFriend, resolveFriendPresenceLocation };

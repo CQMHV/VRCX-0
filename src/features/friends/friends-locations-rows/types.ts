@@ -12,11 +12,9 @@ export type TranslationFn = (
 ) => string;
 
 export type FriendLocationRecord = FriendRecordInput &
-    Omit<Partial<FriendProfileFields>, '$location' | '$travelingToLocation'> & {
+    Partial<FriendProfileFields> & {
         $groupName?: string | null;
         $location?: FriendLocationRecord | null;
-        $travelingToLocation?: FriendLocationRecord | string | null;
-        $travelingToWorld?: string | null;
         group?: FriendLocationRecord | null;
         groupName?: string | null;
         instanceId?: string | null;
@@ -29,7 +27,6 @@ export type FriendLocationRecord = FriendRecordInput &
         ref?: FriendLocationRecord | null;
         shortCode?: string | null;
         tag?: string | null;
-        travelingToWorld?: string | null;
         world?: FriendLocationRecord | null;
         worldId?: string | null;
         worldName?: string | null;

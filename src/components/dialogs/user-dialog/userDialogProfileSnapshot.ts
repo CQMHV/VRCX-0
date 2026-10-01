@@ -32,24 +32,10 @@ type MergeUserDialogLocalSnapshotInput = {
 const SNAPSHOT_DEFAULT_FIELDS = [
     '$location',
     '$location_at',
-    '$online_for',
-    '$travelingToTime',
-    '$active_for'
+    '$travelingToTime'
 ];
 
-const FRIEND_PRESENCE_OVERRIDE_FIELDS = [
-    '$presence',
-    'state',
-    'stateBucket',
-    'location',
-    'status',
-    'travelingToLocation',
-    'travelingToTime',
-    '$travelingToTime',
-    '$location_at',
-    'locationAt',
-    'pendingOffline'
-];
+const FRIEND_PRESENCE_OVERRIDE_FIELDS = ['$presence', 'status'];
 
 const ACTIVITY_TIMESTAMP_FIELDS = ['last_activity', 'last_login'];
 

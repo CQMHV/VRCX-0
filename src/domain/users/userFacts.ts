@@ -7,8 +7,7 @@ type UserFactSource =
     | 'friend'
     | 'profile'
     | 'realtime'
-    | 'currentUser'
-    | 'gameRuntime';
+    | 'currentUser';
 
 interface UserFactMergeOptions {
     endpoint?: string;

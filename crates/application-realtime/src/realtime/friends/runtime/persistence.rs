@@ -54,7 +54,6 @@ pub(super) fn friend_log_upsert(
     user_id: &str,
     patch: &Value,
     previous: Option<&FriendRecord>,
-    _state_bucket: &str,
     created_at: &str,
 ) -> FriendLogUpsert {
     FriendLogUpsert {
@@ -152,10 +151,7 @@ pub(crate) fn player_joining_feed_entry(
         .and_then(PresenceView::place)
         .is_some_and(|place| place.location.is_traveling);
     let place = current.place()?;
-    let destination = place
-        .traveling_to
-        .as_ref()
-        .filter(|destination| place.location.is_traveling && !destination.tag.trim().is_empty())?;
+    let destination = place.traveling_to.as_ref()?;
     if was_traveling {
         return None;
     }

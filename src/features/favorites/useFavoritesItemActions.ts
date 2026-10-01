@@ -18,11 +18,13 @@ import {
 import { selfInviteToInstance } from '@/services/launchService';
 import { toast } from '@/services/toastService';
 import { checkCanInviteSelf } from '@/shared/utils/invite';
-import { parseLocation } from '@/shared/utils/location';
+import {
+    parseLocation,
+    resolveFriendPresenceLocation
+} from '@/shared/utils/location';
 import { useModalStore } from '@/state/modalStore';
 
 import { normalizeFavoriteEntityId as normalizeEntityId } from './favoritesItems';
-import { resolveFavoritePresenceLocation } from './favoritesPageData';
 import type {
     FavoriteGroupView,
     FavoriteItem,
@@ -158,7 +160,7 @@ export function useFavoritesItemActions({
 
     async function launchFavoriteFriendLocation(item: FavoriteItem) {
         const friend = getFavoriteFriend(item);
-        const location = resolveFavoritePresenceLocation(friend);
+        const location = resolveFriendPresenceLocation(friend);
         const parsedLocation = parseLocation(location);
         if (
             !parsedLocation.isRealInstance ||
@@ -198,7 +200,7 @@ export function useFavoritesItemActions({
 
     async function selfInviteFavoriteFriendLocation(item: FavoriteItem) {
         const friend = getFavoriteFriend(item);
-        const location = resolveFavoritePresenceLocation(friend);
+        const location = resolveFriendPresenceLocation(friend);
         const parsedLocation = parseLocation(location);
         if (
             !parsedLocation.isRealInstance ||

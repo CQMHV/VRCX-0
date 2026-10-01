@@ -7,7 +7,6 @@ import {
 import { parseLocation } from '@/shared/utils/location';
 
 import {
-    isPendingOffline,
     parsePresenceById,
     presenceDotClassName,
     presencePlace,
@@ -44,8 +43,6 @@ describe('presence', () => {
         );
         expect(presenceSection({ kind: 'offline' })).toBe('offline');
 
-        expect(isPendingOffline(pending)).toBe(true);
-        expect(isPendingOffline(online)).toBe(false);
         expect(presencePlace(pending)).toBe(place);
         expect(presencePlace({ kind: 'offline' })).toBeNull();
     });

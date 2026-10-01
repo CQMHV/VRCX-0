@@ -23,7 +23,6 @@ import { computeTrustLevel } from '@/shared/utils/userTransforms';
 export type SidebarFriendRecord = FriendRecordInput &
     Partial<FriendProfileFields> & {
         $friendNumber?: number;
-        $online_for?: string | number;
         $userColour?: string;
         created_at?: string;
         developerType?: string;
@@ -36,10 +35,7 @@ export type SidebarFriendRecord = FriendRecordInput &
         tags?: string[];
         updated_at?: string;
         username?: string;
-        activeFriends?: string[];
         isFriend?: boolean;
-        offlineFriends?: string[];
-        onlineFriends?: string[];
         ref?: SidebarFriendRecord | null;
     };
 

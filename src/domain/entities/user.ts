@@ -167,7 +167,6 @@ export type UserProfileEntity = EntityRecord & {
     $isVRCPlus?: boolean;
     $languages?: string[];
     $moderations?: EntityRecord;
-    $offline_for?: number | null;
     $platform?: string;
     $previousLocation?: string;
     $profileSource?: string;

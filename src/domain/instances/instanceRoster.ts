@@ -24,8 +24,7 @@ const INSTANCE_USER_PRESENCE_FIELDS = [
     'state',
     'stateBucket',
     'status',
-    'statusDescription',
-    'pendingOffline'
+    'statusDescription'
 ];
 
 interface BuildInstanceRosterRowsInput {
