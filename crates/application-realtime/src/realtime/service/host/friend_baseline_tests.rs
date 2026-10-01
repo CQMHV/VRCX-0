@@ -84,7 +84,7 @@ fn sync_friend_snapshot_debounces_online_to_offline() -> Result<()> {
 }
 
 #[test]
-fn sync_friend_snapshot_persists_feed_when_refresh_confirms_pending_offline() -> Result<()> {
+fn sync_friend_snapshot_keeps_a_pending_offline_until_its_deadline() -> Result<()> {
     let (_dir, runtime, active_session) =
         runtime_with_active_session("baseline-confirmed-offline-feed")?;
     let mut initial_friends = HashMap::new();
@@ -152,19 +152,30 @@ fn sync_friend_snapshot_persists_feed_when_refresh_confirms_pending_offline() ->
     let projection = events
         .iter()
         .find(|event| event.name == "realtimeFriendProjection")
-        .expect("confirmed offline refresh should emit a friend projection");
+        .expect("the refresh should emit a friend projection");
     assert_eq!(
         projection.payload["patches"][0]["presence"]["view"]["kind"],
-        "offline"
+        "pendingOffline"
     );
     assert_eq!(
         projection.payload["patches"][0]["record"]["displayName"],
         "Friend Fresh Name"
     );
+    assert!(events
+        .iter()
+        .all(|event| event.name != "realtimeFeedProjection"));
+
+    let fired = runtime
+        .runtime()
+        .friends
+        .wake("usr_friend", "2026-05-15T00:03:00Z")
+        .expect("the pending offline finalizes at its deadline");
+    runtime.runtime().apply_friend_output(fired);
+    let events = runtime.runtime().deps.event_bus.take_events_for_test();
     let feed_projection = events
         .iter()
         .find(|event| event.name == "realtimeFeedProjection")
-        .expect("confirmed offline refresh should emit a Feed projection");
+        .expect("the deadline should emit the Offline Feed projection");
     assert_eq!(
         feed_projection.payload["upserts"].as_array().unwrap().len(),
         1

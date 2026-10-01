@@ -114,15 +114,10 @@ fn observe(prev: &Phase, evidence: &Evidence, now_ms: i64) -> Phase {
             target: *target,
             deadline_ms: *deadline_ms,
         },
-        (Phase::PendingOffline { .. }, Claim::NotInGame) => prev.clone(),
-        (Phase::PendingOffline { .. }, Claim::Active { platform }) => match evidence.source {
-            Source::Ws => prev.clone(),
-            _ => Phase::left(LeaveTarget::Active, platform.clone(), now_ms),
-        },
-        (Phase::PendingOffline { .. }, Claim::Offline) => match evidence.source {
-            Source::Ws => prev.clone(),
-            _ => Phase::left(LeaveTarget::Offline, String::new(), now_ms),
-        },
+        (
+            Phase::PendingOffline { .. },
+            Claim::NotInGame | Claim::Active { .. } | Claim::Offline,
+        ) => prev.clone(),
     }
 }
 

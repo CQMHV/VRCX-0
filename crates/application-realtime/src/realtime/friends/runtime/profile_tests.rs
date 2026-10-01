@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod tests {
-    use vrcx_0_core::presence::PresenceView;
 
     use super::super::presence_test_support::{friend_view, is_pending_offline, location_tag};
     use super::super::*;
@@ -258,93 +257,6 @@ mod tests {
         let entry = fired.persistence.feed_entries[0].to_json();
         assert_eq!(entry["type"], "Offline");
         assert_eq!(entry["location"], "wrld_old:123");
-    }
-
-    #[test]
-    fn refetched_offline_profile_finalizes_pending_offline_with_offline_feed() {
-        let runtime = RealtimeFriendsRuntime::default();
-        runtime.set_baseline(
-            FriendRosterBaseline {
-                current_user_id: "usr_self".into(),
-                friends_by_id: [(
-                    "usr_friend".to_string(),
-                    FriendBaselineEntry {
-                        record: FriendRecord {
-                            id: "usr_friend".into(),
-                            display_name: "Friend".into(),
-                            status: "join me".into(),
-                            status_description: "Old status".into(),
-                            ..FriendRecord::default()
-                        },
-                        presence: FriendBaselinePresence {
-                            state: "online".into(),
-                            location: "wrld_old:123".into(),
-                            ..FriendBaselinePresence::default()
-                        },
-                    },
-                )]
-                .into_iter()
-                .collect(),
-                ..FriendRosterBaseline::default()
-            },
-            1,
-            0,
-        );
-
-        let RealtimeFriendApplyResult::Output(location_output) =
-            runtime.apply_ws_message(&RealtimeWsMessagePayload {
-                json: json!({
-                    "type": "friend-location",
-                    "content": {
-                        "userId": "usr_friend",
-                        "location": "offline",
-                        "user": {
-                            "id": "usr_friend",
-                            "displayName": "Friend",
-                            "location": "offline"
-                        }
-                    }
-                }),
-                raw: "{}".into(),
-                received_at: "2026-05-15T00:00:00Z".into(),
-            })
-        else {
-            panic!("friend-location should produce an output");
-        };
-        assert!(
-            location_output.wake.is_some(),
-            "offline location should schedule pending timer"
-        );
-
-        let rev = runtime.friend_rev_of(1, "usr_friend").unwrap_or_default();
-        let RealtimeFriendApplyResult::Output(output) = runtime
-            .apply_refetched_user_profile_if_rev(
-                1,
-                "usr_friend",
-                rev,
-                json!({
-                    "id": "usr_friend",
-                    "displayName": "Friend",
-                    "state": "offline",
-                    "location": "offline",
-                    "status": "active",
-                    "statusDescription": "Fresh REST status"
-                }),
-                "2026-05-15T00:00:01Z",
-            )
-        else {
-            panic!("refetched friend profile should produce an output");
-        };
-
-        assert_eq!(
-            output.projection.patches[0].presence.view,
-            PresenceView::Offline
-        );
-        assert_eq!(output.persistence.feed_entries.len(), 1);
-        let entry = output.persistence.feed_entries[0].to_json();
-        assert_eq!(entry["type"], "Offline");
-        assert_eq!(entry["location"], "wrld_old:123");
-        assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_none());
     }
 
     #[test]

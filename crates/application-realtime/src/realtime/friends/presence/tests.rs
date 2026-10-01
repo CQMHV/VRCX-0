@@ -286,39 +286,25 @@ fn online_friend_leaving_enters_pending_unless_the_add_is_trusted() {
 }
 
 #[test]
-fn pending_is_not_extended_by_repeated_live_offline() {
+fn pending_waits_for_its_deadline_whatever_source_reports_leaving() {
     let prev = pending(online(inst("wrld_a:1"), T), LeaveTarget::Offline, T + 10);
-    for claim in [
-        Claim::Offline,
-        Claim::NotInGame,
-        Claim::Active {
-            platform: "web".into(),
-        },
+    for source in [
+        Source::Ws,
+        Source::Api,
+        Source::Baseline,
+        Source::TrustedAdd,
     ] {
-        let step = reduce(&prev, &ev(Source::Ws, claim), T + 5);
-        assert_eq!(step.next, prev);
-        assert_eq!(step.wake_at_ms, None);
-    }
-}
-
-#[test]
-fn pending_is_confirmed_by_api_or_baseline_offline() {
-    let held = online(inst("wrld_a:1"), T - 30_000);
-    let prev = pending(held, LeaveTarget::Offline, T + PENDING_OFFLINE_DELAY_MS);
-    for source in [Source::Api, Source::Baseline, Source::TrustedAdd] {
-        let step = reduce(&prev, &ev(source, Claim::Offline), T);
-        assert_eq!(
-            step.next,
-            Phase::Offline {
-                changed_ms: Some(T)
+        for claim in [
+            Claim::Offline,
+            Claim::NotInGame,
+            Claim::Active {
+                platform: "web".into(),
             },
-            "{source:?}"
-        );
-        let entries = feed(&prev, &step, T);
-        assert_eq!(entries.len(), 1);
-        assert_eq!(entries[0]["type"], "Offline");
-        assert_eq!(entries[0]["location"], "wrld_a:1");
-        assert_eq!(entries[0]["time"], 30_000);
+        ] {
+            let step = reduce(&prev, &ev(source, claim), T + 5);
+            assert_eq!(step.next, prev, "{source:?}");
+            assert_eq!(step.wake_at_ms, None);
+        }
     }
 }
 

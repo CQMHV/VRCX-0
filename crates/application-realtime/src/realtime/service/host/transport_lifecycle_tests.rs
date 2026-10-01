@@ -511,8 +511,7 @@ fn fresh_baseline_reconnect_preserves_location_time_without_new_game_logs() -> R
 }
 
 #[test]
-fn fresh_placeholder_baseline_confirms_pending_offline_before_syncing_location_time() -> Result<()>
-{
+fn fresh_offline_baseline_keeps_a_pending_offline_through_reconnect() -> Result<()> {
     let (_dir, runtime, active_session) =
         runtime_with_active_session("reconnect-placeholder-offline")?;
     let old_transport = active_transport(&runtime);
@@ -561,11 +560,10 @@ fn fresh_placeholder_baseline_confirms_pending_offline_before_syncing_location_t
         json!({"id": active_session.user_id}),
     )?;
 
-    assert_eq!(friend_view(&runtime), PresenceView::Offline);
-    assert_eq!(
-        runtime.runtime().deps.instance_dwell.snapshot()[0].since_ms,
-        None
-    );
+    assert!(matches!(
+        friend_view(&runtime),
+        PresenceView::PendingOffline { .. }
+    ));
     Ok(())
 }
 
