@@ -273,10 +273,11 @@ impl RealtimeHostRuntime {
             .unwrap_or(0);
         queued_projection.generation = generation;
         queued_projection.baseline_revision = baseline_revision;
-        let start_output = RealtimeFriendOutput::with_confirmed_feed_entries(
+        let start_output = RealtimeFriendOutput::from_baseline(
             OwnerId::new(session.user_id.clone()),
             queued_projection,
             start_feed_entries,
+            Vec::new(),
         );
         self.apply_friend_output_owned(&friend_owner, start_output);
         self.apply_reconciled_friend_feed_entries_owned(

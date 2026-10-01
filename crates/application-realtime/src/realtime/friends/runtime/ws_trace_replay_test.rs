@@ -235,7 +235,12 @@ mod tests {
                     if let Some(wake) = &output.wake {
                         schedule(&mut timers, wake, at_ms);
                     }
-                    output.projection.feed_entries
+                    output
+                        .persistence
+                        .feed_entries
+                        .into_iter()
+                        .chain(output.joining)
+                        .collect()
                 }
                 _ => Vec::new(),
             };

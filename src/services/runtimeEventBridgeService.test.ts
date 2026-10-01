@@ -1565,7 +1565,6 @@ describe('runtimeEventBridgeService', () => {
                     }
                 ],
                 removals: [],
-                feedEntries: [],
                 friendLogChanged: false
             });
         }
@@ -1604,7 +1603,6 @@ describe('runtimeEventBridgeService', () => {
                 }
             ],
             removals: [],
-            feedEntries: [],
             friendLogChanged: false
         });
 
@@ -1624,7 +1622,6 @@ describe('runtimeEventBridgeService', () => {
                 }
             ],
             removals: [],
-            feedEntries: [],
             friendLogChanged: false
         });
 

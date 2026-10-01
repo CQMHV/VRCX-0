@@ -355,14 +355,6 @@ impl RealtimeHostRuntime {
             });
             projection.location_time_snapshot = Some(location_time_snapshot);
         }
-        if !joining_feed_entries.is_empty() {
-            baseline_projection
-                .get_or_insert_with(|| {
-                    FriendProjection::new(result.generation, result.baseline_revision)
-                })
-                .feed_entries
-                .extend(joining_feed_entries);
-        }
         if let Some(snapshot) = canonical_snapshot.as_ref() {
             self.set_activity_friend_user_ids(snapshot.friends_by_id.keys().cloned().collect());
         }
@@ -385,14 +377,18 @@ impl RealtimeHostRuntime {
             FriendRosterReconcileOutcome::default()
         };
         drop(canonical_snapshot);
-        if baseline_projection.is_some() || !confirmed_feed_entries.is_empty() {
+        if baseline_projection.is_some()
+            || !confirmed_feed_entries.is_empty()
+            || !joining_feed_entries.is_empty()
+        {
             let projection = baseline_projection.unwrap_or_else(|| {
                 FriendProjection::new(result.generation, result.baseline_revision)
             });
-            let output = RealtimeFriendOutput::with_confirmed_feed_entries(
+            let output = RealtimeFriendOutput::from_baseline(
                 OwnerId::new(active.session.user_id.clone()),
                 projection,
                 confirmed_feed_entries,
+                joining_feed_entries,
             );
             self.apply_friend_output_owned(&owner, output);
         }

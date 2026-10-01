@@ -77,8 +77,9 @@ fn trust_level_friend_projection_preserves_new_level_in_overlay_content() {
         }
     })));
     runtime.set_friend_user_ids(["usr_friend"]);
-    runtime.ingest_friend_projection(&FriendProjection {
-        feed_entries: vec![FeedLiveEntry::TrustLevel {
+    runtime.ingest_friend_projection(
+        &FriendProjection::new(0, 0),
+        &[FeedLiveEntry::TrustLevel {
             created_at: "2026-05-31T00:01:00.000Z".into(),
             user_id: "usr_friend".into(),
             display_name: "Friend".into(),
@@ -87,8 +88,7 @@ fn trust_level_friend_projection_preserves_new_level_in_overlay_content() {
             friend_number: 7,
             owner_user_id: String::new(),
         }],
-        ..FriendProjection::new(0, 0)
-    });
+    );
 
     let entries = runtime.snapshot().entries;
     assert_eq!(entries.len(), 1);
@@ -121,22 +121,20 @@ fn player_joining_friend_feed_matches_everyone_in_instance_scope() {
             }
         }
     })));
-    let projection = FriendProjection {
-        feed_entries: vec![FeedLiveEntry::OnPlayerJoining {
-            created_at: "2026-07-13T10:00:00Z".into(),
-            user_id: "usr_joining".into(),
-            display_name: "Joining User".into(),
-            location: "traveling".into(),
-            traveling_to_location: "wrld_current:456".into(),
-            world_name: None,
-            world_id: None,
-            display_location: None,
-            owner_user_id: String::new(),
-        }],
-        ..FriendProjection::new(0, 0)
-    };
+    let projection = FriendProjection::new(0, 0);
+    let feed_entries = vec![FeedLiveEntry::OnPlayerJoining {
+        created_at: "2026-07-13T10:00:00Z".into(),
+        user_id: "usr_joining".into(),
+        display_name: "Joining User".into(),
+        location: "traveling".into(),
+        traveling_to_location: "wrld_current:456".into(),
+        world_name: None,
+        world_id: None,
+        display_location: None,
+        owner_user_id: String::new(),
+    }];
 
-    runtime.ingest_friend_projection(&projection);
+    runtime.ingest_friend_projection(&projection, &feed_entries);
 
     let entries = runtime.snapshot().entries;
     assert_eq!(entries.len(), 1);
@@ -163,27 +161,27 @@ fn friend_projection_feed_entries_do_not_restore_removed_friend_membership() {
     runtime.set_friend_user_ids(["usr_removed"]);
     let projection = FriendProjection {
         removals: vec!["usr_removed".to_string()],
-        feed_entries: vec![
-            FeedLiveEntry::Unfriend {
-                created_at: "2026-05-31T00:01:30.000Z".into(),
-                user_id: "usr_removed".into(),
-                display_name: "Removed User".into(),
-                owner_user_id: String::new(),
-            },
-            FeedLiveEntry::TrustLevel {
-                created_at: "2026-05-31T00:01:31.000Z".into(),
-                user_id: "usr_removed".into(),
-                display_name: "Removed User".into(),
-                trust_level: "Trusted User".into(),
-                previous_trust_level: "Known User".into(),
-                friend_number: 1,
-                owner_user_id: String::new(),
-            },
-        ],
         ..FriendProjection::new(0, 0)
     };
+    let feed_entries = vec![
+        FeedLiveEntry::Unfriend {
+            created_at: "2026-05-31T00:01:30.000Z".into(),
+            user_id: "usr_removed".into(),
+            display_name: "Removed User".into(),
+            owner_user_id: String::new(),
+        },
+        FeedLiveEntry::TrustLevel {
+            created_at: "2026-05-31T00:01:31.000Z".into(),
+            user_id: "usr_removed".into(),
+            display_name: "Removed User".into(),
+            trust_level: "Trusted User".into(),
+            previous_trust_level: "Known User".into(),
+            friend_number: 1,
+            owner_user_id: String::new(),
+        },
+    ];
 
-    runtime.ingest_friend_projection(&projection);
+    runtime.ingest_friend_projection(&projection, &feed_entries);
 
     let entries = runtime.snapshot().entries;
     assert_eq!(entries.len(), 1);
@@ -357,24 +355,22 @@ fn friend_projection_location_content_exposes_raw_and_display_location() {
         }
     })));
     runtime.set_friend_user_ids(["usr_location"]);
-    let projection = FriendProjection {
-        feed_entries: vec![FeedLiveEntry::Gps {
-            created_at: "2026-05-31T00:02:30.000Z".into(),
-            user_id: "usr_location".into(),
-            display_name: "Location User".into(),
-            location: "wrld_world:12345".into(),
-            world_name: "World Name".into(),
-            previous_location: String::new(),
-            time: 0,
-            group_name: "Group Name".into(),
-            world_id: None,
-            display_location: None,
-            owner_user_id: String::new(),
-        }],
-        ..FriendProjection::new(0, 0)
-    };
+    let projection = FriendProjection::new(0, 0);
+    let feed_entries = vec![FeedLiveEntry::Gps {
+        created_at: "2026-05-31T00:02:30.000Z".into(),
+        user_id: "usr_location".into(),
+        display_name: "Location User".into(),
+        location: "wrld_world:12345".into(),
+        world_name: "World Name".into(),
+        previous_location: String::new(),
+        time: 0,
+        group_name: "Group Name".into(),
+        world_id: None,
+        display_location: None,
+        owner_user_id: String::new(),
+    }];
 
-    runtime.ingest_friend_projection(&projection);
+    runtime.ingest_friend_projection(&projection, &feed_entries);
 
     let entries = runtime.snapshot().entries;
     assert_eq!(entries.len(), 1);

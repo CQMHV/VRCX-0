@@ -4267,7 +4267,6 @@ export type FriendProjection = {
     baselineRevision: number;
     patches?: FriendProjectionPatch[];
     removals?: string[];
-    feedEntries?: FeedLiveEntry[];
     locationTimeSnapshot?: FriendLocationTime[] | null;
     friendLogChanged: boolean;
 };

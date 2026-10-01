@@ -116,14 +116,6 @@ describe('realtimePresenceService projection boundary', () => {
                 }
             ],
             removals: [],
-            feedEntries: [
-                onlineFeedEntry({
-                    created_at: '2026-05-15T00:00:00Z',
-                    userId: 'usr_friend',
-                    displayName: 'Friend',
-                    location: 'wrld_1:123'
-                })
-            ],
             friendLogChanged: true
         });
 
@@ -154,7 +146,6 @@ describe('realtimePresenceService projection boundary', () => {
             baselineRevision: 1,
             patches: [],
             removals: [],
-            feedEntries: [],
             friendLogChanged: false,
             locationTimeSnapshot: [
                 {
@@ -178,7 +169,6 @@ describe('realtimePresenceService projection boundary', () => {
             baselineRevision: 1,
             patches: [],
             removals: [],
-            feedEntries: [],
             friendLogChanged: false
         });
         flushRealtimeRosterUpdates();
@@ -195,7 +185,6 @@ describe('realtimePresenceService projection boundary', () => {
             baselineRevision: 1,
             patches: [],
             removals: [],
-            feedEntries: [],
             friendLogChanged: false,
             locationTimeSnapshot: []
         });
@@ -253,7 +242,6 @@ describe('realtimePresenceService projection boundary', () => {
             baselineRevision: 1,
             patches: [],
             removals: [],
-            feedEntries: [],
             friendLogChanged: true
         });
         expect(useFriendLogStore.getState().revision).toBe(before + 1);
@@ -263,7 +251,6 @@ describe('realtimePresenceService projection boundary', () => {
             baselineRevision: 1,
             patches: [],
             removals: [],
-            feedEntries: [],
             friendLogChanged: false
         });
         expect(useFriendLogStore.getState().revision).toBe(before + 1);
@@ -292,7 +279,6 @@ describe('realtimePresenceService projection boundary', () => {
             baselineRevision: 1,
             removals: ['usr_friend'],
             patches: [],
-            feedEntries: [],
             friendLogChanged: true
         });
 
@@ -335,7 +321,6 @@ describe('realtimePresenceService projection boundary', () => {
                     }
                 ],
                 removals: [],
-                feedEntries: [],
                 friendLogChanged: false
             });
         }
@@ -345,7 +330,6 @@ describe('realtimePresenceService projection boundary', () => {
             baselineRevision: 1,
             patches: [],
             removals: ['usr_friend'],
-            feedEntries: [],
             friendLogChanged: false
         });
         flushRealtimeRosterUpdates();

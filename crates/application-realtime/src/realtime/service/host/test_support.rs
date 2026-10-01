@@ -321,6 +321,7 @@ struct TestActivitySinkState {
     delivery_armed: bool,
     friend_user_ids: Vec<String>,
     friend_projections: Vec<FriendProjection>,
+    friend_feed_entries: Vec<FeedLiveEntry>,
     notification_projections: Vec<RealtimeNotificationProjection>,
 }
 
@@ -336,6 +337,10 @@ impl TestActivitySink {
 
     pub(super) fn take_friend_projections(&self) -> Vec<FriendProjection> {
         std::mem::take(&mut self.lock_state().friend_projections)
+    }
+
+    pub(super) fn take_friend_feed_entries(&self) -> Vec<FeedLiveEntry> {
+        std::mem::take(&mut self.lock_state().friend_feed_entries)
     }
 
     pub(super) fn notification_by_id(&self, id: &str) -> Option<serde_json::Value> {
@@ -359,10 +364,14 @@ impl OverlayActivityInputSink for TestActivitySink {
         self.lock_state().delivery_armed = armed;
     }
 
-    fn ingest_friend_projection(&self, projection: &FriendProjection) {
-        self.lock_state()
-            .friend_projections
-            .push(projection.clone());
+    fn ingest_friend_projection(
+        &self,
+        projection: &FriendProjection,
+        feed_entries: &[FeedLiveEntry],
+    ) {
+        let mut state = self.lock_state();
+        state.friend_projections.push(projection.clone());
+        state.friend_feed_entries.extend_from_slice(feed_entries);
     }
 
     fn ingest_notification_projection(&self, projection: &RealtimeNotificationProjection) {

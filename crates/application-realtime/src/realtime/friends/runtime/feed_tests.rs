@@ -56,7 +56,7 @@ mod tests {
         };
 
         assert!(output.persistence.feed_entries.is_empty());
-        assert!(output.projection.feed_entries.is_empty());
+        assert!(output.joining.is_empty());
         assert_eq!(output.projection.patches[0].record.status, "offline");
         assert_eq!(
             output.projection.patches[0].record.status_description,
@@ -122,7 +122,6 @@ mod tests {
             first.persistence.feed_entries[0].to_json()["type"],
             "Status"
         );
-        assert_eq!(first.projection.feed_entries[0].to_json()["type"], "Status");
 
         assert!(matches!(
             runtime.apply_ws_message(&RealtimeWsMessagePayload {

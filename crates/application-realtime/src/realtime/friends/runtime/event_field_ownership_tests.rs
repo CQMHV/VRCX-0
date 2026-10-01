@@ -144,8 +144,7 @@ mod tests {
         assert_eq!(location_tag(view), Some("traveling"));
         assert_eq!(traveling_to_tag(view), Some("wrld_dest:7~region(us)"));
         assert!(output
-            .projection
-            .feed_entries
+            .joining
             .iter()
             .any(|entry| entry.to_json()["type"] == "OnPlayerJoining"));
 

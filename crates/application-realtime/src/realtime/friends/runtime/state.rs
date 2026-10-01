@@ -612,8 +612,7 @@ impl RealtimeFriendsRuntime {
             roster.generation,
             roster.baseline_revision,
         );
-        output.persistence.feed_entries.push(feed_entry.clone());
-        output.projection.feed_entries.push(feed_entry);
+        output.persistence.feed_entries.push(feed_entry);
         Some(output)
     }
 

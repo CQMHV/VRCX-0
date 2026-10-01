@@ -99,19 +99,14 @@ impl RealtimeHostRuntime {
         if feed_entries.is_empty() {
             return;
         }
-        let mut projection = FriendProjection::new(generation, baseline_revision);
-        projection.feed_entries = feed_entries;
+        let projection = FriendProjection::new(generation, baseline_revision);
         if !self.is_friend_projection_current(&projection) {
             return;
         }
         if let Some(activity_sink) = &self.deps.activity_sink {
-            activity_sink.ingest_friend_projection(&projection);
+            activity_sink.ingest_friend_projection(&projection, &feed_entries);
         }
-        self.emit_feed_entries(
-            generation,
-            owner_user_id,
-            std::mem::take(&mut projection.feed_entries),
-        );
+        self.emit_feed_entries(generation, owner_user_id, feed_entries);
     }
 
     pub(super) fn apply_friend_output_owned(
@@ -122,21 +117,19 @@ impl RealtimeHostRuntime {
         let wake = output.wake.take();
         let profile_refetch_user_ids = output.profile_refetch_user_ids.clone();
         let icon_changes = std::mem::take(&mut output.icon_changes);
-        let mut projection = output.projection.clone();
+        let projection = output.projection.clone();
         let projection_generation = projection.generation;
         if !self.is_friend_projection_current(&projection) {
             return FriendOutputApplyOutcome::Stale;
         }
-        self.retain_current_instance_joining_entries(
-            &mut projection,
-            output.owner_user_id.as_str(),
-        );
+        let mut live_feed = output.persistence.feed_entries.clone();
+        live_feed.append(&mut output.joining);
+        self.retain_current_instance_joining_entries(&mut live_feed, output.owner_user_id.as_str());
         let feed_persistence_disabled = self.feed_persistence_disabled.load(Ordering::Relaxed);
         if feed_persistence_disabled {
             output.persistence.feed_entries.clear();
         }
-        let mut world_name_fetch_ids =
-            self.enrich_projection_world_names(&mut projection.feed_entries);
+        let mut world_name_fetch_ids = self.enrich_projection_world_names(&mut live_feed);
         world_name_fetch_ids.extend(self.enrich_persistence_world_names(&mut output.persistence));
         let persisted = match self
             .deps
@@ -158,18 +151,15 @@ impl RealtimeHostRuntime {
                     .sync
                     .record_failure("realtimeFriends", error.to_string());
                 if !feed_persistence_disabled {
-                    projection.feed_entries.clear();
+                    live_feed.clear();
                 }
                 false
             }
         };
         if let Some(activity_sink) = &self.deps.activity_sink {
-            activity_sink.ingest_friend_projection(&projection);
+            activity_sink.ingest_friend_projection(&projection, &live_feed);
         }
-        projection
-            .feed_entries
-            .retain(|entry| !is_player_joining_entry(entry));
-        let feed_entries = std::mem::take(&mut projection.feed_entries);
+        live_feed.retain(|entry| !is_player_joining_entry(entry));
         if !projection.patches.is_empty() || !projection.removals.is_empty() {
             let endpoint = self.active_endpoint();
             if !projection.removals.is_empty() {
@@ -191,7 +181,7 @@ impl RealtimeHostRuntime {
             }
         }
         self.emit_friend_projection(projection);
-        self.emit_feed_entries(projection_generation, &output.owner_user_id, feed_entries);
+        self.emit_feed_entries(projection_generation, &output.owner_user_id, live_feed);
 
         if let Some(wake) = wake {
             self.schedule_friend_wake(projection_generation, wake);
@@ -206,10 +196,10 @@ impl RealtimeHostRuntime {
 
     fn retain_current_instance_joining_entries(
         &self,
-        projection: &mut FriendProjection,
+        feed_entries: &mut Vec<FeedLiveEntry>,
         current_user_id: &str,
     ) {
-        if !projection.feed_entries.iter().any(is_player_joining_entry) {
+        if !feed_entries.iter().any(is_player_joining_entry) {
             return;
         }
         let local_game_context = self.local_game_context();
@@ -227,7 +217,7 @@ impl RealtimeHostRuntime {
             ),
         };
         let current_user_id = current_user_id.trim();
-        projection.feed_entries.retain(|entry| {
+        feed_entries.retain(|entry| {
             let FeedLiveEntry::OnPlayerJoining {
                 user_id,
                 traveling_to_location,

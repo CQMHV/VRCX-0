@@ -29,8 +29,6 @@ pub struct FriendProjection {
     pub patches: Vec<FriendProjectionPatch>,
     #[serde(default)]
     pub removals: Vec<String>,
-    #[serde(default)]
-    pub feed_entries: Vec<FeedLiveEntry>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub location_time_snapshot: Option<Vec<FriendLocationTime>>,
     pub friend_log_changed: bool,
@@ -43,7 +41,6 @@ impl FriendProjection {
             baseline_revision,
             patches: Vec::new(),
             removals: Vec::new(),
-            feed_entries: Vec::new(),
             location_time_snapshot: None,
             friend_log_changed: false,
         }

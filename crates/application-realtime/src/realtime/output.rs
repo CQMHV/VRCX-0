@@ -53,6 +53,7 @@ pub struct RealtimeFriendOutput {
     pub owner_user_id: OwnerId,
     pub projection: FriendProjection,
     pub persistence: RealtimePersistenceBatch,
+    pub joining: Vec<FeedLiveEntry>,
     pub wake: Option<FriendWake>,
     pub profile_refetch_user_ids: Vec<String>,
     pub icon_changes: Vec<FriendIconChange>,
@@ -71,22 +72,22 @@ impl RealtimeFriendOutput {
             owner_user_id,
             projection,
             persistence: RealtimePersistenceBatch::default(),
+            joining: Vec::new(),
             wake: None,
             profile_refetch_user_ids: Vec::new(),
             icon_changes: Vec::new(),
         }
     }
 
-    pub(crate) fn with_confirmed_feed_entries(
+    pub(crate) fn from_baseline(
         owner_user_id: OwnerId,
-        mut projection: FriendProjection,
-        entries: Vec<FeedLiveEntry>,
+        projection: FriendProjection,
+        feed_entries: Vec<FeedLiveEntry>,
+        joining: Vec<FeedLiveEntry>,
     ) -> Self {
-        projection
-            .feed_entries
-            .splice(0..0, entries.iter().cloned());
         let mut output = Self::from_projection(owner_user_id, projection);
-        output.persistence.feed_entries = entries;
+        output.persistence.feed_entries = feed_entries;
+        output.joining = joining;
         output
     }
 }

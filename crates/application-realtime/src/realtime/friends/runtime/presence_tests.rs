@@ -76,7 +76,7 @@ mod tests {
         assert_eq!(entries[0].to_json()["previousTrustLevel"], "User");
         assert_eq!(
             output
-                .projection
+                .persistence
                 .feed_entries
                 .iter()
                 .filter(|entry| entry.to_json()["type"] == "TrustLevel")

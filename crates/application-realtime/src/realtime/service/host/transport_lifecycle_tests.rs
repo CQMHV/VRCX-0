@@ -1321,11 +1321,9 @@ fn friend_ws_dispatch_fans_out_one_canonical_output() -> Result<()> {
     assert!(events.iter().all(|event| {
         event.name != "backendRuntimeTelemetry" || event.payload["kind"] != "gameLogPersisted"
     }));
-    let mut frontend_projection = activity_projections[0].clone();
-    frontend_projection.feed_entries.clear();
     assert_eq!(
         frontend_projections[0].payload,
-        serde_json::to_value(frontend_projection)
+        serde_json::to_value(&activity_projections[0])
             .expect("serialize frontend projection")
             .into()
     );

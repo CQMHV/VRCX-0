@@ -161,10 +161,6 @@ fn sync_friend_snapshot_persists_feed_when_refresh_confirms_pending_offline() ->
         projection.payload["patches"][0]["record"]["displayName"],
         "Friend Fresh Name"
     );
-    assert!(projection.payload["feedEntries"]
-        .as_array()
-        .unwrap()
-        .is_empty());
     let feed_projection = events
         .iter()
         .find(|event| event.name == "realtimeFeedProjection")
@@ -1730,24 +1726,16 @@ fn friend_projection_clears_feed_entries_when_persistence_fails() -> Result<()> 
 
     let mut output = RealtimeFriendOutput::from_projection(
         OwnerId::new(active_session.user_id.clone()),
-        FriendProjection {
-            generation: 7,
-            feed_entries: vec![feed_entry.clone()],
-            ..FriendProjection::new(7, 0)
-        },
+        FriendProjection::new(7, 0),
     );
     output.persistence.feed_entries.push(feed_entry);
     runtime.runtime().apply_friend_output(output);
 
     let events = runtime.runtime().deps.event_bus.take_events_for_test();
-    let projection = events
+    let _projection = events
         .iter()
         .find(|event| event.name == "realtimeFriendProjection")
         .expect("friend projection should still be emitted after persistence failure");
-    assert_eq!(
-        projection.payload["feedEntries"].as_array().unwrap().len(),
-        0
-    );
     assert!(events
         .iter()
         .all(|event| event.name != "realtimeFeedProjection"));
@@ -1861,11 +1849,7 @@ fn disabled_feed_persistence_keeps_projection_and_other_batch_writes() -> Result
         .collect::<Vec<_>>();
     let mut output = RealtimeFriendOutput::from_projection(
         OwnerId::new(active_session.user_id.clone()),
-        FriendProjection {
-            generation: 7,
-            feed_entries: feed_entries.clone(),
-            ..FriendProjection::new(7, 0)
-        },
+        FriendProjection::new(7, 0),
     );
     output.persistence.feed_entries = feed_entries;
     output.persistence.friend_log_upserts.push(FriendLogUpsert {
@@ -1879,14 +1863,10 @@ fn disabled_feed_persistence_keeps_projection_and_other_batch_writes() -> Result
     runtime.runtime().apply_friend_output(output);
 
     let events = runtime.runtime().deps.event_bus.take_events_for_test();
-    let projection = events
+    let _projection = events
         .iter()
         .find(|event| event.name == "realtimeFriendProjection")
         .expect("disabled persistence should still emit the live projection");
-    assert!(projection.payload["feedEntries"]
-        .as_array()
-        .unwrap()
-        .is_empty());
     let feed_projection = events
         .iter()
         .find(|event| event.name == "realtimeFeedProjection")
@@ -1916,11 +1896,7 @@ fn disabled_feed_persistence_keeps_projection_and_other_batch_writes() -> Result
     let enabled_entry = feed_entry_of("Online", "2026-06-21T00:00:10.000Z");
     let mut enabled_output = RealtimeFriendOutput::from_projection(
         OwnerId::new(active_session.user_id.clone()),
-        FriendProjection {
-            generation: 7,
-            feed_entries: vec![enabled_entry.clone()],
-            ..FriendProjection::new(7, 0)
-        },
+        FriendProjection::new(7, 0),
     );
     enabled_output.persistence.feed_entries.push(enabled_entry);
     runtime.runtime().apply_friend_output(enabled_output);

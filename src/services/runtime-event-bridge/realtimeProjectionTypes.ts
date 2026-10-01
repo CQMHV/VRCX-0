@@ -12,16 +12,12 @@ import type {
     RealtimeUserProjection
 } from '@/platform/tauri/bindings';
 import type { NotificationRow } from '@/repositories/notificationPersistenceRepository';
-import type {
-    FeedLiveEntryPayload,
-    FeedLivePatch
-} from '@/state/feedLiveTypes';
+import type { FeedLivePatch } from '@/state/feedLiveTypes';
 
 export type RealtimeFriendProjectionPayload = Omit<
     FriendProjection,
-    'feedEntries' | 'patches' | 'removals'
+    'patches' | 'removals'
 > & {
-    feedEntries: FeedLiveEntryPayload[];
     patches: FriendProjectionPatch[];
     removals: string[];
 };

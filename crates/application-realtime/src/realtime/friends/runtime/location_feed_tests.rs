@@ -60,11 +60,6 @@ mod tests {
         let entry = output.persistence.feed_entries[0].to_json();
         assert_eq!(entry["type"], "Online");
         assert_eq!(entry["location"], "wrld_new:456");
-        assert_eq!(output.projection.feed_entries.len(), 1);
-        assert_eq!(
-            output.projection.feed_entries[0].to_json()["type"],
-            "Online"
-        );
     }
 
     #[test]
@@ -407,13 +402,10 @@ mod tests {
             panic!("entering traveling should produce an output");
         };
         assert!(first.persistence.feed_entries.is_empty());
-        assert_eq!(first.projection.feed_entries.len(), 1);
+        assert_eq!(first.joining.len(), 1);
+        assert_eq!(first.joining[0].to_json()["type"], "OnPlayerJoining");
         assert_eq!(
-            first.projection.feed_entries[0].to_json()["type"],
-            "OnPlayerJoining"
-        );
-        assert_eq!(
-            first.projection.feed_entries[0].to_json()["travelingToLocation"],
+            first.joining[0].to_json()["travelingToLocation"],
             "wrld_current:456"
         );
 
@@ -478,15 +470,8 @@ mod tests {
             output.persistence.feed_entries[0].to_json()["type"],
             "Online"
         );
-        assert_eq!(output.projection.feed_entries.len(), 2);
-        assert_eq!(
-            output.projection.feed_entries[0].to_json()["type"],
-            "Online"
-        );
-        assert_eq!(
-            output.projection.feed_entries[1].to_json()["type"],
-            "OnPlayerJoining"
-        );
+        assert_eq!(output.joining.len(), 1);
+        assert_eq!(output.joining[0].to_json()["type"], "OnPlayerJoining");
     }
 
     #[test]

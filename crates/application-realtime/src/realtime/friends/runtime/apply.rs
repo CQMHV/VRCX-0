@@ -64,7 +64,7 @@ pub(super) fn apply_wake(
             presence: step.next,
         },
     );
-    Some(finish(output))
+    Some(output)
 }
 
 pub(super) fn apply_friend_event(
@@ -79,7 +79,7 @@ pub(super) fn apply_friend_event(
         FriendEventKind::Delete => apply_delete(state, &mut output, content, now)?,
         _ => apply_change(state, &mut output, event_kind, content, now, source)?,
     }
-    Some(finish(output))
+    Some(output)
 }
 
 fn new_output(state: &RealtimeFriendState) -> Option<RealtimeFriendOutput> {
@@ -89,13 +89,6 @@ fn new_output(state: &RealtimeFriendState) -> Option<RealtimeFriendOutput> {
         roster.generation,
         roster.baseline_revision,
     ))
-}
-
-fn finish(mut output: RealtimeFriendOutput) -> RealtimeFriendOutput {
-    let mut feed_entries = output.persistence.feed_entries.clone();
-    feed_entries.append(&mut output.projection.feed_entries);
-    output.projection.feed_entries = feed_entries;
-    output
 }
 
 fn evidence_for(event_kind: FriendEventKind, content: &Value, source: Source) -> Evidence {
@@ -220,7 +213,7 @@ fn create_entry(
         output.projection.friend_log_changed = true;
     }
     let record = merge_profile(None, user_id, patch);
-    output.projection.feed_entries.extend(joining_feed(
+    output.joining.extend(joining_feed(
         user_id,
         &record,
         &Phase::offline(),
@@ -270,7 +263,7 @@ fn apply_delete(
 fn push_feed(output: &mut RealtimeFriendOutput, entries: Vec<FeedLiveEntry>) {
     for entry in entries {
         match entry {
-            FeedLiveEntry::OnPlayerJoining { .. } => output.projection.feed_entries.push(entry),
+            FeedLiveEntry::OnPlayerJoining { .. } => output.joining.push(entry),
             _ => output.persistence.feed_entries.push(entry),
         }
     }

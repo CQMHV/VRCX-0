@@ -104,7 +104,7 @@ mod tests {
         );
         assert_eq!(
             first
-                .projection
+                .persistence
                 .feed_entries
                 .iter()
                 .filter(|entry| entry.to_json()["type"] == "TrustLevel")
