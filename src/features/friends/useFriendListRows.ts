@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { buildFavoriteIdSet } from '@/domain/favorites/favoriteIdSet';
 import { applyFactDerivedFields } from '@/domain/friends/friendRosterFacts';
 import {
     useFriendStatsById,
@@ -13,7 +14,6 @@ import { useRuntimeStore } from '@/state/runtimeStore';
 import { useSessionStore } from '@/state/sessionStore';
 
 import {
-    buildFriendListFavoriteIdSet as buildFavoriteIdSet,
     filterFriendListRows,
     type FriendListRow,
     normalizeFriendListId as normalizeId

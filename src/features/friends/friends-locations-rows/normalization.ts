@@ -1,5 +1,6 @@
 import { hasWorldIdPrefix } from '@/shared/constants/vrchatIds';
 import { isRecord } from '@/shared/utils/record';
+import { normalizeString } from '@/shared/utils/string';
 
 import type {
     FriendLocationFriend,
@@ -14,57 +15,6 @@ export function sourceFromFriend(friend: unknown): FriendLocationRecord {
         return {};
     }
     return isRecord(friend.ref) ? friend.ref : friend;
-}
-
-const SENTINEL_LOCATION_VALUES = new Set([
-    'offline',
-    'offline:offline',
-    'private',
-    'private:private',
-    'traveling',
-    'traveling:traveling'
-]);
-
-export function normalizeFriendsLocationId(value: unknown): string {
-    if (typeof value === 'string') {
-        return value.trim();
-    }
-    if (!isRecord(value)) {
-        return String(value ?? '').trim();
-    }
-    const location = isRecord(value.$location) ? value.$location : {};
-
-    const tag = normalizeFriendsLocationId(
-        value.tag || value.location || location.tag
-    );
-    if (tag) {
-        return tag;
-    }
-    const id = normalizeFriendsLocationId(
-        value.id || value.userId || value.shortCode
-    );
-    if (id) {
-        return id;
-    }
-    const worldId = normalizeFriendsLocationId(
-        value.worldId || value.world_id || location.worldId
-    );
-    const instanceId = normalizeFriendsLocationId(
-        value.instanceId || value.instance_id || location.instanceId
-    );
-    if (worldId && instanceId) {
-        return `${worldId}:${instanceId}`;
-    }
-    if (value.isOffline) {
-        return 'offline';
-    }
-    if (value.isPrivate) {
-        return 'private';
-    }
-    if (value.isTraveling) {
-        return 'traveling';
-    }
-    return '';
 }
 
 function interpolateFallback(
@@ -111,14 +61,9 @@ export function normalizeDisplayText(value: unknown) {
     );
 }
 
-export function isSentinelLocationValue(value: unknown) {
-    const normalizedValue = normalizeFriendsLocationId(value).toLowerCase();
-    return SENTINEL_LOCATION_VALUES.has(normalizedValue);
-}
-
 export function resolveWorldIdCandidate(...values: unknown[]) {
     for (const value of values) {
-        const normalizedValue = normalizeFriendsLocationId(value);
+        const normalizedValue = normalizeString(value);
         if (normalizedValue && hasWorldIdPrefix(normalizedValue)) {
             return normalizedValue;
         }
@@ -146,7 +91,7 @@ export function uniqueFriendsById<TFriend extends FriendLocationFriend>(
     const seen = new Set<string>();
     const rows: TFriend[] = [];
     for (const friend of friends ?? []) {
-        const id = normalizeFriendsLocationId(
+        const id = normalizeString(
             isRecord(friend) ? friend.id || friend.userId : ''
         );
         if (!id) {

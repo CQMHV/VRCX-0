@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 import { activePresence, pendingPresence } from '@/test/presenceFixtures';
 
 import {
-    buildFriendListFavoriteIdSet,
     filterFriendListRows,
     friendNumberForSort,
     matchesFriendListSearch,
@@ -11,14 +10,6 @@ import {
 } from './friendListRows';
 
 describe('friendListRows', () => {
-    it('combines remote and local favorite ids for the favorites-only filter', () => {
-        expect([
-            ...buildFriendListFavoriteIdSet([' usr_remote ', ''], {
-                groupA: ['usr_local']
-            })
-        ]).toEqual(['usr_remote', 'usr_local']);
-    });
-
     it('matches friends by the search filters users can toggle', () => {
         const friend: Parameters<typeof matchesFriendListSearch>[0] = {
             id: 'usr_friend',

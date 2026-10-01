@@ -13,17 +13,17 @@ import { presenceCanRequestInvite } from '@/domain/friends/presence';
 import type { FriendRecord } from '@/domain/friends/types';
 import { isSameInstanceLocation } from '@/domain/instances/instanceRoster';
 import { cn } from '@/lib/utils';
+import { normalizeString } from '@/shared/utils/string';
 import { useFriendLocationTimeStore } from '@/state/friendLocationTimeStore';
 import { Badge } from '@/ui/shadcn/badge';
 import { Button } from '@/ui/shadcn/button';
 
 import type { getFriendsLocationsDensityConfig } from '../friendsLocationsDensity';
 import {
-    normalizeFriendsLocationId as normalizeId,
     locationTarget,
     resolveFriendGroupName,
     resolveLocationSummary,
-    resolveLocationTarget,
+    friendLocationTarget,
     summarizeLocation
 } from '../friendsLocationsRows';
 import type { FriendsLocationsSection } from '../useFriendsLocationsPageDerivedState';
@@ -211,12 +211,12 @@ export function FriendsLocationCardItem({
         : resolveLocationSummary(friend, t);
     const target = localLocation
         ? locationTarget(localLocation)
-        : resolveLocationTarget(friend);
+        : friendLocationTarget(friend);
     const rawLocation = target.rawLocation;
     const groupHint = localLocation ? '' : resolveFriendGroupName(friend);
     const presence = friend.$presence;
     const friendIsCurrentUser =
-        normalizeId(friend.id) === normalizeId(currentUserId);
+        normalizeString(friend.id) === normalizeString(currentUserId);
     const friendLocationAvailable = canUseFriendLocation(rawLocation);
 
     return (

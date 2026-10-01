@@ -4,11 +4,11 @@ import {
     resolveFriendPresenceLocation
 } from '@/domain/friends/presence';
 import { parseLocation } from '@/shared/utils/location';
+import { normalizeString } from '@/shared/utils/string';
 
 import { resolveFriendGroupName, resolveFriendWorldName } from './names';
 import {
     localized,
-    normalizeFriendsLocationId,
     resolveWorldIdCandidate,
     sourceFromFriend
 } from './normalization';
@@ -36,7 +36,7 @@ export function locationTarget(rawLocation: string): FriendLocationTarget {
     };
 }
 
-export function resolveLocationTarget(
+export function friendLocationTarget(
     friend: FriendLocationFriend | null | undefined
 ): FriendLocationTarget {
     return locationTarget(resolveFriendPresenceLocation(friend));
@@ -45,7 +45,7 @@ export function resolveLocationTarget(
 export function isFriendInPrivateLocation(
     friend: FriendLocationFriend | null | undefined
 ) {
-    const target = resolveLocationTarget(friend);
+    const target = friendLocationTarget(friend);
     return target.isPrivate;
 }
 
@@ -129,8 +129,8 @@ export function summarizeLocation(
 export function resolveWorldDialogTarget(
     target: Partial<FriendLocationTarget> | null
 ) {
-    const rawLocation = normalizeFriendsLocationId(target?.rawLocation);
-    const worldId = normalizeFriendsLocationId(target?.worldId);
+    const rawLocation = normalizeString(target?.rawLocation);
+    const worldId = normalizeString(target?.worldId);
     const parsed = target?.parsed || parseLocation(rawLocation);
     if (parsed?.isRealInstance && parsed?.tag) {
         return parsed.tag;

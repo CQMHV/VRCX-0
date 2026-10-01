@@ -1,4 +1,3 @@
-import type { FavoriteGroupMap } from '@/domain/favorites/types';
 import { presenceSection } from '@/domain/friends/presence';
 import type {
     FriendProfileFields,
@@ -43,28 +42,6 @@ type FriendListFilterInput = {
 
 export function normalizeFriendListId(value: string | null | undefined) {
     return (value ?? '').trim();
-}
-
-export function buildFriendListFavoriteIdSet(
-    remoteFavoriteIds: readonly string[] = [],
-    localFriendFavorites: FavoriteGroupMap = {}
-): Set<string> {
-    const set = new Set<string>();
-    for (const id of remoteFavoriteIds ?? []) {
-        const normalized = normalizeFriendListId(id);
-        if (normalized) {
-            set.add(normalized);
-        }
-    }
-    for (const values of Object.values(localFriendFavorites ?? {})) {
-        for (const id of values) {
-            const normalized = normalizeFriendListId(id);
-            if (normalized) {
-                set.add(normalized);
-            }
-        }
-    }
-    return set;
 }
 
 export function friendNumberForSort(friend: FriendNumberSource) {

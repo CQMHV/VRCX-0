@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { buildFavoriteIdSet } from '@/domain/favorites/favoriteIdSet';
 import type { FavoriteGroup, FavoriteGroupMap } from '@/domain/favorites/types';
 import { presenceOf } from '@/domain/friends/presence';
 import {
@@ -19,6 +20,7 @@ import {
     type InviteLocationCurrentUserSnapshot,
     type InviteLocationGameState
 } from '@/shared/utils/invite';
+import { normalizeString } from '@/shared/utils/string';
 import {
     computeTrustLevel,
     computeUserPlatform
@@ -36,15 +38,11 @@ import {
     type FriendsLocationsDensity
 } from './friendsLocationsDensity';
 import {
-    normalizeFriendsLocationId as normalizeId,
     partitionFriendsByPrivateLocation,
     resolveFriendsLocationsCurrentInviteLocation as resolveCurrentInviteLocation,
     uniqueFriendsById
 } from './friendsLocationsRows';
-import {
-    buildFriendsLocationsFavoriteIdSet as buildFavoriteIdSet,
-    matchesFriendLocationSearch as matchesSearch
-} from './friendsLocationsSearch';
+import { matchesFriendLocationSearch as matchesSearch } from './friendsLocationsSearch';
 import {
     buildFavoriteGroupLabelsByFriendId,
     buildFriendSections,
@@ -255,7 +253,7 @@ export function useFriendsLocationsPageDerivedState({
     const allFavoriteGroupKeys = useMemo<string[]>(
         () => [
             ...favoriteFriendGroups
-                .map((group) => normalizeId(group?.key))
+                .map((group) => normalizeString(group?.key))
                 .filter(Boolean),
             ...(localFriendFavoriteGroups.length
                 ? localFriendFavoriteGroups
@@ -281,7 +279,7 @@ export function useFriendsLocationsPageDerivedState({
             if (groupKey.startsWith('local:')) {
                 for (const id of localFriendFavorites?.[groupKey.slice(6)] ||
                     []) {
-                    const normalized = normalizeId(id);
+                    const normalized = normalizeString(id);
                     if (normalized) {
                         ids.add(normalized);
                     }
@@ -290,7 +288,7 @@ export function useFriendsLocationsPageDerivedState({
             }
             for (const id of groupedFavoriteFriendIdsByGroupKey?.[groupKey] ||
                 []) {
-                const normalized = normalizeId(id);
+                const normalized = normalizeString(id);
                 if (normalized) {
                     ids.add(normalized);
                 }
@@ -334,7 +332,7 @@ export function useFriendsLocationsPageDerivedState({
     const favoriteFriends = useMemo<FriendRecord[]>(
         () =>
             onlineFriends.filter((friend) =>
-                selectedFavoriteIds.has(normalizeId(friend?.id))
+                selectedFavoriteIds.has(normalizeString(friend?.id))
             ),
         [onlineFriends, selectedFavoriteIds]
     );
@@ -346,7 +344,7 @@ export function useFriendsLocationsPageDerivedState({
         () =>
             onlineFriends.filter(
                 (friend) =>
-                    !onlineFavoriteExclusionIds.has(normalizeId(friend?.id))
+                    !onlineFavoriteExclusionIds.has(normalizeString(friend?.id))
             ),
         [onlineFavoriteExclusionIds, onlineFriends]
     );
@@ -356,7 +354,7 @@ export function useFriendsLocationsPageDerivedState({
             !currentUserId ||
             !currentUserSnapshot ||
             !presence ||
-            normalizeId(currentUserSnapshot.id) !== currentUserId
+            normalizeString(currentUserSnapshot.id) !== currentUserId
         ) {
             return null;
         }
@@ -367,13 +365,14 @@ export function useFriendsLocationsPageDerivedState({
             : [];
         const trust = computeTrustLevel(
             tags,
-            normalizeId(currentUserSnapshot.developerType)
+            normalizeString(currentUserSnapshot.developerType)
         );
         return {
             ...currentUserSnapshot,
             id: currentUserId,
             displayName:
-                normalizeId(currentUserSnapshot.displayName) || currentUserId,
+                normalizeString(currentUserSnapshot.displayName) ||
+                currentUserId,
             tags,
             $presence: presence,
             $friendNumber: 0,
@@ -384,7 +383,7 @@ export function useFriendsLocationsPageDerivedState({
             $isTroll: trust.isTroll,
             $isProbableTroll: trust.isProbableTroll,
             $platform: computeUserPlatform(
-                normalizeId(currentUserSnapshot.last_platform)
+                normalizeString(currentUserSnapshot.last_platform)
             )
         };
     }, [currentUserId, currentUserSnapshot]);
@@ -392,7 +391,7 @@ export function useFriendsLocationsPageDerivedState({
         FriendsLocationsSameInstanceGroup[]
     >(() => {
         const onlineFriendIds = new Set(
-            onlineFriends.map((friend) => normalizeId(friend.id))
+            onlineFriends.map((friend) => normalizeString(friend.id))
         );
         const localFriends: FriendRecord[] = [];
         for (const [userId, time] of Object.entries(locationTimes)) {
@@ -454,7 +453,7 @@ export function useFriendsLocationsPageDerivedState({
         () =>
             new Set(
                 sameInstanceFriends
-                    .map((friend) => normalizeId(friend?.id))
+                    .map((friend) => normalizeString(friend?.id))
                     .filter(Boolean)
             ),
         [sameInstanceFriends]
@@ -462,7 +461,8 @@ export function useFriendsLocationsPageDerivedState({
     const onlineWithoutSameInstanceFriends = useMemo<FriendRecord[]>(
         () =>
             onlineNonFavoriteFriends.filter(
-                (friend) => !sameInstanceFriendIds.has(normalizeId(friend?.id))
+                (friend) =>
+                    !sameInstanceFriendIds.has(normalizeString(friend?.id))
             ),
         [onlineNonFavoriteFriends, sameInstanceFriendIds]
     );
@@ -473,10 +473,12 @@ export function useFriendsLocationsPageDerivedState({
             favorite: favoriteFriends,
             'same-instance': sameInstanceFriends,
             active: activeFriends.filter(
-                (friend) => !sameInstanceFriendIds.has(normalizeId(friend.id))
+                (friend) =>
+                    !sameInstanceFriendIds.has(normalizeString(friend.id))
             ),
             offline: offlineFriends.filter(
-                (friend) => !sameInstanceFriendIds.has(normalizeId(friend.id))
+                (friend) =>
+                    !sameInstanceFriendIds.has(normalizeString(friend.id))
             )
         }),
         [
@@ -550,15 +552,20 @@ export function useFriendsLocationsPageDerivedState({
             return [];
         }
         const friendById = new Map<string, FriendRecord>(
-            favoriteFriends.map((friend) => [normalizeId(friend?.id), friend])
+            favoriteFriends.map((friend) => [
+                normalizeString(friend?.id),
+                friend
+            ])
         );
         const seen = new Set<string>();
         const sections: FriendsLocationsSection[] = [];
         const orderedRemoteGroups = favoriteFriendGroups
             .map((group): FriendsLocationsFavoriteGroupDescriptor => ({
-                key: normalizeId(group?.key),
+                key: normalizeString(group?.key),
                 label:
-                    group?.displayName || group?.name || normalizeId(group?.key)
+                    group?.displayName ||
+                    group?.name ||
+                    normalizeString(group?.key)
             }))
             .filter(
                 (group) => group.key && selectedFavoriteGroupKeys.has(group.key)
@@ -590,13 +597,13 @@ export function useFriendsLocationsPageDerivedState({
             const friendsInGroup = (
                 groupedFavoriteFriendIdsByGroupKey?.[group.key] || []
             )
-                .map((id) => friendById.get(normalizeId(id)))
+                .map((id) => friendById.get(normalizeString(id)))
                 .filter(isPresent);
             if (!friendsInGroup.length) {
                 continue;
             }
             for (const friend of friendsInGroup) {
-                seen.add(normalizeId(friend?.id));
+                seen.add(normalizeString(friend?.id));
             }
             sections.push({
                 key: `favorite:${group.key}`,
@@ -617,13 +624,13 @@ export function useFriendsLocationsPageDerivedState({
         for (const group of orderedLocalGroups) {
             const groupName = group.key.slice(6);
             const friendsInGroup = (localFriendFavorites?.[groupName] || [])
-                .map((id) => friendById.get(normalizeId(id)))
+                .map((id) => friendById.get(normalizeString(id)))
                 .filter(isPresent);
             if (!friendsInGroup.length) {
                 continue;
             }
             for (const friend of friendsInGroup) {
-                seen.add(normalizeId(friend?.id));
+                seen.add(normalizeString(friend?.id));
             }
             sections.push({
                 key: `favorite:${group.key}`,
@@ -642,7 +649,7 @@ export function useFriendsLocationsPageDerivedState({
             });
         }
         const ungrouped = favoriteFriends.filter(
-            (friend) => !seen.has(normalizeId(friend?.id))
+            (friend) => !seen.has(normalizeString(friend?.id))
         );
         if (ungrouped.length) {
             sections.push({
@@ -689,8 +696,8 @@ export function useFriendsLocationsPageDerivedState({
                     friends: group.friends.filter((friend) =>
                         visibleFriends.some(
                             (visibleFriend) =>
-                                normalizeId(visibleFriend?.id) ===
-                                normalizeId(friend?.id)
+                                normalizeString(visibleFriend?.id) ===
+                                normalizeString(friend?.id)
                         )
                     )
                 }))

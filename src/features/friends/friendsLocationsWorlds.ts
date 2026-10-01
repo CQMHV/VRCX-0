@@ -4,7 +4,7 @@ import { isSameInstanceLocation } from '@/domain/instances/instanceRoster';
 import {
     resolveFriendGroupName,
     resolveFriendWorldName,
-    resolveLocationTarget
+    friendLocationTarget
 } from './friendsLocationsRows';
 
 export type FriendsLocationsViewMode = 'people' | 'worlds';
@@ -44,7 +44,7 @@ export function buildFriendWorldGroups(
     >();
 
     for (const friend of friends) {
-        const target = resolveLocationTarget(friend);
+        const target = friendLocationTarget(friend);
         if (!target.worldId || target.isOffline || target.isPrivate) {
             continue;
         }

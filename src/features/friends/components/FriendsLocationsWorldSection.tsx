@@ -23,7 +23,7 @@ import { Spinner } from '@/ui/shadcn/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
 import type { getFriendsLocationsDensityConfig } from '../friendsLocationsDensity';
-import { resolveLocationTarget } from '../friendsLocationsRows';
+import { friendLocationTarget } from '../friendsLocationsRows';
 import type {
     FriendsLocationsWorldGroup,
     FriendsLocationsWorldInstance
@@ -54,7 +54,7 @@ function FriendChip({
     onOpen: () => void;
 }) {
     const avatarUrl = userImage(friend);
-    const isTraveling = resolveLocationTarget(friend).isTraveling;
+    const isTraveling = friendLocationTarget(friend).isTraveling;
     const statusDescription = twoLine
         ? normalizeString(friend.statusDescription)
         : '';

@@ -6,15 +6,15 @@ import {
 } from '@/shared/utils/friend';
 import type { FriendSortMethod } from '@/shared/utils/friend';
 import { isRecord } from '@/shared/utils/record';
+import { normalizeString } from '@/shared/utils/string';
 
 import {
     type FriendLocationFriend,
     type FriendLocationTarget,
     type SameInstanceGroup,
     locationTarget,
-    normalizeFriendsLocationId as normalizeId,
     resolveLocationSummary,
-    resolveLocationTarget,
+    friendLocationTarget,
     summarizeLocation
 } from './friendsLocationsRows';
 
@@ -121,7 +121,7 @@ function appendLabel(
     friendId: string,
     label: string
 ) {
-    const normalizedFriendId = normalizeId(friendId);
+    const normalizedFriendId = normalizeString(friendId);
     const normalizedLabel = label.trim();
     if (!normalizedFriendId || !normalizedLabel) {
         return;
@@ -143,7 +143,7 @@ export function buildFavoriteGroupLabelsByFriendId({
     const labelsByFriendId: FavoriteGroupLabelsByFriendId = new Map();
 
     for (const group of favoriteFriendGroups ?? []) {
-        const groupKey = normalizeId(group?.key);
+        const groupKey = normalizeString(group?.key);
         if (!groupKey) {
             continue;
         }
@@ -231,7 +231,7 @@ function resolveFavoriteGroupLabels(
     favoriteIds: Set<string>,
     t?: TranslationFn | null
 ) {
-    const friendId = normalizeId(isRecord(friend) ? friend.id : '');
+    const friendId = normalizeString(isRecord(friend) ? friend.id : '');
     if (!friendId) {
         return [];
     }
@@ -428,7 +428,7 @@ export function buildFriendSections<TFriend extends FriendLocationFriend>({
         upsertSection(
             sectionsByKey,
             resolveInstanceSectionDescriptor(
-                resolveLocationTarget(friend),
+                friendLocationTarget(friend),
                 resolveLocationSummary(friend, t),
                 t
             ),

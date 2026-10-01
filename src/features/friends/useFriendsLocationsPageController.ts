@@ -8,9 +8,9 @@ import {
     evaluateLocalInstanceActionGates,
     type LocalInstanceActionGateTarget
 } from '@/shared/utils/invite';
+import { normalizeString } from '@/shared/utils/string';
 
 import type { FriendsLocationsSegment } from './friendsLocationsConfig';
-import { normalizeFriendsLocationId as normalizeId } from './friendsLocationsRows';
 import { useFriendsLocationsActions } from './useFriendsLocationsActions';
 import { useFriendsLocationsPageDerivedState } from './useFriendsLocationsPageDerivedState';
 import { useFriendsLocationsPreferences } from './useFriendsLocationsPreferences';
@@ -30,7 +30,7 @@ function buildLocationGateTarget(
         userId: friend.id,
         location,
         presenceKind: friend.$presence.kind,
-        isCurrentUser: friend.id === normalizeId(currentUserId)
+        isCurrentUser: friend.id === normalizeString(currentUserId)
     };
 }
 

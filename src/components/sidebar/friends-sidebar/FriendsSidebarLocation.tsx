@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { resolveLocationTarget } from '@/components/location/locationModel';
 import { LocationPendingText } from '@/components/location/LocationPendingText';
 import { RegionCodeBadge } from '@/components/location/RegionCodeBadge';
 import type { LocationMetadata } from '@/components/location/useLocationMetadata';
@@ -45,17 +46,6 @@ import { SidebarLocationMenu } from './SidebarLocationMenu';
 
 function recordValue(value: unknown): Record<string, unknown> | null {
     return isRecord(value) ? value : null;
-}
-
-function sidebarLocationTarget(location: unknown, traveling: unknown = '') {
-    const normalizedLocation = normalizeId(location);
-    if (
-        typeof traveling !== 'undefined' &&
-        normalizedLocation === 'traveling'
-    ) {
-        return normalizeId(traveling);
-    }
-    return normalizedLocation;
 }
 
 function friendLocationHint(
@@ -147,7 +137,7 @@ export function resolveFriendRowLocationState({
         displayTraveling,
         groupByInstanceTimerVisible,
         showLocationSubline,
-        metadataCurrentLocation: sidebarLocationTarget(
+        metadataCurrentLocation: resolveLocationTarget(
             displayLocation,
             displayTraveling
         ),
@@ -205,7 +195,7 @@ export function StaticSidebarLocation({
     const sidebarWindowMode = useShellStore(
         (state) => state.windowDisplayMode === 'sidebar'
     );
-    const currentLocation = sidebarLocationTarget(location, traveling);
+    const currentLocation = resolveLocationTarget(location, traveling);
     const parsedLocation = useMemo(
         () => parseLocation(currentLocation),
         [currentLocation]
@@ -421,7 +411,7 @@ export function buildSidebarLocationMetadataEntry(
     > = {}
 ) {
     if (row?.type === 'instance-header') {
-        const currentLocation = sidebarLocationTarget(row.location);
+        const currentLocation = resolveLocationTarget(row.location, '');
         return {
             key: row.key,
             locationInfo: parseLocation(currentLocation),

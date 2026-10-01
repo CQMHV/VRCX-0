@@ -1,8 +1,6 @@
 export {
     isRawWorldReference,
-    isSentinelLocationValue,
     normalizeDisplayText,
-    normalizeFriendsLocationId,
     resolveDisplayWorldName,
     resolveWorldIdCandidate,
     uniqueFriendsById
@@ -16,7 +14,7 @@ export {
     locationTarget,
     partitionFriendsByPrivateLocation,
     resolveLocationSummary,
-    resolveLocationTarget,
+    friendLocationTarget,
     resolveWorldDialogTarget,
     summarizeLocation
 } from './friends-locations-rows/targets';

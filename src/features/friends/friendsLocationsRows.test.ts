@@ -9,31 +9,19 @@ import {
 import {
     isFriendInPrivateLocation,
     normalizeDisplayText,
-    normalizeFriendsLocationId,
     partitionFriendsByPrivateLocation,
     resolveDisplayWorldName,
     resolveFriendsLocationsCurrentInviteLocation,
     resolveFriendGroupName,
     resolveLocationSummary,
-    resolveLocationTarget,
+    friendLocationTarget,
     resolveWorldDialogTarget,
     uniqueFriendsById
 } from './friendsLocationsRows';
-import {
-    buildFriendsLocationsFavoriteIdSet,
-    matchesFriendLocationSearch
-} from './friendsLocationsSearch';
+import { matchesFriendLocationSearch } from './friendsLocationsSearch';
 
 describe('friends locations row helpers', () => {
-    it('normalizes ids and display text from strings and location-like objects', () => {
-        expect(normalizeFriendsLocationId('  usr_1  ')).toBe('usr_1');
-        expect(normalizeFriendsLocationId({ tag: 'wrld_1:123' })).toBe(
-            'wrld_1:123'
-        );
-        expect(
-            normalizeFriendsLocationId({ worldId: 'wrld_1', instanceId: '123' })
-        ).toBe('wrld_1:123');
-        expect(normalizeFriendsLocationId({ isPrivate: true })).toBe('private');
+    it('normalizes display text from location-like objects', () => {
         expect(
             normalizeDisplayText({ $location: { worldName: 'World Name' } })
         ).toBe('World Name');
@@ -80,14 +68,6 @@ describe('friends locations row helpers', () => {
                 { $locationTag: 'wrld_profile:456' }
             )
         ).toBe('wrld_profile:456');
-    });
-
-    it('combines remote and local favorite friend ids without empty entries', () => {
-        expect([
-            ...buildFriendsLocationsFavoriteIdSet(['usr_1'], {
-                Local: ['usr_2', '']
-            })
-        ]).toEqual(['usr_1', 'usr_2']);
     });
 
     it('matches search text against friend and location summary fields', () => {
@@ -150,13 +130,13 @@ describe('friends locations row helpers', () => {
             meta: 'traveling'
         });
 
-        const travelingTarget = resolveLocationTarget({
+        const travelingTarget = friendLocationTarget({
             $presence: travelingPresence('wrld_456:789')
         });
         expect(travelingTarget.isTraveling).toBe(false);
         expect(travelingTarget.rawLocation).toBe('wrld_456:789');
         expect(travelingTarget.worldId).toBe('wrld_456');
-        const unknownDestination = resolveLocationTarget({
+        const unknownDestination = friendLocationTarget({
             $presence: travelingPresence()
         });
         expect(unknownDestination.isTraveling).toBe(true);
