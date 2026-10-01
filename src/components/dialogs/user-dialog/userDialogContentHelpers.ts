@@ -133,7 +133,9 @@ export function resolveUserDialogTargetPresenceLocation({
     currentLocationPlayers?: readonly CurrentInstanceRosterPlayer[];
     friendsById?: Record<string, unknown>;
 }) {
-    const presenceLocation = resolveFriendPresenceLocation(profile);
+    const presenceLocation = resolveFriendPresenceLocation(profile, {
+        preferTraveling: true
+    });
     const normalizedTargetUserId = normalizeUserId(targetUserId);
     if (
         normalizedTargetUserId &&

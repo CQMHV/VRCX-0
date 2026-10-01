@@ -277,6 +277,7 @@ export function buildWorldDialogDisplayInstanceRows({
         .map((friend) => ({
             friend,
             location: resolveFriendPresenceLocation(friend, {
+                preferTraveling: true,
                 requireInstance: true
             })
         }));
@@ -349,6 +350,7 @@ export function buildWorldDialogDisplayInstanceRows({
             const userId = firstText(user.id, user.userId);
             const friend = friendsById[userId];
             const friendLocation = resolveFriendPresenceLocation(friend, {
+                preferTraveling: true,
                 requireInstance: true
             });
             return Boolean(

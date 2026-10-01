@@ -120,9 +120,13 @@ export function EntityList({
                 const timerLocation =
                     kind === 'user'
                         ? isTraveling
-                            ? resolveFriendPresenceLocation(row)
+                            ? resolveFriendPresenceLocation(row, {
+                                  preferTraveling: true
+                              })
                             : instanceLocation.trim() ||
-                              resolveFriendPresenceLocation(row)
+                              resolveFriendPresenceLocation(row, {
+                                  preferTraveling: true
+                              })
                         : '';
                 const dotClassName =
                     kind === 'user'

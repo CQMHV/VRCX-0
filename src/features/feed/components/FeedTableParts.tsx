@@ -127,7 +127,9 @@ function FeedUserLink({
         displayUser,
         cachedDisplayName
     );
-    const location = resolveFriendPresenceLocation(friend || knownUser);
+    const location = resolveFriendPresenceLocation(friend || knownUser, {
+        preferTraveling: true
+    });
     const parsedLocation = parseLocation(location);
     const worldTarget = parsedLocation.worldId || '';
     const worldDialogTarget =

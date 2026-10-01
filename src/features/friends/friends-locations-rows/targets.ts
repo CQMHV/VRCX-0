@@ -43,7 +43,7 @@ export function friendLocationTarget(
 ): FriendLocationTarget {
     return locationTarget(
         revealPrivateLocation(
-            resolveFriendPresenceLocation(friend),
+            resolveFriendPresenceLocation(friend, { preferTraveling: true }),
             observedLocation
         )
     );

@@ -131,7 +131,9 @@ export function useUserDialogSupplementalData({
         profile?.displayName || profile?.username
     );
     const profileId = profile?.id;
-    const profilePresenceLocation = resolveFriendPresenceLocation(profile);
+    const profilePresenceLocation = resolveFriendPresenceLocation(profile, {
+        preferTraveling: true
+    });
     const profileDisplayNameRef = useRef('');
     profileDisplayNameRef.current = profileDisplayName;
     const representedGroupMatchesTarget =

@@ -228,7 +228,9 @@ function buildFriendFavoriteItem({
         : knownUser || null;
     const presence = profile?.$presence ?? null;
     const status = presence ? presenceSection(presence) : 'offline';
-    const location = resolveFriendPresenceLocation(profile);
+    const location = resolveFriendPresenceLocation(profile, {
+        preferTraveling: true
+    });
 
     return {
         key: `${source}:${groupKey}:${normalizedId}`,

@@ -36,7 +36,9 @@ function filterVisibleUserDialogLocationUsers<TUser>({
         const userRecord: Record<string, unknown> = isRecord(user) ? user : {};
         const userId = firstText(userRecord.id, userRecord.userId);
         const friend = userId ? friendDirectory[userId] : null;
-        const friendLocation = resolveFriendPresenceLocation(friend);
+        const friendLocation = resolveFriendPresenceLocation(friend, {
+            preferTraveling: true
+        });
         const friendIsElsewhere = Boolean(
             location &&
             parseLocation(friendLocation).isRealInstance &&

@@ -90,32 +90,47 @@ describe('resolveFriendPresenceLocation with presence views', () => {
 
     it('reads the place from the presence view instead of raw fields', () => {
         expect(
-            resolveFriendPresenceLocation({
-                location: 'offline',
-                $presence: onlinePresence('wrld_a:1')
-            })
+            resolveFriendPresenceLocation(
+                {
+                    location: 'offline',
+                    $presence: onlinePresence('wrld_a:1')
+                },
+                { preferTraveling: true }
+            )
         ).toBe('wrld_a:1');
         expect(
-            resolveFriendPresenceLocation({
-                $presence: pendingPresence('wrld_a:1')
-            })
+            resolveFriendPresenceLocation(
+                {
+                    $presence: pendingPresence('wrld_a:1')
+                },
+                { preferTraveling: true }
+            )
         ).toBe('wrld_a:1');
         expect(
-            resolveFriendPresenceLocation({ $presence: activePresence() })
+            resolveFriendPresenceLocation(
+                { $presence: activePresence() },
+                { preferTraveling: true }
+            )
         ).toBe('offline');
         expect(
             resolveFriendPresenceLocation(
                 { $presence: activePresence() },
-                { requireInstance: true }
+                { preferTraveling: true, requireInstance: true }
             )
         ).toBe('');
         expect(
-            resolveFriendPresenceLocation({
-                $presence: onlinePresence('private')
-            })
+            resolveFriendPresenceLocation(
+                {
+                    $presence: onlinePresence('private')
+                },
+                { preferTraveling: true }
+            )
         ).toBe('private');
         expect(
-            resolveFriendPresenceLocation({ ref: { $presence: traveling } })
+            resolveFriendPresenceLocation(
+                { ref: { $presence: traveling } },
+                { preferTraveling: true }
+            )
         ).toBe('wrld_dest:2');
         expect(
             resolveFriendPresenceLocation(

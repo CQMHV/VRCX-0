@@ -232,7 +232,7 @@ export function InstanceUserTiles({
                 );
                 const subtitle = instanceUserSubtitle(user, t);
                 const presenceLocation = presence
-                    ? presenceLocationTag(presence)
+                    ? presenceLocationTag(presence, { preferTraveling: true })
                     : '';
                 const isTraveling = presence
                     ? presencePlace(presence)?.location.isTraveling === true

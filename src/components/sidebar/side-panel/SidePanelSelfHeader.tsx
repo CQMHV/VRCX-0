@@ -119,7 +119,9 @@ export function SidePanelSelfHeader() {
         });
     const selfPresence = presenceOf(selfRow);
     const locationMetadata = useLocationMetadata({
-        locationInfo: selfPresence ? presenceLocationTag(selfPresence) : '',
+        locationInfo: selfPresence
+            ? presenceLocationTag(selfPresence, { preferTraveling: true })
+            : '',
         currentLocation: gameState?.currentLocation || '',
         endpoint: currentEndpoint || ''
     });

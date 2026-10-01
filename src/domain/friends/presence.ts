@@ -151,9 +151,9 @@ export function presenceStatusKey(view: PresenceView, status: unknown): string {
 export function presenceLocationTag(
     view: PresenceView,
     {
-        preferTraveling = true,
+        preferTraveling,
         requireInstance = false
-    }: { preferTraveling?: boolean; requireInstance?: boolean } = {}
+    }: { preferTraveling: boolean; requireInstance?: boolean }
 ): string {
     const place = presencePlace(view);
     if (!place) {
@@ -179,7 +179,7 @@ export function presenceLocationTag(
 
 export function resolveFriendPresenceLocation(
     value: unknown,
-    options: { preferTraveling?: boolean; requireInstance?: boolean } = {}
+    options: { preferTraveling: boolean; requireInstance?: boolean }
 ): string {
     const presence = presenceOfSelfOrRef(value);
     return presence ? presenceLocationTag(presence, options) : '';
