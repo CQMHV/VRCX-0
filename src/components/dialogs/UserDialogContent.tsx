@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 
 import { buildFavoriteIdSet } from '@/domain/favorites/favoriteIdSet';
 import { localGameLocation } from '@/domain/friends/presence';
+import { resolveObservedPlayerUserIds } from '@/domain/friends/sameInstanceFriends';
 import { recordKnownUser } from '@/services/domainIngestionService';
 import { userImage } from '@/services/entityMediaService';
 import { subscribeRecentActions } from '@/services/recentActionService';
@@ -165,9 +166,6 @@ export function UserDialogContent({
     }, [targetIdentity]);
 
     const currentGameLocation = normalizeUserId(gameState?.currentLocation);
-    const currentGameDestination = normalizeUserId(
-        gameState?.currentDestination
-    );
     const currentSnapshotLocation = normalizeUserId(
         currentUserSnapshot?.$locationTag || currentUserSnapshot?.location
     );
@@ -237,11 +235,13 @@ export function UserDialogContent({
     } = useUserDialogSupplementalData({
         activeUserTargetRef,
         currentEndpoint,
-        currentGameDestination,
-        currentGameLocation,
-        currentSnapshotLocation,
         currentUserId,
         currentUserSnapshot,
+        inCurrentWorld: resolveObservedPlayerUserIds(
+            gameState?.currentLocationPlayerIds,
+            gameState?.currentLocationPlayers,
+            friendsById
+        ).includes(normalizedUserId),
         isTargetCurrentUser,
         normalizedUserId,
         openNonce,

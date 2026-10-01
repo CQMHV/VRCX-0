@@ -7,7 +7,6 @@ import {
     type SetStateAction
 } from 'react';
 
-import { resolveFriendPresenceLocation } from '@/domain/friends/presence';
 import type { LoadStatus } from '@/domain/shared/types';
 import friendLogHistoryRepository from '@/repositories/friendLogHistoryRepository';
 import gameLogRepository from '@/repositories/gameLogRepository';
@@ -23,7 +22,6 @@ import {
     type UserDialogStats
 } from '@/services/userDialogSessionCacheService';
 
-import { isSameLocationTag } from './userDialogContentHelpers';
 import {
     mergePreviousDisplayNames,
     replacePreviousDisplayNameSource
@@ -55,11 +53,9 @@ type UseUserDialogSupplementalDataInput = {
         };
     };
     currentEndpoint: string;
-    currentGameDestination: string;
-    currentGameLocation: string;
-    currentSnapshotLocation: string;
     currentUserId: string | null;
     currentUserSnapshot: DialogRecord | null;
+    inCurrentWorld: boolean;
     isTargetCurrentUser: boolean;
     normalizedUserId: string;
     openNonce: number;
@@ -71,11 +67,9 @@ type UseUserDialogSupplementalDataInput = {
 export function useUserDialogSupplementalData({
     activeUserTargetRef,
     currentEndpoint,
-    currentGameDestination,
-    currentGameLocation,
-    currentSnapshotLocation,
     currentUserId,
     currentUserSnapshot,
+    inCurrentWorld,
     isTargetCurrentUser,
     normalizedUserId,
     openNonce,
@@ -131,9 +125,6 @@ export function useUserDialogSupplementalData({
         profile?.displayName || profile?.username
     );
     const profileId = profile?.id;
-    const profilePresenceLocation = resolveFriendPresenceLocation(profile, {
-        preferTraveling: true
-    });
     const profileDisplayNameRef = useRef('');
     profileDisplayNameRef.current = profileDisplayName;
     const representedGroupMatchesTarget =
@@ -348,18 +339,6 @@ export function useUserDialogSupplementalData({
             };
         }
 
-        const currentLocation =
-            currentGameLocation === 'traveling'
-                ? currentGameDestination
-                : currentGameLocation ||
-                  currentGameDestination ||
-                  currentSnapshotLocation;
-        const inCurrentWorld = Boolean(
-            profilePresenceLocation &&
-            currentLocation &&
-            isSameLocationTag(profilePresenceLocation, currentLocation)
-        );
-
         gameLogRepository
             .getUserStats(
                 {
@@ -399,12 +378,9 @@ export function useUserDialogSupplementalData({
             active = false;
         };
     }, [
-        currentGameDestination,
-        currentGameLocation,
-        currentSnapshotLocation,
+        inCurrentWorld,
         openNonce,
         profileId,
-        profilePresenceLocation,
         reloadToken,
         setUserStatsForTarget,
         targetKey
