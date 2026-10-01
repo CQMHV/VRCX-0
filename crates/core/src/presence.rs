@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
 use crate::friends::StateBucket;
@@ -91,6 +91,16 @@ impl PresencePlace {
             traveling_to: place.traveling_to().map(parse_location),
         }
     }
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub enum PresenceKind {
+    Online,
+    PendingOffline,
+    Active,
+    #[default]
+    Offline,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, specta::Type)]
