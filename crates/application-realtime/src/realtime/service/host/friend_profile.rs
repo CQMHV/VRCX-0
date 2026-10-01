@@ -135,7 +135,7 @@ impl RealtimeHostRuntime {
             is_friend,
             ..Default::default()
         };
-        if let Some(output) = self.user_cache.record_user(profile, &options) {
+        if let Some(output) = self.user_facts.record_user(profile, &options) {
             self.emit_user_cache_changes(vec![output.user]);
         }
     }
@@ -164,7 +164,7 @@ impl RealtimeHostRuntime {
             .filter_map(|record| {
                 let value = serde_json::to_value(record)
                     .expect("FriendRecord contains only JSON-serializable fields");
-                self.user_cache
+                self.user_facts
                     .record_user(&value, options)
                     .map(|output| output.user)
             })
@@ -220,7 +220,7 @@ impl RealtimeHostRuntime {
                     .unwrap_or(false),
                 ..Default::default()
             };
-            if let Some(output) = self.user_cache.record_user(user, &options) {
+            if let Some(output) = self.user_facts.record_user(user, &options) {
                 changed.push(output.user);
             }
         }

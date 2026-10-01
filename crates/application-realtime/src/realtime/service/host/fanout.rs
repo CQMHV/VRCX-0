@@ -173,7 +173,7 @@ impl RealtimeHostRuntime {
         if !projection.patches.is_empty() || !projection.removals.is_empty() {
             let endpoint = self.active_endpoint();
             if !projection.removals.is_empty() {
-                self.user_cache
+                self.user_facts
                     .remove_users(&endpoint, &projection.removals);
             }
             if !projection.patches.is_empty() {

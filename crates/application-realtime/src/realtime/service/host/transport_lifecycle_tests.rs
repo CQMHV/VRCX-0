@@ -239,7 +239,7 @@ fn local_mode_stop_after_disconnect_clears_the_previous_session() -> Result<()> 
         .lock()
         .unwrap()
         .friend_baseline
-        .pending
+        .queued
         .is_none());
     runtime.auth_scope().set("", "");
     runtime
@@ -765,13 +765,13 @@ fn baseline_friend_cache_seed_preserves_profile_and_friend_fields() -> Result<()
             },
         )]),
     )?;
-    runtime.runtime().user_cache.clear();
+    runtime.runtime().user_facts.clear();
 
     runtime.runtime().record_baseline_friends_into_cache();
 
     let cached = runtime
         .runtime()
-        .user_cache
+        .user_facts
         .get_user(&active_session.endpoint, "usr_future")
         .expect("baseline friend should be cached");
     assert_eq!(
@@ -1290,7 +1290,7 @@ fn friend_ws_dispatch_fans_out_one_canonical_output() -> Result<()> {
 
     let cached = runtime
         .runtime()
-        .user_cache
+        .user_facts
         .get_user(&active_session.endpoint, "usr_friend")
         .expect("friend projection should update user facts");
     assert_eq!(cached.get("displayName"), Some(&json!("Friend")));
@@ -1344,7 +1344,7 @@ fn friend_ws_without_baseline_has_no_fanout() -> Result<()> {
         .is_empty());
     assert!(runtime
         .runtime()
-        .user_cache
+        .user_facts
         .get_user(&active_session.endpoint, "usr_friend")
         .is_none());
     let events = runtime.take_events_for_test();
@@ -1456,7 +1456,7 @@ fn pending_baseline_trust_feed_projects_once_after_start_without_rewriting() -> 
         .lock()
         .unwrap()
         .friend_baseline
-        .pending
+        .queued
         .is_none());
     Ok(())
 }

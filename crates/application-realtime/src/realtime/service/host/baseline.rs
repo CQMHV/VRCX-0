@@ -19,7 +19,7 @@ use crate::social_baseline::service::{
     reconcile_friend_roster_records, FriendRosterReconcileOutcome, FriendStatusVerdicts,
 };
 
-use super::state::{ActiveRealtimeContext, PendingFriendBaseline, ScopedFriendLogMutation};
+use super::state::{ActiveRealtimeContext, QueuedFriendBaseline, ScopedFriendLogMutation};
 use super::RealtimeHostRuntime;
 use vrcx_0_core::OwnerId;
 
@@ -206,7 +206,7 @@ impl RealtimeHostRuntime {
                     presence_by_id,
                     friends_by_id: snapshot_friends_by_id,
                 };
-                state.friend_baseline.pending = Some(PendingFriendBaseline {
+                state.friend_baseline.queued = Some(QueuedFriendBaseline {
                     session: requested_session.clone(),
                     friends_by_id,
                     feed_entries: Vec::new(),
@@ -245,9 +245,9 @@ impl RealtimeHostRuntime {
                         .state
                         .lock()
                         .map_err(|error| Error::Custom(format!("realtime state lock: {error}")))?;
-                    if let Some(pending) = state.friend_baseline.pending.as_mut() {
-                        if pending.session == requested_session {
-                            pending.feed_entries = feed_entries;
+                    if let Some(queued) = state.friend_baseline.queued.as_mut() {
+                        if queued.session == requested_session {
+                            queued.feed_entries = feed_entries;
                         }
                     }
                 }

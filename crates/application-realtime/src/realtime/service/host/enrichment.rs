@@ -118,7 +118,7 @@ impl RealtimeHostRuntime {
         {
             return Some(display_name);
         }
-        let user = self.user_cache.get_user(endpoint, user_id)?;
+        let user = self.user_facts.get_user(endpoint, user_id)?;
         user_display_name(&Value::Object(user))
     }
 
@@ -126,7 +126,7 @@ impl RealtimeHostRuntime {
         if let Some(url) = self.cached_friend_image_url(endpoint, user_id) {
             return Some(url);
         }
-        let user = self.user_cache.get_user(endpoint, user_id)?;
+        let user = self.user_facts.get_user(endpoint, user_id)?;
         user.trimmed_string("iconUrl")
     }
 
@@ -237,7 +237,7 @@ impl RealtimeHostRuntime {
         deadline: Instant,
     ) -> Option<String> {
         for attempt in 0..NOTIFICATION_USERNAME_RESOLVE_ATTEMPTS {
-            if let Some(user) = self.user_cache.get_user(endpoint, user_id) {
+            if let Some(user) = self.user_facts.get_user(endpoint, user_id) {
                 if let Some(value) = user_display_name(&Value::Object(user)) {
                     return Some(value);
                 }

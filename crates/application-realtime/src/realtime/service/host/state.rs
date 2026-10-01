@@ -18,7 +18,7 @@ use super::feed::FeedLiveCache;
 use crate::realtime::current_user::RealtimeCurrentUserRuntime;
 use crate::realtime::friends::{baseline_friend_view, RealtimeFriendsRuntime};
 use crate::realtime::invite_automation::runtime::InviteAutomationState;
-use crate::realtime::user_cache::UserCacheRuntime;
+use crate::realtime::user_facts::UserFactStore;
 use crate::realtime::user_query_cache::UserQueryCache;
 use crate::realtime::{FriendProjection, RealtimeSessionContext, RealtimeTransportLifecycleEvent};
 use crate::world_enrich::PendingEntryCorrection;
@@ -55,47 +55,45 @@ impl ScopedFriendLogMutation {
     }
 
     pub(super) fn apply(self, baseline: &mut FriendBaselineState) {
-        let Some(pending) = baseline.pending.as_mut() else {
+        let Some(queued) = baseline.queued.as_mut() else {
             return;
         };
-        if pending.session.user_id.trim() != self.owner_user_id.as_str()
-            || normalize_vrchat_api_endpoint(Some(&pending.session.endpoint)) != self.endpoint
+        if queued.session.user_id.trim() != self.owner_user_id.as_str()
+            || normalize_vrchat_api_endpoint(Some(&queued.session.endpoint)) != self.endpoint
         {
             return;
         }
 
         match self.mutation {
             FriendLogMutation::Remove { user_id } => {
-                pending.friends_by_id.remove(&user_id);
-                pending
+                queued.friends_by_id.remove(&user_id);
+                queued
                     .projection
                     .patches
                     .retain(|patch| patch.user_id != user_id);
-                if !pending
+                if !queued
                     .projection
                     .removals
                     .iter()
                     .any(|removed_user_id| removed_user_id == &user_id)
                 {
-                    pending.projection.removals.push(user_id);
+                    queued.projection.removals.push(user_id);
                 }
             }
             FriendLogMutation::Upsert { record } => {
                 let record = *record;
                 let user_id = record.id.clone();
-                pending
-                    .friends_by_id
-                    .insert(user_id.clone(), record.clone());
-                pending
+                queued.friends_by_id.insert(user_id.clone(), record.clone());
+                queued
                     .projection
                     .removals
                     .retain(|removed_user_id| removed_user_id != &user_id);
-                pending
+                queued
                     .projection
                     .patches
                     .retain(|existing| existing.user_id != user_id);
                 let (patch, presence) = baseline_friend_view(&record);
-                pending
+                queued
                     .projection
                     .patches
                     .push(crate::realtime::FriendProjectionPatch {
@@ -105,7 +103,7 @@ impl ScopedFriendLogMutation {
                     });
             }
         }
-        pending.projection.friend_log_changed = true;
+        queued.projection.friend_log_changed = true;
     }
 }
 
@@ -119,7 +117,7 @@ pub(super) struct ActiveRealtimeContext {
 }
 
 #[derive(Clone, Debug)]
-pub(super) struct PendingFriendBaseline {
+pub(super) struct QueuedFriendBaseline {
     pub(super) session: RealtimeSessionContext,
     pub(super) friends_by_id: HashMap<String, FriendRecord>,
     pub(super) feed_entries: Vec<FeedLiveEntry>,
@@ -135,7 +133,7 @@ pub(super) struct ConnectionState {
 #[derive(Default)]
 pub(super) struct FriendBaselineState {
     pub(super) friend_log_sequence: u64,
-    pub(super) pending: Option<PendingFriendBaseline>,
+    pub(super) queued: Option<QueuedFriendBaseline>,
 }
 
 #[derive(Default)]
@@ -287,7 +285,7 @@ pub struct RealtimeHostRuntime {
     pub(super) transport_lifecycle_tx: broadcast::Sender<RealtimeTransportLifecycleEvent>,
     pub(super) friends: RealtimeFriendsRuntime,
     pub(super) current_user: RealtimeCurrentUserRuntime,
-    pub(super) user_cache: UserCacheRuntime,
+    pub(super) user_facts: UserFactStore,
     pub(super) user_query_cache: UserQueryCache,
     pub(super) world_cache: Arc<WorldCache>,
     pub(super) friend_owner_lock: Mutex<()>,

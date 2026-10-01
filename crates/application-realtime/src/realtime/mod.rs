@@ -10,7 +10,7 @@ mod print_content_refresh;
 mod projection;
 mod runtime_types;
 pub(crate) mod service;
-pub(crate) mod user_cache;
+pub(crate) mod user_facts;
 pub(crate) mod user_query_cache;
 
 pub use connection::{RealtimeMessageSink, RealtimeTransport, RealtimeTransportFuture};

@@ -35,6 +35,7 @@ mod friend_avatar_change;
 mod friend_avatar_change_tests;
 #[cfg(test)]
 mod friend_baseline_tests;
+mod friend_events;
 mod friend_feed_entry;
 #[cfg(test)]
 mod friend_feed_entry_tests;
@@ -45,7 +46,6 @@ mod friend_profile;
 mod friend_profile_bulk_load;
 #[cfg(test)]
 mod friend_profile_bulk_load_tests;
-mod friend_queue;
 mod game_process;
 mod message_dispatch;
 #[cfg(test)]

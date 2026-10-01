@@ -1465,7 +1465,7 @@ fn causal_baseline_from_stopped_generation_is_not_cached() -> Result<()> {
         .lock()
         .unwrap()
         .friend_baseline
-        .pending
+        .queued
         .is_none());
     Ok(())
 }
@@ -1523,7 +1523,7 @@ fn sync_friend_snapshot_emits_projection_for_active_removals() -> Result<()> {
     );
     assert!(runtime
         .runtime()
-        .user_cache
+        .user_facts
         .get_user(&active_session.endpoint, "usr_removed")
         .is_some());
     runtime.runtime().deps.event_bus.take_events_for_test();
@@ -1557,7 +1557,7 @@ fn sync_friend_snapshot_emits_projection_for_active_removals() -> Result<()> {
         .is_empty());
     assert!(runtime
         .runtime()
-        .user_cache
+        .user_facts
         .get_user(&active_session.endpoint, "usr_removed")
         .is_none());
     assert!(runtime
