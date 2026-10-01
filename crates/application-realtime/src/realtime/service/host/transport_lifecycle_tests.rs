@@ -4,6 +4,7 @@ use std::time::Duration;
 use super::test_support::*;
 use super::*;
 use crate::realtime::{RealtimeSessionContext, RealtimeTransportLifecycleEvent};
+use vrcx_0_application_core::HostSessionGameProcessStatus as GameProcessStatus;
 use vrcx_0_application_core::{
     InstanceRosterMember, InstanceRosterSnapshot, RuntimeTask, RuntimeTaskExecutor,
     RuntimeTaskHandle,
@@ -156,6 +157,59 @@ fn local_mode_startup_preserves_roster_replayed_before_the_first_baseline() -> R
         projection.payload["locationTimeSnapshot"][0]["sinceMs"],
         1_000
     );
+    Ok(())
+}
+
+#[test]
+fn transport_start_announces_friends_already_traveling_to_the_current_instance() -> Result<()> {
+    let (_dir, runtime, session) = runtime_with_active_session("start-player-joining")?;
+    let activity_sink = runtime.activity_sink_for_test();
+    runtime
+        .runtime()
+        .deps
+        .session
+        .apply_game_process_status(GameProcessStatus {
+            is_game_running: true,
+            is_steamvr_running: true,
+            changed_at: "2026-07-13T09:59:00Z".into(),
+        });
+    runtime
+        .local_game_context_for_test()
+        .set_location("wrld_current:456");
+    runtime.prepare_pending_friend_baseline(
+        &session,
+        HashMap::from([(
+            "usr_friend".to_string(),
+            FriendBaselineEntry {
+                record: FriendRecord {
+                    id: "usr_friend".into(),
+                    display_name: "Friend".into(),
+                    ..FriendRecord::default()
+                },
+                presence: FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "traveling".into(),
+                    traveling_to_location: "wrld_current:456".into(),
+                    ..FriendBaselinePresence::default()
+                },
+            },
+        )]),
+    )?;
+    activity_sink.take_friend_feed_entries();
+    runtime.set_task_executor_for_test(DiscardTaskExecutor);
+
+    runtime.runtime().start_from_friend_baseline(
+        session.user_id.clone(),
+        session.endpoint,
+        session.websocket,
+        2,
+        json!({"id": session.user_id}),
+    )?;
+
+    let entries = activity_sink.take_friend_feed_entries();
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].to_json()["type"], "OnPlayerJoining");
+    assert_eq!(entries[0].to_json()["userId"], "usr_friend");
     Ok(())
 }
 

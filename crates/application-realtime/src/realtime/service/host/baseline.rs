@@ -38,7 +38,7 @@ struct FriendBaselineApplyPlan {
     active: ActiveRealtimeContext,
     delta: RosterDelta,
     schedules: Vec<FriendWake>,
-    confirmed_feed_entries: Vec<FeedLiveEntry>,
+    presence_feed_entries: Vec<FeedLiveEntry>,
     joining_feed_entries: Vec<FeedLiveEntry>,
     profile_refetch_user_ids: Vec<String>,
     location_time_snapshot: Option<Vec<vrcx_0_application_core::FriendLocationTime>>,
@@ -144,7 +144,7 @@ impl RealtimeHostRuntime {
             active,
             delta,
             schedules: baseline_schedules,
-            confirmed_feed_entries,
+            presence_feed_entries,
             joining_feed_entries,
             profile_refetch_user_ids,
             location_time_snapshot,
@@ -332,7 +332,7 @@ impl RealtimeHostRuntime {
                 active,
                 delta: baseline_effects.delta,
                 schedules: baseline_effects.schedules,
-                confirmed_feed_entries: baseline_effects.confirmed_feed_entries,
+                presence_feed_entries: baseline_effects.presence_feed_entries,
                 joining_feed_entries: baseline_effects.joining_feed_entries,
                 profile_refetch_user_ids: baseline_effects.profile_refetch_user_ids,
                 location_time_snapshot: baseline_effects.location_time_snapshot,
@@ -378,7 +378,7 @@ impl RealtimeHostRuntime {
         };
         drop(canonical_snapshot);
         if baseline_projection.is_some()
-            || !confirmed_feed_entries.is_empty()
+            || !presence_feed_entries.is_empty()
             || !joining_feed_entries.is_empty()
         {
             let projection = baseline_projection.unwrap_or_else(|| {
@@ -387,7 +387,7 @@ impl RealtimeHostRuntime {
             let output = RealtimeFriendOutput::from_baseline(
                 OwnerId::new(active.session.user_id.clone()),
                 projection,
-                confirmed_feed_entries,
+                presence_feed_entries,
                 joining_feed_entries,
             );
             self.apply_friend_output_owned(&owner, output);

@@ -60,7 +60,7 @@ pub(crate) struct FriendBaselineEffects {
     pub(crate) result: FriendBaselineResult,
     pub(crate) delta: RosterDelta,
     pub(crate) schedules: Vec<FriendWake>,
-    pub(crate) confirmed_feed_entries: Vec<FeedLiveEntry>,
+    pub(crate) presence_feed_entries: Vec<FeedLiveEntry>,
     pub(crate) joining_feed_entries: Vec<FeedLiveEntry>,
     pub(crate) profile_refetch_user_ids: Vec<String>,
     pub(crate) location_time_snapshot: Option<Vec<FriendLocationTime>>,
@@ -178,7 +178,7 @@ impl RealtimeFriendsRuntime {
         if new_generation {
             state.friend_rev_by_user.clear();
         }
-        let mut confirmed_feed_entries = Vec::new();
+        let mut presence_feed_entries = Vec::new();
         let mut joining_feed_entries = Vec::new();
         let unseen = Phase::offline();
         let mut schedules = Vec::new();
@@ -216,7 +216,7 @@ impl RealtimeFriendsRuntime {
             let presence = match existing_entry {
                 Some(entry) => {
                     let step = reduce(&entry.presence, &evidence, now_ms);
-                    confirmed_feed_entries.extend(
+                    presence_feed_entries.extend(
                         presence_feed(
                             &user_id,
                             &record,
@@ -324,7 +324,7 @@ impl RealtimeFriendsRuntime {
             },
             delta,
             schedules,
-            confirmed_feed_entries,
+            presence_feed_entries,
             joining_feed_entries: joining_feed_entries
                 .into_iter()
                 .map(|(_, entry)| entry)

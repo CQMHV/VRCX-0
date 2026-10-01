@@ -173,6 +173,7 @@ impl RealtimeHostRuntime {
         let mut queued_projection = FriendProjection::new(0, 0);
         let start_wakes;
         let mut start_feed_entries = Vec::new();
+        let mut start_joining = Vec::new();
         let mut start_refetch_user_ids = Vec::new();
         let friend_owner = self.lock_friend_owner();
         let generation = {
@@ -232,7 +233,8 @@ impl RealtimeHostRuntime {
                         chrono::Utc::now().timestamp_millis(),
                     );
                     start_wakes = effects.schedules;
-                    start_feed_entries = effects.confirmed_feed_entries;
+                    start_feed_entries = effects.presence_feed_entries;
+                    start_joining = effects.joining_feed_entries;
                     start_refetch_user_ids = effects.profile_refetch_user_ids;
                     friend_user_ids
                 } else {
@@ -277,7 +279,7 @@ impl RealtimeHostRuntime {
             OwnerId::new(session.user_id.clone()),
             queued_projection,
             start_feed_entries,
-            Vec::new(),
+            start_joining,
         );
         self.apply_friend_output_owned(&friend_owner, start_output);
         self.apply_reconciled_friend_feed_entries_owned(

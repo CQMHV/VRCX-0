@@ -219,7 +219,7 @@ mod tests {
                     "baseline",
                     at,
                     "",
-                    &effects.confirmed_feed_entries,
+                    &effects.presence_feed_entries,
                 );
                 continue;
             }

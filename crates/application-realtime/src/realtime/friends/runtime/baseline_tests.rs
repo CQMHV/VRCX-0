@@ -552,7 +552,7 @@ mod tests {
         assert_eq!(friend.section().as_str(), "online");
         assert_eq!(location_tag(&friend), Some("wrld_1:123"));
         assert!(is_pending_offline(&friend));
-        assert!(effects.confirmed_feed_entries.is_empty());
+        assert!(effects.presence_feed_entries.is_empty());
         assert_eq!(effects.profile_refetch_user_ids, vec!["usr_friend"]);
         let fired = runtime
             .wake("usr_friend", "2026-05-15T00:03:00Z")
@@ -687,11 +687,11 @@ mod tests {
                 "online"
             );
             assert_eq!(
-                effects.confirmed_feed_entries.len(),
+                effects.presence_feed_entries.len(),
                 1,
                 "{previous_state} -> online"
             );
-            let entry = effects.confirmed_feed_entries[0].to_json();
+            let entry = effects.presence_feed_entries[0].to_json();
             assert_eq!(entry["type"], "Online");
             assert_eq!(entry["location"], "wrld_2:456");
         }
@@ -711,7 +711,7 @@ mod tests {
             friend_view(&runtime, "usr_friend").section().as_str(),
             "online"
         );
-        assert!(effects.confirmed_feed_entries.is_empty());
+        assert!(effects.presence_feed_entries.is_empty());
     }
 
     #[test]
@@ -727,11 +727,8 @@ mod tests {
             1_800_000_000_000,
         );
 
-        assert_eq!(effects.confirmed_feed_entries.len(), 1);
-        assert_eq!(
-            effects.confirmed_feed_entries[0].to_json()["type"],
-            "Online"
-        );
+        assert_eq!(effects.presence_feed_entries.len(), 1);
+        assert_eq!(effects.presence_feed_entries[0].to_json()["type"], "Online");
     }
 
     #[test]
