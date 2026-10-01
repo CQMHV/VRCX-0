@@ -115,6 +115,20 @@ export function presenceDotClassName(
     }
 }
 
+export function userStatusDotClassName(value: unknown): string {
+    if (!isRecord(value)) {
+        return '';
+    }
+    const status =
+        value.status ?? (isRecord(value.ref) ? value.ref.status : undefined);
+    const presence = presenceOfSelfOrRef(value);
+    if (presence) {
+        return presenceDotClassName(presence, status);
+    }
+    const friendStatus = userStatusFromValue(status);
+    return friendStatus ? SOLID_USER_STATUS_DOT_CLASS_NAMES[friendStatus] : '';
+}
+
 export function presenceStatusKey(view: PresenceView, status: unknown): string {
     const friendStatus = userStatusFromValue(status);
     if (

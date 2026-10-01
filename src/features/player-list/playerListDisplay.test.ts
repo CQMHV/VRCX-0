@@ -97,8 +97,8 @@ describe('playerListDisplay', () => {
                 },
                 state: 'offline',
                 statusDescription: 'Me'
-            }).indicatorClassName
-        ).toBe('x-user-status online mr-1');
+            }).statusDotClassName
+        ).toBe('user-status-indicator online bg-[var(--status-online)]');
     });
 
     it('resolves home world ids from location strings and profile objects', () => {

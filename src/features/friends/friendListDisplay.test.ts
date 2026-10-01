@@ -28,7 +28,9 @@ describe('friendListDisplay', () => {
             $presence: onlinePresence()
         });
         expect(active.label).toBe('');
-        expect(active.showIndicator).toBe(true);
+        expect(active.statusDotClassName).toBe(
+            'user-status-indicator online bg-[var(--status-online)]'
+        );
 
         const custom = resolveFriendStatusMeta({
             status: 'busy',
@@ -36,7 +38,7 @@ describe('friendListDisplay', () => {
         });
         expect(custom.label).toBe('Do not disturb');
 
-        expect(resolveFriendStatusMeta(null).showIndicator).toBe(false);
+        expect(resolveFriendStatusMeta(null).statusDotClassName).toBe('');
     });
 
     it('ranks join me, active, ask me, busy, then offline friends for sorting', () => {

@@ -9,11 +9,11 @@ import type {
     PlatformFileAnalysis,
     WorldProfileRecord
 } from '@/domain/entities/world';
+import { userStatusDotClassName } from '@/domain/friends/presence';
 import { convertFileUrlToImageUrl } from '@/services/entityMediaService';
 import { parseLocation } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 import { normalizeString } from '@/shared/utils/string';
-import { userStatusIndicatorClassName } from '@/shared/utils/userStatus';
 
 import type { PlayerListRecord, PlayerListRow } from './playerListTypes';
 
@@ -25,7 +25,7 @@ type PlatformMeta = {
 
 type StatusMeta = {
     badgeVariant: 'default' | 'secondary' | 'outline';
-    indicatorClassName: string;
+    statusDotClassName: string;
     label: string;
 };
 
@@ -76,15 +76,12 @@ export function resolvePlatformMeta(platform: unknown): PlatformMeta {
 }
 
 export function resolveStatusMeta(row: PlayerStatusSource): StatusMeta {
-    const indicatorClassName = userStatusIndicatorClassName(row, {
-        showOffline: true,
-        className: 'mr-1'
-    });
+    const statusDotClassName = userStatusDotClassName(row);
 
     if (row.isCurrentUser || row.isFavorite) {
         return {
             badgeVariant: 'default',
-            indicatorClassName,
+            statusDotClassName,
             label: normalizeString(row.statusDescription)
         };
     }
@@ -92,14 +89,14 @@ export function resolveStatusMeta(row: PlayerStatusSource): StatusMeta {
     if (row.isFriend) {
         return {
             badgeVariant: 'secondary',
-            indicatorClassName,
+            statusDotClassName,
             label: normalizeString(row.statusDescription)
         };
     }
 
     return {
         badgeVariant: 'outline',
-        indicatorClassName,
+        statusDotClassName,
         label: normalizeString(row.statusDescription)
     };
 }
