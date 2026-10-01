@@ -35,14 +35,13 @@ export function buildFavoriteGateTarget(item: {
     if (item.kind !== 'friend' || !presence) {
         return null;
     }
-    const location = presenceLiveInstanceTag(presence);
-    if (!location) {
+    if (!presenceLiveInstanceTag(presence, { preferTraveling: true })) {
         return null;
     }
     return {
         key: item.key,
         userId: item.id,
-        location,
+        location: presenceLiveInstanceTag(presence, { preferTraveling: false }),
         presenceKind: presence.kind,
         isCurrentUser: false
     };

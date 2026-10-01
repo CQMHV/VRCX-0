@@ -21,7 +21,9 @@ function buildLocationGateTarget(
     friend: FriendRecord,
     currentUserId?: string | null
 ): LocalInstanceActionGateTarget | null {
-    const location = presenceLiveInstanceTag(friend.$presence);
+    const location = presenceLiveInstanceTag(friend.$presence, {
+        preferTraveling: false
+    });
     if (!location) {
         return null;
     }

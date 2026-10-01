@@ -48,7 +48,9 @@ export function normalizeLocation(value: unknown) {
 
 export function userGroupLocation(user: InstanceUser | null | undefined) {
     const presence = presenceOf(user);
-    return presence ? presenceLiveInstanceTag(presence) : '';
+    return presence
+        ? presenceLiveInstanceTag(presence, { preferTraveling: true })
+        : '';
 }
 
 export function instanceLocation(instance: GroupInstanceRecord) {

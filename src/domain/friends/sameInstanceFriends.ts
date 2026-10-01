@@ -179,7 +179,9 @@ function resolveSameInstanceFriendLocation(
     if (!presence) {
         return '';
     }
-    const liveLocation = presenceLiveInstanceTag(presence);
+    const liveLocation = presenceLiveInstanceTag(presence, {
+        preferTraveling: true
+    });
     if (liveLocation || presence.kind !== 'online') {
         return liveLocation;
     }

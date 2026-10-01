@@ -183,7 +183,7 @@ export function revealPrivateLocation(
 
 export function presenceLiveInstanceTag(
     view: PresenceView,
-    { preferTraveling = true }: { preferTraveling?: boolean } = {}
+    { preferTraveling }: { preferTraveling: boolean }
 ): string {
     return view.kind === 'online'
         ? presenceLocationTag(view, { preferTraveling, requireInstance: true })

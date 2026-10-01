@@ -9,7 +9,10 @@ import { useTranslation } from 'react-i18next';
 import { CurrentInstanceBadge } from '@/components/instances/CurrentInstanceBadge';
 import { EmptyState } from '@/components/layout/PageScaffold';
 import { Location } from '@/components/Location';
-import { presenceCanRequestInvite } from '@/domain/friends/presence';
+import {
+    presenceCanRequestInvite,
+    presenceLiveInstanceTag
+} from '@/domain/friends/presence';
 import type { FriendRecord } from '@/domain/friends/types';
 import { isSameInstanceLocation } from '@/domain/instances/instanceRoster';
 import { cn } from '@/lib/utils';
@@ -217,7 +220,10 @@ export function FriendsLocationCardItem({
     const presence = friend.$presence;
     const friendIsCurrentUser =
         normalizeString(friend.id) === normalizeString(currentUserId);
-    const friendLocationAvailable = canUseFriendLocation(rawLocation);
+    const friendLocationAvailable = canUseFriendLocation(
+        localLocation ||
+            presenceLiveInstanceTag(presence, { preferTraveling: false })
+    );
 
     return (
         <FriendLocationCard

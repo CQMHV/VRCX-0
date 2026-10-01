@@ -193,6 +193,39 @@ describe('FriendsLocationCardItem', () => {
         }
     );
 
+    it('does not offer to join the destination of a traveling friend', () => {
+        const destination = 'wrld_dest:1';
+        const { container } = render(
+            <FriendsLocationCardItem
+                section={{
+                    key: `instance:${destination}`,
+                    title: 'World',
+                    description: '',
+                    friends: [friendAt(travelingPresence(destination))],
+                    worldId: 'wrld_dest',
+                    groupId: '',
+                    rawLocation: destination
+                }}
+                friend={friendAt(travelingPresence(destination))}
+                currentUserId="usr_self"
+                densityConfig={getFriendsLocationsDensityConfig('compact')}
+                canUseFriendLocation={(location) => location === destination}
+                canSendInvite
+                canBoop
+                onOpenUser={vi.fn()}
+                onOpenWorld={vi.fn()}
+                onLaunchLocation={vi.fn()}
+                onSelfInviteLocation={vi.fn()}
+                onSendInvite={vi.fn()}
+                onRequestInvite={vi.fn()}
+                onSendBoop={vi.fn()}
+            />
+        );
+
+        const card = container.querySelector('[data-can-use-location]');
+        expect(card?.getAttribute('data-can-use-location')).toBe('false');
+    });
+
     it('passes the stay clock room to the shared card timer', () => {
         const location = 'wrld_test:123';
         const friend = friendAt(location);

@@ -158,7 +158,9 @@ export function useFavoritesItemActions({
 
     async function launchFavoriteFriendLocation(item: FavoriteItem) {
         const friend = getFavoriteFriend(item);
-        const location = resolveFriendPresenceLocation(friend);
+        const location = resolveFriendPresenceLocation(friend, {
+            preferTraveling: false
+        });
         const parsedLocation = parseLocation(location);
         if (
             !parsedLocation.isRealInstance ||
@@ -198,7 +200,9 @@ export function useFavoritesItemActions({
 
     async function selfInviteFavoriteFriendLocation(item: FavoriteItem) {
         const friend = getFavoriteFriend(item);
-        const location = resolveFriendPresenceLocation(friend);
+        const location = resolveFriendPresenceLocation(friend, {
+            preferTraveling: false
+        });
         const parsedLocation = parseLocation(location);
         if (
             !parsedLocation.isRealInstance ||
