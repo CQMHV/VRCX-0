@@ -3,7 +3,7 @@ use vrcx_0_core::friends::{FriendBaselinePresence, FriendRecord};
 use vrcx_0_core::presence::{LeaveTarget, Place, PresenceView};
 
 use super::evidence::{Claim, Evidence, FriendEventKind, Source};
-use super::feed::presence_feed;
+use super::feed::{joining_feed, presence_feed};
 use super::model::{OnlineState, Phase, Stay};
 use super::reduce::{reduce, wake, Step, BASELINE_CONFLICT_WINDOW_MS, FLAP_WINDOW_MS};
 use super::view::presence_view;
@@ -51,7 +51,8 @@ fn feed(prev: &Phase, step: &Step, now_ms: i64) -> Vec<serde_json::Value> {
         ..FriendRecord::default()
     };
     presence_feed("usr_friend", &record, prev, &step.next, now_ms, "at")
-        .iter()
+        .into_iter()
+        .chain(joining_feed("usr_friend", &record, prev, &step.next, "at"))
         .map(|entry| entry.to_json())
         .collect()
 }

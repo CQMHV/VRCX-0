@@ -19,14 +19,12 @@ pub(crate) fn presence_feed(
     match (prev.online_state(), next) {
         (None, Phase::Online(state)) => {
             entries.push(names.online(state.place.tag()));
-            entries.extend(names.joining(None, state));
         }
         (Some(held), Phase::Offline { .. } | Phase::Active { .. }) => {
             entries.push(names.offline(held, now_ms));
         }
         (Some(before), Phase::Online(after)) => {
             entries.extend(names.gps(before, after, now_ms));
-            entries.extend(names.joining(Some(before), after));
         }
         _ => {}
     }
@@ -154,7 +152,7 @@ impl<'a> FeedNames<'a> {
         Some(FeedLiveEntry::OnPlayerJoining {
             created_at: self.created_at.to_string(),
             user_id: self.user_id.to_string(),
-            display_name: self.record.display_name.to_string(),
+            display_name: self.display_name.clone(),
             location: after.place.tag().to_string(),
             traveling_to_location: to.to_string(),
             world_name: None,

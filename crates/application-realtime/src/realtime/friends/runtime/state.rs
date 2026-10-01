@@ -216,18 +216,14 @@ impl RealtimeFriendsRuntime {
             let presence = match existing_entry {
                 Some(entry) => {
                     let step = reduce(&entry.presence, &evidence, now_ms);
-                    presence_feed_entries.extend(
-                        presence_feed(
-                            &user_id,
-                            &record,
-                            &entry.presence,
-                            &step.next,
-                            now_ms,
-                            &now_iso,
-                        )
-                        .into_iter()
-                        .filter(|entry| !matches!(entry, FeedLiveEntry::OnPlayerJoining { .. })),
-                    );
+                    presence_feed_entries.extend(presence_feed(
+                        &user_id,
+                        &record,
+                        &entry.presence,
+                        &step.next,
+                        now_ms,
+                        &now_iso,
+                    ));
                     let wake_at_ms = if new_generation {
                         step.next.wake_at()
                     } else {

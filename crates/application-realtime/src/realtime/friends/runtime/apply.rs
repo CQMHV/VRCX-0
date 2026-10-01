@@ -1,6 +1,5 @@
 use serde_json::{json, Value};
 use vrcx_0_application_core::FriendProjectionPatch;
-use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_contracts::realtime::FriendLogDelete;
 use vrcx_0_core::derived_keys;
 use vrcx_0_core::files::extract_file_id;
@@ -41,17 +40,21 @@ pub(super) fn apply_wake(
     if step.next == previous.presence && step.wake_at_ms.is_none() {
         return None;
     }
-    push_feed(
-        &mut output,
-        presence_feed(
-            user_id,
-            &previous.record,
-            &previous.presence,
-            &step.next,
-            now.timestamp_ms,
-            &now.iso,
-        ),
-    );
+    output.persistence.feed_entries.extend(presence_feed(
+        user_id,
+        &previous.record,
+        &previous.presence,
+        &step.next,
+        now.timestamp_ms,
+        &now.iso,
+    ));
+    output.joining.extend(joining_feed(
+        user_id,
+        &previous.record,
+        &previous.presence,
+        &step.next,
+        &now.iso,
+    ));
     if let Some(wake_at_ms) = step.wake_at_ms {
         output.wake = Some(FriendWake::at(user_id, wake_at_ms, now.timestamp_ms));
     }
@@ -133,12 +136,14 @@ fn apply_change(
         now.timestamp_ms,
         &now.iso,
     );
+    let joining = joining_feed(&user_id, &record, &previous.presence, &step.next, &now.iso);
     if event_kind != FriendEventKind::Add
         && record == previous.record
         && presence_view(&step.next) == presence_view(&previous.presence)
         && step.wake_at_ms.is_none()
         && !step.refetch
         && feeds.is_empty()
+        && joining.is_none()
     {
         if let Some(entry) = state
             .roster
@@ -150,7 +155,8 @@ fn apply_change(
         return None;
     }
     record_profile_identity_change(output, &user_id, &patch, &previous.record, now);
-    push_feed(output, feeds);
+    output.persistence.feed_entries.extend(feeds);
+    output.joining.extend(joining);
     if event_kind == FriendEventKind::Update && source == Source::Ws {
         add_profile_diff_feed_entries(
             output,
@@ -258,15 +264,6 @@ fn apply_delete(
     output.projection.friend_log_changed = true;
     output.projection.location_time_snapshot = state.instance_dwell.forget_friend(&user_id);
     Some(())
-}
-
-fn push_feed(output: &mut RealtimeFriendOutput, entries: Vec<FeedLiveEntry>) {
-    for entry in entries {
-        match entry {
-            FeedLiveEntry::OnPlayerJoining { .. } => output.joining.push(entry),
-            _ => output.persistence.feed_entries.push(entry),
-        }
-    }
 }
 
 fn commit(
