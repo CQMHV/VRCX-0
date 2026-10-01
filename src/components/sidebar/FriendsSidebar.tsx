@@ -15,11 +15,11 @@ import {
     type SameInstanceLastLocation
 } from '@/domain/friends/sameInstanceFriends';
 import type { FriendRecord, FriendRosterById } from '@/domain/friends/types';
+import { useCurrentInviteContext } from '@/lib/useCurrentInviteContext';
 import { useFriendSortContext } from '@/lib/useFriendStats';
 import { subscribeRecentActions } from '@/services/recentActionService';
 import {
     buildLocalInstanceActionGateMap,
-    checkCanInvite,
     evaluateLocalInstanceActionGates,
     type LocalInstanceActionGateTarget
 } from '@/shared/utils/invite';
@@ -36,7 +36,6 @@ import {
     buildSameInstanceGroups,
     friendMatchesSidebarFilterQuery,
     normalizeSidebarFilterQuery,
-    resolveCurrentInviteLocation,
     sortActiveRows,
     sortRows,
     type SidebarFriendRecord,
@@ -182,10 +181,8 @@ export function FriendsSidebar({
     const { openGroups, statusPresets, toggleSection } =
         useFriendsSidebarPreferences();
     const [recentActionVersion, setRecentActionVersion] = useState(0);
-    const currentInviteLocation = useMemo(
-        () => resolveCurrentInviteLocation(gameState, currentUser),
-        [currentUser, gameState]
-    );
+    const { currentInviteLocation, canInviteFromCurrentLocation } =
+        useCurrentInviteContext();
     const currentLocationSnapshot = useMemo<SameInstanceLastLocation>(
         () => ({
             location: currentInviteLocation,
@@ -203,15 +200,6 @@ export function FriendsSidebar({
             effectiveCurrentLocationPlayerIds,
             friendsById
         ]
-    );
-    const canInviteFromCurrentLocation = useMemo(
-        () =>
-            checkCanInvite(currentInviteLocation, {
-                currentUserId: currentUserId || '',
-                lastLocationStr: currentInviteLocation,
-                cachedInstances: new Map()
-            }),
-        [currentInviteLocation, currentUserId]
     );
     const {
         applyCurrentUserStatusPreset,

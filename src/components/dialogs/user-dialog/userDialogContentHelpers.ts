@@ -8,7 +8,6 @@ import {
 import type { CurrentInstanceRosterPlayer } from '@/domain/instances/currentInstanceRoster';
 import { hasGroupIdPrefix } from '@/shared/constants/vrchatIds';
 import { parseLocation } from '@/shared/utils/location';
-export { resolveCurrentInviteLocation } from '@/shared/utils/invite';
 
 import { normalizeUserId } from './userProfileFields';
 

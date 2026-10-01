@@ -11,7 +11,6 @@ import {
     isUserIdLike,
     normalizeFeedId,
     resolveDisplayNameCandidate,
-    resolveFeedCurrentInviteLocation,
     resolveFeedLocationForDisplay,
     resolveFeedStatusMeta,
     resolveFeedUserDisplayName,
@@ -73,22 +72,6 @@ describe('feed row helpers', () => {
             })
         ).toBe(false);
         expect(canRequestInviteFromFeedFriend({ id: USER_ID })).toBe(false);
-        expect(
-            resolveFeedCurrentInviteLocation(
-                {
-                    isGameRunning: true,
-                    currentLocation: 'traveling',
-                    currentDestination: 'wrld_dest:123'
-                },
-                { location: 'wrld_profile:456' }
-            )
-        ).toBe('wrld_dest:123');
-        expect(
-            resolveFeedCurrentInviteLocation(
-                { isGameRunning: true },
-                { $locationTag: 'wrld_profile:456' }
-            )
-        ).toBe('wrld_profile:456');
     });
 
     it('hides stale offline locations only for online feed display rows', () => {

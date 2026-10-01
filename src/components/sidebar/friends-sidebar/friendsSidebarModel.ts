@@ -1,11 +1,3 @@
-import {
-    compareByActiveStatus,
-    getFriendsSortFunction,
-    type FriendSortMethod,
-    type FriendSortContext
-} from '@/shared/utils/friend';
-import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
-export { resolveCurrentInviteLocation } from '@/shared/utils/invite';
 import { presenceDotClassName, presenceOf } from '@/domain/friends/presence';
 import {
     buildSameInstanceFriendGroups,
@@ -15,8 +7,15 @@ import type {
     FriendProfileFields,
     FriendRecordInput
 } from '@/domain/friends/types';
+import {
+    compareByActiveStatus,
+    getFriendsSortFunction,
+    type FriendSortMethod,
+    type FriendSortContext
+} from '@/shared/utils/friend';
 import { getTrustColor, type TrustColorMap } from '@/shared/utils/trustColors';
 import { computeTrustLevel } from '@/shared/utils/userTransforms';
+import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
 
 export type SidebarFriendRecord = FriendRecordInput &
     Partial<FriendProfileFields> & {

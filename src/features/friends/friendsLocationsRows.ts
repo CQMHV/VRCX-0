@@ -23,4 +23,3 @@ export type {
     FriendLocationTarget,
     SameInstanceGroup
 } from './friends-locations-rows/types';
-export { resolveCurrentInviteLocation as resolveFriendsLocationsCurrentInviteLocation } from '@/shared/utils/invite';

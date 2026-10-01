@@ -1,19 +1,18 @@
+import type {
+    FavoriteGroupMap,
+    FavoriteRecord
+} from '@/domain/favorites/types';
 import {
     presenceCanRequestInvite,
     presenceOf
 } from '@/domain/friends/presence';
 import type { FriendRecordInput } from '@/domain/friends/types';
 import { isUserId } from '@/shared/constants/vrchatIds';
-import { isRecord } from '@/shared/utils/record';
-export { resolveCurrentInviteLocation as resolveFeedCurrentInviteLocation } from '@/shared/utils/invite';
-import type {
-    FavoriteGroupMap,
-    FavoriteRecord
-} from '@/domain/favorites/types';
 import {
     SOLID_USER_STATUS_DOT_CLASS_NAMES,
     userStatusFromValue
 } from '@/shared/utils/friendStatus';
+import { isRecord } from '@/shared/utils/record';
 
 import type { FeedRow } from './feedTypes';
 

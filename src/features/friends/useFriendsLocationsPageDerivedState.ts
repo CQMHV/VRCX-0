@@ -18,7 +18,8 @@ import { useFriendSortContext } from '@/lib/useFriendStats';
 import {
     checkCanInvite,
     type InviteLocationCurrentUserSnapshot,
-    type InviteLocationGameState
+    type InviteLocationGameState,
+    resolveCurrentInviteLocation
 } from '@/shared/utils/invite';
 import { normalizeString } from '@/shared/utils/string';
 import {
@@ -39,7 +40,6 @@ import {
 } from './friendsLocationsDensity';
 import {
     partitionFriendsByPrivateLocation,
-    resolveFriendsLocationsCurrentInviteLocation as resolveCurrentInviteLocation,
     uniqueFriendsById
 } from './friendsLocationsRows';
 import { matchesFriendLocationSearch as matchesSearch } from './friendsLocationsSearch';

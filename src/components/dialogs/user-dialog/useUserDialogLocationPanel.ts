@@ -26,14 +26,16 @@ import {
     recordLocationHintsFromInstances
 } from '@/services/domainIngestionService';
 import { hasUserIdPrefix } from '@/shared/constants/vrchatIds';
-import { checkCanInvite } from '@/shared/utils/invite';
+import {
+    checkCanInvite,
+    resolveCurrentInviteLocation
+} from '@/shared/utils/invite';
 import { parseLocation } from '@/shared/utils/location';
 import { normalizeString } from '@/shared/utils/string';
 
 import {
     buildCachedInstanceMap,
-    locationCacheKey,
-    resolveCurrentInviteLocation
+    locationCacheKey
 } from './userDialogContentHelpers';
 import {
     loadLocationOwner,

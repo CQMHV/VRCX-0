@@ -11,7 +11,6 @@ import {
     normalizeDisplayText,
     partitionFriendsByPrivateLocation,
     resolveDisplayWorldName,
-    resolveFriendsLocationsCurrentInviteLocation,
     resolveFriendGroupName,
     resolveLocationSummary,
     friendLocationTarget,
@@ -49,25 +48,6 @@ describe('friends locations row helpers', () => {
             first,
             anonymous
         ]);
-    });
-
-    it('resolves the invite location from session-visible fields', () => {
-        expect(
-            resolveFriendsLocationsCurrentInviteLocation(
-                {
-                    isGameRunning: true,
-                    currentLocation: 'traveling',
-                    currentDestination: 'wrld_dest:123'
-                },
-                { location: 'wrld_profile:456' }
-            )
-        ).toBe('wrld_dest:123');
-        expect(
-            resolveFriendsLocationsCurrentInviteLocation(
-                { isGameRunning: true },
-                { $locationTag: 'wrld_profile:456' }
-            )
-        ).toBe('wrld_profile:456');
     });
 
     it('matches search text against friend and location summary fields', () => {
