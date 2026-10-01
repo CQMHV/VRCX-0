@@ -104,7 +104,7 @@ function useKnownUserFact(
     );
     const rosterPresence = useFriendRosterStore((state) =>
         normalizedUserId
-            ? state.presenceById[normalizedUserId]?.view
+            ? state.friendsById[normalizedUserId]?.$presence
             : undefined
     );
     return (
@@ -174,7 +174,7 @@ function useKnownUserFacts(
         useShallow((state) => {
             const views: Record<string, PresenceView> = {};
             for (const userId of normalizedUserIds) {
-                const view = state.presenceById[userId]?.view;
+                const view = state.friendsById[userId]?.$presence;
                 if (view) {
                     views[userId] = view;
                 }

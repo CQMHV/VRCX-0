@@ -6,7 +6,6 @@ import {
     FRIEND_PROFILE_BOOLEAN_FIELDS,
     FRIEND_PROFILE_STRING_FIELDS,
     type FriendPatchEntry,
-    type FriendPresenceById,
     type FriendProfileFields,
     type FriendRecord,
     type FriendRecordInput,
@@ -317,7 +316,7 @@ const initialState: FriendRosterState = {
     detail: '',
     lastLoadedAt: null,
     friendsById: {},
-    presenceById: {},
+    presenceRevById: {},
     presenceGeneration: null,
     orderedFriendIds: [],
     onlineIds: [],
@@ -326,7 +325,7 @@ const initialState: FriendRosterState = {
 };
 
 function isStalePresence(
-    presenceById: FriendPresenceById,
+    presenceRevById: Record<string, number>,
     presenceGeneration: number | null,
     userId: string,
     entry: FriendPatchEntry
@@ -340,8 +339,8 @@ function isStalePresence(
     if (entry.generation !== presenceGeneration) {
         return entry.generation < presenceGeneration;
     }
-    const existing = presenceById[userId];
-    return existing !== undefined && existing.rev > entry.presence.rev;
+    const existingRev = presenceRevById[userId];
+    return existingRev !== undefined && existingRev > entry.presence.rev;
 }
 
 export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
@@ -372,7 +371,7 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
                 detail,
                 lastLoadedAt: null,
                 friendsById: {},
-                presenceById: {},
+                presenceRevById: {},
                 presenceGeneration: null,
                 orderedFriendIds: [],
                 onlineIds: [],
@@ -404,11 +403,12 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
             ) {
                 return state;
             }
-            const nextPresenceById: FriendPresenceById = { ...presenceById };
+            const nextPresenceRevById: Record<string, number> = {};
             const sourceFriendsById = normalizeFriendRecordMap(friendsById);
             for (const [userId, friend] of Object.entries(sourceFriendsById)) {
-                const presence = nextPresenceById[userId];
+                const presence = presenceById?.[userId];
                 if (presence) {
+                    nextPresenceRevById[userId] = presence.rev;
                     sourceFriendsById[userId] = {
                         ...friend,
                         $presence: presence.view
@@ -422,18 +422,18 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
                 generation !== null &&
                 generation === state.presenceGeneration
             ) {
-                for (const [userId, existing] of Object.entries(
-                    state.presenceById
+                for (const [userId, existingRev] of Object.entries(
+                    state.presenceRevById
                 )) {
-                    const incoming = nextPresenceById[userId];
+                    const incomingRev = nextPresenceRevById[userId];
                     const existingFriend = state.friendsById[userId];
                     if (
-                        incoming &&
+                        incomingRev !== undefined &&
                         existingFriend &&
-                        existing.rev > incoming.rev
+                        existingRev > incomingRev
                     ) {
                         nextFriendsById[userId] = existingFriend;
-                        nextPresenceById[userId] = existing;
+                        nextPresenceRevById[userId] = existingRev;
                     }
                 }
             }
@@ -443,7 +443,7 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
                 detail,
                 lastLoadedAt: new Date().toISOString(),
                 friendsById: nextFriendsById,
-                presenceById: nextPresenceById,
+                presenceRevById: nextPresenceRevById,
                 presenceGeneration: generation ?? state.presenceGeneration,
                 ...buildRosterOrdering(nextFriendsById)
             };
@@ -472,7 +472,7 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
             let changed = false;
             let orderingDirty = false;
             let friendsById = state.friendsById;
-            let presenceById = state.presenceById;
+            let presenceRevById = state.presenceRevById;
             let presenceGeneration = state.presenceGeneration;
 
             for (const entry of patches) {
@@ -488,7 +488,7 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
                 if (
                     !normalizedUserId ||
                     isStalePresence(
-                        presenceById,
+                        presenceRevById,
                         presenceGeneration,
                         normalizedUserId,
                         entry
@@ -497,16 +497,13 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
                     continue;
                 }
                 if (entry.presence) {
-                    const existingPresence = presenceById[normalizedUserId];
-                    const nextPresence = replaceEqualDeep(
-                        existingPresence,
-                        entry.presence
-                    );
-                    if (nextPresence !== existingPresence) {
-                        if (presenceById === state.presenceById) {
-                            presenceById = { ...presenceById };
+                    if (
+                        presenceRevById[normalizedUserId] !== entry.presence.rev
+                    ) {
+                        if (presenceRevById === state.presenceRevById) {
+                            presenceRevById = { ...presenceRevById };
                         }
-                        presenceById[normalizedUserId] = nextPresence;
+                        presenceRevById[normalizedUserId] = entry.presence.rev;
                         changed = true;
                     }
                     if (entry.generation !== undefined) {
@@ -555,7 +552,7 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
                 ...state,
                 ...(orderingDirty ? buildRosterOrdering(friendsById) : {}),
                 friendsById,
-                presenceById,
+                presenceRevById,
                 presenceGeneration,
                 loadStatus:
                     state.loadStatus === 'idle' ? 'ready' : state.loadStatus,
@@ -574,16 +571,14 @@ export const useFriendRosterStore = create<FriendRosterStore>((set) => ({
 
             const friendsById: FriendRosterById = { ...state.friendsById };
             delete friendsById[normalizedUserId];
-            const presenceById: FriendPresenceById = {
-                ...state.presenceById
-            };
-            delete presenceById[normalizedUserId];
+            const presenceRevById = { ...state.presenceRevById };
+            delete presenceRevById[normalizedUserId];
 
             const nextState = {
                 ...state,
                 ...buildRosterOrdering(friendsById),
                 friendsById,
-                presenceById,
+                presenceRevById,
                 detail: detail || state.detail,
                 lastLoadedAt: new Date().toISOString()
             };

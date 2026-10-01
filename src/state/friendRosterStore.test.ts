@@ -332,7 +332,8 @@ describe('friendRosterStore', () => {
         ]);
 
         const state = useFriendRosterStore.getState();
-        expect(state.presenceById.usr_a).toEqual(active(5));
+        expect(state.presenceRevById.usr_a).toBe(5);
+        expect(state.friendsById.usr_a.$presence).toEqual(active(5).view);
         expect(state.friendsById.usr_a.$presence).toEqual(active(5).view);
     });
 
@@ -356,7 +357,8 @@ describe('friendRosterStore', () => {
         ]);
 
         const state = useFriendRosterStore.getState();
-        expect(state.presenceById.usr_a).toEqual(offline(1));
+        expect(state.presenceRevById.usr_a).toBe(1);
+        expect(state.friendsById.usr_a.$presence).toEqual(offline(1).view);
         expect(state.presenceGeneration).toBe(2);
     });
 
@@ -382,8 +384,10 @@ describe('friendRosterStore', () => {
 
         const state = useFriendRosterStore.getState();
         expect(state.friendsById.usr_a.$presence).toEqual(active(9).view);
-        expect(state.presenceById.usr_a).toEqual(active(9));
-        expect(state.presenceById.usr_b).toEqual(offline(3));
+        expect(state.presenceRevById.usr_a).toBe(9);
+        expect(state.friendsById.usr_a.$presence).toEqual(active(9).view);
+        expect(state.presenceRevById.usr_b).toBe(3);
+        expect(state.friendsById.usr_b.$presence).toEqual(offline(3).view);
         expect(state.activeIds).toEqual(['usr_a']);
         expect(state.offlineIds).toEqual(['usr_b']);
     });
@@ -407,7 +411,8 @@ describe('friendRosterStore', () => {
 
         const state = useFriendRosterStore.getState();
         expect(state.friendsById.usr_a.$presence).toEqual(offline(0).view);
-        expect(state.presenceById.usr_a).toEqual(offline(0));
+        expect(state.presenceRevById.usr_a).toBe(0);
+        expect(state.friendsById.usr_a.$presence).toEqual(offline(0).view);
         expect(state.presenceGeneration).toBe(3);
     });
 
@@ -429,7 +434,8 @@ describe('friendRosterStore', () => {
         });
 
         const state = useFriendRosterStore.getState();
-        expect(state.presenceById.usr_a).toEqual(active(9));
+        expect(state.presenceRevById.usr_a).toBe(9);
+        expect(state.friendsById.usr_a.$presence).toEqual(active(9).view);
         expect(state.presenceGeneration).toBe(3);
     });
 
@@ -449,7 +455,8 @@ describe('friendRosterStore', () => {
         });
 
         const state = useFriendRosterStore.getState();
-        expect(state.presenceById.usr_a).toEqual(active(5));
+        expect(state.presenceRevById.usr_a).toBe(5);
+        expect(state.friendsById.usr_a.$presence).toEqual(active(5).view);
         expect(state.friendsById.usr_a.memo).toBe('note');
     });
 

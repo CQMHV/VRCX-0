@@ -102,7 +102,7 @@ export type FriendPatchEntry = {
 };
 
 export type FriendRosterState = FriendRosterSnapshot & {
-    presenceById: FriendPresenceById;
+    presenceRevById: Record<string, number>;
     presenceGeneration: number | null;
     loadStatus: FriendRosterLoadStatus;
     detail: string;
