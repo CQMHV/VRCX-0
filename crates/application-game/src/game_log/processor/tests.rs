@@ -1953,12 +1953,7 @@ fn side_effect_events_without_history_rows_still_advance_the_restart_position() 
             world_name: "Sync".into(),
         },
     );
-    let video_sync = event(
-        "2026-05-14T04:00:20Z",
-        GameLogEventKind::VideoSync {
-            timestamp: "1000".into(),
-        },
-    );
+    let desktop_mode = event("2026-05-14T04:00:20Z", GameLogEventKind::DesktopMode);
     let side_effects = |processor: &GameLogProcessor| {
         processor
             .deps
@@ -1978,7 +1973,7 @@ fn side_effect_events_without_history_rows_still_advance_the_restart_position() 
     processor.handle_jobs(vec![scan_job(
         "output_log_current.txt",
         300,
-        vec![video_sync.clone()],
+        vec![desktop_mode.clone()],
         true,
     )])?;
     assert_eq!(side_effects(&processor), 1);
@@ -1990,7 +1985,7 @@ fn side_effect_events_without_history_rows_still_advance_the_restart_position() 
         replayed.push(location);
     }
     if resume_position <= 200 {
-        replayed.push(video_sync);
+        replayed.push(desktop_mode);
     }
     let mut context = crate::game_log_parser::LogContext::new();
     context.position = 300;
@@ -2027,7 +2022,9 @@ impl vrcx_0_application_core::RuntimeTaskExecutor for InlineVideoTaskExecutor {
             .enable_all()
             .build()
             .unwrap()
-            .block_on(task);
+            .block_on(async {
+                let _ = tokio::time::timeout(std::time::Duration::from_secs(1), task).await;
+            });
         Box::new(Self)
     }
 }
