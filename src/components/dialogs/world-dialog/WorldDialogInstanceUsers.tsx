@@ -7,15 +7,12 @@ import {
     FriendInstanceTimer,
     FriendLocationTimer
 } from '@/components/friends/FriendInstanceTimer';
-import {
-    resolveSidebarStatusDotClassName,
-    type SidebarFriendRecord
-} from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
 import { UserDetailTile } from '@/components/UserDetailTile';
 import {
+    presenceDotClassName,
+    presenceLocationTag,
     presenceOf,
-    presencePlace,
-    resolveFriendPresenceLocation
+    presencePlace
 } from '@/domain/friends/presence';
 import {
     createInstanceUserRow,
@@ -218,36 +215,12 @@ export function InstanceUserTiles({
                 const image =
                     userImage(user) ||
                     (isCurrentUser ? userImage(currentUserSnapshot) : '');
-                const statusUser: SidebarFriendRecord = {
-                    id: user.id,
-                    userId: user.userId,
-                    displayName: user.displayName,
-                    $presence:
-                        presenceOf(user) ??
-                        (isCurrentUser
-                            ? presenceOf(currentUserSnapshot)
-                            : null) ??
-                        undefined,
-                    status:
-                        typeof user.status === 'string' ? user.status : null,
-                    statusDescription:
-                        typeof user.statusDescription === 'string'
-                            ? user.statusDescription
-                            : undefined,
-                    isFriend:
-                        typeof user.isFriend === 'boolean'
-                            ? user.isFriend
-                            : undefined,
-                    $userColour:
-                        typeof user.$userColour === 'string'
-                            ? user.$userColour
-                            : undefined
-                };
-                const dotClassName = resolveSidebarStatusDotClassName(
-                    statusUser,
-                    {
-                        hideNonFriend: false
-                    }
+                const presence =
+                    presenceOf(user) ??
+                    (isCurrentUser ? presenceOf(currentUserSnapshot) : null);
+                const dotClassName = presenceDotClassName(
+                    presence,
+                    user.status
                 );
                 const displayName = firstText(
                     user.displayName,
@@ -258,14 +231,15 @@ export function InstanceUserTiles({
                     'User'
                 );
                 const subtitle = instanceUserSubtitle(user, t);
-                const isTraveling = statusUser.$presence
-                    ? presencePlace(statusUser.$presence)?.location
-                          .isTraveling === true
+                const presenceLocation = presence
+                    ? presenceLocationTag(presence)
+                    : '';
+                const isTraveling = presence
+                    ? presencePlace(presence)?.location.isTraveling === true
                     : false;
                 const timerLocation = isTraveling
-                    ? resolveFriendPresenceLocation(statusUser)
-                    : instanceLocation.trim() ||
-                      resolveFriendPresenceLocation(statusUser);
+                    ? presenceLocation
+                    : instanceLocation.trim() || presenceLocation;
                 const isInstanceCreator = userId === creatorUserId;
                 let subline: ReactNode;
                 if (
