@@ -4,17 +4,13 @@ mod tests {
     use super::super::*;
 
     #[test]
-    fn baseline_causal_watermark_reports_baseline_identity() {
+    fn roster_revision_reports_the_baseline_identity() {
         let runtime = RealtimeFriendsRuntime::default();
-        let empty = runtime.baseline_causal_watermark();
-        assert_eq!(empty.generation, None);
-        assert_eq!(empty.baseline_revision, None);
+        assert_eq!(runtime.roster_revision(), None);
 
         runtime.set_baseline(FriendRosterBaseline::default(), 7, 3);
 
-        let watermark = runtime.baseline_causal_watermark();
-        assert_eq!(watermark.generation, Some(7));
-        assert_eq!(watermark.baseline_revision, Some(3));
+        assert_eq!(runtime.roster_revision(), Some((7, 3)));
     }
 
     #[test]
@@ -519,7 +515,7 @@ mod tests {
             output.wake.is_some(),
             "offline should schedule pending timer"
         );
-        let watermark = runtime.baseline_causal_watermark().friend_rev;
+        let watermark = runtime.friend_rev();
 
         let effects = runtime.set_baseline_with_effects(
             FriendRosterBaseline {

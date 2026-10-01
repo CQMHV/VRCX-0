@@ -171,10 +171,8 @@ impl RealtimeHostRuntime {
         let auth_scope_generation = self.deps.auth_scope.snapshot().generation;
         let mut queued_feed_entries = Vec::new();
         let mut queued_projection = FriendProjection::new(0, 0);
-        let start_wakes;
-        let mut start_feed_entries = Vec::new();
-        let mut start_joining = Vec::new();
-        let mut start_refetch_user_ids = Vec::new();
+        let mut start_effects = None;
+        let mut preserved_wakes = Vec::new();
         let friend_owner = self.lock_friend_owner();
         let generation = {
             let mut state = self
@@ -231,10 +229,7 @@ impl RealtimeHostRuntime {
                         None,
                         chrono::Utc::now().timestamp_millis(),
                     );
-                    start_wakes = effects.schedules;
-                    start_feed_entries = effects.presence_feed_entries;
-                    start_joining = effects.joining_feed_entries;
-                    start_refetch_user_ids = effects.profile_refetch_user_ids;
+                    start_effects = Some(effects);
                     friend_user_ids
                 } else {
                     let Some((friend_user_ids, wakes)) = self
@@ -249,7 +244,7 @@ impl RealtimeHostRuntime {
                                 .into(),
                         ));
                     };
-                    start_wakes = wakes;
+                    preserved_wakes = wakes;
                     friend_user_ids
                 };
             queued_projection.location_time_snapshot = Some(self.deps.instance_dwell.snapshot());
@@ -269,18 +264,35 @@ impl RealtimeHostRuntime {
         }
         let baseline_revision = self
             .friends
-            .baseline_causal_watermark()
-            .baseline_revision
-            .unwrap_or(0);
+            .roster_revision()
+            .map_or(0, |(_, baseline_revision)| baseline_revision);
         queued_projection.generation = generation;
         queued_projection.baseline_revision = baseline_revision;
-        let start_output = RealtimeFriendOutput::from_baseline(
-            OwnerId::new(session.user_id.clone()),
-            queued_projection,
-            start_feed_entries,
-            start_joining,
-        );
-        self.apply_friend_output_owned(&friend_owner, start_output);
+        let owner_user_id = OwnerId::new(session.user_id.clone());
+        match start_effects {
+            Some(effects) => {
+                let snapshot = self
+                    .friends
+                    .snapshot()
+                    .filter(|snapshot| snapshot.generation == generation);
+                self.apply_friend_baseline_effects_owned(
+                    &friend_owner,
+                    &owner_user_id,
+                    queued_projection,
+                    snapshot.as_ref(),
+                    effects,
+                );
+            }
+            None => {
+                self.apply_friend_output_owned(
+                    &friend_owner,
+                    RealtimeFriendOutput::from_projection(owner_user_id, queued_projection),
+                );
+                for wake in preserved_wakes {
+                    self.schedule_friend_wake(generation, wake);
+                }
+            }
+        }
         self.apply_reconciled_friend_feed_entries_owned(
             &friend_owner,
             &OwnerId::new(session.user_id.clone()),
@@ -289,10 +301,6 @@ impl RealtimeHostRuntime {
             queued_feed_entries,
         );
         drop(friend_owner);
-        for wake in start_wakes {
-            self.schedule_friend_wake(generation, wake);
-        }
-        self.schedule_friend_profile_refetches(generation, start_refetch_user_ids);
         self.user_facts.clear();
         self.user_query_cache.clear();
         self.record_baseline_friends_into_cache();

@@ -18,9 +18,8 @@ use crate::realtime::friends::presence::{
     Phase, Source,
 };
 use crate::realtime::{
-    FriendBaselineCausalWatermark, FriendBaselineResult, FriendWake, RealtimeFriendApplyResult,
-    RealtimeFriendOutput, RealtimeFriendRecordSnapshot, RealtimeFriendRosterSnapshot,
-    RealtimeFriendSnapshot,
+    FriendBaselineResult, FriendWake, RealtimeFriendApplyResult, RealtimeFriendOutput,
+    RealtimeFriendRecordSnapshot, RealtimeFriendRosterSnapshot, RealtimeFriendSnapshot,
 };
 
 use super::apply::{apply_friend_event, apply_wake};
@@ -49,7 +48,9 @@ impl Roster {
 }
 
 pub(crate) enum RosterDelta {
-    Rebuilt,
+    Rebuilt {
+        removed: Vec<String>,
+    },
     Changed {
         patched: Vec<String>,
         removed: Vec<String>,
@@ -117,14 +118,15 @@ impl RealtimeFriendsRuntime {
         }
     }
 
-    pub fn baseline_causal_watermark(&self) -> FriendBaselineCausalWatermark {
-        let state = self.lock_state();
-        FriendBaselineCausalWatermark {
-            generation: state.roster.as_ref().map(|roster| roster.generation),
-            baseline_revision: state.roster.as_ref().map(|roster| roster.baseline_revision),
-            friend_rev: state.friend_rev,
-            friend_log_sequence: 0,
-        }
+    pub(crate) fn roster_revision(&self) -> Option<(u64, u64)> {
+        self.lock_state()
+            .roster
+            .as_ref()
+            .map(|roster| (roster.generation, roster.baseline_revision))
+    }
+
+    pub(crate) fn friend_rev(&self) -> u64 {
+        self.lock_state().friend_rev
     }
 
     #[cfg(any(test, feature = "test-utils"))]
@@ -255,8 +257,19 @@ impl RealtimeFriendsRuntime {
             }
         }
 
+        let removed = existing
+            .as_ref()
+            .map(|existing| {
+                existing
+                    .entries
+                    .keys()
+                    .filter(|user_id| !entries.contains_key(*user_id))
+                    .cloned()
+                    .collect()
+            })
+            .unwrap_or_default();
         let delta = match existing.as_ref().filter(|_| !new_generation) {
-            None => RosterDelta::Rebuilt,
+            None => RosterDelta::Rebuilt { removed },
             Some(existing) => RosterDelta::Changed {
                 patched: entries
                     .iter()
@@ -269,12 +282,7 @@ impl RealtimeFriendsRuntime {
                     })
                     .map(|(user_id, _)| user_id.clone())
                     .collect(),
-                removed: existing
-                    .entries
-                    .keys()
-                    .filter(|user_id| !entries.contains_key(*user_id))
-                    .cloned()
-                    .collect(),
+                removed,
             },
         };
         let membership_changed = previous_ids.len() != entries.len()

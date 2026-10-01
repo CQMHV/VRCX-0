@@ -6,20 +6,20 @@ use vrcx_0_core::derived_keys;
 
 use serde_json::Value;
 use vrcx_0_application_core::{Error, Result};
-use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_core::friends::{FriendBaselineEntry, FriendRecord, FriendRosterBaseline};
 
-use crate::realtime::friends::{baseline_friend_view, RosterDelta};
+use crate::realtime::friends::{baseline_friend_view, FriendBaselineEffects, RosterDelta};
 use crate::realtime::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendBaselineSyncOutcome,
-    FriendProjection, FriendWake, RealtimeFriendOutput, RealtimeFriendSnapshot,
-    RealtimeSessionContext,
+    FriendProjection, RealtimeFriendOutput, RealtimeFriendSnapshot, RealtimeSessionContext,
 };
 use crate::social_baseline::service::{
     reconcile_friend_roster_records, FriendRosterReconcileOutcome, FriendStatusVerdicts,
 };
 
-use super::state::{ActiveRealtimeContext, QueuedFriendBaseline, ScopedFriendLogMutation};
+use super::state::{
+    ActiveRealtimeContext, FriendOwnerGuard, QueuedFriendBaseline, ScopedFriendLogMutation,
+};
 use super::RealtimeHostRuntime;
 use vrcx_0_core::OwnerId;
 
@@ -34,17 +34,57 @@ enum FriendBaselineSyncMode {
 }
 
 struct FriendBaselineApplyPlan {
-    result: FriendBaselineResult,
     active: ActiveRealtimeContext,
-    delta: RosterDelta,
-    schedules: Vec<FriendWake>,
-    presence_feed_entries: Vec<FeedLiveEntry>,
-    joining_feed_entries: Vec<FeedLiveEntry>,
-    profile_refetch_user_ids: Vec<String>,
-    location_time_snapshot: Option<Vec<vrcx_0_application_core::FriendLocationTime>>,
+    effects: FriendBaselineEffects,
 }
 
 impl RealtimeHostRuntime {
+    pub(super) fn apply_friend_baseline_effects_owned(
+        self: &Arc<Self>,
+        owner: &FriendOwnerGuard<'_>,
+        owner_user_id: &OwnerId,
+        mut projection: FriendProjection,
+        snapshot: Option<&RealtimeFriendSnapshot>,
+        effects: FriendBaselineEffects,
+    ) {
+        let FriendBaselineEffects {
+            result,
+            delta,
+            schedules,
+            presence_feed_entries,
+            joining_feed_entries,
+            profile_refetch_user_ids,
+            location_time_snapshot,
+        } = effects;
+        if let Some(snapshot) = snapshot {
+            add_roster_delta(&mut projection, snapshot, &delta);
+        }
+        if location_time_snapshot.is_some() {
+            projection.location_time_snapshot = location_time_snapshot;
+        }
+        if !projection.patches.is_empty()
+            || !projection.removals.is_empty()
+            || projection.location_time_snapshot.is_some()
+            || projection.friend_log_changed
+            || !presence_feed_entries.is_empty()
+            || !joining_feed_entries.is_empty()
+        {
+            self.apply_friend_output_owned(
+                owner,
+                RealtimeFriendOutput::from_baseline(
+                    owner_user_id.clone(),
+                    projection,
+                    presence_feed_entries,
+                    joining_feed_entries,
+                ),
+            );
+        }
+        for wake in schedules {
+            self.schedule_friend_wake(result.generation, wake);
+        }
+        self.schedule_friend_profile_refetches(result.generation, profile_refetch_user_ids);
+    }
+
     pub fn capture_friend_baseline_watermark(&self) -> Result<FriendBaselineCausalWatermark> {
         let _owner = self.lock_friend_owner();
         let state = self
@@ -56,13 +96,16 @@ impl RealtimeHostRuntime {
             .active_context
             .as_ref()
             .map(|active| active.generation);
-        let mut watermark = self.friends.baseline_causal_watermark();
-        if watermark.generation != active_generation {
-            watermark.baseline_revision = None;
-        }
-        watermark.generation = active_generation;
-        watermark.friend_log_sequence = state.friend_baseline.friend_log_sequence;
-        Ok(watermark)
+        Ok(FriendBaselineCausalWatermark {
+            generation: active_generation,
+            baseline_revision: self
+                .friends
+                .roster_revision()
+                .filter(|(generation, _)| Some(*generation) == active_generation)
+                .map(|(_, baseline_revision)| baseline_revision),
+            friend_rev: self.friends.friend_rev(),
+            friend_log_sequence: state.friend_baseline.friend_log_sequence,
+        })
     }
 
     #[cfg(test)]
@@ -139,16 +182,7 @@ impl RealtimeHostRuntime {
         let owner = self.lock_friend_owner();
         let feed_persistence_disabled = self.feed_persistence_disabled.load(Ordering::Relaxed);
         let friend_count = u32::try_from(friends_by_id.len()).unwrap_or(u32::MAX);
-        let FriendBaselineApplyPlan {
-            result,
-            active,
-            delta,
-            schedules: baseline_schedules,
-            presence_feed_entries,
-            joining_feed_entries,
-            profile_refetch_user_ids,
-            location_time_snapshot,
-        } = {
+        let FriendBaselineApplyPlan { active, effects } = {
             let mut state = self
                 .state
                 .lock()
@@ -284,17 +318,17 @@ impl RealtimeHostRuntime {
                     generation: generation.unwrap_or(active.generation),
                     baseline_revision: self
                         .friends
-                        .baseline_causal_watermark()
-                        .baseline_revision
-                        .unwrap_or(0),
+                        .roster_revision()
+                        .map_or(0, |(_, baseline_revision)| baseline_revision),
                     friend_count: u32::try_from(friends_by_id.len()).unwrap_or(u32::MAX),
                 }));
             }
 
-            let roster_watermark = self.friends.baseline_causal_watermark();
-            let current_baseline_revision = roster_watermark
-                .baseline_revision
-                .filter(|_| roster_watermark.generation == Some(active.generation));
+            let current_baseline_revision = self
+                .friends
+                .roster_revision()
+                .filter(|(generation, _)| *generation == active.generation)
+                .map(|(_, baseline_revision)| baseline_revision);
             if causal_watermark.is_some_and(|watermark| {
                 watermark.generation.is_some()
                     && current_baseline_revision != watermark.baseline_revision
@@ -328,16 +362,11 @@ impl RealtimeHostRuntime {
                 chrono::Utc::now().timestamp_millis(),
             );
             FriendBaselineApplyPlan {
-                result: baseline_effects.result,
                 active,
-                delta: baseline_effects.delta,
-                schedules: baseline_effects.schedules,
-                presence_feed_entries: baseline_effects.presence_feed_entries,
-                joining_feed_entries: baseline_effects.joining_feed_entries,
-                profile_refetch_user_ids: baseline_effects.profile_refetch_user_ids,
-                location_time_snapshot: baseline_effects.location_time_snapshot,
+                effects: baseline_effects,
             }
         };
+        let result = effects.result.clone();
 
         let canonical_snapshot = if result.accepted {
             self.friends
@@ -346,15 +375,6 @@ impl RealtimeHostRuntime {
         } else {
             None
         };
-        let mut baseline_projection = canonical_snapshot
-            .as_ref()
-            .and_then(|snapshot| friend_baseline_projection(snapshot, &delta));
-        if let Some(location_time_snapshot) = location_time_snapshot {
-            let projection = baseline_projection.get_or_insert_with(|| {
-                FriendProjection::new(result.generation, result.baseline_revision)
-            });
-            projection.location_time_snapshot = Some(location_time_snapshot);
-        }
         if let Some(snapshot) = canonical_snapshot.as_ref() {
             self.set_activity_friend_user_ids(snapshot.friends_by_id.keys().cloned().collect());
         }
@@ -376,22 +396,14 @@ impl RealtimeHostRuntime {
         } else {
             FriendRosterReconcileOutcome::default()
         };
+        self.apply_friend_baseline_effects_owned(
+            &owner,
+            &OwnerId::new(active.session.user_id.clone()),
+            FriendProjection::new(result.generation, result.baseline_revision),
+            canonical_snapshot.as_ref(),
+            effects,
+        );
         drop(canonical_snapshot);
-        if baseline_projection.is_some()
-            || !presence_feed_entries.is_empty()
-            || !joining_feed_entries.is_empty()
-        {
-            let projection = baseline_projection.unwrap_or_else(|| {
-                FriendProjection::new(result.generation, result.baseline_revision)
-            });
-            let output = RealtimeFriendOutput::from_baseline(
-                OwnerId::new(active.session.user_id.clone()),
-                projection,
-                presence_feed_entries,
-                joining_feed_entries,
-            );
-            self.apply_friend_output_owned(&owner, output);
-        }
         let FriendRosterReconcileOutcome {
             changed: friend_log_changed,
             feed_entries,
@@ -403,10 +415,6 @@ impl RealtimeHostRuntime {
             result.baseline_revision,
             feed_entries,
         );
-        for wake in baseline_schedules {
-            self.schedule_friend_wake(result.generation, wake);
-        }
-        self.schedule_friend_profile_refetches(result.generation, profile_refetch_user_ids);
         drop(owner);
         let final_snapshot = if result.accepted {
             let _owner = self.lock_friend_owner();
@@ -444,18 +452,17 @@ impl RealtimeHostRuntime {
     }
 }
 
-fn friend_baseline_projection(
+fn add_roster_delta(
+    projection: &mut FriendProjection,
     snapshot: &RealtimeFriendSnapshot,
     delta: &RosterDelta,
-) -> Option<FriendProjection> {
-    let mut projection = FriendProjection::new(snapshot.generation, snapshot.baseline_revision);
-    let mut patched = match delta {
-        RosterDelta::Rebuilt => snapshot.friends_by_id.keys().cloned().collect::<Vec<_>>(),
-        RosterDelta::Changed { patched, removed } => {
-            projection.removals = removed.clone();
-            projection.removals.sort();
-            patched.clone()
-        }
+) {
+    let (mut patched, removed) = match delta {
+        RosterDelta::Rebuilt { removed } => (
+            snapshot.friends_by_id.keys().cloned().collect::<Vec<_>>(),
+            removed,
+        ),
+        RosterDelta::Changed { patched, removed } => (patched.clone(), removed),
     };
     patched.sort();
     projection.patches = patched
@@ -468,7 +475,9 @@ fn friend_baseline_projection(
             })
         })
         .collect();
-    (!projection.patches.is_empty() || !projection.removals.is_empty()).then_some(projection)
+    projection.removals.extend(removed.iter().cloned());
+    projection.removals.sort();
+    projection.removals.dedup();
 }
 
 fn roster_order_from_friend_records(

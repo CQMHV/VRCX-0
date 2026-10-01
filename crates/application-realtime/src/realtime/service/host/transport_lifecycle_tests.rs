@@ -136,6 +136,76 @@ fn local_mode_startup_preserves_roster_replayed_before_the_first_baseline() -> R
 }
 
 #[test]
+fn reconnect_projects_the_fresh_baseline_to_the_frontend() -> Result<()> {
+    let (_dir, runtime, session) = runtime_with_active_session("reconnect-fresh-projection")?;
+    let old_transport = active_transport(&runtime);
+    let mut roster = online_friend_roster();
+    roster.insert(
+        "usr_gone".to_string(),
+        FriendBaselineEntry {
+            record: FriendRecord {
+                id: "usr_gone".into(),
+                ..FriendRecord::default()
+            },
+            presence: FriendBaselinePresence::default(),
+        },
+    );
+    runtime.runtime().sync_friend_snapshot(
+        session.clone(),
+        Some(old_transport.generation),
+        roster,
+    )?;
+    runtime.runtime().finish_realtime_transport(
+        old_transport,
+        RealtimeTransportTermination::UnexpectedExit {
+            reason: "websocket stream ended".into(),
+            connected_secs: Some(60),
+        },
+    );
+    runtime.runtime().sync_friend_snapshot(
+        session.clone(),
+        None,
+        HashMap::from([(
+            "usr_friend".to_string(),
+            FriendBaselineEntry {
+                record: FriendRecord {
+                    id: "usr_friend".into(),
+                    ..FriendRecord::default()
+                },
+                presence: FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "wrld_new:456".into(),
+                    ..FriendBaselinePresence::default()
+                },
+            },
+        )]),
+    )?;
+    runtime.take_events_for_test();
+    runtime.set_task_executor_for_test(DiscardTaskExecutor);
+
+    runtime.runtime().start_from_friend_baseline(
+        session.user_id.clone(),
+        session.endpoint,
+        session.websocket,
+        2,
+        json!({"id": session.user_id}),
+    )?;
+
+    let events = runtime.take_events_for_test();
+    let projection = events
+        .iter()
+        .find(|event| event.name == "realtimeFriendProjection")
+        .expect("the transport start should publish the fresh roster");
+    assert_eq!(projection.payload["patches"][0]["userId"], "usr_friend");
+    assert_eq!(
+        projection.payload["patches"][0]["presence"]["view"]["place"]["location"]["tag"],
+        "wrld_new:456"
+    );
+    assert_eq!(projection.payload["removals"], json!(["usr_gone"]));
+    Ok(())
+}
+
+#[test]
 fn transport_start_announces_friends_already_traveling_to_the_current_instance() -> Result<()> {
     let (_dir, runtime, session) = runtime_with_active_session("start-player-joining")?;
     let activity_sink = runtime.activity_sink_for_test();
