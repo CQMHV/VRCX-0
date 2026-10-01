@@ -176,7 +176,9 @@ export function FriendRow({
             isDarkMode,
             trustColor
         });
-    const statusDotClassName = resolveSidebarStatusDotClassName(friend);
+    const statusDotClassName = resolveSidebarStatusDotClassName(friend, {
+        hideNonFriend: !isCurrentUser
+    });
     const {
         isPendingOffline,
         friendLocation,

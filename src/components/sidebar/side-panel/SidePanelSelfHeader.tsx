@@ -205,7 +205,8 @@ export function SidePanelSelfHeader() {
                                     className="size-10"
                                     imageUrl={imageUrl}
                                     statusDotClassName={resolveSidebarStatusDotClassName(
-                                        selfRow
+                                        selfRow,
+                                        { hideNonFriend: false }
                                     )}
                                 />
                             </button>
