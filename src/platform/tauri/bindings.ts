@@ -5859,7 +5859,6 @@ export type RawJsonObject = Partial<{ [key in string]: JsonValue }>;
 export type RealtimeCurrentUserProjection = {
     generation: number;
     patch: RawJsonObject;
-    snapshot: RawJsonObject;
     gameStatePatch?: RawJsonObject | null;
 };
 export type RealtimeEntryCorrection = {

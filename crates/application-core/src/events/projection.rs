@@ -102,7 +102,6 @@ pub struct RealtimeEntryCorrection {
 pub struct RealtimeCurrentUserProjection {
     pub generation: u64,
     pub patch: RawJsonObject,
-    pub snapshot: RawJsonObject,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub game_state_patch: Option<RawJsonObject>,
 }

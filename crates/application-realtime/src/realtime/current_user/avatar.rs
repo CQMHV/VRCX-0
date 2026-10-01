@@ -1,3 +1,4 @@
+use serde_json::{Map, Value};
 use vrcx_0_contracts::realtime::{
     AvatarHistoryUpsert, AvatarTimeSpentUpsert, RealtimePersistenceBatch,
 };
@@ -8,6 +9,20 @@ use vrcx_0_application_core::LocalGameContextSnapshot;
 use super::state::RealtimeCurrentUserStateSnapshot;
 use super::utils::first_positive;
 use crate::realtime::event_time::EventTime;
+
+pub(super) fn insert_avatar_swap_time(
+    snapshot: &RealtimeCurrentUserStateSnapshot,
+    patch: &mut Map<String, Value>,
+) {
+    patch.insert(
+        derived_keys::PREVIOUS_AVATAR_SWAP_TIME.into(),
+        snapshot
+            .raw
+            .get(derived_keys::PREVIOUS_AVATAR_SWAP_TIME)
+            .cloned()
+            .unwrap_or(Value::Null),
+    );
+}
 
 pub(super) fn apply_avatar_wear_transition(
     mut next: RealtimeCurrentUserStateSnapshot,

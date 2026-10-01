@@ -390,8 +390,8 @@ impl RealtimeHostRuntime {
                 self.cancel_friend_profile_bulk_load_for_session(&active.session);
             }
             if let Some(output) = final_current_user_output {
-                if preserve_snapshot {
-                    self.apply_current_user_snapshot_sink(&active, &output.projection);
+                if preserve_snapshot && active.generation == output.projection.generation {
+                    self.apply_current_user_snapshot_sink(&active, &output.snapshot);
                 }
                 self.apply_current_user_output(output);
             }

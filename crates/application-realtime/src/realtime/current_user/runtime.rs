@@ -8,7 +8,7 @@ use crate::realtime::event_kind::RealtimeWsEventKind;
 use crate::realtime::{RealtimeCurrentUserOutput, RealtimeCurrentUserProjection};
 use vrcx_0_application_core::LocalGameContextSnapshot;
 
-use super::avatar::apply_avatar_wear_transition;
+use super::avatar::{apply_avatar_wear_transition, insert_avatar_swap_time};
 use super::game_log::close_remote_game_log_interval;
 use super::patch::{
     apply_current_user_patch, apply_user_location, apply_user_update, insert_presence,
@@ -289,6 +289,7 @@ impl RealtimeCurrentUserRuntime {
             (previous_avatar_swap_time > 0).then_some(previous_avatar_swap_time),
         );
         let mut patch = map_from_json(json!({ "id": state.current_user_id.clone() }));
+        insert_avatar_swap_time(&snapshot, &mut patch);
         let mut snapshot_map = snapshot.to_map();
         insert_presence(&mut state, &game, &mut patch, &mut snapshot_map);
         Some(RealtimeCurrentUserOutput {
@@ -296,9 +297,9 @@ impl RealtimeCurrentUserRuntime {
             projection: RealtimeCurrentUserProjection {
                 generation: state.generation,
                 patch: patch.into(),
-                snapshot: snapshot_map.into(),
                 game_state_patch: None,
             },
+            snapshot: snapshot_map.into(),
             persistence,
             wake: None,
         })

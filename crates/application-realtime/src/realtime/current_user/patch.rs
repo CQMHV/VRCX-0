@@ -8,7 +8,7 @@ use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY_MS;
 use crate::realtime::{RealtimeCurrentUserOutput, RealtimeCurrentUserProjection, WakeDeadline};
 use vrcx_0_application_core::LocalGameContextSnapshot;
 
-use super::avatar::apply_avatar_wear_transition;
+use super::avatar::{apply_avatar_wear_transition, insert_avatar_swap_time};
 use super::game_log::{
     close_remote_game_log_interval, local_game_location_patch, reconcile_remote_game_log_interval,
 };
@@ -175,6 +175,7 @@ pub(super) fn apply_current_user_patch(
         None
     };
 
+    insert_avatar_swap_time(&snapshot, &mut projection_patch);
     let mut snapshot_map = snapshot.to_map();
     state.sequence = state.sequence.saturating_add(1);
     state.snapshot = snapshot;
@@ -184,9 +185,9 @@ pub(super) fn apply_current_user_patch(
         projection: RealtimeCurrentUserProjection {
             generation: state.generation,
             patch: projection_patch.into(),
-            snapshot: snapshot_map.into(),
             game_state_patch: game_state_patch.map(Into::into),
         },
+        snapshot: snapshot_map.into(),
         persistence,
         wake: options.wake,
     })

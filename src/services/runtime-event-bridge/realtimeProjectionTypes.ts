@@ -68,10 +68,9 @@ type RealtimeGameStatePatch = Partial<{
 
 export type RealtimeCurrentUserProjectionPayload = Omit<
     RealtimeCurrentUserProjection,
-    'patch' | 'snapshot' | 'gameStatePatch'
+    'patch' | 'gameStatePatch'
 > & {
     patch: UserProfileEntity;
-    snapshot: UserProfileEntity;
     gameStatePatch?: RealtimeGameStatePatch | null;
 };
 

@@ -7,6 +7,7 @@ use super::projection::{
     FriendProjection, RealtimeCurrentUserProjection, RealtimeInstanceClosedProjection,
     RealtimeNotificationProjection,
 };
+use vrcx_0_core::json::RawJsonObject;
 use vrcx_0_core::OwnerId;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -103,6 +104,7 @@ pub struct RealtimeNotificationOutput {
 pub struct RealtimeCurrentUserOutput {
     pub owner_user_id: OwnerId,
     pub projection: RealtimeCurrentUserProjection,
+    pub snapshot: RawJsonObject,
     pub persistence: RealtimePersistenceBatch,
     pub wake: Option<WakeDeadline>,
 }

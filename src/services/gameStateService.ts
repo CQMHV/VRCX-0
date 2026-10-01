@@ -2,10 +2,6 @@ import {
     commands,
     type HostSessionProjection
 } from '@/platform/tauri/bindings';
-import {
-    startCurrentAvatarWearTimer,
-    stopCurrentAvatarWearTimer
-} from '@/services/avatarWearTimeService';
 import { resetGameLogSessionState } from '@/services/gameLogIngestService';
 import { useNotificationStore } from '@/state/notificationStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
@@ -26,12 +22,6 @@ async function handleGameStopped() {
             error
         );
     });
-
-    try {
-        await stopCurrentAvatarWearTimer();
-    } catch (error) {
-        console.warn('Game stop side effect failed:', error);
-    }
 }
 
 function buildNewGameSessionPatch(startedAt: string): GameStatePatch {
@@ -116,7 +106,6 @@ export async function handleGameRunningUpdate(
 
     if (nextGameRunning && gameRunningChanged) {
         useRuntimeStore.getState().resetNowPlayingState();
-        startCurrentAvatarWearTimer();
     }
 
     if (

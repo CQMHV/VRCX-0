@@ -84,7 +84,7 @@ fn current_user_projection_serializes_object_shape() {
     let serialized = serde_json::to_value(&output.projection).unwrap();
     assert_eq!(serialized["patch"]["id"], json!("usr_self"));
     assert_eq!(
-        serialized["snapshot"]["location"],
+        serialized["patch"]["location"],
         json!("wrld_1:123~group(grp_1)")
     );
     assert_eq!(
@@ -150,30 +150,15 @@ fn refreshed_current_user_snapshot_preserves_local_authority_fields() {
         )
         .expect("refreshed snapshot should update profile fields");
 
-    assert_eq!(
-        output.projection.snapshot["displayName"],
-        json!("Self Fresh")
-    );
-    assert_eq!(output.projection.snapshot["bio"], json!("fresh bio"));
-    assert_eq!(output.projection.snapshot["status"], json!("join me"));
-    assert_eq!(
-        output.projection.snapshot["statusDescription"],
-        json!("Local status")
-    );
-    assert_eq!(
-        output.projection.snapshot["$presence"]["kind"],
-        json!("online")
-    );
-    assert_eq!(
-        output.projection.snapshot["location"],
-        json!("wrld_auth:123")
-    );
-    assert_eq!(output.projection.snapshot["worldId"], json!("wrld_auth"));
-    assert_eq!(output.projection.snapshot["instanceId"], json!("123"));
-    assert_eq!(
-        output.projection.snapshot["worldName"],
-        json!("Authoritative World")
-    );
+    assert_eq!(output.snapshot["displayName"], json!("Self Fresh"));
+    assert_eq!(output.snapshot["bio"], json!("fresh bio"));
+    assert_eq!(output.snapshot["status"], json!("join me"));
+    assert_eq!(output.snapshot["statusDescription"], json!("Local status"));
+    assert_eq!(output.snapshot["$presence"]["kind"], json!("online"));
+    assert_eq!(output.snapshot["location"], json!("wrld_auth:123"));
+    assert_eq!(output.snapshot["worldId"], json!("wrld_auth"));
+    assert_eq!(output.snapshot["instanceId"], json!("123"));
+    assert_eq!(output.snapshot["worldName"], json!("Authoritative World"));
     assert_eq!(output.projection.patch["location"], json!("wrld_auth:123"));
     assert_eq!(
         output.projection.patch["$location"]["tag"],
@@ -218,7 +203,31 @@ fn refreshed_snapshot_with_stale_sequence_is_dropped() {
             game_not_running(true),
         )
         .expect("fresh sequence applies");
-    assert_eq!(output.projection.snapshot["bio"], json!("fresh bio"));
+    assert_eq!(output.snapshot["bio"], json!("fresh bio"));
+}
+
+#[test]
+fn projection_patch_carries_the_avatar_wear_start_while_the_game_runs() {
+    let runtime = RealtimeCurrentUserRuntime::new();
+    runtime.set_snapshot(
+        "usr_self".into(),
+        7,
+        json!({ "id": "usr_self", "currentAvatar": "avtr_worn" }),
+    );
+
+    let started = runtime
+        .apply_game_running_state(7, game_running_at("wrld_1:1", "World"))
+        .expect("game start output");
+    let stopped = runtime
+        .apply_game_running_state(7, game_not_running(true))
+        .expect("game stop output");
+
+    let started = serde_json::to_value(&started.projection.patch).unwrap();
+    let stopped = serde_json::to_value(&stopped.projection.patch).unwrap();
+    assert!(started["$previousAvatarSwapTime"]
+        .as_i64()
+        .is_some_and(|started_at| started_at > 0));
+    assert_eq!(stopped["$previousAvatarSwapTime"], json!(null));
 }
 
 #[test]
@@ -248,10 +257,7 @@ fn interleaved_avatar_and_fallback_selection_drops_the_stale_response() {
             game_not_running(true),
         )
         .expect("avatar selection response applies");
-    assert_eq!(
-        avatar_output.projection.snapshot["currentAvatar"],
-        json!("avtr_new")
-    );
+    assert_eq!(avatar_output.snapshot["currentAvatar"], json!("avtr_new"));
 
     assert!(runtime
         .apply_refreshed_snapshot_if_sequence(
@@ -305,11 +311,8 @@ fn unavailable_local_game_context_skips_game_dependent_side_effects() {
         )
         .expect("current user location output");
 
-    assert_eq!(output.projection.snapshot["location"], json!("wrld_1:123"));
-    assert_eq!(
-        output.projection.snapshot["$previousAvatarSwapTime"],
-        json!(1_000)
-    );
+    assert_eq!(output.snapshot["location"], json!("wrld_1:123"));
+    assert_eq!(output.snapshot["$previousAvatarSwapTime"], json!(1_000));
     assert!(output.projection.game_state_patch.is_none());
     assert!(output.persistence.is_empty());
     assert!(runtime.apply_game_running_state(7, game).is_none());
@@ -351,11 +354,8 @@ fn running_local_game_keeps_authoritative_location_above_remote_ws_location() {
         )
         .expect("current user location output");
 
-    assert_eq!(
-        output.projection.snapshot["location"],
-        json!("wrld_local:123")
-    );
-    assert_eq!(output.projection.snapshot["worldId"], json!("wrld_local"));
+    assert_eq!(output.snapshot["location"], json!("wrld_local:123"));
+    assert_eq!(output.snapshot["worldId"], json!("wrld_local"));
     assert!(output.projection.game_state_patch.is_none());
     assert!(output.persistence.game_log_locations.is_empty());
 }
@@ -387,15 +387,12 @@ fn stopped_local_game_projects_remote_location_as_online_and_starts_gamelog_inte
         )
         .expect("remote location output");
 
+    assert_eq!(output.snapshot["$presence"]["kind"], json!("online"));
     assert_eq!(
-        output.projection.snapshot["$presence"]["kind"],
-        json!("online")
-    );
-    assert_eq!(
-        output.projection.snapshot["location"],
+        output.snapshot["location"],
         json!("wrld_remote:456~group(grp_remote)")
     );
-    assert!(output.projection.snapshot.get("pendingOffline").is_none());
+    assert!(output.snapshot.get("pendingOffline").is_none());
     assert_eq!(output.persistence.game_log_locations.len(), 1);
     assert_eq!(
         output.persistence.game_log_locations[0],
@@ -434,14 +431,8 @@ fn false_remote_offline_keeps_location_until_same_location_cancels_pending() {
         pending.wake.map(|wake| wake.delay),
         Some(std::time::Duration::from_secs(170))
     );
-    assert_eq!(
-        pending.projection.snapshot["location"],
-        json!("wrld_remote:456")
-    );
-    assert_eq!(
-        pending.projection.snapshot["$presence"]["kind"],
-        json!("online")
-    );
+    assert_eq!(pending.snapshot["location"], json!("wrld_remote:456"));
+    assert_eq!(pending.snapshot["$presence"]["kind"], json!("online"));
     assert!(pending.persistence.is_empty());
 
     let resumed = runtime
@@ -482,10 +473,7 @@ fn an_earlier_wake_does_not_confirm_a_newer_pending_offline() {
     let confirmed = runtime
         .wake_pending_offline(7, "2026-05-15T00:03:10Z".into(), game_not_running(true))
         .expect("the newer pending offline confirms at its own deadline");
-    assert_eq!(
-        confirmed.projection.snapshot["$presence"]["kind"],
-        json!("active")
-    );
+    assert_eq!(confirmed.snapshot["$presence"]["kind"], json!("active"));
 }
 
 #[test]
@@ -512,11 +500,8 @@ fn confirmed_remote_offline_ends_interval_and_same_location_can_start_again() {
         .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), game_not_running(true))
         .expect("pending remote offline should fire");
 
-    assert_eq!(
-        confirmed.projection.snapshot["$presence"]["kind"],
-        json!("active")
-    );
-    assert_eq!(confirmed.projection.snapshot["location"], json!("offline"));
+    assert_eq!(confirmed.snapshot["$presence"]["kind"], json!("active"));
+    assert_eq!(confirmed.snapshot["location"], json!("offline"));
     assert_eq!(
         confirmed.persistence.game_log_location_time_updates,
         vec![GameLogLocationTimeUpdate {
@@ -552,10 +537,7 @@ fn remote_presence_remains_visible_when_gamelog_is_disabled_without_writes() {
         )
         .expect("remote presence output");
 
-    assert_eq!(
-        output.projection.snapshot["$presence"]["kind"],
-        json!("online")
-    );
+    assert_eq!(output.snapshot["$presence"]["kind"], json!("online"));
     assert!(output.persistence.is_empty());
 }
 
@@ -584,14 +566,8 @@ fn local_game_start_invalidates_remote_offline_timer_and_keeps_local_authority()
         .apply_game_running_state(7, local_game.clone())
         .expect("local game state output");
 
-    assert_eq!(
-        local.projection.snapshot["location"],
-        json!("wrld_local:123")
-    );
-    assert_eq!(
-        local.projection.snapshot["$presence"]["kind"],
-        json!("online")
-    );
+    assert_eq!(local.snapshot["location"], json!("wrld_local:123"));
+    assert_eq!(local.snapshot["$presence"]["kind"], json!("online"));
     assert!(runtime
         .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), local_game,)
         .is_none());
@@ -629,10 +605,7 @@ fn stopping_local_game_does_not_start_remote_gamelog_from_stale_snapshot() {
         )
         .expect("stopped game state output");
 
-    assert_eq!(
-        stopped.projection.snapshot["location"],
-        json!("wrld_for_two:94665")
-    );
+    assert_eq!(stopped.snapshot["location"], json!("wrld_for_two:94665"));
     assert!(stopped.projection.game_state_patch.is_some());
     assert!(stopped.persistence.game_log_locations.is_empty());
 }
@@ -717,14 +690,8 @@ fn transport_interruption_does_not_end_remote_interval_or_change_presence() {
         .interrupt_transport(7, game_not_running(true))
         .expect("transport finalization output");
 
-    assert_eq!(
-        finalized.projection.snapshot["location"],
-        json!("wrld_remote:456")
-    );
-    assert_eq!(
-        finalized.projection.snapshot["$presence"]["kind"],
-        json!("online")
-    );
+    assert_eq!(finalized.snapshot["location"], json!("wrld_remote:456"));
+    assert_eq!(finalized.snapshot["$presence"]["kind"], json!("online"));
     assert!(finalized
         .persistence
         .game_log_location_time_updates

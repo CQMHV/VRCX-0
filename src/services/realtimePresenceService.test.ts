@@ -458,15 +458,6 @@ describe('realtimePresenceService projection boundary', () => {
                 activeFriends: [],
                 offlineFriends: []
             },
-            snapshot: {
-                id: 'usr_self',
-                displayName: 'New Self',
-                status: 'active',
-                friends: ['usr_friend'],
-                onlineFriends: ['usr_friend'],
-                activeFriends: [],
-                offlineFriends: []
-            },
             gameStatePatch: {
                 currentLocation: 'wrld_1:123',
                 currentWorldId: 'wrld_1'
@@ -528,15 +519,6 @@ describe('realtimePresenceService projection boundary', () => {
                 id: 'usr_self',
                 displayName: 'New Self',
                 status: 'active'
-            },
-            snapshot: {
-                id: 'usr_self',
-                displayName: 'New Self',
-                status: 'active',
-                friends: ['usr_friend'],
-                onlineFriends: [],
-                activeFriends: [],
-                offlineFriends: ['usr_friend']
             }
         });
 
@@ -559,11 +541,6 @@ describe('realtimePresenceService projection boundary', () => {
 
         handleRealtimeCurrentUserProjection({
             generation: 7,
-            snapshot: {
-                id: 'usr_self',
-                location: 'private:private',
-                worldId: 'private'
-            },
             patch: {
                 id: 'usr_self',
                 location: 'wrld_game:456',

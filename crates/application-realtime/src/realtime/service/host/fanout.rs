@@ -9,12 +9,12 @@ use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_core::user_facts::UserFactMergeOptions;
 
 use crate::realtime::{
-    FriendProjection, RealtimeCurrentUserOutput, RealtimeCurrentUserProjection,
-    RealtimeFriendOutput, RealtimeInstanceClosedOutput, RealtimeNotificationOutput,
-    RealtimeSessionContext,
+    FriendProjection, RealtimeCurrentUserOutput, RealtimeFriendOutput,
+    RealtimeInstanceClosedOutput, RealtimeNotificationOutput, RealtimeSessionContext,
 };
 
 use super::RealtimeHostRuntime;
+use vrcx_0_core::json::RawJsonObject;
 use vrcx_0_core::OwnerId;
 
 pub(super) enum FriendOutputApplyOutcome {
@@ -318,6 +318,7 @@ impl RealtimeHostRuntime {
     pub(super) fn apply_current_user_output(&self, mut output: RealtimeCurrentUserOutput) {
         self.enrich_current_user_location_output(&mut output);
         let projection = output.projection;
+        let snapshot = output.snapshot;
         match self
             .deps
             .store
@@ -342,7 +343,7 @@ impl RealtimeHostRuntime {
             .active_current_user_context()
             .filter(|active| active.generation == projection.generation)
         {
-            self.apply_current_user_snapshot_sink(&active, &projection);
+            self.apply_current_user_snapshot_sink(&active, &snapshot);
         }
         self.deps
             .event_bus
@@ -352,16 +353,13 @@ impl RealtimeHostRuntime {
     pub(super) fn apply_current_user_snapshot_sink(
         &self,
         active: &ActiveRealtimeContext,
-        projection: &RealtimeCurrentUserProjection,
+        snapshot: &RawJsonObject,
     ) {
-        if active.generation != projection.generation {
-            return;
-        }
         if let Some(sink) = &self.deps.current_user_snapshot_sink {
             sink(
                 &active.session,
                 active.auth_scope_generation,
-                Value::Object(projection.snapshot.clone().into_map()),
+                Value::Object(snapshot.clone().into_map()),
             );
         }
     }

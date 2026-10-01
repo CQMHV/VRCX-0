@@ -2,8 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
     appRuntimeDiscordReconcileRequest: vi.fn(),
-    startCurrentAvatarWearTimer: vi.fn(),
-    stopCurrentAvatarWearTimer: vi.fn(),
     resetGameLogSessionState: vi.fn()
 }));
 
@@ -12,11 +10,6 @@ vi.mock('@/platform/tauri/bindings', () => ({
         appRuntimeDiscordReconcileRequest:
             mocks.appRuntimeDiscordReconcileRequest
     }
-}));
-
-vi.mock('@/services/avatarWearTimeService', () => ({
-    startCurrentAvatarWearTimer: mocks.startCurrentAvatarWearTimer,
-    stopCurrentAvatarWearTimer: mocks.stopCurrentAvatarWearTimer
 }));
 
 vi.mock('@/services/gameLogIngestService', () => ({
@@ -41,7 +34,6 @@ describe('gameStateService lifecycle transitions', () => {
             sessionPhase: 'ready',
             isLoggedIn: true
         });
-        mocks.stopCurrentAvatarWearTimer.mockResolvedValue(undefined);
         mocks.appRuntimeDiscordReconcileRequest.mockResolvedValue(1);
     });
 
@@ -94,7 +86,6 @@ describe('gameStateService lifecycle transitions', () => {
             url: '',
             name: ''
         });
-        expect(mocks.startCurrentAvatarWearTimer).toHaveBeenCalledTimes(1);
         expect(mocks.appRuntimeDiscordReconcileRequest).toHaveBeenCalledTimes(
             1
         );
@@ -105,7 +96,7 @@ describe('gameStateService lifecycle transitions', () => {
         });
     });
 
-    it('stops a game session by clearing the local game state and stopping avatar timing', async () => {
+    it('stops a game session by clearing the local game state', async () => {
         useRuntimeStore.getState().setGameState({
             isGameRunning: true,
             isSteamVRRunning: true,
@@ -148,7 +139,6 @@ describe('gameStateService lifecycle transitions', () => {
         expect(mocks.appRuntimeDiscordReconcileRequest).toHaveBeenCalledTimes(
             1
         );
-        expect(mocks.stopCurrentAvatarWearTimer).toHaveBeenCalledTimes(1);
         expect(useNotificationStore.getState().items[0]).toMatchObject({
             level: 'info',
             title: 'VRChat stopped',
