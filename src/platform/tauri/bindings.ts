@@ -4004,6 +4004,7 @@ export type FeedLatestQueryInput = {
     favoriteUserIds?: string[];
     scopedUserIds?: string[];
     excludedUserIds?: string[];
+    locationHiddenUserIds?: string[];
     favoritesOnly?: boolean;
     maxRows: number;
 };
@@ -4173,6 +4174,7 @@ export type FeedRowsQueryInput = {
     vipList?: string[];
     scopedUserIds?: string[];
     excludedUserIds?: string[];
+    locationHiddenUserIds?: string[];
     maxEntries: number;
     dateFrom?: string;
     dateTo?: string;
@@ -4185,6 +4187,7 @@ export type FeedSearchQueryInput = {
     favoriteUserIds?: string[];
     scopedUserIds?: string[];
     excludedUserIds?: string[];
+    locationHiddenUserIds?: string[];
     favoritesOnly?: boolean;
     dateFrom?: string;
     dateTo?: string;

@@ -62,7 +62,9 @@ export function SettingsSocialTab() {
             recentActionCooldownMinutes: state.recentActionCooldownMinutes,
             friendLogNotificationDot: state.friendLogNotificationDot,
             hideUnfriends: state.hideUnfriends,
-            profileBioScanEnabled: state.profileBioScanEnabled
+            profileBioScanEnabled: state.profileBioScanEnabled,
+            feedHiddenUsersHideNotifications:
+                state.feedHiddenUsersHideNotifications
         }))
     );
     const {
@@ -73,6 +75,7 @@ export function SettingsSocialTab() {
         localFavoriteFriendsGroups,
         feedHiddenUsers = [],
         onAddFeedHiddenUser,
+        onFeedHiddenUsersHideNotificationsChange,
         onFriendLogNotificationDotChange,
         onHideUnfriendsChange,
         onProfileBioScanEnabledChange,
@@ -368,6 +371,21 @@ export function SettingsSocialTab() {
                             </div>
                         )}
                     </div>
+                </Field>
+                <Field
+                    label={t(
+                        'view.settings.social.hidden_feed.hide_notifications'
+                    )}
+                    description={t(
+                        'view.settings.social.hidden_feed.hide_notifications_description'
+                    )}
+                >
+                    <Switch
+                        checked={prefs.feedHiddenUsersHideNotifications}
+                        onCheckedChange={
+                            onFeedHiddenUsersHideNotificationsChange
+                        }
+                    />
                 </Field>
             </SettingsCard>
             <SettingsCard
