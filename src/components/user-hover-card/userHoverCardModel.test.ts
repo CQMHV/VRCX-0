@@ -52,6 +52,22 @@ describe('buildUserHoverCardModel', () => {
         expect(model.statusKey).toBe('online');
     });
 
+    it('shows the observed room for a private friend in my instance', () => {
+        const model = buildUserHoverCardModel({
+            seed: {
+                id: 'usr_2',
+                status: 'active',
+                $presence: onlinePresence('private')
+            },
+            profile: null,
+            observedLocation: REAL_INSTANCE,
+            nowMs: NOW
+        });
+
+        expect(model.variant).toBe('in-instance');
+        expect(model.location.tag).toBe(REAL_INSTANCE);
+    });
+
     it('uses the active variant when online with no resolvable instance', () => {
         const seed = {
             id: 'usr_3',

@@ -16,7 +16,8 @@ import {
     presenceLocationTag,
     presenceOf,
     presenceSection,
-    presenceTravelingTag
+    presenceTravelingTag,
+    revealPrivateLocation
 } from '@/domain/friends/presence';
 import { cn } from '@/lib/utils';
 import { openGroupDialog, openWorldDialog } from '@/services/dialogService';
@@ -108,17 +109,11 @@ export function resolveFriendRowLocationState({
         !presence || presence.kind === 'active'
             ? ''
             : presenceLocationTag(presence, { preferTraveling: false });
-    const projectedFriendLocation = normalizeId(locationTime?.location);
-    const useProjectedFriendLocation = Boolean(
-        !isCurrentUser &&
-        locationSentinel(apiFriendLocation) === 'private' &&
-        parseLocation(projectedFriendLocation).isRealInstance
-    );
     const friendLocation =
         localLocation ||
-        (useProjectedFriendLocation
-            ? projectedFriendLocation
-            : apiFriendLocation);
+        (isCurrentUser
+            ? apiFriendLocation
+            : revealPrivateLocation(apiFriendLocation, locationTime?.location));
     const parsedFriendLocation = parseLocation(friendLocation);
     const isTraveling = locationSentinel(friendLocation) === 'traveling';
     const displayLocation = isTraveling ? 'traveling' : friendLocation;

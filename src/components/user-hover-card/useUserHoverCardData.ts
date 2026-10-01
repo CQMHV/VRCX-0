@@ -9,6 +9,7 @@ import vrchatInstanceRepository from '@/repositories/vrchatInstanceRepository';
 import worldProfileRepository from '@/repositories/worldProfileRepository';
 import { convertFileUrlToImageUrl } from '@/services/entityMediaService';
 import { normalizeString as normalizeId } from '@/shared/utils/string';
+import { useFriendLocationTimeStore } from '@/state/friendLocationTimeStore';
 import { useFriendRosterStore } from '@/state/friendRosterStore';
 import { usePreferencesStore } from '@/state/preferencesStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
@@ -58,14 +59,18 @@ export function useUserHoverCardData({
         ReturnType<typeof worldProfileRepository.getWorldProfile>
     > | null>(null);
 
+    const observedLocation = useFriendLocationTimeStore((state) =>
+        normalizedUserId ? state.byUserId[normalizedUserId]?.location : null
+    );
     const model = useMemo(
         () =>
             buildUserHoverCardModel({
                 seed: effectiveSeed,
                 profile,
+                observedLocation,
                 nowMs
             }),
-        [effectiveSeed, nowMs, profile]
+        [effectiveSeed, nowMs, observedLocation, profile]
     );
     const instanceEpoch = useFriendLocationTimeEpoch(
         normalizedUserId,

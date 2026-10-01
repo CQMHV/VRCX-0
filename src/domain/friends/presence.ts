@@ -3,7 +3,11 @@ import {
     USER_STATUS_INDICATOR_CLASS_NAMES,
     userStatusFromValue
 } from '@/shared/utils/friendStatus';
-import type { ParsedLocation } from '@/shared/utils/location';
+import {
+    normalizeLocationValue,
+    parseLocation,
+    type ParsedLocation
+} from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 
 import type { FriendRosterBucket } from './types';
@@ -187,6 +191,16 @@ export function resolveFriendPresenceLocation(
 ): string {
     const presence = presenceOfSelfOrRef(value);
     return presence ? presenceLocationTag(presence, options) : '';
+}
+
+export function revealPrivateLocation(
+    location: string,
+    observedLocation: string | null | undefined
+): string {
+    const observed = normalizeLocationValue(observedLocation);
+    return location === 'private' && parseLocation(observed).isRealInstance
+        ? observed
+        : location;
 }
 
 export function presenceLiveInstanceTag(
