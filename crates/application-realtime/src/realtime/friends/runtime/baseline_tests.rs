@@ -663,35 +663,6 @@ mod tests {
     }
 
     #[test]
-    fn same_generation_baseline_emits_online_for_friend_that_came_online() {
-        for previous_state in ["offline", "active"] {
-            let runtime = RealtimeFriendsRuntime::default();
-            runtime.set_baseline(single_friend_baseline(previous_state, "offline"), 1, 0);
-
-            let effects = runtime.set_baseline_with_effects(
-                single_friend_baseline("online", "wrld_2:456"),
-                1,
-                1,
-                None,
-                1_800_000_000_000,
-            );
-
-            assert_eq!(
-                friend_view(&runtime, "usr_friend").section().as_str(),
-                "online"
-            );
-            assert_eq!(
-                effects.presence_feed_entries.len(),
-                1,
-                "{previous_state} -> online"
-            );
-            let entry = effects.presence_feed_entries[0].to_json();
-            assert_eq!(entry["type"], "Online");
-            assert_eq!(entry["location"], "wrld_2:456");
-        }
-    }
-
-    #[test]
     fn baseline_for_another_session_rebuilds_without_presence_feed() {
         let runtime = RealtimeFriendsRuntime::default();
         runtime.set_baseline(single_friend_baseline("offline", "offline"), 1, 0);

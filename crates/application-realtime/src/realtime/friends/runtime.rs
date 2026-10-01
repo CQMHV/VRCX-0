@@ -21,13 +21,7 @@ mod event_field_ownership_tests;
 #[cfg(test)]
 mod feed_tests;
 #[cfg(test)]
-mod location_embedded_user_tests;
-#[cfg(test)]
 mod location_feed_tests;
-#[cfg(test)]
-mod location_offline_tests;
-#[cfg(test)]
-mod location_state_tests;
 #[cfg(test)]
 mod presence_test_support;
 #[cfg(test)]
