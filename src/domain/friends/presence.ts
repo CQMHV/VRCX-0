@@ -198,15 +198,3 @@ export function presenceTravelingTag(view: PresenceView): string {
 export function presenceCanRequestInvite(view: PresenceView): boolean {
     return view.kind === 'online';
 }
-
-export function localGamePresence(
-    location: ParsedLocation,
-    platform: string
-): PresenceView {
-    return {
-        kind: 'online',
-        place: { location, travelingTo: null },
-        platform,
-        onlineSinceMs: null
-    };
-}

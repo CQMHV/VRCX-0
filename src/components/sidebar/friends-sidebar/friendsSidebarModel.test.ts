@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import { onlinePresence, pendingPresence } from '@/test/presenceFixtures';
+import {
+    activePresence,
+    onlinePresence,
+    pendingPresence
+} from '@/test/presenceFixtures';
 
 import {
     buildSameInstanceGroups,
     readFriendRefLocation,
     readFriendStatusSource,
-    resolveCurrentUserStateBucket,
     resolveSidebarStatusDotClassName,
     sortRows,
     toLegacyFriendSortRow
@@ -111,161 +114,44 @@ describe('friendsSidebarModel friend status source', () => {
 });
 
 describe('friendsSidebarModel current user status dot', () => {
-    const currentUser = {
-        id: 'usr_self',
-        status: 'active',
-        state: 'online'
-    };
+    it('uses the solid account status while the realtime view is online', () => {
+        const currentUser = {
+            id: 'usr_self',
+            status: 'busy',
+            $presence: onlinePresence('wrld_local:1')
+        };
 
-    it('defaults to the active outline when local game state is unavailable', () => {
-        expect(
-            resolveSidebarStatusDotClassName(currentUser, currentUser, true)
-        ).toBe(
-            'user-status-indicator online border-[var(--status-online)] bg-background'
+        expect(resolveSidebarStatusDotClassName(currentUser, currentUser)).toBe(
+            'user-status-indicator busy bg-[var(--status-busy)]'
         );
     });
 
-    it('uses the solid status colour while the local game is running', () => {
-        expect(
-            resolveSidebarStatusDotClassName(currentUser, currentUser, true, {
-                isGameRunning: true
-            })
-        ).toBe('user-status-indicator online bg-[var(--status-online)]');
-    });
-
-    it('keeps the logged-in current user active when the local game is stopped', () => {
-        const stoppedCurrentUser = {
+    it('uses the hollow account status while the realtime view is only active', () => {
+        const currentUser = {
             id: 'usr_self',
             status: 'busy',
-            state: 'offline',
-            location: 'offline'
+            $presence: activePresence()
         };
 
-        expect(
-            resolveSidebarStatusDotClassName(
-                stoppedCurrentUser,
-                stoppedCurrentUser,
-                true,
-                { isGameRunning: false }
-            )
-        ).toBe(
+        expect(resolveSidebarStatusDotClassName(currentUser, currentUser)).toBe(
             'user-status-indicator busy border-[var(--status-busy)] bg-background'
         );
-    });
-
-    it('keeps local game authority above stale remote presence fields', () => {
-        const runningCurrentUser = {
-            id: 'usr_self',
-            status: 'busy',
-            state: 'offline',
-            location: 'offline'
-        };
-
-        expect(
-            resolveSidebarStatusDotClassName(
-                runningCurrentUser,
-                runningCurrentUser,
-                true,
-                { isGameRunning: true }
-            )
-        ).toBe('user-status-indicator busy bg-[var(--status-busy)]');
-    });
-
-    it('uses the solid account status when the stopped local game has a remote location', () => {
-        const dialogUser = {
-            id: 'usr_self',
-            status: 'active',
-            state: 'offline',
-            location: 'offline'
-        };
-        const currentUserSnapshot = {
-            id: 'usr_self',
-            status: 'busy',
-            state: 'online',
-            location: 'wrld_remote:456'
-        };
-
-        expect(
-            resolveSidebarStatusDotClassName(
-                dialogUser,
-                currentUserSnapshot,
-                true,
-                { isGameRunning: false }
-            )
-        ).toBe('user-status-indicator busy bg-[var(--status-busy)]');
-    });
-
-    it('uses the account status color for remote play', () => {
-        const remoteCurrentUser = {
-            id: 'usr_self',
-            status: 'join me',
-            state: 'online',
-            location: 'wrld_remote:456'
-        };
-
-        expect(
-            resolveSidebarStatusDotClassName(
-                remoteCurrentUser,
-                remoteCurrentUser,
-                true,
-                { isGameRunning: false }
-            )
-        ).toBe('user-status-indicator joinme bg-[var(--status-joinme)]');
-    });
-});
-
-describe('friendsSidebarModel current user state bucket', () => {
-    it('ignores remote online state when there is no location', () => {
-        expect(
-            resolveCurrentUserStateBucket({
-                id: 'usr_self',
-                state: 'online',
-                location: ''
-            })
-        ).toBe('active');
-    });
-
-    it('uses active instead of offline after login without a location', () => {
-        expect(
-            resolveCurrentUserStateBucket({
-                id: 'usr_self',
-                state: 'offline',
-                location: 'offline'
-            })
-        ).toBe('active');
-    });
-
-    it('uses online when a remote location contradicts embedded offline state', () => {
-        expect(
-            resolveCurrentUserStateBucket({
-                id: 'usr_self',
-                state: 'offline',
-                location: 'wrld_remote:456'
-            })
-        ).toBe('online');
     });
 });
 
 describe('friendsSidebarModel ordinary friend status dot', () => {
     const currentUser = { id: 'usr_self' };
 
-    it('does not let the local game flag change an ordinary online friend', () => {
+    it('uses the solid status for an ordinary online friend', () => {
         const friend = {
             id: 'usr_friend',
             status: 'busy',
             $presence: onlinePresence()
         };
 
-        expect(
-            resolveSidebarStatusDotClassName(friend, currentUser, false, {
-                isGameRunning: false
-            })
-        ).toBe('user-status-indicator busy bg-[var(--status-busy)]');
-        expect(
-            resolveSidebarStatusDotClassName(friend, currentUser, false, {
-                isGameRunning: true
-            })
-        ).toBe('user-status-indicator busy bg-[var(--status-busy)]');
+        expect(resolveSidebarStatusDotClassName(friend, currentUser)).toBe(
+            'user-status-indicator busy bg-[var(--status-busy)]'
+        );
     });
 
     it('keeps an ordinary pending friend offline', () => {
@@ -275,10 +161,8 @@ describe('friendsSidebarModel ordinary friend status dot', () => {
             $presence: pendingPresence()
         };
 
-        expect(
-            resolveSidebarStatusDotClassName(friend, currentUser, false, {
-                isGameRunning: false
-            })
-        ).toBe('user-status-indicator offline bg-[var(--status-offline)]');
+        expect(resolveSidebarStatusDotClassName(friend, currentUser)).toBe(
+            'user-status-indicator offline bg-[var(--status-offline)]'
+        );
     });
 });

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { FavoriteGroup, FavoriteGroupMap } from '@/domain/favorites/types';
-import { localGamePresence } from '@/domain/friends/presence';
+import { presenceOf } from '@/domain/friends/presence';
 import { resolveObservedPlayerUserIds } from '@/domain/friends/sameInstanceFriends';
 import type { FriendRecord, FriendRosterById } from '@/domain/friends/types';
 import type { CurrentInstanceRosterPlayer } from '@/domain/instances/currentInstanceRoster';
@@ -10,14 +10,12 @@ import {
     getVisibleKnownSizeRows,
     positionKnownSizeRows
 } from '@/lib/knownSizeVirtualRows';
-import { buildCurrentUserPresenceView } from '@/shared/utils/currentUserPresence';
 import type { FriendStaySince } from '@/shared/utils/friend';
 import {
     checkCanInvite,
     type InviteLocationCurrentUserSnapshot,
     type InviteLocationGameState
 } from '@/shared/utils/invite';
-import { parseLocation } from '@/shared/utils/location';
 import {
     computeTrustLevel,
     computeUserPlatform
@@ -358,16 +356,16 @@ export function useFriendsLocationsPageDerivedState({
         [onlineFavoriteExclusionIds, onlineFriends]
     );
     const currentUserRecord = useMemo<FriendRecord | null>(() => {
+        const presence = presenceOf(currentUserSnapshot);
         if (
             !currentUserId ||
             !currentUserSnapshot ||
+            !presence ||
             normalizeId(currentUserSnapshot.id) !== currentUserId
         ) {
             return null;
         }
-        const profile = buildCurrentUserPresenceView(currentUserSnapshot, {
-            gameState
-        });
+        const profile = currentUserSnapshot;
         const tags = Array.isArray(profile.tags)
             ? profile.tags.filter(
                   (tag): tag is string => typeof tag === 'string'
@@ -382,10 +380,7 @@ export function useFriendsLocationsPageDerivedState({
             id: currentUserId,
             displayName: normalizeId(profile.displayName) || currentUserId,
             tags,
-            $presence: localGamePresence(
-                parseLocation(currentInviteLocation),
-                normalizeId(profile.last_platform)
-            ),
+            $presence: presence,
             $friendNumber: 0,
             $trustLevel: trust.trustLevel,
             $trustClass: trust.trustClass,
@@ -395,7 +390,7 @@ export function useFriendsLocationsPageDerivedState({
             $isProbableTroll: trust.isProbableTroll,
             $platform: computeUserPlatform(normalizeId(profile.last_platform))
         };
-    }, [currentInviteLocation, currentUserId, currentUserSnapshot, gameState]);
+    }, [currentUserId, currentUserSnapshot]);
     const sameInstanceGroups = useMemo<
         FriendsLocationsSameInstanceGroup[]
     >(() => {

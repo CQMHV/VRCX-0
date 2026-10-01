@@ -329,6 +329,19 @@ impl RealtimeHostRuntime {
         }
     }
 
+    pub fn refresh_current_user_local_presence(&self) {
+        let Some(active) = self.active_current_user_context() else {
+            return;
+        };
+        let Some(output) = self
+            .current_user
+            .refresh_local_presence(active.generation, self.current_user_authority())
+        else {
+            return;
+        };
+        self.apply_current_user_output(output);
+    }
+
     pub(super) fn sync_current_user_game_running_state(
         &self,
         generation: u64,

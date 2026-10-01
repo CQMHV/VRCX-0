@@ -109,7 +109,7 @@ describe('useFriendsLocationsPageDerivedState', () => {
             input.currentUserSnapshot = {
                 id: 'usr_self',
                 displayName: 'Me',
-                location: 'wrld_stale:2'
+                $presence: onlinePresence('wrld_local:1')
             };
             const { result } = renderHook(() =>
                 useFriendsLocationsPageDerivedState(input)
@@ -124,7 +124,7 @@ describe('useFriendsLocationsPageDerivedState', () => {
             ]);
             expect(cards[0]).toMatchObject({
                 displayName: 'Me',
-                $presence: onlinePresence('wrld_local:1', '')
+                $presence: onlinePresence('wrld_local:1')
             });
         }
     );
@@ -533,7 +533,7 @@ describe('useFriendsLocationsPageDerivedState worlds view', () => {
         input.currentUserSnapshot = {
             id: 'usr_self',
             displayName: 'Me',
-            location: 'wrld_local:1'
+            $presence: onlinePresence('wrld_local:1')
         };
         const { result } = renderHook(() =>
             useFriendsLocationsPageDerivedState(input)
@@ -555,7 +555,7 @@ describe('useFriendsLocationsPageDerivedState worlds view', () => {
         input.currentUserSnapshot = {
             id: 'usr_self',
             displayName: 'Me',
-            location: 'wrld_local:1'
+            $presence: onlinePresence('wrld_local:1')
         };
         const { result } = renderHook(() =>
             useFriendsLocationsPageDerivedState(input)

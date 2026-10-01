@@ -1,4 +1,5 @@
 use serde_json::{Map, Value};
+use vrcx_0_core::derived_keys;
 use vrcx_0_core::json::JsonExt;
 use vrcx_0_core::text::first_owned;
 
@@ -13,6 +14,7 @@ use super::game_log::{
     close_remote_game_log_interval, game_log_authority_patch, reconcile_remote_game_log_interval,
 };
 use super::location::{build_location_patch, location_game_state_patch};
+use super::presence::current_user_presence;
 use super::self_profile::append_self_profile_log_entries;
 use super::state::{
     CurrentUserPatchOptions, PendingCurrentUserOffline, RealtimeCurrentUserState,
@@ -206,9 +208,10 @@ pub(super) fn apply_current_user_patch(
         None
     };
 
-    let snapshot_map = snapshot.to_map();
+    let mut snapshot_map = snapshot.to_map();
     state.sequence = state.sequence.saturating_add(1);
     state.snapshot = snapshot;
+    insert_presence(state, authority, &mut projection_patch, &mut snapshot_map);
     Some(RealtimeCurrentUserOutput {
         owner_user_id: OwnerId::new(state.current_user_id.clone()),
         projection: RealtimeCurrentUserProjection {
@@ -220,6 +223,20 @@ pub(super) fn apply_current_user_patch(
         persistence,
         timer_action: options.timer_action,
     })
+}
+
+pub(super) fn insert_presence(
+    state: &mut RealtimeCurrentUserState,
+    authority: &RealtimeCurrentUserAuthority,
+    projection_patch: &mut Map<String, Value>,
+    snapshot_map: &mut Map<String, Value>,
+) {
+    let presence = current_user_presence(state, authority);
+    if let Ok(value) = serde_json::to_value(&presence) {
+        projection_patch.insert(derived_keys::PRESENCE.into(), value.clone());
+        snapshot_map.insert(derived_keys::PRESENCE.into(), value);
+    }
+    state.presence = Some(presence);
 }
 
 fn normalize_current_user_presence(merged: &mut Map<String, Value>, is_online: bool) {

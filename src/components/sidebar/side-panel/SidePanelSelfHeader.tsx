@@ -13,8 +13,10 @@ import {
     resolveFriendRowLocationState,
     StaticSidebarLocation
 } from '@/components/sidebar/friends-sidebar/FriendsSidebarLocation';
-import { resolveSidebarStatusDotClassName } from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
-import { buildCurrentUserDisplayRecord } from '@/components/sidebar/friends-sidebar/friendsSidebarVirtualRowBuilder';
+import {
+    resolveSidebarStatusDotClassName,
+    type SidebarFriendRecord
+} from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
 import { useFriendsSidebarActions } from '@/components/sidebar/friends-sidebar/useFriendsSidebarActions';
 import { useFriendsSidebarPreferences } from '@/components/sidebar/friends-sidebar/useFriendsSidebarPreferences';
 import { SidePanelSelfAccountMenu } from '@/components/sidebar/side-panel/SidePanelSelfAccountMenu';
@@ -104,9 +106,9 @@ export function SidePanelSelfHeader() {
         currentUserId
     });
 
-    const selfRow = useMemo(
-        () => buildCurrentUserDisplayRecord(currentUser, gameState),
-        [currentUser, gameState]
+    const selfRow = useMemo<SidebarFriendRecord | null>(
+        () => (currentUser ? { ...currentUser } : null),
+        [currentUser]
     );
     const { displaySource, imageUrl, displayName, nameStyle } =
         resolveFriendRowDisplay(selfRow, {
@@ -200,12 +202,7 @@ export function SidePanelSelfHeader() {
                                     imageUrl={imageUrl}
                                     statusDotClassName={resolveSidebarStatusDotClassName(
                                         selfRow,
-                                        currentUser,
-                                        true,
-                                        {
-                                            isGameRunning:
-                                                gameState?.isGameRunning
-                                        }
+                                        currentUser
                                     )}
                                 />
                             </button>

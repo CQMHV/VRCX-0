@@ -333,6 +333,7 @@ impl RealtimeHostRuntime {
         if self.deps.session.snapshot().is_game_running {
             self.sync_current_user_game_running_state(generation, true);
         }
+        self.refresh_current_user_local_presence();
 
         Ok(transport)
     }

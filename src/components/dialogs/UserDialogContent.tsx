@@ -144,7 +144,6 @@ export function UserDialogContent({
     } = useUserDialogProfileResource({
         currentEndpoint,
         currentUserSnapshot,
-        gameState,
         isFriend: isKnownFriend,
         isTargetCurrentUser,
         activitySnapshot,

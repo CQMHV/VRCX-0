@@ -13,9 +13,10 @@ use crate::realtime::{
 use super::avatar::apply_avatar_wear_transition;
 use super::game_log::close_remote_game_log_interval;
 use super::patch::{
-    apply_current_user_patch, apply_user_location, apply_user_update,
+    apply_current_user_patch, apply_user_location, apply_user_update, insert_presence,
     merge_preserved_remote_presence,
 };
+use super::presence::current_user_presence;
 use super::state::{
     CurrentUserPatchOptions, RealtimeCurrentUserState, RealtimeCurrentUserStateSnapshot,
     CURRENT_USER_REFRESH_LOCAL_AUTHORITY_FIELDS,
@@ -56,6 +57,7 @@ impl RealtimeCurrentUserRuntime {
         state.snapshot = snapshot.clone();
         state.remote_snapshot = snapshot;
         state.pending_offline = None;
+        state.presence = None;
         if !preserves_remote_interval {
             state.next_pending_token = 0;
             state.remote_game_log_interval = None;
@@ -70,6 +72,7 @@ impl RealtimeCurrentUserRuntime {
         state.remote_snapshot = RealtimeCurrentUserStateSnapshot::default();
         state.pending_offline = None;
         state.remote_game_log_interval = None;
+        state.presence = None;
     }
 
     pub fn snapshot_value(&self) -> Option<serde_json::Value> {
@@ -231,6 +234,30 @@ impl RealtimeCurrentUserRuntime {
         )
     }
 
+    pub fn refresh_local_presence(
+        &self,
+        generation: u64,
+        authority: RealtimeCurrentUserAuthority,
+    ) -> Option<RealtimeCurrentUserOutput> {
+        let mut state = self.lock_state();
+        if state.generation != generation || state.current_user_id.is_empty() {
+            return None;
+        }
+        if state.presence.as_ref() == Some(&current_user_presence(&state, &authority)) {
+            return None;
+        }
+        apply_current_user_patch(
+            &mut state,
+            Map::new(),
+            &EventTime::now(),
+            &authority,
+            CurrentUserPatchOptions {
+                applies_local_game_authority: true,
+                ..CurrentUserPatchOptions::default()
+            },
+        )
+    }
+
     pub fn fire_pending_offline(
         &self,
         generation: u64,
@@ -291,7 +318,7 @@ impl RealtimeCurrentUserRuntime {
         }
         let previous = state.snapshot.clone();
         let now = EventTime::now();
-        let stopped_authority = authority.with_game_running(false);
+        let stopped_authority = authority.clone().with_game_running(false);
         let (snapshot, mut persistence) = apply_avatar_wear_transition(
             previous.clone(),
             &previous,
@@ -308,12 +335,15 @@ impl RealtimeCurrentUserRuntime {
         state.remote_snapshot.set_previous_avatar_swap_time(
             (previous_avatar_swap_time > 0).then_some(previous_avatar_swap_time),
         );
+        let mut patch = map_from_json(json!({ "id": state.current_user_id.clone() }));
+        let mut snapshot_map = snapshot.to_map();
+        insert_presence(&mut state, &authority, &mut patch, &mut snapshot_map);
         Some(RealtimeCurrentUserOutput {
             owner_user_id: OwnerId::new(state.current_user_id.clone()),
             projection: RealtimeCurrentUserProjection {
                 generation: state.generation,
-                patch: map_from_json(json!({ "id": state.current_user_id.clone() })).into(),
-                snapshot: snapshot.to_map().into(),
+                patch: patch.into(),
+                snapshot: snapshot_map.into(),
                 game_state_patch: None,
             },
             persistence,

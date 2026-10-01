@@ -90,9 +90,6 @@ export function InstanceUserTiles({
     const currentUserSnapshot = useRuntimeStore(
         (state) => state.auth.currentUserSnapshot
     );
-    const isGameRunning = useRuntimeStore(
-        (state) => state.gameState.isGameRunning === true
-    );
     const currentLocation = useRuntimeStore(
         (state) => state.gameState.currentLocation
     );
@@ -254,8 +251,7 @@ export function InstanceUserTiles({
                 const dotClassName = resolveSidebarStatusDotClassName(
                     statusUser,
                     currentUserSnapshot,
-                    isCurrentUser,
-                    { hideNonFriend: false, isGameRunning }
+                    { hideNonFriend: false }
                 );
                 const displayName = firstText(
                     user.displayName,

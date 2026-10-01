@@ -78,13 +78,6 @@ export type LastLocationSnapshot = SameInstanceLastLocation;
 
 type SidebarStatusOptions = {
     hideNonFriend?: boolean;
-    isGameRunning?: boolean | null;
-};
-
-type CurrentUserLocationSource = {
-    [key: string]: unknown;
-    location?: string | null;
-    $location?: { tag?: string | null } | null;
 };
 
 export type SameInstanceGroup = {
@@ -207,26 +200,6 @@ export function resolveTrustNameColour(
     return getTrustColor(friend, trustColor);
 }
 
-function legacyStatusDotClassName(status: unknown) {
-    const normalizedStatus = userStatusFromValue(status);
-    if (normalizedStatus && normalizedStatus !== 'offline') {
-        return SOLID_USER_STATUS_DOT_CLASS_NAMES[normalizedStatus];
-    }
-    return '';
-}
-
-export function resolveCurrentUserStateBucket(
-    currentUser: CurrentUserLocationSource | null | undefined
-) {
-    const location = normalizeLocationStatus(
-        currentUser?.location || locationProjection(currentUser?.$location)?.tag
-    );
-    if (location && locationSentinel(location) !== 'offline') {
-        return 'online';
-    }
-    return 'active';
-}
-
 function activeStatusDotClassName(status: unknown) {
     const normalizedStatus = userStatusFromValue(status);
     if (normalizedStatus === 'join me') {
@@ -267,41 +240,12 @@ function compareByActiveStatus(
 export function resolveSidebarStatusDotClassName(
     friend: SidebarFriendRecord | null | undefined,
     currentUser: SidebarFriendRecord | null | undefined,
-    isCurrentUser = false,
-    { hideNonFriend = true, isGameRunning = false }: SidebarStatusOptions = {}
+    { hideNonFriend = true }: SidebarStatusOptions = {}
 ) {
     const source = readFriendStatusSource(friend);
     if (!source) {
         return '';
     }
-    const userId = normalizeId(source?.id || source?.userId);
-
-    if (isCurrentUser || userId === currentUser?.id) {
-        const currentSource = readFriendStatusSource(currentUser) || source;
-        const currentStatus = normalizeLocationStatus(
-            currentSource?.status || userStatusFromValue(source?.status)
-        );
-        const currentLocation = normalizeLocationStatus(
-            currentSource?.location ||
-                locationProjection(currentSource?.$location)?.tag ||
-                source?.location ||
-                locationProjection(source?.$location)?.tag
-        );
-        if (isGameRunning === true) {
-            return (
-                legacyStatusDotClassName(currentStatus) ||
-                SOLID_USER_STATUS_DOT_CLASS_NAMES.active
-            );
-        }
-        if (currentLocation && currentLocation !== 'offline') {
-            return (
-                legacyStatusDotClassName(currentStatus) ||
-                SOLID_USER_STATUS_DOT_CLASS_NAMES.active
-            );
-        }
-        return activeStatusDotClassName(currentStatus);
-    }
-
     if (
         hideNonFriend &&
         source?.isFriend === false &&

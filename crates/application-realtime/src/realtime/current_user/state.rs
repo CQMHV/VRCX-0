@@ -1,6 +1,7 @@
 use serde_json::{Map, Value};
 use vrcx_0_core::derived_keys;
 use vrcx_0_core::json::JsonExt;
+use vrcx_0_core::presence::PresenceView;
 
 use crate::realtime::PendingOfflineTimerAction;
 
@@ -16,6 +17,7 @@ pub(super) struct RealtimeCurrentUserState {
     pub(super) pending_offline: Option<PendingCurrentUserOffline>,
     pub(super) next_pending_token: u64,
     pub(super) remote_game_log_interval: Option<RemoteGameLogInterval>,
+    pub(super) presence: Option<PresenceView>,
 }
 
 #[derive(Clone, Debug)]

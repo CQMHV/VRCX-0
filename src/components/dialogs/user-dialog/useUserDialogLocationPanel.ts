@@ -544,8 +544,6 @@ export function useUserDialogLocationPanel({
                     if (currentLocationMatches) {
                         recordGameRuntimePresence({
                             endpoint: currentEndpoint,
-                            currentUserId: normalizedCurrentUserId,
-                            currentUserSnapshot,
                             currentLocation: snapshotLocation,
                             currentLocationStartedAt:
                                 gameState?.currentLocationStartedAt ||

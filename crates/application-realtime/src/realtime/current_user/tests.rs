@@ -782,3 +782,74 @@ fn explicit_transport_finalization_ends_remote_interval() {
     );
     assert!(finalized.persistence.game_log_location_time_updates[0].time > 0);
 }
+
+fn presence_of(output: &crate::realtime::RealtimeCurrentUserOutput) -> serde_json::Value {
+    serde_json::to_value(&output.projection).unwrap()["patch"]["$presence"].clone()
+}
+
+#[test]
+fn current_user_presence_follows_the_local_game_then_remote_presence_then_active() {
+    let runtime = RealtimeCurrentUserRuntime::new();
+    runtime.set_snapshot(
+        "usr_self".into(),
+        7,
+        json!({ "id": "usr_self", "location": "offline", "last_platform": "standalonewindows" }),
+    );
+
+    let local = runtime
+        .refresh_local_presence(7, local_authority("wrld_local:1", "Local"))
+        .expect("local presence output");
+    assert_eq!(presence_of(&local)["kind"], "online");
+    assert_eq!(
+        presence_of(&local)["place"]["location"]["tag"],
+        "wrld_local:1"
+    );
+    assert_eq!(presence_of(&local)["platform"], "standalonewindows");
+    assert!(runtime
+        .refresh_local_presence(7, local_authority("wrld_local:1", "Local"))
+        .is_none());
+
+    let remote = runtime
+        .apply_ws_message(
+            7,
+            &current_user_location_message("wrld_remote:2", "", "2026-05-15T00:00:00Z"),
+            remote_authority(false),
+        )
+        .expect("remote presence output");
+    assert_eq!(presence_of(&remote)["kind"], "online");
+    assert_eq!(
+        presence_of(&remote)["place"]["location"]["tag"],
+        "wrld_remote:2"
+    );
+
+    let confirmed_offline = runtime
+        .apply_refreshed_snapshot(
+            7,
+            json!({ "id": "usr_self" }),
+            json!({ "location": "offline" }),
+            remote_authority(false),
+        )
+        .expect("refreshed output");
+    assert_eq!(presence_of(&confirmed_offline)["kind"], "active");
+}
+
+#[test]
+fn current_user_presence_reports_the_travel_destination_from_the_local_game() {
+    let runtime = RealtimeCurrentUserRuntime::new();
+    runtime.set_snapshot("usr_self".into(), 7, json!({ "id": "usr_self" }));
+    let traveling = RealtimeCurrentUserAuthority::Available {
+        is_game_running: true,
+        game_log: Some(RealtimeCurrentUserGameLogContext {
+            location: "traveling".into(),
+            destination: "wrld_next:3".into(),
+            world_name: String::new(),
+        }),
+    };
+
+    let output = runtime
+        .refresh_local_presence(7, traveling)
+        .expect("traveling presence output");
+    let presence = presence_of(&output);
+    assert_eq!(presence["place"]["location"]["isTraveling"], true);
+    assert_eq!(presence["place"]["travelingTo"]["tag"], "wrld_next:3");
+}

@@ -60,9 +60,6 @@ export function EntityList({
     const currentUserSnapshot = useRuntimeStore(
         (state) => state.auth.currentUserSnapshot
     );
-    const isGameRunning = useRuntimeStore(
-        (state) => state.gameState.isGameRunning === true
-    );
     const nowMs = useNowMs({ active: kind === 'user' });
 
     if (loading) {
@@ -134,16 +131,12 @@ export function EntityList({
                             : instanceLocation.trim() ||
                               resolveFriendPresenceLocation(row)
                         : '';
-                const isCurrentUserRow = Boolean(
-                    userId && userId === currentUserSnapshot?.id
-                );
                 const dotClassName =
                     kind === 'user'
                         ? resolveSidebarStatusDotClassName(
                               row,
                               currentUserSnapshot,
-                              isCurrentUserRow,
-                              { hideNonFriend: false, isGameRunning }
+                              { hideNonFriend: false }
                           )
                         : '';
                 const isPrivateWorld =

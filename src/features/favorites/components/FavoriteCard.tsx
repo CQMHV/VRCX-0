@@ -172,9 +172,7 @@ const FavoriteCard = memo(function FavoriteCard({
     const statusDotClassName = friendStatusSource
         ? resolveSidebarStatusDotClassName(
               friendStatusSource,
-              currentUserSnapshot,
-              isCurrentUser,
-              { isGameRunning }
+              currentUserSnapshot
           )
         : '';
     const isSelectionActive = Boolean(selectionActive);

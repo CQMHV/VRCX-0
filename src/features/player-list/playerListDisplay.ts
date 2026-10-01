@@ -9,9 +9,7 @@ import type {
     PlatformFileAnalysis,
     WorldProfileRecord
 } from '@/domain/entities/world';
-import { localGamePresence } from '@/domain/friends/presence';
 import { convertFileUrlToImageUrl } from '@/services/entityMediaService';
-import { normalizeUserStatus } from '@/shared/utils/friendStatus';
 import { parseLocation } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 import { normalizeString } from '@/shared/utils/string';
@@ -78,36 +76,11 @@ export function resolvePlatformMeta(platform: unknown): PlatformMeta {
     };
 }
 
-function isLivePlayerLocation(location: string | undefined) {
-    const parsed = parseLocation(location ?? '');
-    return Boolean(
-        parsed.worldId &&
-        !parsed.isOffline &&
-        !parsed.isPrivate &&
-        !parsed.isTraveling
-    );
-}
-
-function resolveStatusIndicatorSource(row: PlayerStatusSource) {
-    if (!row?.isCurrentUser || !isLivePlayerLocation(row.location)) {
-        return row;
-    }
-
-    const status = normalizeUserStatus(row.status);
-    return {
-        $presence: localGamePresence(parseLocation(row.location), ''),
-        status: status && status !== 'offline' ? status : 'active'
-    };
-}
-
 export function resolveStatusMeta(row: PlayerStatusSource): StatusMeta {
-    const indicatorClassName = userStatusIndicatorClassName(
-        resolveStatusIndicatorSource(row),
-        {
-            showOffline: true,
-            className: 'mr-1'
-        }
-    );
+    const indicatorClassName = userStatusIndicatorClassName(row, {
+        showOffline: true,
+        className: 'mr-1'
+    });
 
     if (row.isCurrentUser || row.isFavorite) {
         return {

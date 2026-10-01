@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { onlinePresence } from '@/test/presenceFixtures';
+
 import {
     fileAnalysisSizeForPlatform,
     getHomeWorldId,
@@ -82,7 +84,7 @@ describe('playerListDisplay', () => {
         });
     });
 
-    it('does not render the current player as offline while they are in a live instance', () => {
+    it('renders the current player from the realtime presence view over stale raw fields', () => {
         expect(
             resolveStatusMeta({
                 isCurrentUser: true,
@@ -90,10 +92,10 @@ describe('playerListDisplay', () => {
                 ref: {
                     location: 'offline',
                     state: 'offline',
-                    status: 'offline'
+                    status: 'active',
+                    $presence: onlinePresence('wrld_live:123')
                 },
                 state: 'offline',
-                status: 'offline',
                 statusDescription: 'Me'
             }).indicatorClassName
         ).toBe('x-user-status online mr-1');

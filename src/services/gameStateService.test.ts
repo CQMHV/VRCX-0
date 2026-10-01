@@ -105,7 +105,7 @@ describe('gameStateService lifecycle transitions', () => {
         });
     });
 
-    it('stops a game session by clearing stale local current-user presence and stopping avatar timing', async () => {
+    it('stops a game session by clearing the local game state and stopping avatar timing', async () => {
         useRuntimeStore.getState().setGameState({
             isGameRunning: true,
             isSteamVRRunning: true,
@@ -114,18 +114,6 @@ describe('gameStateService lifecycle transitions', () => {
             currentWorldName: 'Old World',
             currentDestination: 'wrld_next:456',
             lastGameStartedAt: '2026-06-08T09:00:00.000Z'
-        });
-        useRuntimeStore.getState().setAuthBootstrap({
-            currentUserId: 'usr_self',
-            currentUserSnapshot: {
-                id: 'usr_self',
-                location: 'wrld_old:123',
-                $locationTag: 'wrld_old:123',
-                travelingToLocation: 'wrld_next:456',
-                $travelingToLocation: 'wrld_next:456',
-                worldId: 'wrld_old',
-                status: 'active'
-            }
         });
         useRuntimeStore.getState().setInstanceQueueState({
             active: true,
@@ -154,17 +142,6 @@ describe('gameStateService lifecycle transitions', () => {
             lastGameLogType: 'game-stopped'
         });
         expect(useRuntimeStore.getState().instanceQueue.active).toBe(false);
-        expect(
-            useRuntimeStore.getState().auth.currentUserSnapshot
-        ).toMatchObject({
-            id: 'usr_self',
-            location: '',
-            $locationTag: '',
-            travelingToLocation: '',
-            $travelingToLocation: '',
-            worldId: '',
-            status: 'active'
-        });
         expect(mocks.resetGameLogSessionState).toHaveBeenCalledWith(
             '2026-06-08T10:00:00.000Z'
         );

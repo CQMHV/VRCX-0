@@ -35,7 +35,6 @@ type FriendsLocationsWorldSectionProps = {
     group: FriendsLocationsWorldGroup;
     summary?: FriendsLocationsWorldSummary;
     densityConfig: ReturnType<typeof getFriendsLocationsDensityConfig>;
-    currentUserId?: string | null;
     favoriteIds: ReadonlySet<string>;
     onOpenWorld: (group: FriendsLocationsWorldGroup, name: string) => void;
     onOpenGroup: (groupId: string) => void;
@@ -111,22 +110,17 @@ function FriendChip({
 
 export function FriendsLocationsFriendChips({
     friends,
-    currentUserId,
     favoriteIds,
     twoLine,
     onOpenUser
 }: {
     friends: FriendRecord[];
-    currentUserId?: string | null;
     favoriteIds: ReadonlySet<string>;
     twoLine: boolean;
     onOpenUser: (friend: FriendRecord) => void;
 }) {
     const currentUserSnapshot = useRuntimeStore(
         (state) => state.auth.currentUserSnapshot
-    );
-    const isGameRunning = useRuntimeStore(
-        (state) => state.gameState.isGameRunning === true
     );
 
     return (
@@ -140,8 +134,7 @@ export function FriendsLocationsFriendChips({
                     statusDotClassName={resolveSidebarStatusDotClassName(
                         friend,
                         currentUserSnapshot,
-                        friend.id === currentUserId,
-                        { hideNonFriend: false, isGameRunning }
+                        { hideNonFriend: false }
                     )}
                     onOpen={() => onOpenUser(friend)}
                 />
@@ -152,14 +145,12 @@ export function FriendsLocationsFriendChips({
 
 function InstanceRow({
     instance,
-    currentUserId,
     favoriteIds,
     twoLine,
     onOpenGroup,
     onOpenUser
 }: {
     instance: FriendsLocationsWorldInstance;
-    currentUserId?: string | null;
     favoriteIds: ReadonlySet<string>;
     twoLine: boolean;
     onOpenGroup: (groupId: string) => void;
@@ -272,7 +263,6 @@ function InstanceRow({
             </div>
             <FriendsLocationsFriendChips
                 friends={instance.friends}
-                currentUserId={currentUserId}
                 favoriteIds={favoriteIds}
                 twoLine={twoLine}
                 onOpenUser={onOpenUser}
@@ -285,7 +275,6 @@ export function FriendsLocationsWorldSection({
     group,
     summary,
     densityConfig,
-    currentUserId,
     favoriteIds,
     onOpenWorld,
     onOpenGroup,
@@ -347,7 +336,6 @@ export function FriendsLocationsWorldSection({
                         <InstanceRow
                             key={instance.location}
                             instance={instance}
-                            currentUserId={currentUserId}
                             favoriteIds={favoriteIds}
                             twoLine={densityConfig.worldChipLines === 2}
                             onOpenGroup={onOpenGroup}

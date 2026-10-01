@@ -202,7 +202,7 @@ export function buildUserHoverCardModel({
               )
             : '';
     const statusDotClassName = hasPresence
-        ? resolveSidebarStatusDotClassName(seedRecord, null, false, {
+        ? resolveSidebarStatusDotClassName(seedRecord, null, {
               hideNonFriend: false
           })
         : '';
