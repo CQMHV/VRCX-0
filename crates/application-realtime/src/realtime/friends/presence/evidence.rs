@@ -1,5 +1,5 @@
 use serde_json::Value;
-use vrcx_0_core::friends::{FriendRecord, StateBucket};
+use vrcx_0_core::friends::{FriendBaselinePresence, StateBucket};
 use vrcx_0_core::presence::{is_offline_location_proof, is_online_location_proof, Place};
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
@@ -103,11 +103,11 @@ impl Evidence {
         Self::new(source, claim)
     }
 
-    pub(crate) fn from_baseline(record: &FriendRecord) -> Self {
-        let platform = record.platform.to_string();
-        let claim = match StateBucket::normalize(&record.state) {
+    pub(crate) fn from_baseline(presence: &FriendBaselinePresence) -> Self {
+        let platform = presence.platform.to_string();
+        let claim = match StateBucket::normalize(&presence.state) {
             Some(StateBucket::Online) => Claim::Online {
-                place: Place::from_location(&record.location, &record.traveling_to_location),
+                place: Place::from_location(&presence.location, &presence.traveling_to_location),
                 platform,
             },
             Some(StateBucket::Active) => Claim::Active { platform },

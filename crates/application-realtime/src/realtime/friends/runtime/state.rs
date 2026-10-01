@@ -6,7 +6,7 @@ use vrcx_0_core::derived_keys;
 use chrono::{TimeZone, Utc};
 use serde_json::{json, Value};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
-use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
+use vrcx_0_core::friends::{FriendBaselineEntry, FriendRecord, FriendRosterBaseline};
 use vrcx_0_core::presence::PresenceEntry;
 use vrcx_0_core::realtime::{RealtimeSessionContext, RealtimeWsMessagePayload};
 use vrcx_0_core::vrchat_endpoints::normalize_vrchat_api_endpoint;
@@ -14,7 +14,7 @@ use vrcx_0_core::OwnerId;
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
 use crate::realtime::friends::presence::{
-    dwell_place, presence_feed, presence_view, reduce, FriendEventKind, Phase, Source,
+    dwell_place, presence_feed, presence_view, reduce, Evidence, FriendEventKind, Phase, Source,
 };
 use crate::realtime::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendWake, RealtimeFriendApplyResult,
@@ -24,7 +24,6 @@ use crate::realtime::{
 
 use super::apply::{apply_friend_event, apply_wake};
 use super::event_time::EventTime;
-use super::presence_split::split_baseline_record;
 
 #[derive(Clone, Debug)]
 pub(super) struct FriendEntry {
@@ -172,7 +171,14 @@ impl RealtimeFriendsRuntime {
         let mut schedules = Vec::new();
         let mut profile_refetch_user_ids = Vec::new();
         let mut entries = HashMap::with_capacity(baseline.friends_by_id.len());
-        for (user_id, mut record) in baseline.friends_by_id {
+        for (
+            user_id,
+            FriendBaselineEntry {
+                mut record,
+                presence: reported,
+            },
+        ) in baseline.friends_by_id
+        {
             let existing_entry = existing
                 .as_ref()
                 .and_then(|roster| roster.entries.get(&user_id));
@@ -193,7 +199,7 @@ impl RealtimeFriendsRuntime {
                     record.display_name = entry.record.display_name.clone();
                 }
             }
-            let (record, evidence) = split_baseline_record(record);
+            let evidence = Evidence::from_baseline(&reported);
             let presence = match existing_entry {
                 Some(entry) => {
                     let step = reduce(&entry.presence, &evidence, now_ms);

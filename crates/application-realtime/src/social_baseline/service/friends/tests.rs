@@ -416,7 +416,6 @@ fn canonical_records_can_be_moved_out_after_raw_snapshot_rebuild() -> Result<()>
         FriendRecord {
             id: "usr_future".into(),
             display_name: "Future Friend".into(),
-            state: "online".into(),
             extra,
             ..FriendRecord::default()
         },

@@ -4288,11 +4288,6 @@ export type FriendRecord = Partial<{
     id?: string;
     displayName?: string;
     username?: string;
-    state?: string;
-    location?: string;
-    travelingToLocation?: string;
-    worldId?: string;
-    platform?: string;
     lastPlatform?: string;
     status?: string;
     statusDescription?: string;

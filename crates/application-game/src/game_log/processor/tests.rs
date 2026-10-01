@@ -24,11 +24,11 @@ use super::{GameLogProcessEvent, GameLogProcessor, GameLogProcessorDeps, GameLog
 use vrcx_0_core::OwnerId;
 
 fn place_from_record(
-    record: &vrcx_0_core::friends::FriendRecord,
+    entry: &vrcx_0_core::friends::FriendBaselineEntry,
     observed_ms: i64,
 ) -> vrcx_0_application_core::FriendPlace {
     vrcx_0_application_core::FriendPlace::Present {
-        location: record.location.clone(),
+        location: entry.presence.location.clone(),
         since_ms: observed_ms,
     }
 }
@@ -318,11 +318,16 @@ fn disabled_initial_scan_rebuilds_memory_without_replaying_side_effects() -> Res
     timers.observe_friend(
         "usr_replay",
         &place_from_record(
-            &vrcx_0_core::friends::FriendRecord {
-                id: "usr_replay".into(),
-                state: "online".into(),
-                location: "wrld_replay:1".into(),
-                ..Default::default()
+            &vrcx_0_core::friends::FriendBaselineEntry {
+                record: vrcx_0_core::friends::FriendRecord {
+                    id: "usr_replay".into(),
+                    ..Default::default()
+                },
+                presence: vrcx_0_core::friends::FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "wrld_replay:1".into(),
+                    ..vrcx_0_core::friends::FriendBaselinePresence::default()
+                },
             },
             chrono::DateTime::parse_from_rfc3339("2026-05-14T05:11:00Z")
                 .unwrap()
@@ -386,11 +391,16 @@ fn entering_a_friends_instance_keeps_dwell_without_rewriting_log_join_time() -> 
         timers.observe_friend(
             "usr_friend",
             &place_from_record(
-                &vrcx_0_core::friends::FriendRecord {
-                    id: "usr_friend".into(),
-                    state: "online".into(),
-                    location: "wrld_local:1".into(),
-                    ..Default::default()
+                &vrcx_0_core::friends::FriendBaselineEntry {
+                    record: vrcx_0_core::friends::FriendRecord {
+                        id: "usr_friend".into(),
+                        ..Default::default()
+                    },
+                    presence: vrcx_0_core::friends::FriendBaselinePresence {
+                        state: "online".into(),
+                        location: "wrld_local:1".into(),
+                        ..vrcx_0_core::friends::FriendBaselinePresence::default()
+                    },
                 },
                 started_at,
             ),
@@ -450,11 +460,16 @@ fn room_exit_cleanup_preserves_the_dwell_of_friends_staying_in_the_old_instance(
                 timers.observe_friend(
                     user_id,
                     &place_from_record(
-                        &vrcx_0_core::friends::FriendRecord {
-                            id: user_id.into(),
-                            state: "online".into(),
-                            location: "wrld_old:1".into(),
-                            ..Default::default()
+                        &vrcx_0_core::friends::FriendBaselineEntry {
+                            record: vrcx_0_core::friends::FriendRecord {
+                                id: user_id.into(),
+                                ..Default::default()
+                            },
+                            presence: vrcx_0_core::friends::FriendBaselinePresence {
+                                state: "online".into(),
+                                location: "wrld_old:1".into(),
+                                ..vrcx_0_core::friends::FriendBaselinePresence::default()
+                            },
                         },
                         since_ms,
                     ),
@@ -556,11 +571,16 @@ fn local_mode_initial_replay_does_not_restart_remote_timers() -> Result<()> {
             timers.observe_friend(
                 user_id,
                 &place_from_record(
-                    &vrcx_0_core::friends::FriendRecord {
-                        id: user_id.into(),
-                        state: "online".into(),
-                        location: "wrld_current:2".into(),
-                        ..Default::default()
+                    &vrcx_0_core::friends::FriendBaselineEntry {
+                        record: vrcx_0_core::friends::FriendRecord {
+                            id: user_id.into(),
+                            ..Default::default()
+                        },
+                        presence: vrcx_0_core::friends::FriendBaselinePresence {
+                            state: "online".into(),
+                            location: "wrld_current:2".into(),
+                            ..vrcx_0_core::friends::FriendBaselinePresence::default()
+                        },
                     },
                     500,
                 ),
@@ -636,11 +656,16 @@ fn local_mode_resume_prefix_does_not_restart_timers_but_live_departures_do() -> 
     timers.observe_friend(
         "usr_friend",
         &place_from_record(
-            &vrcx_0_core::friends::FriendRecord {
-                id: "usr_friend".into(),
-                state: "online".into(),
-                location: "wrld_local:1".into(),
-                ..Default::default()
+            &vrcx_0_core::friends::FriendBaselineEntry {
+                record: vrcx_0_core::friends::FriendRecord {
+                    id: "usr_friend".into(),
+                    ..Default::default()
+                },
+                presence: vrcx_0_core::friends::FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "wrld_local:1".into(),
+                    ..vrcx_0_core::friends::FriendBaselinePresence::default()
+                },
             },
             500,
         ),
@@ -695,11 +720,16 @@ fn local_mode_distinguishes_player_leave_rejoin_and_own_room_exit() -> Result<()
     timers.observe_friend(
         "usr_friend",
         &place_from_record(
-            &vrcx_0_core::friends::FriendRecord {
-                id: "usr_friend".into(),
-                state: "online".into(),
-                location: "wrld_local:1".into(),
-                ..Default::default()
+            &vrcx_0_core::friends::FriendBaselineEntry {
+                record: vrcx_0_core::friends::FriendRecord {
+                    id: "usr_friend".into(),
+                    ..Default::default()
+                },
+                presence: vrcx_0_core::friends::FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "wrld_local:1".into(),
+                    ..vrcx_0_core::friends::FriendBaselinePresence::default()
+                },
             },
             500,
         ),
@@ -768,11 +798,16 @@ fn local_mode_player_leave_is_not_lost_when_own_exit_is_in_the_same_batch() -> R
     timers.observe_friend(
         "usr_friend",
         &place_from_record(
-            &vrcx_0_core::friends::FriendRecord {
-                id: "usr_friend".into(),
-                state: "online".into(),
-                location: "wrld_local:1".into(),
-                ..Default::default()
+            &vrcx_0_core::friends::FriendBaselineEntry {
+                record: vrcx_0_core::friends::FriendRecord {
+                    id: "usr_friend".into(),
+                    ..Default::default()
+                },
+                presence: vrcx_0_core::friends::FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "wrld_local:1".into(),
+                    ..vrcx_0_core::friends::FriendBaselinePresence::default()
+                },
             },
             500,
         ),

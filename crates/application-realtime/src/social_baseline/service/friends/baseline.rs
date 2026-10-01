@@ -6,7 +6,7 @@ use vrcx_0_application_core::{Error, Result};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_contracts::friend_log::{FriendLogCurrentEntryInput, FriendLogReplaceOptionsInput};
 use vrcx_0_contracts::realtime::{FriendLogDelete, FriendLogUpsert, RealtimePersistenceBatch};
-use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::friends::{FriendBaselineEntry, FriendRecord};
 use vrcx_0_core::trust::{trust_level_changed, trust_level_differs};
 
 use crate::realtime::friends::trust_level_feed_entry;
@@ -48,7 +48,7 @@ pub(crate) async fn verify_friend_log_relationship_changes(
     deps: &SocialBaselineDeps,
     endpoint: &str,
     user_id: &str,
-    friends_by_id: &HashMap<String, FriendRecord>,
+    friends_by_id: &HashMap<String, FriendBaselineEntry>,
 ) -> FriendStatusVerdicts {
     let candidates =
         friend_log_relationship_candidates(deps.store.as_ref(), user_id, friends_by_id);
@@ -63,7 +63,7 @@ pub(crate) async fn verify_friend_log_relationship_changes(
 pub(crate) fn friend_log_relationship_candidates(
     store: &dyn crate::RealtimeStore,
     user_id: &str,
-    friends_by_id: &HashMap<String, FriendRecord>,
+    friends_by_id: &HashMap<String, FriendBaselineEntry>,
 ) -> Vec<String> {
     if !store
         .get_bool(&format!("friendLogInit_{user_id}"), false)
@@ -83,7 +83,7 @@ pub(crate) fn friend_log_relationship_candidates(
         .iter()
         .filter(|(friend_id, entry)| {
             friend_id.as_str() != user_id
-                && !entry.is_placeholder()
+                && !entry.record.is_placeholder()
                 && !existing_ids.contains(friend_id.as_str())
         })
         .map(|(friend_id, _)| friend_id.clone());
@@ -247,7 +247,7 @@ pub(crate) async fn build_friend_roster_baseline(
 
 pub(crate) struct BuiltFriendRosterBaseline {
     pub(crate) output: SocialFriendRosterBaselineOutput,
-    pub(crate) friends_by_id: Option<HashMap<String, FriendRecord>>,
+    pub(crate) friends_by_id: Option<HashMap<String, FriendBaselineEntry>>,
 }
 
 fn replace_friend_roster_baseline_snapshot(

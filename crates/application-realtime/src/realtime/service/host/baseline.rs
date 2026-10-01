@@ -7,7 +7,7 @@ use vrcx_0_core::derived_keys;
 use serde_json::Value;
 use vrcx_0_application_core::{Error, Result};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
-use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
+use vrcx_0_core::friends::{FriendBaselineEntry, FriendRecord, FriendRosterBaseline};
 
 use crate::realtime::friends::{baseline_friend_view, player_joining_feed_entry};
 use crate::realtime::{
@@ -94,7 +94,7 @@ impl RealtimeHostRuntime {
         self: &Arc<Self>,
         session: RealtimeSessionContext,
         generation: Option<u64>,
-        friends_by_id: HashMap<String, FriendRecord>,
+        friends_by_id: HashMap<String, FriendBaselineEntry>,
     ) -> Result<FriendBaselineResult> {
         Ok(self
             .sync_friend_snapshot_inner(
@@ -109,7 +109,7 @@ impl RealtimeHostRuntime {
         self: &Arc<Self>,
         session: RealtimeSessionContext,
         watermark: FriendBaselineCausalWatermark,
-        friends_by_id: HashMap<String, FriendRecord>,
+        friends_by_id: HashMap<String, FriendBaselineEntry>,
         verdicts: FriendStatusVerdicts,
     ) -> Result<FriendBaselineSyncOutcome> {
         self.sync_friend_snapshot_inner(
@@ -126,7 +126,7 @@ impl RealtimeHostRuntime {
         self: &Arc<Self>,
         requested_session: RealtimeSessionContext,
         mode: FriendBaselineSyncMode,
-        friends_by_id: HashMap<String, FriendRecord>,
+        friends_by_id: HashMap<String, FriendBaselineEntry>,
     ) -> Result<FriendBaselineSyncOutcome> {
         let (generation, causal_watermark, friend_log_verdicts) = match mode {
             FriendBaselineSyncMode::Direct { generation } => (generation, None, None),
@@ -192,8 +192,8 @@ impl RealtimeHostRuntime {
                 }
                 let (snapshot_friends_by_id, presence_by_id) = friends_by_id
                     .iter()
-                    .map(|(user_id, record)| {
-                        let (record, presence) = baseline_friend_view(record);
+                    .map(|(user_id, entry)| {
+                        let (record, presence) = baseline_friend_view(entry);
                         ((user_id.clone(), record), (user_id.clone(), presence))
                     })
                     .unzip();

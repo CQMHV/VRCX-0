@@ -1,7 +1,9 @@
 #[cfg(test)]
 use serde_json::{json, Value};
 #[cfg(test)]
-use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
+use vrcx_0_core::friends::{
+    FriendBaselineEntry, FriendBaselinePresence, FriendRecord, FriendRosterBaseline,
+};
 #[cfg(test)]
 use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 

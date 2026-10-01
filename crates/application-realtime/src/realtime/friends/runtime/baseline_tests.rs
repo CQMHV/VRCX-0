@@ -27,10 +27,15 @@ mod tests {
                 websocket: " wss://ws.example.test ".into(),
                 friends_by_id: [(
                     "usr_friend".to_string(),
-                    FriendRecord {
-                        display_name: "Friend".into(),
-                        state: "active".into(),
-                        ..FriendRecord::default()
+                    FriendBaselineEntry {
+                        record: FriendRecord {
+                            display_name: "Friend".into(),
+                            ..FriendRecord::default()
+                        },
+                        presence: FriendBaselinePresence {
+                            state: "active".into(),
+                            ..FriendBaselinePresence::default()
+                        },
                     },
                 )]
                 .into_iter()
@@ -81,11 +86,16 @@ mod tests {
                 endpoint: "https://api.example.test".into(),
                 friends_by_id: [(
                     "usr_friend".to_string(),
-                    FriendRecord {
-                        state: "active".into(),
-                        id: "usr_friend".into(),
-                        display_name: "Friend".into(),
-                        ..FriendRecord::default()
+                    FriendBaselineEntry {
+                        record: FriendRecord {
+                            id: "usr_friend".into(),
+                            display_name: "Friend".into(),
+                            ..FriendRecord::default()
+                        },
+                        presence: FriendBaselinePresence {
+                            state: "active".into(),
+                            ..FriendBaselinePresence::default()
+                        },
                     },
                 )]
                 .into_iter()
@@ -116,18 +126,28 @@ mod tests {
                 friends_by_id: [
                     (
                         "usr_existing".to_string(),
-                        FriendRecord {
-                            state: "active".into(),
-                            id: "usr_existing".into(),
-                            ..Default::default()
+                        FriendBaselineEntry {
+                            record: FriendRecord {
+                                id: "usr_existing".into(),
+                                ..Default::default()
+                            },
+                            presence: FriendBaselinePresence {
+                                state: "active".into(),
+                                ..FriendBaselinePresence::default()
+                            },
                         },
                     ),
                     (
                         "usr_new".to_string(),
-                        FriendRecord {
-                            state: "online".into(),
-                            id: "usr_new".into(),
-                            ..Default::default()
+                        FriendBaselineEntry {
+                            record: FriendRecord {
+                                id: "usr_new".into(),
+                                ..Default::default()
+                            },
+                            presence: FriendBaselinePresence {
+                                state: "online".into(),
+                                ..FriendBaselinePresence::default()
+                            },
                         },
                     ),
                 ]
@@ -179,11 +199,16 @@ mod tests {
                     current_user_id: "usr_self".into(),
                     friends_by_id: [(
                         "usr_friend".to_string(),
-                        FriendRecord {
-                            id: "usr_friend".into(),
-                            display_name: "Friend".into(),
-                            state: previous_state.into(),
-                            ..FriendRecord::default()
+                        FriendBaselineEntry {
+                            record: FriendRecord {
+                                id: "usr_friend".into(),
+                                display_name: "Friend".into(),
+                                ..FriendRecord::default()
+                            },
+                            presence: FriendBaselinePresence {
+                                state: previous_state.into(),
+                                ..FriendBaselinePresence::default()
+                            },
                         },
                     )]
                     .into_iter()
@@ -193,15 +218,21 @@ mod tests {
                 1,
                 0,
             );
-            let mut next = FriendRecord {
-                id: "usr_friend".into(),
-                display_name: "Friend".into(),
-                state: "online".into(),
-                location: next_location.into(),
-                ..FriendRecord::default()
+            let mut next = FriendBaselineEntry {
+                record: FriendRecord {
+                    id: "usr_friend".into(),
+                    display_name: "Friend".into(),
+                    ..FriendRecord::default()
+                },
+                presence: FriendBaselinePresence {
+                    state: "online".into(),
+                    location: next_location.into(),
+                    ..FriendBaselinePresence::default()
+                },
             };
             if placeholder {
-                next.extra
+                next.record
+                    .extra
                     .insert("$profileSource".to_string(), json!("placeholder"));
             }
             runtime.set_baseline(
@@ -230,17 +261,22 @@ mod tests {
                 current_user_id: "usr_self".into(),
                 friends_by_id: [(
                     "usr_friend".to_string(),
-                    FriendRecord {
-                        id: "usr_friend".into(),
-                        display_name: "Friend".into(),
-                        state: "offline".into(),
-                        extra: [
-                            ("$trustLevel".to_string(), json!("Trusted User")),
-                            ("tags".to_string(), json!(["system_trust_veteran"])),
-                        ]
-                        .into_iter()
-                        .collect(),
-                        ..FriendRecord::default()
+                    FriendBaselineEntry {
+                        record: FriendRecord {
+                            id: "usr_friend".into(),
+                            display_name: "Friend".into(),
+                            extra: [
+                                ("$trustLevel".to_string(), json!("Trusted User")),
+                                ("tags".to_string(), json!(["system_trust_veteran"])),
+                            ]
+                            .into_iter()
+                            .collect(),
+                            ..FriendRecord::default()
+                        },
+                        presence: FriendBaselinePresence {
+                            state: "offline".into(),
+                            ..FriendBaselinePresence::default()
+                        },
                     },
                 )]
                 .into_iter()
@@ -255,18 +291,23 @@ mod tests {
                 current_user_id: "usr_self".into(),
                 friends_by_id: [(
                     "usr_friend".to_string(),
-                    FriendRecord {
-                        id: "usr_friend".into(),
-                        display_name: "Friend".into(),
-                        state: "offline".into(),
-                        extra: [
-                            ("$trustLevel".to_string(), json!("Visitor")),
-                            ("tags".to_string(), json!([])),
-                            ("$profileSource".to_string(), json!("placeholder")),
-                        ]
-                        .into_iter()
-                        .collect(),
-                        ..FriendRecord::default()
+                    FriendBaselineEntry {
+                        record: FriendRecord {
+                            id: "usr_friend".into(),
+                            display_name: "Friend".into(),
+                            extra: [
+                                ("$trustLevel".to_string(), json!("Visitor")),
+                                ("tags".to_string(), json!([])),
+                                ("$profileSource".to_string(), json!("placeholder")),
+                            ]
+                            .into_iter()
+                            .collect(),
+                            ..FriendRecord::default()
+                        },
+                        presence: FriendBaselinePresence {
+                            state: "offline".into(),
+                            ..FriendBaselinePresence::default()
+                        },
                     },
                 )]
                 .into_iter()
@@ -300,11 +341,16 @@ mod tests {
                 current_user_id: "usr_self".into(),
                 friends_by_id: [(
                     "usr_friend".to_string(),
-                    FriendRecord {
-                        id: "usr_friend".into(),
-                        display_name: "Friend".into(),
-                        state: "offline".into(),
-                        ..FriendRecord::default()
+                    FriendBaselineEntry {
+                        record: FriendRecord {
+                            id: "usr_friend".into(),
+                            display_name: "Friend".into(),
+                            ..FriendRecord::default()
+                        },
+                        presence: FriendBaselinePresence {
+                            state: "offline".into(),
+                            ..FriendBaselinePresence::default()
+                        },
                     },
                 )]
                 .into_iter()
@@ -335,11 +381,16 @@ mod tests {
                 current_user_id: "usr_self".into(),
                 friends_by_id: [(
                     "usr_friend".to_string(),
-                    FriendRecord {
-                        id: "usr_friend".into(),
-                        display_name: "Friend".into(),
-                        state: "offline".into(),
-                        ..FriendRecord::default()
+                    FriendBaselineEntry {
+                        record: FriendRecord {
+                            id: "usr_friend".into(),
+                            display_name: "Friend".into(),
+                            ..FriendRecord::default()
+                        },
+                        presence: FriendBaselinePresence {
+                            state: "offline".into(),
+                            ..FriendBaselinePresence::default()
+                        },
                     },
                 )]
                 .into_iter()
@@ -366,12 +417,17 @@ mod tests {
                 current_user_id: "usr_self".into(),
                 friends_by_id: [(
                     "usr_friend".to_string(),
-                    FriendRecord {
-                        id: "usr_friend".into(),
-                        display_name: "Friend".into(),
-                        state: "online".into(),
-                        location: "wrld_x:1".into(),
-                        ..FriendRecord::default()
+                    FriendBaselineEntry {
+                        record: FriendRecord {
+                            id: "usr_friend".into(),
+                            display_name: "Friend".into(),
+                            ..FriendRecord::default()
+                        },
+                        presence: FriendBaselinePresence {
+                            state: "online".into(),
+                            location: "wrld_x:1".into(),
+                            ..FriendBaselinePresence::default()
+                        },
                     },
                 )]
                 .into_iter()
@@ -386,14 +442,19 @@ mod tests {
                 current_user_id: "usr_self".into(),
                 friends_by_id: [(
                     "usr_friend".to_string(),
-                    FriendRecord {
-                        id: "usr_friend".into(),
-                        display_name: "usr_friend".into(),
-                        state: "online".into(),
-                        extra: [("$profileSource".to_string(), json!("placeholder"))]
-                            .into_iter()
-                            .collect(),
-                        ..FriendRecord::default()
+                    FriendBaselineEntry {
+                        record: FriendRecord {
+                            id: "usr_friend".into(),
+                            display_name: "usr_friend".into(),
+                            extra: [("$profileSource".to_string(), json!("placeholder"))]
+                                .into_iter()
+                                .collect(),
+                            ..FriendRecord::default()
+                        },
+                        presence: FriendBaselinePresence {
+                            state: "online".into(),
+                            ..FriendBaselinePresence::default()
+                        },
                     },
                 )]
                 .into_iter()
@@ -420,12 +481,17 @@ mod tests {
                 current_user_id: "usr_self".into(),
                 friends_by_id: [(
                     "usr_friend".to_string(),
-                    FriendRecord {
-                        id: "usr_friend".into(),
-                        display_name: "Friend".into(),
-                        state: "online".into(),
-                        location: "wrld_1:123".into(),
-                        ..FriendRecord::default()
+                    FriendBaselineEntry {
+                        record: FriendRecord {
+                            id: "usr_friend".into(),
+                            display_name: "Friend".into(),
+                            ..FriendRecord::default()
+                        },
+                        presence: FriendBaselinePresence {
+                            state: "online".into(),
+                            location: "wrld_1:123".into(),
+                            ..FriendBaselinePresence::default()
+                        },
                     },
                 )]
                 .into_iter()
@@ -459,12 +525,17 @@ mod tests {
                 current_user_id: "usr_self".into(),
                 friends_by_id: [(
                     "usr_friend".to_string(),
-                    FriendRecord {
-                        id: "usr_friend".into(),
-                        display_name: "Friend".into(),
-                        state: "online".into(),
-                        location: "wrld_2:456".into(),
-                        ..FriendRecord::default()
+                    FriendBaselineEntry {
+                        record: FriendRecord {
+                            id: "usr_friend".into(),
+                            display_name: "Friend".into(),
+                            ..FriendRecord::default()
+                        },
+                        presence: FriendBaselinePresence {
+                            state: "online".into(),
+                            location: "wrld_2:456".into(),
+                            ..FriendBaselinePresence::default()
+                        },
                     },
                 )]
                 .into_iter()
@@ -535,12 +606,17 @@ mod tests {
             current_user_id: "usr_self".into(),
             friends_by_id: [(
                 "usr_friend".to_string(),
-                FriendRecord {
-                    id: "usr_friend".into(),
-                    display_name: "Friend".into(),
-                    state: state.into(),
-                    location: location.into(),
-                    ..FriendRecord::default()
+                FriendBaselineEntry {
+                    record: FriendRecord {
+                        id: "usr_friend".into(),
+                        display_name: "Friend".into(),
+                        ..FriendRecord::default()
+                    },
+                    presence: FriendBaselinePresence {
+                        state: state.into(),
+                        location: location.into(),
+                        ..FriendBaselinePresence::default()
+                    },
                 },
             )]
             .into_iter()

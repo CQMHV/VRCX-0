@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use serde_json::Value;
 use vrcx_0_application_core::{Result, RuntimeVrchatAuthFailurePayload};
-use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::friends::FriendBaselineEntry;
 
 use crate::realtime::friends::SyntheticFriendEvent;
 use crate::realtime::RealtimeFriendApplyResult;
@@ -50,7 +50,7 @@ impl RealtimeHostRuntime {
         &self,
         owner_user_id: &OwnerId,
         endpoint: &str,
-        record: FriendRecord,
+        entry: FriendBaselineEntry,
         mutation: impl FnOnce() -> Result<T>,
     ) -> Result<T> {
         self.run_friend_log_current_mutation_with_effect(
@@ -59,7 +59,7 @@ impl RealtimeHostRuntime {
                 owner_user_id,
                 endpoint,
                 FriendLogMutation::Upsert {
-                    record: Box::new(record),
+                    entry: Box::new(entry),
                 },
             )),
         )

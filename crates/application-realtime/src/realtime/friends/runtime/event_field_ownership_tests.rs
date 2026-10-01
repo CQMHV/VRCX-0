@@ -6,12 +6,12 @@ mod tests {
     use super::super::*;
     use crate::realtime::FriendIconChange;
 
-    fn runtime_with_friend(record: FriendRecord) -> RealtimeFriendsRuntime {
+    fn runtime_with_friend(entry: FriendBaselineEntry) -> RealtimeFriendsRuntime {
         let runtime = RealtimeFriendsRuntime::default();
         runtime.set_baseline(
             FriendRosterBaseline {
                 current_user_id: "usr_self".into(),
-                friends_by_id: [("usr_friend".to_string(), record)].into_iter().collect(),
+                friends_by_id: [("usr_friend".to_string(), entry)].into_iter().collect(),
                 ..FriendRosterBaseline::default()
             },
             1,
@@ -41,13 +41,18 @@ mod tests {
         }
     }
 
-    fn friend_record(state: &str, location: &str) -> FriendRecord {
-        FriendRecord {
-            id: "usr_friend".into(),
-            display_name: "Friend".into(),
-            state: state.into(),
-            location: location.into(),
-            ..FriendRecord::default()
+    fn friend_record(state: &str, location: &str) -> FriendBaselineEntry {
+        FriendBaselineEntry {
+            record: FriendRecord {
+                id: "usr_friend".into(),
+                display_name: "Friend".into(),
+                ..FriendRecord::default()
+            },
+            presence: FriendBaselinePresence {
+                state: state.into(),
+                location: location.into(),
+                ..FriendBaselinePresence::default()
+            },
         }
     }
 
@@ -152,7 +157,7 @@ mod tests {
     #[test]
     fn friend_location_with_embedded_user_updates_location_and_profile() {
         let mut baseline = friend_record("online", "wrld_old:1~region(jp)");
-        baseline.status = "active".into();
+        baseline.record.status = "active".into();
         let runtime = runtime_with_friend(baseline);
 
         let RealtimeFriendApplyResult::Output(output) = runtime.apply_ws_message(&ws(json!({
@@ -199,7 +204,7 @@ mod tests {
     #[test]
     fn friend_update_embedded_user_owns_icon_url() {
         let mut baseline = friend_record("online", "wrld_old:1~region(jp)");
-        baseline.icon_url = "https://api.vrchat.cloud/api/1/image/file_old/1/256".into();
+        baseline.record.icon_url = "https://api.vrchat.cloud/api/1/image/file_old/1/256".into();
         let runtime = runtime_with_friend(baseline);
 
         let RealtimeFriendApplyResult::Output(output) = runtime.apply_ws_message(&ws(json!({
@@ -374,7 +379,7 @@ mod tests {
     #[test]
     fn friend_offline_without_user_debounces_and_preserves_profile() {
         let mut baseline = friend_record("online", "wrld_1:123~region(jp)");
-        baseline.status = "join me".into();
+        baseline.record.status = "join me".into();
         let runtime = runtime_with_friend(baseline);
 
         let RealtimeFriendApplyResult::Output(output) = runtime.apply_ws_message(&ws(json!({
@@ -412,8 +417,8 @@ mod tests {
     #[test]
     fn friend_update_is_profile_only_and_ignores_garbage_state() {
         let mut baseline = friend_record("online", "wrld_1:123~region(jp)");
-        baseline.status = "join me".into();
-        baseline.status_description = "old".into();
+        baseline.record.status = "join me".into();
+        baseline.record.status_description = "old".into();
         let runtime = runtime_with_friend(baseline);
 
         let RealtimeFriendApplyResult::Output(output) = runtime.apply_ws_message(&ws(json!({
@@ -523,7 +528,7 @@ mod tests {
     #[test]
     fn friend_update_profile_merge_is_defined_only() {
         let mut baseline = friend_record("online", "wrld_1:123~region(jp)");
-        baseline.icon_url = "https://images.example/original/256".into();
+        baseline.record.icon_url = "https://images.example/original/256".into();
         let runtime = runtime_with_friend(baseline);
 
         let RealtimeFriendApplyResult::Output(_) = runtime.apply_ws_message(&ws(json!({
@@ -584,7 +589,7 @@ mod tests {
     #[test]
     fn friend_update_icon_file_change_reports_previous_and_next_file_ids() {
         let mut baseline = friend_record("online", "wrld_1:123~region(jp)");
-        baseline.icon_url = "https://api.vrchat.cloud/api/1/image/file_old/1/256".into();
+        baseline.record.icon_url = "https://api.vrchat.cloud/api/1/image/file_old/1/256".into();
         let runtime = runtime_with_friend(baseline);
 
         let RealtimeFriendApplyResult::Output(output) = runtime.apply_ws_message(&ws(json!({
@@ -617,7 +622,7 @@ mod tests {
     #[test]
     fn icon_url_changes_without_a_new_file_id_are_not_reported() {
         let mut baseline = friend_record("online", "wrld_1:123~region(jp)");
-        baseline.icon_url = "https://api.vrchat.cloud/api/1/image/file_same/1/256".into();
+        baseline.record.icon_url = "https://api.vrchat.cloud/api/1/image/file_same/1/256".into();
         let runtime = runtime_with_friend(baseline);
 
         let RealtimeFriendApplyResult::Output(output) = runtime.apply_ws_message(&ws(json!({

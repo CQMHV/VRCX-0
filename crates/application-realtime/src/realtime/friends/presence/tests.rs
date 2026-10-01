@@ -1,5 +1,5 @@
 use serde_json::json;
-use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::friends::{FriendBaselinePresence, FriendRecord};
 use vrcx_0_core::presence::{LeaveTarget, Place, PresenceView};
 
 use super::evidence::{Claim, Evidence, FriendEventKind, Source};
@@ -771,12 +771,11 @@ fn profiles_and_baseline_records_map_state_buckets() {
     assert_eq!(profile("offline"), Claim::Offline);
     assert_eq!(profile(""), Claim::Nothing);
 
-    let record = FriendRecord {
+    let baseline = Evidence::from_baseline(&FriendBaselinePresence {
         state: "online".into(),
         location: "private".into(),
-        ..FriendRecord::default()
-    };
-    let baseline = Evidence::from_baseline(&record);
+        ..FriendBaselinePresence::default()
+    });
     assert_eq!(baseline.source, Source::Baseline);
     assert_eq!(
         baseline.claim,
@@ -786,7 +785,7 @@ fn profiles_and_baseline_records_map_state_buckets() {
         }
     );
     assert_eq!(
-        Evidence::from_baseline(&FriendRecord::default()).claim,
+        Evidence::from_baseline(&FriendBaselinePresence::default()).claim,
         Claim::Offline
     );
 }

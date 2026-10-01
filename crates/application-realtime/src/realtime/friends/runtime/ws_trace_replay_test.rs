@@ -89,19 +89,24 @@ mod tests {
         Value::Object(changes)
     }
 
-    fn roster_record(entry: &Value) -> Option<(String, FriendRecord)> {
+    fn roster_record(entry: &Value) -> Option<(String, FriendBaselineEntry)> {
         let text = |key: &str| entry.get(key).and_then(Value::as_str).unwrap_or("");
         let uid = text("uid").to_string();
         if uid.is_empty() {
             return None;
         }
-        let record = FriendRecord {
-            id: uid.clone(),
-            display_name: text("dn").into(),
-            state: text("state").into(),
-            location: text("loc").to_string(),
-            status: text("status").into(),
-            ..FriendRecord::default()
+        let record = FriendBaselineEntry {
+            record: FriendRecord {
+                id: uid.clone(),
+                display_name: text("dn").into(),
+                status: text("status").into(),
+                ..FriendRecord::default()
+            },
+            presence: FriendBaselinePresence {
+                state: text("state").into(),
+                location: text("loc").to_string(),
+                ..FriendBaselinePresence::default()
+            },
         };
         Some((uid, record))
     }
@@ -189,7 +194,7 @@ mod tests {
             }
 
             if kind == "baseline" {
-                let friends_by_id: HashMap<String, FriendRecord> = entry
+                let friends_by_id: HashMap<String, FriendBaselineEntry> = entry
                     .get("roster")
                     .and_then(Value::as_array)
                     .map(|rows| rows.iter().filter_map(roster_record).collect())

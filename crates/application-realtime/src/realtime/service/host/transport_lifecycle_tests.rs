@@ -8,7 +8,7 @@ use vrcx_0_application_core::{
     InstanceRosterMember, InstanceRosterSnapshot, RuntimeTask, RuntimeTaskExecutor,
     RuntimeTaskHandle,
 };
-use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::friends::{FriendBaselineEntry, FriendBaselinePresence, FriendRecord};
 use vrcx_0_core::presence::PresenceView;
 use vrcx_0_core::OwnerId;
 
@@ -50,15 +50,20 @@ fn active_transport(runtime: &TestRealtimeHostRuntime) -> RealtimeTransportStart
     }
 }
 
-fn online_friend_roster() -> HashMap<String, FriendRecord> {
+fn online_friend_roster() -> HashMap<String, FriendBaselineEntry> {
     HashMap::from([(
         "usr_friend".to_string(),
-        FriendRecord {
-            id: "usr_friend".into(),
-            display_name: "Friend".into(),
-            state: "online".into(),
-            location: "wrld_old:123".into(),
-            ..FriendRecord::default()
+        FriendBaselineEntry {
+            record: FriendRecord {
+                id: "usr_friend".into(),
+                display_name: "Friend".into(),
+                ..FriendRecord::default()
+            },
+            presence: FriendBaselinePresence {
+                state: "online".into(),
+                location: "wrld_old:123".into(),
+                ..FriendBaselinePresence::default()
+            },
         },
     )])
 }
@@ -113,11 +118,16 @@ fn local_mode_startup_preserves_roster_replayed_before_the_first_baseline() -> R
         &session,
         HashMap::from([(
             "usr_friend".to_string(),
-            FriendRecord {
-                id: "usr_friend".into(),
-                state: "online".into(),
-                location: "wrld_old:123".into(),
-                ..FriendRecord::default()
+            FriendBaselineEntry {
+                record: FriendRecord {
+                    id: "usr_friend".into(),
+                    ..FriendRecord::default()
+                },
+                presence: FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "wrld_old:123".into(),
+                    ..FriendBaselinePresence::default()
+                },
             },
         )]),
     )?;
@@ -292,11 +302,16 @@ fn local_mode_stop_before_first_connection_preserves_replayed_roster() -> Result
         None,
         HashMap::from([(
             "usr_friend".to_string(),
-            FriendRecord {
-                id: "usr_friend".into(),
-                state: "online".into(),
-                location: "wrld_old:123".into(),
-                ..Default::default()
+            FriendBaselineEntry {
+                record: FriendRecord {
+                    id: "usr_friend".into(),
+                    ..Default::default()
+                },
+                presence: FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "wrld_old:123".into(),
+                    ..FriendBaselinePresence::default()
+                },
             },
         )]),
     )?;
@@ -463,13 +478,18 @@ fn fresh_placeholder_baseline_confirms_pending_offline_before_syncing_location_t
             connected_secs: Some(60),
         },
     );
-    let placeholder = FriendRecord {
-        id: "usr_friend".into(),
-        state: "offline".into(),
-        extra: [("$profileSource".into(), json!("placeholder"))]
-            .into_iter()
-            .collect(),
-        ..FriendRecord::default()
+    let placeholder = FriendBaselineEntry {
+        record: FriendRecord {
+            id: "usr_friend".into(),
+            extra: [("$profileSource".into(), json!("placeholder"))]
+                .into_iter()
+                .collect(),
+            ..FriendRecord::default()
+        },
+        presence: FriendBaselinePresence {
+            state: "offline".into(),
+            ..FriendBaselinePresence::default()
+        },
     };
     runtime.runtime().sync_friend_snapshot(
         active_session.clone(),
@@ -625,9 +645,9 @@ fn pending_baseline_snapshot_carries_presence_views_instead_of_raw_fields() -> R
     )?;
 
     let snapshot = outcome.snapshot.expect("pending baseline snapshot");
-    let friend = &snapshot.friends_by_id["usr_friend"];
-    assert!(friend.state.is_empty());
-    assert!(friend.location.is_empty());
+    let friend = serde_json::to_value(&snapshot.friends_by_id["usr_friend"]).unwrap();
+    assert!(friend.get("state").is_none());
+    assert!(friend.get("location").is_none());
     assert!(matches!(
         snapshot.presence_by_id["usr_friend"].view,
         PresenceView::Online { .. }
@@ -643,12 +663,17 @@ fn pending_baseline_start_emits_initial_location_time_snapshot() -> Result<()> {
         &active_session,
         HashMap::from([(
             "usr_friend".to_string(),
-            FriendRecord {
-                id: "usr_friend".into(),
-                display_name: "Friend".into(),
-                state: "online".into(),
-                location: "wrld_start:123".into(),
-                ..FriendRecord::default()
+            FriendBaselineEntry {
+                record: FriendRecord {
+                    id: "usr_friend".into(),
+                    display_name: "Friend".into(),
+                    ..FriendRecord::default()
+                },
+                presence: FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "wrld_start:123".into(),
+                    ..FriendBaselinePresence::default()
+                },
             },
         )]),
     )?;
@@ -691,20 +716,30 @@ fn game_start_in_another_instance_republishes_remote_friend_timers() -> Result<(
         HashMap::from([
             (
                 "usr_a".to_string(),
-                FriendRecord {
-                    id: "usr_a".into(),
-                    state: "online".into(),
-                    location: "wrld_friends:1".into(),
-                    ..FriendRecord::default()
+                FriendBaselineEntry {
+                    record: FriendRecord {
+                        id: "usr_a".into(),
+                        ..FriendRecord::default()
+                    },
+                    presence: FriendBaselinePresence {
+                        state: "online".into(),
+                        location: "wrld_friends:1".into(),
+                        ..FriendBaselinePresence::default()
+                    },
                 },
             ),
             (
                 "usr_b".to_string(),
-                FriendRecord {
-                    id: "usr_b".into(),
-                    state: "online".into(),
-                    location: "wrld_friends:1".into(),
-                    ..FriendRecord::default()
+                FriendBaselineEntry {
+                    record: FriendRecord {
+                        id: "usr_b".into(),
+                        ..FriendRecord::default()
+                    },
+                    presence: FriendBaselinePresence {
+                        state: "online".into(),
+                        location: "wrld_friends:1".into(),
+                        ..FriendBaselinePresence::default()
+                    },
                 },
             ),
         ]),
@@ -756,12 +791,17 @@ fn baseline_friend_cache_seed_preserves_profile_and_friend_fields() -> Result<()
         Some(active.generation),
         HashMap::from([(
             "usr_future".to_string(),
-            FriendRecord {
-                id: "usr_future".into(),
-                display_name: "Future Friend".into(),
-                state: "online".into(),
-                extra,
-                ..FriendRecord::default()
+            FriendBaselineEntry {
+                record: FriendRecord {
+                    id: "usr_future".into(),
+                    display_name: "Future Friend".into(),
+                    extra,
+                    ..FriendRecord::default()
+                },
+                presence: FriendBaselinePresence {
+                    state: "online".into(),
+                    ..FriendBaselinePresence::default()
+                },
             },
         )]),
     )?;
@@ -930,12 +970,17 @@ fn unexpected_exit_keeps_old_roster_until_pending_baseline_replacement_starts() 
     assert_eq!(watermark.generation, None);
     let fresh_friends = [(
         "usr_friend".to_string(),
-        FriendRecord {
-            id: "usr_friend".into(),
-            display_name: "Friend".into(),
-            state: "online".into(),
-            location: "wrld_fresh:456".into(),
-            ..FriendRecord::default()
+        FriendBaselineEntry {
+            record: FriendRecord {
+                id: "usr_friend".into(),
+                display_name: "Friend".into(),
+                ..FriendRecord::default()
+            },
+            presence: FriendBaselinePresence {
+                state: "online".into(),
+                location: "wrld_fresh:456".into(),
+                ..FriendBaselinePresence::default()
+            },
         },
     )]
     .into_iter()
@@ -1012,12 +1057,17 @@ fn reconnect_without_a_fresh_baseline_preserves_the_latest_canonical_roster() ->
         Some(old_transport.generation),
         HashMap::from([(
             "usr_friend".to_string(),
-            FriendRecord {
-                id: "usr_friend".into(),
-                display_name: "Friend".into(),
-                state: "online".into(),
-                location: "wrld_latest:456".into(),
-                ..FriendRecord::default()
+            FriendBaselineEntry {
+                record: FriendRecord {
+                    id: "usr_friend".into(),
+                    display_name: "Friend".into(),
+                    ..FriendRecord::default()
+                },
+                presence: FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "wrld_latest:456".into(),
+                    ..FriendBaselinePresence::default()
+                },
             },
         )]),
     )?;
@@ -1382,14 +1432,19 @@ fn pending_baseline_trust_feed_projects_once_after_start_without_rewriting() -> 
         },
     )?;
     let watermark = runtime.runtime().capture_friend_baseline_watermark()?;
-    let friend = FriendRecord {
-        state: "online".into(),
-        id: "usr_friend".into(),
-        display_name: "Friend".into(),
-        extra: [("$trustLevel".into(), json!("Trusted User"))]
-            .into_iter()
-            .collect(),
-        ..FriendRecord::default()
+    let friend = FriendBaselineEntry {
+        record: FriendRecord {
+            id: "usr_friend".into(),
+            display_name: "Friend".into(),
+            extra: [("$trustLevel".into(), json!("Trusted User"))]
+                .into_iter()
+                .collect(),
+            ..FriendRecord::default()
+        },
+        presence: FriendBaselinePresence {
+            state: "online".into(),
+            ..FriendBaselinePresence::default()
+        },
     };
 
     let outcome = runtime.runtime().sync_friend_snapshot_with_watermark(

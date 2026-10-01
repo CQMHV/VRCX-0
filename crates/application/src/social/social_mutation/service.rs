@@ -326,38 +326,40 @@ fn fallback_accept(
     profile: &Value,
 ) -> SocialFriendMutationOutcome {
     let display_name = display_name_or_fallback(target_display_name, target_user_id);
-    let mut record = serde_json::from_value::<vrcx_0_core::friends::FriendRecord>(profile.clone())
-        .unwrap_or_default();
-    if record.display_name.trim().is_empty() {
-        record.display_name = display_name.clone().into();
+    let mut entry =
+        serde_json::from_value::<vrcx_0_core::friends::FriendBaselineEntry>(profile.clone())
+            .unwrap_or_default();
+    if entry.record.display_name.trim().is_empty() {
+        entry.record.display_name = display_name.clone().into();
     }
-    let record =
-        record
-            .normalized(target_user_id)
-            .unwrap_or_else(|| vrcx_0_core::friends::FriendRecord {
+    let entry = entry.normalized(target_user_id).unwrap_or_else(|| {
+        vrcx_0_core::friends::FriendBaselineEntry {
+            record: vrcx_0_core::friends::FriendRecord {
                 id: target_user_id.to_string(),
                 display_name: display_name.clone().into(),
-                state: "offline".into(),
                 ..vrcx_0_core::friends::FriendRecord::default()
-            });
+            },
+            ..vrcx_0_core::friends::FriendBaselineEntry::default()
+        }
+    });
     let history_entry = history_entry("Friend", target_user_id, target_display_name);
-    let result =
-        deps.realtime
-            .run_scoped_friend_log_upsert(owner_user_id, endpoint, record, || {
-                deps.store.upsert_current_friend(
-                    owner_user_id.as_str(),
-                    FriendLogCurrentEntryInput {
-                        user_id: target_user_id.to_string(),
-                        display_name,
-                        trust_level: None,
-                        friend_number: Value::Null,
-                    },
-                    FriendLogUpsertOptionsInput {
-                        history_entry: Some(history_entry),
-                        force_history: false,
-                    },
-                )
-            });
+    let result = deps
+        .realtime
+        .run_scoped_friend_log_upsert(owner_user_id, endpoint, entry, || {
+            deps.store.upsert_current_friend(
+                owner_user_id.as_str(),
+                FriendLogCurrentEntryInput {
+                    user_id: target_user_id.to_string(),
+                    display_name,
+                    trust_level: None,
+                    friend_number: Value::Null,
+                },
+                FriendLogUpsertOptionsInput {
+                    history_entry: Some(history_entry),
+                    force_history: false,
+                },
+            )
+        });
     match result {
         Ok(_) => SocialFriendMutationOutcome::applied(target_user_id),
         Err(error) => SocialFriendMutationOutcome::remote_ok_local_failed(target_user_id, error),

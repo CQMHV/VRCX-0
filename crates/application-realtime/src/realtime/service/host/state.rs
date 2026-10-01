@@ -11,7 +11,7 @@ use vrcx_0_application_core::{
     RuntimeSyncEngine, TaskSupervisor, WebClient, WorldCache,
 };
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
-use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::friends::FriendBaselineEntry;
 use vrcx_0_core::vrchat_endpoints::normalize_vrchat_api_endpoint;
 
 use super::feed::FeedLiveCache;
@@ -30,7 +30,7 @@ pub(super) struct FriendOwnerGuard<'a> {
 
 pub(super) enum FriendLogMutation {
     Remove { user_id: String },
-    Upsert { record: Box<FriendRecord> },
+    Upsert { entry: Box<FriendBaselineEntry> },
 }
 
 pub(super) type CurrentUserRefreshStatus = Option<std::result::Result<bool, String>>;
@@ -80,10 +80,10 @@ impl ScopedFriendLogMutation {
                     queued.projection.removals.push(user_id);
                 }
             }
-            FriendLogMutation::Upsert { record } => {
-                let record = *record;
-                let user_id = record.id.clone();
-                queued.friends_by_id.insert(user_id.clone(), record.clone());
+            FriendLogMutation::Upsert { entry } => {
+                let user_id = entry.record.id.clone();
+                let (patch, presence) = baseline_friend_view(&entry);
+                queued.friends_by_id.insert(user_id.clone(), *entry);
                 queued
                     .projection
                     .removals
@@ -92,7 +92,6 @@ impl ScopedFriendLogMutation {
                     .projection
                     .patches
                     .retain(|existing| existing.user_id != user_id);
-                let (patch, presence) = baseline_friend_view(&record);
                 queued
                     .projection
                     .patches
@@ -119,7 +118,7 @@ pub(super) struct ActiveRealtimeContext {
 #[derive(Clone, Debug)]
 pub(super) struct QueuedFriendBaseline {
     pub(super) session: RealtimeSessionContext,
-    pub(super) friends_by_id: HashMap<String, FriendRecord>,
+    pub(super) friends_by_id: HashMap<String, FriendBaselineEntry>,
     pub(super) feed_entries: Vec<FeedLiveEntry>,
     pub(super) projection: FriendProjection,
 }

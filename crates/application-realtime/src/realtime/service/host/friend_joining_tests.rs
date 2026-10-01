@@ -1,7 +1,7 @@
 use super::test_support::*;
 use super::*;
 use vrcx_0_application_core::HostSessionGameProcessStatus as GameProcessStatus;
-use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::friends::{FriendBaselineEntry, FriendBaselinePresence, FriendRecord};
 use vrcx_0_core::OwnerId;
 
 fn joining_output(
@@ -40,12 +40,17 @@ fn player_joining_only_reaches_overlay_for_current_instance_absent_player() -> R
         Some(7),
         [(
             "usr_friend".to_string(),
-            FriendRecord {
-                id: "usr_friend".into(),
-                display_name: "Friend".into(),
-                state: "online".into(),
-                location: "wrld_old:123".into(),
-                ..FriendRecord::default()
+            FriendBaselineEntry {
+                record: FriendRecord {
+                    id: "usr_friend".into(),
+                    display_name: "Friend".into(),
+                    ..FriendRecord::default()
+                },
+                presence: FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "wrld_old:123".into(),
+                    ..FriendBaselinePresence::default()
+                },
             },
         )]
         .into_iter()
@@ -129,13 +134,18 @@ fn initial_traveling_baseline_emits_player_joining() -> Result<()> {
         Some(7),
         [(
             "usr_friend".to_string(),
-            FriendRecord {
-                id: "usr_friend".into(),
-                display_name: "Friend".into(),
-                state: "online".into(),
-                location: "traveling".into(),
-                traveling_to_location: "wrld_current:456".into(),
-                ..FriendRecord::default()
+            FriendBaselineEntry {
+                record: FriendRecord {
+                    id: "usr_friend".into(),
+                    display_name: "Friend".into(),
+                    ..FriendRecord::default()
+                },
+                presence: FriendBaselinePresence {
+                    state: "online".into(),
+                    location: "traveling".into(),
+                    traveling_to_location: "wrld_current:456".into(),
+                    ..FriendBaselinePresence::default()
+                },
             },
         )]
         .into_iter()

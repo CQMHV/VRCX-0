@@ -15,7 +15,7 @@ use vrcx_0_application_core::vrchat_api::VrchatApiResponse;
 use vrcx_0_application_core::{
     RuntimeAuthScope, RuntimeTask, RuntimeTaskExecutor, RuntimeTaskHandle,
 };
-use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::friends::{FriendBaselineEntry, FriendRecord};
 
 #[derive(Clone, Copy)]
 struct DiscardTaskExecutor;
@@ -42,6 +42,10 @@ fn friend_record(extra: serde_json::Value) -> FriendRecord {
     let mut value = extra;
     value["id"] = json!(value["id"].as_str().unwrap_or("usr_test"));
     serde_json::from_value(value).unwrap()
+}
+
+fn friend_entry(extra: serde_json::Value) -> FriendBaselineEntry {
+    serde_json::from_value(extra).unwrap()
 }
 
 #[test]
@@ -184,7 +188,7 @@ fn start_completes_immediately_when_no_targets() -> Result<()> {
                 let mut map = HashMap::new();
                 map.insert(
                     "usr_a".to_string(),
-                    friend_record(json!({"id": "usr_a", "date_joined": "2026-01-01"})),
+                    friend_entry(json!({"id": "usr_a", "date_joined": "2026-01-01"})),
                 );
                 map
             },
@@ -239,11 +243,11 @@ async fn unexpected_exit_and_same_account_replacement_keep_bulk_worker_active() 
     let friends_by_id = HashMap::from([
         (
             "usr_a".to_string(),
-            friend_record(json!({"id": "usr_a", "displayName": "A"})),
+            friend_entry(json!({"id": "usr_a", "displayName": "A"})),
         ),
         (
             "usr_b".to_string(),
-            friend_record(json!({"id": "usr_b", "displayName": "B"})),
+            friend_entry(json!({"id": "usr_b", "displayName": "B"})),
         ),
     ]);
     runtime.runtime().friends.set_baseline(
@@ -448,7 +452,7 @@ async fn explicit_stop_keeps_a_real_worker_cancelled_after_it_exits() -> Result<
             websocket: active_session.websocket.clone(),
             friends_by_id: HashMap::from([(
                 "usr_a".to_string(),
-                friend_record(json!({"id": "usr_a", "displayName": "A"})),
+                friend_entry(json!({"id": "usr_a", "displayName": "A"})),
             )]),
         },
         7,
@@ -618,7 +622,7 @@ fn bulk_profile_refresh_applies_when_friend_sequence_matches() -> Result<()> {
                 let mut map = HashMap::new();
                 map.insert(
                     "usr_friend".to_string(),
-                    friend_record(json!({"id": "usr_friend", "displayName": "Friend"})),
+                    friend_entry(json!({"id": "usr_friend", "displayName": "Friend"})),
                 );
                 map
             },
@@ -678,7 +682,7 @@ fn bulk_profile_refresh_is_discarded_when_friend_sequence_advanced() -> Result<(
                 let mut map = HashMap::new();
                 map.insert(
                     "usr_friend".to_string(),
-                    friend_record(json!({"id": "usr_friend", "displayName": "Friend"})),
+                    friend_entry(json!({"id": "usr_friend", "displayName": "Friend"})),
                 );
                 map
             },
@@ -747,7 +751,7 @@ async fn cached_user_response_is_not_replayed_into_friend_state() -> Result<()> 
                 let mut map = HashMap::new();
                 map.insert(
                     "usr_friend".to_string(),
-                    friend_record(json!({"id": "usr_friend", "displayName": "Friend"})),
+                    friend_entry(json!({"id": "usr_friend", "displayName": "Friend"})),
                 );
                 map
             },
@@ -829,7 +833,7 @@ async fn cached_user_response_does_not_revert_display_name() -> Result<()> {
                 let mut map = HashMap::new();
                 map.insert(
                     "usr_friend".to_string(),
-                    friend_record(json!({"id": "usr_friend", "displayName": "Friend"})),
+                    friend_entry(json!({"id": "usr_friend", "displayName": "Friend"})),
                 );
                 map
             },

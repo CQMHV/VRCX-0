@@ -36,7 +36,7 @@ use vrcx_0_application_core::{
     MemoryFileCachePort, MemoryWorldCachePort, NoopPrintCleanupInputSink, NoopWebClientPort,
     Result, RuntimeAuthScope, RuntimeEventForTest, RuntimeTaskExecutor,
 };
-use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::friends::FriendBaselineEntry;
 use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 
 #[cfg(test)]
@@ -136,7 +136,7 @@ impl TestRealtimeHostRuntime {
     pub fn prepare_pending_friend_baseline(
         &self,
         session: &RealtimeSessionContext,
-        friends_by_id: HashMap<String, FriendRecord>,
+        friends_by_id: HashMap<String, FriendBaselineEntry>,
     ) -> Result<()> {
         self.runtime.state.lock().unwrap().connection.active_context = None;
         self.runtime.friends.clear();
@@ -281,11 +281,16 @@ pub fn seed_friend_baseline(
             websocket: active_session.websocket.clone(),
             friends_by_id: [(
                 "usr_friend".to_string(),
-                vrcx_0_core::friends::FriendRecord {
-                    id: "usr_friend".into(),
-                    display_name: "Friend".into(),
-                    state: "online".into(),
-                    ..vrcx_0_core::friends::FriendRecord::default()
+                vrcx_0_core::friends::FriendBaselineEntry {
+                    record: vrcx_0_core::friends::FriendRecord {
+                        id: "usr_friend".into(),
+                        display_name: "Friend".into(),
+                        ..vrcx_0_core::friends::FriendRecord::default()
+                    },
+                    presence: vrcx_0_core::friends::FriendBaselinePresence {
+                        state: "online".into(),
+                        ..vrcx_0_core::friends::FriendBaselinePresence::default()
+                    },
                 },
             )]
             .into_iter()

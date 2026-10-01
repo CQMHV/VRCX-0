@@ -360,7 +360,9 @@ impl vrcx_0_contracts::InstanceRosterObserver for InstanceDwellRegistry {
 mod tests {
     use super::*;
     use vrcx_0_contracts::InstanceRosterMember;
-    use vrcx_0_core::friends::{FriendRecord, StateBucket};
+    use vrcx_0_core::friends::{
+        FriendBaselineEntry, FriendBaselinePresence, FriendRecord, StateBucket,
+    };
 
     fn roster(location: &str, members: &[(&str, i64)]) -> InstanceRosterSnapshot {
         InstanceRosterSnapshot {
@@ -381,7 +383,8 @@ mod tests {
         }
     }
 
-    fn place_from_record(record: &FriendRecord, observed_ms: i64) -> FriendPlace {
+    fn place_from_record(entry: &FriendBaselineEntry, observed_ms: i64) -> FriendPlace {
+        let record = &entry.presence;
         let parsed = parse_location(&record.location);
         if StateBucket::normalize(&record.state) != Some(StateBucket::Online)
             || !(parsed.is_traveling || parsed.is_real_instance)
@@ -403,7 +406,7 @@ mod tests {
     }
 
     fn places_from_records(
-        records: &HashMap<String, FriendRecord>,
+        records: &HashMap<String, FriendBaselineEntry>,
         observed_ms: i64,
     ) -> HashMap<String, FriendPlace> {
         records
@@ -412,12 +415,17 @@ mod tests {
             .collect()
     }
 
-    fn friend(user_id: &str, state: &str, location: &str) -> FriendRecord {
-        FriendRecord {
-            id: user_id.to_string(),
-            state: state.into(),
-            location: location.to_string(),
-            ..FriendRecord::default()
+    fn friend(user_id: &str, state: &str, location: &str) -> FriendBaselineEntry {
+        FriendBaselineEntry {
+            record: FriendRecord {
+                id: user_id.to_string(),
+                ..FriendRecord::default()
+            },
+            presence: FriendBaselinePresence {
+                state: state.into(),
+                location: location.to_string(),
+                ..FriendBaselinePresence::default()
+            },
         }
     }
 
@@ -498,7 +506,7 @@ mod tests {
     #[test]
     fn local_arrival_only_inherits_present_time_known_before_self_entry() {
         let mut traveling = friend("usr_a", "online", "traveling");
-        traveling.traveling_to_location = "wrld_a:1".into();
+        traveling.presence.traveling_to_location = "wrld_a:1".into();
         for (record, observed_at) in [
             (traveling, 1_000),
             (friend("usr_a", "online", "wrld_a:2"), 1_000),
@@ -818,7 +826,7 @@ mod tests {
     fn traveling_arrival_restarts_the_timer_even_for_the_same_target() {
         let registry = InstanceDwellRegistry::new();
         let mut traveling = friend("usr_a", "online", "traveling");
-        traveling.traveling_to_location = "wrld_a:1".to_string();
+        traveling.presence.traveling_to_location = "wrld_a:1".to_string();
         registry.observe_friend("usr_a", &place_from_record(&traveling, 1_000));
         assert_eq!(registry.snapshot()[0].location, "wrld_a:1");
         assert_eq!(registry.snapshot()[0].since_ms, Some(1_000));
@@ -839,6 +847,7 @@ mod tests {
         registry.observe_friend("usr_a", &place_from_record(&online, 1_000));
         let mut pending = online.clone();
         pending
+            .record
             .extra
             .insert("pendingOffline".into(), serde_json::Value::Bool(true));
 
@@ -951,7 +960,7 @@ mod tests {
             &place_from_record(&friend("usr_a", "online", "wrld_a:1"), 5_000),
         );
         let mut traveling = friend("usr_a", "online", "traveling");
-        traveling.traveling_to_location = "wrld_a:1".into();
+        traveling.presence.traveling_to_location = "wrld_a:1".into();
         registry.observe_friend("usr_a", &place_from_record(&traveling, 7_000));
         registry.observe_friend(
             "usr_a",

@@ -39,31 +39,6 @@ const NAMED_FIELDS: &[NamedField] = &[
         set: |record, value| record.username = value.into(),
     },
     NamedField {
-        keys: &["state"],
-        get: |record| &record.state,
-        set: |record, value| record.state = value.into(),
-    },
-    NamedField {
-        keys: &["location"],
-        get: |record| &record.location,
-        set: |record, value| record.location = value.into(),
-    },
-    NamedField {
-        keys: &["travelingToLocation"],
-        get: |record| &record.traveling_to_location,
-        set: |record, value| record.traveling_to_location = value.into(),
-    },
-    NamedField {
-        keys: &["worldId"],
-        get: |record| &record.world_id,
-        set: |record, value| record.world_id = value.into(),
-    },
-    NamedField {
-        keys: &["platform"],
-        get: |record| &record.platform,
-        set: |record, value| record.platform = value.into(),
-    },
-    NamedField {
         keys: &["lastPlatform", "last_platform"],
         get: |record| &record.last_platform,
         set: |record, value| record.last_platform = value.into(),
@@ -193,11 +168,6 @@ mod tests {
     #[test]
     fn field_tables_cover_every_serialized_friend_record_key() {
         let record = FriendRecord {
-            state: "online".into(),
-            location: "wrld_a:1".into(),
-            traveling_to_location: "wrld_b:2".into(),
-            world_id: "wrld_a".into(),
-            platform: "standalonewindows".into(),
             date_joined: "2026-01-01".into(),
             last_activity: "2026-01-01T00:00:00Z".into(),
             last_login: "2026-01-01T00:00:00Z".into(),

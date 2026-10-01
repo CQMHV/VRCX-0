@@ -6,7 +6,7 @@ use vrcx_0_application_core::{RuntimeAuthScopeSnapshot, RuntimeOperationStatus};
 use tokio::sync::{broadcast, watch};
 use vrcx_0_application_core::{Error, Result};
 use vrcx_0_contracts::realtime::{NotificationExpiration, RealtimePersistenceBatch};
-use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
+use vrcx_0_core::friends::{FriendBaselineEntry, FriendRosterBaseline};
 use vrcx_0_core::vrchat_endpoints::normalize_vrchat_websocket_endpoint;
 
 use crate::realtime::connection::RealtimeMessageSink;
@@ -28,7 +28,7 @@ use super::{RealtimeHostRuntime, RealtimeHostRuntimeDeps, RealtimeStopRequest};
 use vrcx_0_core::OwnerId;
 
 enum RealtimeFriendBaselineStart {
-    Supplied(HashMap<String, FriendRecord>),
+    Supplied(HashMap<String, FriendBaselineEntry>),
     PendingOrPreserved,
 }
 
@@ -119,7 +119,7 @@ impl RealtimeHostRuntime {
         websocket: String,
         client_run_id: u64,
         current_user_snapshot: serde_json::Value,
-        friends_by_id: HashMap<String, FriendRecord>,
+        friends_by_id: HashMap<String, FriendBaselineEntry>,
     ) -> Result<RealtimeTransportStartResult> {
         self.start_with_friend_baseline(
             user_id,
