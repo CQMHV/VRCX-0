@@ -1,5 +1,8 @@
+// @vitest-environment jsdom
+
+import { cleanup, render, waitFor } from '@testing-library/react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { offlinePresence, onlinePresence } from '@/test/presenceFixtures';
 
@@ -27,6 +30,21 @@ const storeMocks = vi.hoisted(() => ({
     friendLocationTimeState: {
         byUserId: {}
     } as FriendLocationTimeStoreState
+}));
+
+const repositoryMocks = vi.hoisted(() => ({ getUserProfile: vi.fn() }));
+
+vi.mock('@/repositories/userProfileRepository', () => ({
+    default: { getUserProfile: repositoryMocks.getUserProfile }
+}));
+vi.mock('@/repositories/memoPersistenceRepository', () => ({
+    default: { getUserMemo: () => Promise.resolve({ memo: '' }) }
+}));
+vi.mock('@/repositories/worldProfileRepository', () => ({
+    default: { getWorldProfile: () => Promise.resolve(null) }
+}));
+vi.mock('@/repositories/vrchatInstanceRepository', () => ({
+    default: { getInstance: () => Promise.resolve({ json: {} }) }
 }));
 
 vi.mock('@tanstack/react-query', () => ({
@@ -88,7 +106,13 @@ function Probe({ userId, seed = null }: ProbeProps) {
 }
 
 describe('useUserHoverCardData', () => {
+    afterEach(() => {
+        cleanup();
+        repositoryMocks.getUserProfile.mockReset();
+    });
+
     beforeEach(() => {
+        repositoryMocks.getUserProfile.mockResolvedValue(null);
         storeMocks.friendLocationTimeState = { byUserId: {} };
         storeMocks.friendRosterState = {
             friendsById: {
@@ -102,6 +126,26 @@ describe('useUserHoverCardData', () => {
                 }
             }
         };
+    });
+
+    it('queries hovered users with the friend cache class only when they are on the roster', async () => {
+        render(
+            <Probe
+                userId="usr_stranger"
+                seed={{ id: 'usr_stranger', displayName: 'Stranger' }}
+            />
+        );
+        render(<Probe userId="usr_friend" />);
+
+        await waitFor(() =>
+            expect(repositoryMocks.getUserProfile).toHaveBeenCalledTimes(2)
+        );
+        expect(repositoryMocks.getUserProfile).toHaveBeenCalledWith(
+            expect.objectContaining({ userId: 'usr_stranger', isFriend: false })
+        );
+        expect(repositoryMocks.getUserProfile).toHaveBeenCalledWith(
+            expect.objectContaining({ userId: 'usr_friend', isFriend: true })
+        );
     });
 
     it('falls back to the friend roster seed when only userId is supplied', () => {

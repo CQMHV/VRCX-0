@@ -47,7 +47,9 @@ export function useUserHoverCardData({
     const normalizedUserId =
         normalizedInputUserId || normalizeId(effectiveSeed?.id);
 
-    const isFriend = Boolean(effectiveSeed);
+    const isFriend = useFriendRosterStore((state) =>
+        Boolean(normalizedUserId && state.friendsById[normalizedUserId])
+    );
 
     const [profile, setProfile] = useState<UserHoverCardProfile | null>(null);
     const [memo, setMemo] = useState('');
