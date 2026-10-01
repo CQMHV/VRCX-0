@@ -12,7 +12,6 @@ import {
 } from '@/test/presenceFixtures';
 
 import {
-    parsePresenceById,
     presenceDotClassName,
     presencePlace,
     presenceSection,
@@ -51,18 +50,6 @@ describe('presence', () => {
 
         expect(presencePlace(pending)).toBe(place);
         expect(presencePlace({ kind: 'offline' })).toBeNull();
-    });
-
-    it('parses only well-formed presence entries from raw snapshots', () => {
-        expect(
-            parsePresenceById({
-                usr_a: { rev: 3, view: { kind: 'offline' } },
-                usr_b: { rev: '3', view: { kind: 'offline' } },
-                usr_c: { rev: 1, view: { kind: 'sleeping' } },
-                usr_d: null
-            })
-        ).toEqual({ usr_a: { rev: 3, view: { kind: 'offline' } } });
-        expect(parsePresenceById(undefined)).toEqual({});
     });
 
     it('derives the status dot from presence and the chosen status', () => {

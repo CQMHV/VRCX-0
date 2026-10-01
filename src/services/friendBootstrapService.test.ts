@@ -46,6 +46,9 @@ describe('friendBootstrapService baseline reconciliation', () => {
             count: 0,
             detail: 'complete',
             snapshot: {
+                currentUserId: 'usr_self',
+                generation: 1,
+                presenceById: {},
                 friendsById: {}
             }
         });
@@ -62,6 +65,9 @@ describe('friendBootstrapService baseline reconciliation', () => {
             count: 2,
             detail: 'fast roster',
             snapshot: {
+                currentUserId: 'usr_self',
+                generation: 1,
+                presenceById: {},
                 friendsById: {
                     usr_online: {
                         id: 'usr_online',
@@ -119,6 +125,9 @@ describe('friendBootstrapService baseline reconciliation', () => {
             detail: 'fast roster',
             friendLogChanged: true,
             snapshot: {
+                currentUserId: 'usr_self',
+                generation: 1,
+                presenceById: {},
                 friendsById: {
                     usr_online: {
                         id: 'usr_online',
@@ -153,6 +162,9 @@ describe('friendBootstrapService baseline reconciliation', () => {
             detail: 'fast roster',
             friendLogChanged: false,
             snapshot: {
+                currentUserId: 'usr_self',
+                generation: 1,
+                presenceById: {},
                 friendsById: {
                     usr_online: {
                         id: 'usr_online',
@@ -199,6 +211,9 @@ describe('friendBootstrapService baseline reconciliation', () => {
             count: 1,
             detail: 'refreshed',
             snapshot: {
+                currentUserId: 'usr_self',
+                generation: 1,
+                presenceById: {},
                 friendsById: {
                     usr_stale: {
                         id: 'usr_stale',

@@ -30,10 +30,11 @@ pub use projection::{
 };
 pub use runtime_types::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendBaselineSyncOutcome,
-    RealtimeCachedUserProfile, RealtimeFriendApplyResult, RealtimeFriendRecordSnapshot,
-    RealtimeFriendRosterSnapshot, RealtimeFriendSnapshot, RealtimeSessionContext,
-    RealtimeTransportLifecycleEvent, RealtimeTransportStartResult, RealtimeTransportTermination,
-    RealtimeWsMessagePayload, RealtimeWsStatus, RealtimeWsStatusPayload,
+    FriendRosterSnapshot, RealtimeCachedUserProfile, RealtimeFriendApplyResult,
+    RealtimeFriendRecordSnapshot, RealtimeFriendRosterSnapshot, RealtimeFriendSnapshot,
+    RealtimeSessionContext, RealtimeTransportLifecycleEvent, RealtimeTransportStartResult,
+    RealtimeTransportTermination, RealtimeWsMessagePayload, RealtimeWsStatus,
+    RealtimeWsStatusPayload,
 };
 pub use service::{
     FriendProfileBulkLoadStatus, FriendProfileLoadStatusPayload, RealtimeCurrentUserSnapshotSink,

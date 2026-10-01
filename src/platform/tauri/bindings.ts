@@ -4296,6 +4296,12 @@ export type FriendRecord = Partial<{
     last_login?: string | null;
     last_mobile?: string | null;
 };
+export type FriendRosterSnapshot = {
+    currentUserId: string;
+    friendsById: Partial<{ [key in string]: FriendRecord }>;
+    presenceById: Partial<{ [key in string]: PresenceEntry }>;
+    generation: number;
+};
 export type GameClientEvent =
     | { kind: 'crashRelaunchDecision'; payload: CrashRelaunchDecisionPayload }
     | { kind: 'debugLoggingOutcome'; payload: DebugLoggingOutcome }
@@ -6251,7 +6257,7 @@ export type SocialFriendRosterBaselineOutput = {
     stale: boolean;
     count: number;
     detail: string;
-    snapshot: RawJson | null;
+    snapshot: FriendRosterSnapshot | null;
     friendLogChanged: boolean;
 };
 export type SocialUnfriendBatchInput = {

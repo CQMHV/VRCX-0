@@ -82,28 +82,6 @@ export function presenceOfSelfOrRef(value: unknown): PresenceView | null {
     );
 }
 
-function isPresenceEntry(value: unknown): value is PresenceEntry {
-    return (
-        isRecord(value) &&
-        typeof value.rev === 'number' &&
-        isPresenceView(value.view)
-    );
-}
-
-export function parsePresenceById(
-    value: unknown
-): Record<string, PresenceEntry> {
-    if (!isRecord(value)) {
-        return {};
-    }
-    return Object.fromEntries(
-        Object.entries(value).filter(
-            (entry): entry is [string, PresenceEntry] =>
-                isPresenceEntry(entry[1])
-        )
-    );
-}
-
 function hollowStatusDotClassName(status: string): string {
     switch (status) {
         case 'join me':

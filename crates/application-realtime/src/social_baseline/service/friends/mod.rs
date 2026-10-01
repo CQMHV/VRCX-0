@@ -18,7 +18,7 @@ use vrcx_0_core::friends::FriendRecord;
 
 #[cfg(test)]
 use super::{
-    json, object_field, object_field_string, FriendBaselineSyncOutcome, RawJson,
+    json, object_field, object_field_string, FriendBaselineSyncOutcome,
     SocialFriendRosterBaselineOutput,
 };
 #[cfg(test)]

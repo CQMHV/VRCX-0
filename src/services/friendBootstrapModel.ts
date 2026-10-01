@@ -1,15 +1,7 @@
-import type {
-    FriendPresenceById,
-    FriendRosterInputById
-} from '@/domain/friends/types';
+import type { FriendRosterSnapshotInput } from '@/domain/friends/types';
+import type { FriendRosterSnapshot } from '@/platform/tauri/bindings';
 import { isRecord } from '@/shared/utils/record';
 
-export type FriendBootstrapSnapshot = Record<string, unknown> & {
-    friendsById?: FriendRosterInputById;
-    presenceById?: FriendPresenceById;
-    generation?: number | null;
-    detail?: string;
-};
 export type CurrentUserFriendSnapshot = Record<string, unknown> & {
     id?: string;
 };
@@ -35,18 +27,28 @@ export function normalizeUserId(value: unknown) {
 
 export { isRecord };
 
-export function normalizeFriendsById(value: unknown): FriendRosterInputById {
-    if (!isRecord(value)) {
-        return {};
-    }
-
-    const friendsById: FriendRosterInputById = {};
-    for (const [userId, friend] of Object.entries(value)) {
-        if (isRecord(friend)) {
-            friendsById[userId] = friend;
+function definedById<T>(byId: Partial<Record<string, T>>): Record<string, T> {
+    const values: Record<string, T> = {};
+    for (const [key, value] of Object.entries(byId)) {
+        if (value !== undefined) {
+            values[key] = value;
         }
     }
-    return friendsById;
+    return values;
+}
+
+export function rosterSnapshotInput(
+    currentUserId: string,
+    snapshot: FriendRosterSnapshot,
+    detail: string
+): FriendRosterSnapshotInput {
+    return {
+        currentUserId,
+        friendsById: definedById(snapshot.friendsById),
+        presenceById: definedById(snapshot.presenceById),
+        generation: snapshot.generation,
+        detail
+    };
 }
 
 export function getDisplayName(

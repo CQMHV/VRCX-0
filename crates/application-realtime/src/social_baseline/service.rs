@@ -203,7 +203,7 @@ pub async fn build_synced_friend_roster_baseline(
         friends_by_id,
         verdicts,
     )?;
-    let Some(friends_by_id) = apply_friend_roster_baseline_sync_outcome(&mut output, outcome)?
+    let Some(friends_by_id) = apply_friend_roster_baseline_sync_outcome(&mut output, outcome)
     else {
         return Ok(SyncedFriendRosterBaseline {
             output,

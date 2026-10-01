@@ -158,18 +158,19 @@ mod tests {
             3,
         );
 
-        let projection = runtime.roster_snapshot().unwrap().unwrap();
+        let projection = runtime.roster_snapshot().unwrap();
+        let snapshot = serde_json::to_value(&projection.snapshot).unwrap();
 
         assert_eq!(projection.current_user_id, "usr_self");
         assert_eq!(projection.endpoint, "https://api.example.test");
         assert_eq!(projection.websocket, "wss://ws.example.test");
         assert_eq!(projection.friend_count, 2);
         assert_eq!(
-            projection.snapshot["presenceById"]["usr_new"]["view"]["kind"],
+            snapshot["presenceById"]["usr_new"]["view"]["kind"],
             "online"
         );
         assert_eq!(
-            projection.snapshot["presenceById"]["usr_existing"]["view"]["kind"],
+            snapshot["presenceById"]["usr_existing"]["view"]["kind"],
             "active"
         );
     }
@@ -754,7 +755,7 @@ mod tests {
         assert_eq!(presence["view"]["place"]["location"]["tag"], "wrld_a:1");
         assert_eq!(presence["view"]["platform"], "android");
 
-        let snapshot = runtime.roster_snapshot().unwrap().unwrap().snapshot;
+        let snapshot = runtime.roster_snapshot().unwrap().snapshot;
         let snapshot = serde_json::to_value(&snapshot).unwrap();
         assert_eq!(snapshot["presenceById"]["usr_friend"], presence);
         assert_eq!(snapshot["generation"], 1);

@@ -431,17 +431,15 @@ impl RealtimeFriendsRuntime {
         Some(visit(&roster.endpoint, &mut records))
     }
 
-    pub fn roster_snapshot(&self) -> serde_json::Result<Option<RealtimeFriendRosterSnapshot>> {
-        let Some(snapshot) = self.snapshot() else {
-            return Ok(None);
-        };
-        Ok(Some(RealtimeFriendRosterSnapshot {
+    pub fn roster_snapshot(&self) -> Option<RealtimeFriendRosterSnapshot> {
+        let snapshot = self.snapshot()?;
+        Some(RealtimeFriendRosterSnapshot {
             friend_count: snapshot.friends_by_id.len(),
-            snapshot: snapshot.to_roster_json()?.into(),
+            snapshot: snapshot.to_roster_snapshot(),
             current_user_id: snapshot.current_user_id,
             endpoint: snapshot.endpoint,
             websocket: snapshot.websocket,
-        }))
+        })
     }
 
     pub fn session_context(&self) -> Option<RealtimeSessionContext> {

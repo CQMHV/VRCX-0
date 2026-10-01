@@ -306,16 +306,30 @@ fn active_list_bucket_ignores_location() {
 }
 
 #[test]
-fn canonical_records_replace_raw_roster_snapshot_and_presence() -> Result<()> {
+fn canonical_records_replace_roster_snapshot_and_presence() -> Result<()> {
     let mut output = SocialFriendRosterBaselineOutput {
         user_id: "usr_self".into(),
         stale: false,
         count: 1,
         detail: String::new(),
-        snapshot: Some(RawJson::from(json!({
-            "friendsById": { "usr_stale": { "id": "usr_stale", "stateBucket": "online" } },
-            "presenceById": { "usr_stale": { "rev": 0, "view": { "kind": "offline" } } }
-        }))),
+        snapshot: Some(crate::realtime::FriendRosterSnapshot {
+            current_user_id: "usr_self".into(),
+            friends_by_id: HashMap::from([(
+                "usr_stale".to_string(),
+                FriendRecord {
+                    id: "usr_stale".into(),
+                    ..FriendRecord::default()
+                },
+            )]),
+            presence_by_id: HashMap::from([(
+                "usr_stale".to_string(),
+                PresenceEntry {
+                    rev: 0,
+                    view: PresenceView::Offline,
+                },
+            )]),
+            generation: 0,
+        }),
         friend_log_changed: false,
     };
     let friends_by_id = HashMap::from([
@@ -377,28 +391,28 @@ fn canonical_records_replace_raw_roster_snapshot_and_presence() -> Result<()> {
             },
             true,
         ),
-    )?
+    )
     .is_some();
 
-    let snapshot = output.snapshot.unwrap().into_value();
+    let snapshot = output.snapshot.expect("roster snapshot");
     assert!(applied);
     assert_eq!(output.count, 2);
     assert!(output.friend_log_changed);
-    assert!(snapshot["friendsById"].get("usr_stale").is_none());
-    assert!(snapshot["presenceById"].get("usr_stale").is_none());
+    assert!(!snapshot.friends_by_id.contains_key("usr_stale"));
+    assert!(!snapshot.presence_by_id.contains_key("usr_stale"));
+    assert!(matches!(
+        snapshot.presence_by_id["usr_online"].view,
+        PresenceView::Online { .. }
+    ));
     assert_eq!(
-        snapshot["presenceById"]["usr_online"]["view"]["kind"],
-        "online"
-    );
-    assert_eq!(
-        snapshot["presenceById"]["usr_offline"]["view"]["kind"],
-        "offline"
+        snapshot.presence_by_id["usr_offline"].view,
+        PresenceView::Offline
     );
     Ok(())
 }
 
 #[test]
-fn canonical_records_can_be_moved_out_after_raw_snapshot_rebuild() -> Result<()> {
+fn canonical_records_can_be_moved_out_after_snapshot_rebuild() -> Result<()> {
     let mut output = SocialFriendRosterBaselineOutput {
         user_id: "usr_self".into(),
         stale: false,
@@ -440,7 +454,7 @@ fn canonical_records_can_be_moved_out_after_raw_snapshot_rebuild() -> Result<()>
             },
             false,
         ),
-    )?
+    )
     .expect("accepted baseline should return canonical records");
 
     assert_eq!(
@@ -448,23 +462,42 @@ fn canonical_records_can_be_moved_out_after_raw_snapshot_rebuild() -> Result<()>
         json!({ "nested": [1, { "unknown": true }] })
     );
     assert_eq!(
-        output.snapshot.as_ref().expect("raw snapshot").as_value()["friendsById"]["usr_future"]
-            ["futureProfile"],
+        output
+            .snapshot
+            .as_ref()
+            .expect("roster snapshot")
+            .friends_by_id["usr_future"]
+            .extra["futureProfile"],
         json!({ "nested": [1, { "unknown": true }] })
     );
     Ok(())
 }
 
 #[test]
-fn rejected_sync_outcome_clears_raw_roster_snapshot() -> Result<()> {
+fn rejected_sync_outcome_clears_roster_snapshot() -> Result<()> {
     let mut output = SocialFriendRosterBaselineOutput {
         user_id: "usr_self".into(),
         stale: false,
         count: 1,
         detail: String::new(),
-        snapshot: Some(RawJson::from(json!({
-            "friendsById": { "usr_stale": { "id": "usr_stale" } }
-        }))),
+        snapshot: Some(crate::realtime::FriendRosterSnapshot {
+            current_user_id: "usr_self".into(),
+            friends_by_id: HashMap::from([(
+                "usr_stale".to_string(),
+                FriendRecord {
+                    id: "usr_stale".into(),
+                    ..FriendRecord::default()
+                },
+            )]),
+            presence_by_id: HashMap::from([(
+                "usr_stale".to_string(),
+                PresenceEntry {
+                    rev: 0,
+                    view: PresenceView::Offline,
+                },
+            )]),
+            generation: 0,
+        }),
         friend_log_changed: true,
     };
 
@@ -474,7 +507,7 @@ fn rejected_sync_outcome_clears_raw_roster_snapshot() -> Result<()> {
             accepted: false,
             ..crate::realtime::FriendBaselineResult::default()
         }),
-    )?
+    )
     .is_some();
 
     assert!(!applied);

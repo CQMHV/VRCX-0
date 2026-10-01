@@ -1,9 +1,7 @@
 use std::collections::HashMap;
 
 use serde::Serialize;
-use serde_json::{json, Value};
 use vrcx_0_core::friends::FriendRecord;
-use vrcx_0_core::json::RawJson;
 use vrcx_0_core::presence::PresenceEntry;
 pub use vrcx_0_core::realtime::{
     RealtimeSessionContext, RealtimeWsMessagePayload, RealtimeWsStatus, RealtimeWsStatusPayload,
@@ -32,15 +30,23 @@ pub struct RealtimeFriendSnapshot {
 }
 
 impl RealtimeFriendSnapshot {
-    pub(crate) fn to_roster_json(&self) -> serde_json::Result<Value> {
-        Ok(json!({
-            "currentUserId": self.current_user_id,
-            "friendsById": serde_json::to_value(&self.friends_by_id)?,
-            "presenceById": serde_json::to_value(&self.presence_by_id)?,
-            "generation": self.generation,
-            "detail": "",
-        }))
+    pub(crate) fn to_roster_snapshot(&self) -> FriendRosterSnapshot {
+        FriendRosterSnapshot {
+            current_user_id: self.current_user_id.clone(),
+            friends_by_id: self.friends_by_id.clone(),
+            presence_by_id: self.presence_by_id.clone(),
+            generation: self.generation,
+        }
     }
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct FriendRosterSnapshot {
+    pub current_user_id: String,
+    pub friends_by_id: HashMap<String, FriendRecord>,
+    pub presence_by_id: HashMap<String, PresenceEntry>,
+    pub generation: u64,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -55,7 +61,7 @@ pub struct RealtimeFriendRosterSnapshot {
     pub endpoint: String,
     pub websocket: String,
     pub friend_count: usize,
-    pub snapshot: RawJson,
+    pub snapshot: FriendRosterSnapshot,
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, specta::Type)]

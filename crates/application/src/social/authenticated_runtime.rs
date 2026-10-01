@@ -154,13 +154,7 @@ impl AuthenticatedRuntimeOrchestrator {
             )
         };
         let current_friends = match friend_baseline.as_ref() {
-            Some(_) => match self.realtime_runtime.friend_roster_snapshot() {
-                Ok(current_friends) => current_friends,
-                Err(error) => {
-                    tracing::warn!(error = %error, "failed to build current friend phase snapshot");
-                    None
-                }
-            },
+            Some(_) => self.realtime_runtime.friend_roster_snapshot(),
             None => None,
         };
         assemble_authenticated_runtime_snapshot(

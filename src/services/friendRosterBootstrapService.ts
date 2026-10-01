@@ -1,4 +1,3 @@
-import { parsePresenceById } from '@/domain/friends/presence';
 import {
     commands,
     type SocialFriendRosterBaselineOutput
@@ -10,11 +9,10 @@ import { useSessionStore } from '@/state/sessionStore';
 import {
     getDisplayName,
     isRecord,
-    normalizeFriendsById,
     normalizeUserId,
+    rosterSnapshotInput,
     type FriendBootstrapOptions,
-    type FriendBootstrapResult,
-    type FriendBootstrapSnapshot
+    type FriendBootstrapResult
 } from './friendBootstrapModel';
 import { signalFriendLogChanged } from './friendLogMutationService';
 import { flushRealtimeRosterUpdates } from './realtimeRosterUpdateQueue';
@@ -97,19 +95,8 @@ async function runFriendBootstrap({
             isFirstLoad: !preserveLoadedState
         });
 
-    const snapshot: FriendBootstrapSnapshot | null = isRecord(result.snapshot)
-        ? {
-              ...result.snapshot,
-              friendsById: normalizeFriendsById(result.snapshot.friendsById),
-              presenceById: parsePresenceById(result.snapshot.presenceById),
-              generation:
-                  typeof result.snapshot.generation === 'number'
-                      ? result.snapshot.generation
-                      : null,
-              detail: normalizeUserId(result.snapshot.detail)
-          }
-        : null;
-    const detail = String(result.detail || snapshot?.detail || '');
+    const snapshot = result.snapshot;
+    const detail = result.detail;
 
     if (result.stale || !snapshot) {
         if (
@@ -155,13 +142,11 @@ async function runFriendBootstrap({
         useFriendRosterStore.getState().setRosterReady(detail);
     } else {
         flushRealtimeRosterUpdates();
-        useFriendRosterStore.getState().setRosterSnapshot({
-            currentUserId: normalizedUserId,
-            friendsById: snapshot.friendsById ?? {},
-            presenceById: snapshot.presenceById,
-            generation: snapshot.generation,
-            detail
-        });
+        useFriendRosterStore
+            .getState()
+            .setRosterSnapshot(
+                rosterSnapshotInput(normalizedUserId, snapshot, detail)
+            );
     }
     useSessionStore.getState().setFriendsLoaded(true);
     syncStartupServicesTask([detail]);

@@ -448,9 +448,7 @@ impl RealtimeHostRuntime {
         self.friends.friend_user_ids_snapshot()
     }
 
-    pub fn friend_roster_snapshot(
-        &self,
-    ) -> serde_json::Result<Option<crate::realtime::RealtimeFriendRosterSnapshot>> {
+    pub fn friend_roster_snapshot(&self) -> Option<crate::realtime::RealtimeFriendRosterSnapshot> {
         self.friends.roster_snapshot()
     }
 

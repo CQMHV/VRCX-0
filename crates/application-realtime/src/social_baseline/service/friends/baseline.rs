@@ -10,12 +10,11 @@ use vrcx_0_core::friends::{FriendBaselineEntry, FriendRecord, StateBucket};
 use vrcx_0_core::trust::{trust_level_changed, trust_level_differs};
 
 use crate::realtime::friends::trust_level_feed_entry;
-use crate::realtime::RealtimeFriendSnapshot;
 
 use super::super::{
     auth_scope_matches, execute_vrchat_json_request, fetch_friend_statuses_concurrent,
     normalize_text, object_field_string, refetch_users_concurrent, stale_friend_output,
-    value_as_string, FriendBaselineSyncOutcome, Ordering, RawJson, SocialBaselineDeps,
+    value_as_string, FriendBaselineSyncOutcome, Ordering, SocialBaselineDeps,
     SocialFriendRosterBaselineInput, SocialFriendRosterBaselineOutput,
 };
 use super::current_user_snapshot::CurrentUserSnapshotView;
@@ -244,19 +243,10 @@ pub(crate) struct BuiltFriendRosterBaseline {
     pub(crate) friends_by_id: Option<HashMap<String, FriendBaselineEntry>>,
 }
 
-fn replace_friend_roster_baseline_snapshot(
-    output: &mut SocialFriendRosterBaselineOutput,
-    snapshot: &RealtimeFriendSnapshot,
-) -> Result<()> {
-    output.count = u32::try_from(snapshot.friends_by_id.len()).unwrap_or(u32::MAX);
-    output.snapshot = Some(RawJson::from(snapshot.to_roster_json()?));
-    Ok(())
-}
-
 pub(crate) fn apply_friend_roster_baseline_sync_outcome(
     output: &mut SocialFriendRosterBaselineOutput,
     outcome: FriendBaselineSyncOutcome,
-) -> Result<Option<HashMap<String, FriendRecord>>> {
+) -> Option<HashMap<String, FriendRecord>> {
     let FriendBaselineSyncOutcome {
         result,
         snapshot,
@@ -267,11 +257,12 @@ pub(crate) fn apply_friend_roster_baseline_sync_outcome(
         output.snapshot = None;
         output.friend_log_changed = false;
         output.detail = "Superseded friend roster baseline.".into();
-        return Ok(None);
+        return None;
     };
-    replace_friend_roster_baseline_snapshot(output, &snapshot)?;
+    output.count = u32::try_from(snapshot.friends_by_id.len()).unwrap_or(u32::MAX);
+    output.snapshot = Some(snapshot.to_roster_snapshot());
     output.friend_log_changed = friend_log_changed;
-    Ok(Some(snapshot.friends_by_id))
+    Some(snapshot.friends_by_id)
 }
 
 #[derive(Default)]
