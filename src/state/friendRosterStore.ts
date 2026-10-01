@@ -120,7 +120,6 @@ function createFallbackFriendUser(
         username: '',
         tags: [],
         developerType: '',
-        platform: 'offline',
         last_platform: ''
     };
 }
@@ -176,6 +175,7 @@ function normalizeFriendEntry(
         existingRow?.$friendNumber ??
         0;
     const friendNumber = Number.parseInt(String(friendNumberSource), 10) || 0;
+    const presence = source.$presence ?? { kind: 'offline' };
     const displayName =
         getDisplayName(source) ||
         normalizeUserId(existingRow?.displayName) ||
@@ -187,7 +187,7 @@ function normalizeFriendEntry(
         id: normalizeUserId(source.id),
         displayName,
         tags,
-        $presence: source.$presence ?? { kind: 'offline' },
+        $presence: presence,
         friendNumber,
         trustLevel,
         $friendNumber: friendNumber,
@@ -198,7 +198,7 @@ function normalizeFriendEntry(
         $isTroll: trust.isTroll,
         $isProbableTroll: trust.isProbableTroll,
         $platform: computeUserPlatform(
-            typeof source.platform === 'string' ? source.platform : '',
+            presence.kind === 'offline' ? '' : presence.platform,
             typeof source.last_platform === 'string' ? source.last_platform : ''
         )
     });

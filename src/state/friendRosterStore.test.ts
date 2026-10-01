@@ -97,12 +97,14 @@ describe('friendRosterStore', () => {
             [
                 {
                     userId: ' usr_b ',
-                    presence: online(1),
+                    presence: {
+                        rev: 1,
+                        view: onlinePresence('wrld_a:1', 'android')
+                    },
                     patch: {
                         id: 'usr_b',
                         displayName: 'Bravo',
                         friendNumber: 2,
-                        platform: 'standalonewindows',
                         tags: ['system_trust_basic']
                     }
                 },
@@ -156,7 +158,7 @@ describe('friendRosterStore', () => {
             displayName: 'Bravo',
             friendNumber: 2,
             $trustClass: 'x-tag-basic',
-            $platform: 'standalonewindows'
+            $platform: 'android'
         });
     });
 
