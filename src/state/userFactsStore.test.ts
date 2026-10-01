@@ -7,8 +7,6 @@ function rustUser(overrides: Record<string, unknown> = {}) {
         id: 'usr_test',
         endpoint: 'api',
         displayName: 'Mirror User',
-        stateBucket: 'online',
-        location: 'wrld_live:123',
         updatedAt: '2026-01-01T00:00:00.000Z',
         ...overrides
     };

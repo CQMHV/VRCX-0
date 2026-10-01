@@ -1,10 +1,6 @@
 import { create } from 'zustand';
 
-import {
-    normalizeStateBucket,
-    userFactKey,
-    type UserFact
-} from '@/domain/users/userFacts';
+import { userFactKey, type UserFact } from '@/domain/users/userFacts';
 import { evictOverflow } from '@/state/storeEviction';
 
 type UserFactInput = Omit<Partial<UserFact>, 'endpoint' | 'id' | 'updatedAt'> &
@@ -64,12 +60,6 @@ function isUserFactInput(value: unknown): value is UserFactInput {
     );
 }
 
-function isNormalizedStateBucket(
-    value: unknown
-): value is UserFact['stateBucket'] {
-    return value === undefined || normalizeStateBucket(value) === value;
-}
-
 function isStoredUserFact(
     user: UserFactInput,
     key: string,
@@ -80,8 +70,7 @@ function isStoredUserFact(
         user.id.trim() === userId &&
         typeof user.endpoint === 'string' &&
         user.endpoint.trim() === endpointFromKey(key) &&
-        typeof user.updatedAt === 'string' &&
-        isNormalizedStateBucket(user.stateBucket)
+        typeof user.updatedAt === 'string'
     );
 }
 
