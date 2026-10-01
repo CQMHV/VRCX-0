@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use super::super::utils::EventTime;
+    use super::super::event_time::EventTime;
     use super::super::*;
     use crate::realtime::FriendWake;
     use chrono::{TimeZone, Utc};

@@ -8,11 +8,11 @@ use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 #[cfg(test)]
 use super::super::{RealtimeFriendApplyResult, RealtimeFriendOutput};
 
-mod event_patch;
-mod persistence;
+mod apply;
+mod event_time;
 mod presence_split;
+mod social_feed;
 mod state;
-mod utils;
 
 #[cfg(test)]
 mod baseline_tests;
@@ -37,8 +37,8 @@ mod profile_tests;
 #[cfg(test)]
 mod ws_trace_replay_test;
 
-pub use event_patch::is_friend_event_type;
-pub(crate) use persistence::{player_joining_feed_entry, trust_level_feed_entry};
+pub use apply::is_friend_event_type;
 pub(crate) use presence_split::baseline_friend_view;
+pub(crate) use social_feed::{player_joining_feed_entry, trust_level_feed_entry};
 pub use state::RealtimeFriendsRuntime;
 pub(crate) use state::SyntheticFriendEvent;

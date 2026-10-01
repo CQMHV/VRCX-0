@@ -7,8 +7,10 @@ use vrcx_0_core::presence::PresenceView;
 
 use crate::realtime::RealtimeFriendOutput;
 
-use super::event_patch::record_string;
-use super::utils::{first_owned, string_or_previous, JsonExt};
+use vrcx_0_core::json::JsonExt;
+use vrcx_0_core::text::first_owned;
+
+use super::apply::record_string;
 
 #[derive(Clone, Copy, Debug)]
 pub(super) enum FriendRelationshipFeedKind {
@@ -194,4 +196,13 @@ pub(super) fn meaningful_name(value: &Value, user_id: &str) -> String {
         user_id,
     )
     .unwrap_or_default()
+}
+
+fn string_or_previous(patch: &Value, previous: &FriendRecord, key: &str) -> String {
+    let value = patch.text_field(key);
+    if value.is_empty() {
+        record_string(previous, key)
+    } else {
+        value
+    }
 }

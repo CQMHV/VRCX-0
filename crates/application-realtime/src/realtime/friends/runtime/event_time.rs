@@ -1,21 +1,4 @@
 use chrono::{DateTime, Utc};
-use serde_json::Value;
-use vrcx_0_core::friends::FriendRecord;
-
-use super::event_patch::record_string;
-
-pub(super) fn string_or_previous(patch: &Value, previous: &FriendRecord, key: &str) -> String {
-    let value = patch.text_field(key);
-    if value.is_empty() {
-        record_string(previous, key)
-    } else {
-        value
-    }
-}
-
-pub(super) use vrcx_0_core::json::JsonExt;
-
-pub(super) use vrcx_0_core::text::first_owned;
 
 pub(super) struct EventTime {
     pub(super) iso: String,

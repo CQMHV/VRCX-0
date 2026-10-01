@@ -16,19 +16,21 @@ use crate::realtime::friends::presence::{
 };
 use crate::realtime::{FriendIconChange, FriendWake, RealtimeFriendOutput};
 
-use super::persistence::{
+use super::event_time::EventTime;
+use super::presence_split::strip_presence_keys;
+use super::social_feed::{
     add_profile_diff_feed_entries, display_name, friend_log_upsert, friend_relationship_feed_entry,
     meaningful_name, meaningful_record_name, trust_level_feed_entry, FriendRelationshipFeedKind,
 };
-use super::presence_split::strip_presence_keys;
 use super::state::{FriendEntry, RealtimeFriendState};
-use super::utils::{first_owned, EventTime, JsonExt};
+use vrcx_0_core::json::JsonExt;
+use vrcx_0_core::text::first_owned;
 
-mod patch_builders;
-mod record_transition;
+mod event_user;
+mod profile_merge;
 
-use patch_builders::{event_user_id, event_user_patch, normalize_patch_trust};
-pub(super) use record_transition::{merge_profile, record_string};
+use event_user::{event_user_id, event_user_patch, normalize_patch_trust};
+pub(super) use profile_merge::{merge_profile, record_string};
 
 pub fn is_friend_event_type(message_type: &str) -> bool {
     RealtimeWsEventKind::from_name(message_type).is_friend()

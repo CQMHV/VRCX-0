@@ -22,9 +22,9 @@ use crate::realtime::{
     RealtimeFriendSnapshot,
 };
 
-use super::event_patch::{apply_friend_event, apply_wake};
+use super::apply::{apply_friend_event, apply_wake};
+use super::event_time::EventTime;
 use super::presence_split::split_baseline_record;
-use super::utils::EventTime;
 
 #[derive(Clone, Debug)]
 pub(super) struct FriendEntry {
