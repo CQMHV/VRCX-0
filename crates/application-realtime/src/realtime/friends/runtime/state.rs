@@ -48,8 +48,17 @@ impl Roster {
     }
 }
 
+pub(crate) enum RosterDelta {
+    Rebuilt,
+    Changed {
+        patched: Vec<String>,
+        removed: Vec<String>,
+    },
+}
+
 pub(crate) struct FriendBaselineEffects {
     pub(crate) result: FriendBaselineResult,
+    pub(crate) delta: RosterDelta,
     pub(crate) schedules: Vec<FriendWake>,
     pub(crate) confirmed_feed_entries: Vec<FeedLiveEntry>,
     pub(crate) joining_feed_entries: Vec<FeedLiveEntry>,
@@ -250,11 +259,10 @@ impl RealtimeFriendsRuntime {
             }
         }
 
-        let changed_user_ids = existing
-            .as_ref()
-            .filter(|_| !new_generation)
-            .map(|existing| {
-                entries
+        let delta = match existing.as_ref().filter(|_| !new_generation) {
+            None => RosterDelta::Rebuilt,
+            Some(existing) => RosterDelta::Changed {
+                patched: entries
                     .iter()
                     .filter(|(user_id, entry)| {
                         existing.entries.get(*user_id).is_none_or(|previous| {
@@ -264,16 +272,15 @@ impl RealtimeFriendsRuntime {
                         })
                     })
                     .map(|(user_id, _)| user_id.clone())
-                    .chain(
-                        existing
-                            .entries
-                            .keys()
-                            .filter(|user_id| !entries.contains_key(*user_id))
-                            .cloned(),
-                    )
-                    .collect::<Vec<_>>()
-            })
-            .unwrap_or_default();
+                    .collect(),
+                removed: existing
+                    .entries
+                    .keys()
+                    .filter(|user_id| !entries.contains_key(*user_id))
+                    .cloned()
+                    .collect(),
+            },
+        };
         let membership_changed = previous_ids.len() != entries.len()
             || previous_ids
                 .iter()
@@ -297,11 +304,13 @@ impl RealtimeFriendsRuntime {
         if membership_changed {
             state.invalidate_friend_user_ids_snapshot();
         }
-        if !changed_user_ids.is_empty() {
-            state.friend_rev = state.friend_rev.saturating_add(1);
-            let rev = state.friend_rev;
-            for user_id in changed_user_ids {
-                state.friend_rev_by_user.insert(user_id, rev);
+        if let RosterDelta::Changed { patched, removed } = &delta {
+            if !patched.is_empty() || !removed.is_empty() {
+                state.friend_rev = state.friend_rev.saturating_add(1);
+                let rev = state.friend_rev;
+                for user_id in patched.iter().chain(removed) {
+                    state.friend_rev_by_user.insert(user_id.clone(), rev);
+                }
             }
         }
 
@@ -313,6 +322,7 @@ impl RealtimeFriendsRuntime {
                 baseline_revision,
                 friend_count: u32::try_from(friend_count).unwrap_or(u32::MAX),
             },
+            delta,
             schedules,
             confirmed_feed_entries,
             joining_feed_entries: joining_feed_entries
