@@ -20,16 +20,12 @@ describe('inviteDialogModel', () => {
         usr_online_display: {
             id: 'usr_online_display',
             $presence: onlinePresence(),
-            ref: {
-                displayName: 'Online Display'
-            }
+            displayName: 'Online Display'
         },
         usr_online_username: {
             id: 'usr_online_username',
             $presence: pendingPresence(),
-            ref: {
-                username: 'Online Username'
-            }
+            username: 'Online Username'
         },
         usr_offline: {
             id: 'usr_offline',
@@ -88,21 +84,6 @@ describe('inviteDialogModel', () => {
         expect(displayNameForUser('usr_unknown', friendsById, null)).toBe(
             'usr_unknown'
         );
-    });
-
-    it('uses the friend itself when ref is present but not an object', () => {
-        expect(
-            displayNameForUser(
-                'usr_string_ref',
-                {
-                    usr_string_ref: {
-                        ref: 'usr_string_ref',
-                        name: 'String Ref Name'
-                    }
-                },
-                null
-            )
-        ).toBe('String Ref Name');
     });
 
     it('pushes unique non-empty labels in insertion order', () => {

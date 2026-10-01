@@ -45,7 +45,6 @@ import {
     StaticSidebarLocation
 } from './FriendsSidebarLocation';
 import {
-    readFriendRef,
     resolveSidebarStatusDotClassName,
     resolveTrustNameColour,
     type SidebarFriendRecord
@@ -64,7 +63,7 @@ export function resolveFriendRowDisplay(
         trustColor?: TrustColorMap;
     }
 ) {
-    const displaySource = readFriendRef(friend);
+    const displaySource = friend;
     const nameStyle: CSSProperties =
         randomUserColours && friend?.id
             ? { color: getNameColour(friend.id, isDarkMode) }

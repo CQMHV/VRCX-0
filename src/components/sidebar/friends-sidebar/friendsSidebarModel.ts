@@ -33,7 +33,6 @@ export type SidebarFriendRecord = FriendRecordInput &
         updated_at?: string;
         username?: string;
         isFriend?: boolean;
-        ref?: SidebarFriendRecord | null;
     };
 
 export type SidebarPreferences = {
@@ -64,12 +63,6 @@ function isFriendSortMethod(
     return Boolean(value);
 }
 
-export function readFriendRef(
-    friend: SidebarFriendRecord | null | undefined
-): SidebarFriendRecord | null | undefined {
-    return friend?.ref && typeof friend.ref === 'object' ? friend.ref : friend;
-}
-
 export function normalizeSidebarFilterQuery(query: string | null | undefined) {
     return String(query || '')
         .trim()
@@ -83,32 +76,10 @@ export function friendMatchesSidebarFilterQuery(
     if (!query) {
         return true;
     }
-    const ref = readFriendRef(friend);
-    return [
-        friend?.displayName,
-        friend?.name,
-        friend?.username,
-        ref?.displayName,
-        ref?.name,
-        ref?.username
-    ].some(
+    return [friend?.displayName, friend?.name, friend?.username].some(
         (value) =>
             typeof value === 'string' && value.toLowerCase().includes(query)
     );
-}
-
-export function readFriendStatusSource(
-    friend: SidebarFriendRecord | null | undefined
-) {
-    const ref = readFriendRef(friend);
-    if (!ref || ref === friend) {
-        return friend;
-    }
-    return {
-        ...ref,
-        ...friend,
-        ref
-    };
 }
 
 export function resolveTrustNameColour(
@@ -138,16 +109,10 @@ export function resolveSidebarStatusDotClassName(
     friend: SidebarFriendRecord | null | undefined,
     { hideNonFriend = true }: SidebarStatusOptions = {}
 ) {
-    const source = readFriendStatusSource(friend);
-    if (
-        !source ||
-        (hideNonFriend &&
-            source.isFriend === false &&
-            friend?.isFriend === false)
-    ) {
+    if (!friend || (hideNonFriend && friend.isFriend === false)) {
         return '';
     }
-    return presenceDotClassName(presenceOf(source), source.status);
+    return presenceDotClassName(presenceOf(friend), friend.status);
 }
 
 export function sortRows<TRow extends SidebarFriendRecord>(

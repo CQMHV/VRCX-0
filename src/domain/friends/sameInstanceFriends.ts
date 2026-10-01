@@ -1,7 +1,7 @@
 import {
     localGameLocation,
     presenceLiveInstanceTag,
-    presenceOfSelfOrRef
+    presenceOf
 } from '@/domain/friends/presence';
 import type {
     FriendProfileFields,
@@ -52,22 +52,6 @@ export type SameInstanceFriendGroupOptions = {
 
 function asRecord(value: unknown): FriendPresenceRecord | null {
     return isRecord(value) ? value : null;
-}
-
-function friendPresenceSource(friend: unknown): FriendPresenceRecord | null {
-    const direct = asRecord(friend);
-    if (!direct) {
-        return null;
-    }
-    const ref = asRecord(direct.ref);
-    if (!ref) {
-        return direct;
-    }
-    return {
-        ...ref,
-        ...direct,
-        ref: null
-    };
 }
 
 function isLastLocationFriend(
@@ -123,7 +107,7 @@ function resolveObservedPlayerUserId(
         return '';
     }
     for (const [friendId, friend] of Object.entries(friendsById)) {
-        const friendSource = friendPresenceSource(friend);
+        const friendSource = asRecord(friend);
         if (
             text(
                 friendSource?.displayName ||
@@ -164,11 +148,11 @@ function resolveObservedPlayerUserIds(
 }
 
 function isOnlineSameInstanceFriend(friend: unknown): boolean {
-    return presenceOfSelfOrRef(friend)?.kind === 'online';
+    return presenceOf(friend)?.kind === 'online';
 }
 
 function isOfflineOrLeavingFriend(friend: unknown): boolean {
-    const kind = presenceOfSelfOrRef(friend)?.kind;
+    const kind = presenceOf(friend)?.kind;
     return kind === 'offline' || kind === 'pendingOffline';
 }
 
@@ -176,7 +160,7 @@ function resolveSameInstanceFriendLocation(
     friend: unknown,
     lastLocation: SameInstanceLastLocation | null | undefined
 ): string {
-    const presence = presenceOfSelfOrRef(friend);
+    const presence = presenceOf(friend);
     if (!presence) {
         return '';
     }
@@ -188,7 +172,7 @@ function resolveSameInstanceFriendLocation(
     }
     const lastLocationValue = normalizeLocationValue(lastLocation?.location);
     return isRealInstance(lastLocationValue) &&
-        isLastLocationFriend(lastLocation, friendPresenceSource(friend))
+        isLastLocationFriend(lastLocation, asRecord(friend))
         ? lastLocationValue
         : '';
 }
@@ -208,7 +192,7 @@ function buildSameInstanceFriendGroups<TFriend>(
         : OTHER_INSTANCE_MIN_FRIENDS;
 
     for (const friend of friends) {
-        const source = friendPresenceSource(friend);
+        const source = asRecord(friend);
         const time =
             locationTimes?.[
                 firstUserId(source?.id, source?.userId, source?.user_id)

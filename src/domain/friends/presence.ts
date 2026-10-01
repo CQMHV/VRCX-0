@@ -76,12 +76,6 @@ export function presenceOf(value: unknown): PresenceView | null {
         : null;
 }
 
-export function presenceOfSelfOrRef(value: unknown): PresenceView | null {
-    return (
-        presenceOf(value) ?? (isRecord(value) ? presenceOf(value.ref) : null)
-    );
-}
-
 function hollowStatusDotClassName(status: string): string {
     switch (status) {
         case 'join me':
@@ -119,13 +113,11 @@ export function userStatusDotClassName(value: unknown): string {
     if (!isRecord(value)) {
         return '';
     }
-    const status =
-        value.status ?? (isRecord(value.ref) ? value.ref.status : undefined);
-    const presence = presenceOfSelfOrRef(value);
+    const presence = presenceOf(value);
     if (presence) {
-        return presenceDotClassName(presence, status);
+        return presenceDotClassName(presence, value.status);
     }
-    const friendStatus = userStatusFromValue(status);
+    const friendStatus = userStatusFromValue(value.status);
     return friendStatus ? SOLID_USER_STATUS_DOT_CLASS_NAMES[friendStatus] : '';
 }
 
@@ -181,7 +173,7 @@ export function resolveFriendPresenceLocation(
     value: unknown,
     options: { preferTraveling: boolean; requireInstance?: boolean }
 ): string {
-    const presence = presenceOfSelfOrRef(value);
+    const presence = presenceOf(value);
     return presence ? presenceLocationTag(presence, options) : '';
 }
 

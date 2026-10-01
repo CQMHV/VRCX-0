@@ -34,11 +34,6 @@ describe('userStatus', () => {
         expect(resolveUserPresenceStatus({ $presence: offlinePresence })).toBe(
             'offline'
         );
-        expect(
-            resolveUserPresenceStatus({
-                ref: { $presence: offlinePresence }
-            })
-        ).toBe('offline');
     });
 
     it('prioritizes explicit social status before active location', () => {
@@ -110,7 +105,8 @@ describe('userStatus', () => {
         );
         expect(
             resolveUserPresenceStatus({
-                ref: { status: 'busy', $presence: onlinePresence() }
+                status: 'busy',
+                $presence: onlinePresence()
             })
         ).toBe('busy');
     });

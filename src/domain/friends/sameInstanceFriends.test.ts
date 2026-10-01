@@ -203,21 +203,6 @@ describe('sameInstanceFriends', () => {
         ).toEqual([]);
     });
 
-    it('prefers current top-level presence over a stale nested ref', () => {
-        const friend = {
-            id: 'usr_friend',
-            $presence: onlinePresence(currentLocation),
-            ref: {
-                id: 'usr_friend',
-                $presence: offlinePresence
-            }
-        };
-
-        expect(resolveSameInstanceFriendLocation(friend, null)).toBe(
-            currentLocation
-        );
-    });
-
     it('requires two friends in the current instance when the current user is hidden', () => {
         const friend = {
             id: 'usr_friend',

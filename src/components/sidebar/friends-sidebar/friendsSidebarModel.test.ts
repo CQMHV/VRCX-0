@@ -2,14 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import {
     activePresence,
-    offlinePresence,
     onlinePresence,
     pendingPresence
 } from '@/test/presenceFixtures';
 
 import {
     buildSameInstanceGroups,
-    readFriendStatusSource,
     resolveSidebarStatusDotClassName,
     sortRows
 } from './friendsSidebarModel';
@@ -73,29 +71,6 @@ describe('friendsSidebarModel same-instance groups', () => {
                 isCurrentInstance: true
             }
         ]);
-    });
-});
-
-describe('friendsSidebarModel friend status source', () => {
-    it('uses top-level roster presence over stale nested ref presence', () => {
-        const friend = {
-            id: 'usr_friend',
-            displayName: 'Friend',
-            status: 'join me',
-            $presence: onlinePresence('wrld_live:123'),
-            ref: {
-                id: 'usr_friend',
-                displayName: 'Friend',
-                status: 'active',
-                $presence: offlinePresence
-            }
-        };
-
-        const live = {
-            status: 'join me',
-            $presence: onlinePresence('wrld_live:123')
-        };
-        expect(readFriendStatusSource(friend)).toMatchObject(live);
     });
 });
 

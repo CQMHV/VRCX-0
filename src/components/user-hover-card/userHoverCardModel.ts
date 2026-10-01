@@ -2,11 +2,7 @@ import {
     firstFiniteLocationNumber,
     firstNonNegativeLocationNumber
 } from '@/components/location/locationModel';
-import {
-    readFriendRef,
-    readFriendStatusSource,
-    type SidebarFriendRecord
-} from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
+import type { SidebarFriendRecord } from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
 import {
     presenceDotClassName,
     presenceLocationTag,
@@ -123,15 +119,14 @@ export function buildUserHoverCardModel({
     nowMs
 }: UserHoverCardModelInput) {
     const seedRecord = sidebarSeed(seed);
-    const statusSource = seedRecord ? readFriendStatusSource(seedRecord) : null;
-    const ref = recordOrEmpty(readFriendRef(seedRecord));
+    const seedFields = recordOrEmpty(seedRecord);
     const profileRecord = recordOrEmpty(profile);
-    const identity = profile ? profileRecord : ref;
+    const identity = profile ? profileRecord : seedFields;
 
-    const presence = presenceOf(statusSource) ?? presenceOf(profileRecord);
+    const presence = presenceOf(seedRecord) ?? presenceOf(profileRecord);
     const state = presence ? presenceSection(presence) : null;
-    const hasPresence = Boolean(statusSource) && state !== null;
-    const status = profileRecord?.status || statusSource?.status;
+    const hasPresence = Boolean(seedRecord) && state !== null;
+    const status = profileRecord?.status || seedRecord?.status;
 
     const rawLocation =
         localLocation ||
@@ -173,7 +168,7 @@ export function buildUserHoverCardModel({
         displayName:
             identity?.displayName ||
             identity?.username ||
-            ref?.displayName ||
+            seedFields?.displayName ||
             normalizeId(identity?.id) ||
             'Unknown',
         avatarUrl: userImage(identity, 128),
@@ -184,7 +179,9 @@ export function buildUserHoverCardModel({
         statusKey,
         statusDotClassName,
         statusDescription: String(
-            profileRecord?.statusDescription || ref?.statusDescription || ''
+            profileRecord?.statusDescription ||
+                seedFields?.statusDescription ||
+                ''
         ).trim(),
         note: String(profileRecord?.note || '').trim(),
         onlineForMs: estimatedOnlineMs(state, identity?.last_login, nowMs),

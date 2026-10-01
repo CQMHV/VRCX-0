@@ -36,11 +36,7 @@ import { useShellStore } from '@/state/shellStore';
 import { Spinner } from '@/ui/shadcn/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
-import {
-    readFriendRef,
-    readFriendStatusSource,
-    type SidebarFriendRecord
-} from './friendsSidebarModel';
+import type { SidebarFriendRecord } from './friendsSidebarModel';
 import type { SidebarVirtualRow } from './friendsSidebarVirtualRowBuilder';
 import { SidebarLocationMenu } from './SidebarLocationMenu';
 
@@ -76,8 +72,7 @@ export function resolveFriendRowLocationState({
     isGroupByInstance?: boolean;
     locationTime?: FriendLocationTimeEntry | null;
 }) {
-    const displaySource = readFriendRef(friend);
-    const presence = presenceOf(readFriendStatusSource(friend));
+    const presence = presenceOf(friend);
     const localLocation = isCurrentUser ? '' : localGameLocation(locationTime);
     const friendState = localLocation
         ? 'online'
@@ -112,7 +107,6 @@ export function resolveFriendRowLocationState({
     );
 
     return {
-        displaySource,
         isPendingOffline,
         friendState,
         friendLocation,
@@ -126,8 +120,8 @@ export function resolveFriendRowLocationState({
             displayLocation,
             displayTraveling
         ),
-        metadataHint: friendLocationHint(displaySource),
-        metadataGroupHint: friendGroupHint(displaySource)
+        metadataHint: friendLocationHint(friend),
+        metadataGroupHint: friendGroupHint(friend)
     };
 }
 

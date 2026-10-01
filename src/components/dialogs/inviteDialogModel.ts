@@ -4,7 +4,6 @@ import type {
     FriendRecordInput,
     FriendRosterInputById
 } from '@/domain/friends/types';
-import { isRecord } from '@/shared/utils/record';
 import { normalizeString as normalizeId } from '@/shared/utils/string';
 
 type InviteCurrentUser = FriendRecordInput | null | undefined;
@@ -44,10 +43,9 @@ export function displayNameForUser(
         );
     }
     const friend = friendsById[userId];
-    const ref = isRecord(friend?.ref) ? friend.ref : friend;
     return (
-        normalizeId(ref?.displayName) ||
-        normalizeId(ref?.username) ||
+        normalizeId(friend?.displayName) ||
+        normalizeId(friend?.username) ||
         normalizeId(friend?.name) ||
         userId
     );

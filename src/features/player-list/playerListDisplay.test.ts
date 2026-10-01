@@ -88,14 +88,10 @@ describe('playerListDisplay', () => {
         expect(
             resolveStatusMeta({
                 isCurrentUser: true,
-                location: 'wrld_live:123',
-                ref: {
-                    location: 'offline',
-                    state: 'offline',
-                    status: 'active',
-                    $presence: onlinePresence('wrld_live:123')
-                },
+                location: 'offline',
                 state: 'offline',
+                status: 'active',
+                $presence: onlinePresence('wrld_live:123'),
                 statusDescription: 'Me'
             }).statusDotClassName
         ).toBe('user-status-indicator online bg-[var(--status-online)]');

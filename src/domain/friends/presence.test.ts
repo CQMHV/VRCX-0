@@ -128,7 +128,7 @@ describe('resolveFriendPresenceLocation with presence views', () => {
         ).toBe('private');
         expect(
             resolveFriendPresenceLocation(
-                { ref: { $presence: traveling } },
+                { $presence: traveling },
                 { preferTraveling: true }
             )
         ).toBe('wrld_dest:2');

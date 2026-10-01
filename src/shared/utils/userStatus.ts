@@ -1,7 +1,4 @@
-import {
-    presenceOfSelfOrRef,
-    presenceStatusKey
-} from '@/domain/friends/presence';
+import { presenceOf, presenceStatusKey } from '@/domain/friends/presence';
 
 type UserStatusSource = Record<string, unknown>;
 
@@ -50,14 +47,10 @@ function resolveUserPresenceStatus(value: unknown) {
         return normalizePresenceText(value);
     }
     const record = asUserStatusSource(value);
-    const source = asUserStatusSource(
-        record.ref && typeof record.ref === 'object' ? record.ref : record
-    );
-    const status = record.status || source.status;
-    const presence = presenceOfSelfOrRef(record);
+    const presence = presenceOf(record);
     return presence
-        ? presenceStatusKey(presence, status)
-        : normalizePresenceText(status);
+        ? presenceStatusKey(presence, record.status)
+        : normalizePresenceText(record.status);
 }
 
 function userStatusIndicatorClassName(
@@ -134,7 +127,7 @@ const statusLabelFallbacks: Readonly<Record<string, string>> = Object.freeze({
 
 function labelStatus(value: unknown) {
     const status = resolveUserPresenceStatus(value);
-    return status !== 'offline' && presenceOfSelfOrRef(value)?.kind === 'active'
+    return status !== 'offline' && presenceOf(value)?.kind === 'active'
         ? 'state-active'
         : status;
 }
