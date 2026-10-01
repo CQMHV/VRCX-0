@@ -135,14 +135,17 @@ fn platform_prefers_current_platform_and_falls_back_to_last_platform() {
     alice.last_platform = "standalonewindows".into();
     let (mut bob, bob_view) = friend("usr_b", "Bob", "online", "");
     bob.last_platform = "standalonewindows".into();
+    let (mut carol, carol_view) = friend_on_platform("usr_c", "Carol", "online", "", "web");
+    carol.last_platform = "android".into();
 
     let output = build_online_friends_output(
-        vec![(alice, alice_view), (bob, bob_view)],
+        vec![(alice, alice_view), (bob, bob_view), (carol, carol_view)],
         params(None, None),
     );
 
     assert_eq!(output.rows[0].platform, "android");
     assert_eq!(output.rows[1].platform, "standalonewindows");
+    assert_eq!(output.rows[2].platform, "android");
 }
 
 #[test]

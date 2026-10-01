@@ -9,6 +9,7 @@ use serde_json::Value;
 use vrcx_0_core::friends::FriendRecord;
 use vrcx_0_core::location::{parse_location, ParsedLocation};
 use vrcx_0_core::presence::PresenceView;
+use vrcx_0_core::trust::compute_user_platform;
 
 use crate::server::VrcxMcpServer;
 
@@ -52,12 +53,8 @@ pub(super) fn presence_location_and_platform(
     let location = view
         .place()
         .map_or_else(|| parse_location("offline"), |place| place.location.clone());
-    let platform = if view.platform().is_empty() {
-        friend.last_platform.clone()
-    } else {
-        view.platform().into()
-    };
-    (location, platform)
+    let platform = compute_user_platform(view.platform(), &friend.last_platform);
+    (location, platform.into())
 }
 
 fn build_online_friends_output(

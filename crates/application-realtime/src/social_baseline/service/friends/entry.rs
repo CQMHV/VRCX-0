@@ -3,7 +3,7 @@ use vrcx_0_core::derived_keys;
 
 use serde_json::Value;
 use vrcx_0_core::friends::StateBucket;
-use vrcx_0_core::trust::{compute_trust_level, compute_user_platform};
+use vrcx_0_core::trust::compute_trust_level;
 
 use super::super::{
     json, object_field, object_field_normalized, object_field_string, value_as_i64,
@@ -81,15 +81,6 @@ fn normalize_friend_entry(
         }
     };
 
-    let platform = source
-        .get("platform")
-        .map(value_as_string)
-        .unwrap_or_default();
-    let last_platform = source
-        .get("last_platform")
-        .or_else(|| source.get("lastPlatform"))
-        .map(value_as_string)
-        .unwrap_or_default();
     let mut object = match source {
         Value::Object(object) => object,
         _ => Map::new(),
@@ -118,10 +109,6 @@ fn normalize_friend_entry(
     object.insert(
         derived_keys::IS_PROBABLE_TROLL.into(),
         Value::Bool(trust.is_probable_troll),
-    );
-    object.insert(
-        derived_keys::PLATFORM.into(),
-        Value::String(compute_user_platform(&platform, &last_platform)),
     );
     Value::Object(object)
 }

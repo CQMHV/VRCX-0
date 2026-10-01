@@ -8,6 +8,7 @@ import {
     type ParsedLocation
 } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
+import { computeUserPlatform } from '@/shared/utils/userTransforms';
 
 import type { FriendRosterBucket } from './types';
 
@@ -182,6 +183,16 @@ export function resolveFriendPresenceLocation(
 ): string {
     const presence = presenceOfSelfOrRef(value);
     return presence ? presenceLocationTag(presence, options) : '';
+}
+
+export function presencePlatform(
+    view: PresenceView,
+    lastPlatform: string
+): string {
+    return computeUserPlatform(
+        view.kind === 'offline' ? '' : view.platform,
+        lastPlatform
+    );
 }
 
 export function localGameLocation(

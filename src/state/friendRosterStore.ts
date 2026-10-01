@@ -1,7 +1,7 @@
 import { replaceEqualDeep } from '@tanstack/react-query';
 import { create } from 'zustand';
 
-import { presenceSection } from '@/domain/friends/presence';
+import { presencePlatform, presenceSection } from '@/domain/friends/presence';
 import {
     FRIEND_PROFILE_BOOLEAN_FIELDS,
     FRIEND_PROFILE_STRING_FIELDS,
@@ -18,10 +18,7 @@ import {
     type FriendRosterStore
 } from '@/domain/friends/types';
 import { isRecord } from '@/shared/utils/record';
-import {
-    computeTrustLevel,
-    computeUserPlatform
-} from '@/shared/utils/userTransforms';
+import { computeTrustLevel } from '@/shared/utils/userTransforms';
 
 function normalizeUserId(value: unknown): string {
     return typeof value === 'string'
@@ -197,8 +194,8 @@ function normalizeFriendEntry(
         $isModerator: trust.isModerator,
         $isTroll: trust.isTroll,
         $isProbableTroll: trust.isProbableTroll,
-        $platform: computeUserPlatform(
-            presence.kind === 'offline' ? '' : presence.platform,
+        $platform: presencePlatform(
+            presence,
             typeof source.last_platform === 'string' ? source.last_platform : ''
         )
     });

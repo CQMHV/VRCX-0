@@ -267,12 +267,7 @@ export function enrichPlayerListRows({
             '';
         const trustLevel = normalizeString(userRef?.$trustLevel);
         const trustSortNum = Number(userRef?.$trustSortNum ?? 0) || 0;
-        const platform =
-            userRef?.$platform ||
-            userRef?.platform ||
-            userRef?.last_platform ||
-            '';
-        const platformMeta = resolvePlatformMeta(platform);
+        const platformMeta = resolvePlatformMeta(userRef?.$platform);
         const statusDescription = normalizeString(userRef?.statusDescription);
         const languages = userRef
             ? normalizeProfileLanguageRows(userRef, languageOptionsMap)

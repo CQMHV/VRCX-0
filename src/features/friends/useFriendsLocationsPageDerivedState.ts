@@ -7,7 +7,11 @@ import {
 } from '@/domain/favorites/favoriteGroupSelection';
 import { buildFavoriteIdSet } from '@/domain/favorites/favoriteIdSet';
 import type { FavoriteGroup, FavoriteGroupMap } from '@/domain/favorites/types';
-import { localGameLocation, presenceOf } from '@/domain/friends/presence';
+import {
+    localGameLocation,
+    presenceOf,
+    presencePlatform
+} from '@/domain/friends/presence';
 import {
     buildSameInstanceFriendGroups,
     resolveObservedPlayerUserIds
@@ -26,10 +30,7 @@ import {
     resolveCurrentInviteLocation
 } from '@/shared/utils/invite';
 import { normalizeString } from '@/shared/utils/string';
-import {
-    computeTrustLevel,
-    computeUserPlatform
-} from '@/shared/utils/userTransforms';
+import { computeTrustLevel } from '@/shared/utils/userTransforms';
 import { useFriendLocationTimeStore } from '@/state/friendLocationTimeStore';
 
 import {
@@ -375,7 +376,8 @@ export function useFriendsLocationsPageDerivedState({
             $isModerator: trust.isModerator,
             $isTroll: trust.isTroll,
             $isProbableTroll: trust.isProbableTroll,
-            $platform: computeUserPlatform(
+            $platform: presencePlatform(
+                presence,
                 normalizeString(currentUserSnapshot.last_platform)
             )
         };

@@ -284,9 +284,7 @@ export function UserDialogContent({
         }
     }, [currentEndpoint, isCurrentUser, isFriend, profile]);
     const friendRequestState = resolveFriendRequestState(profile);
-    const platform = resolvePlatformMeta(
-        profile?.$platform || profile?.platform || profile?.last_platform
-    );
+    const platform = resolvePlatformMeta(profile?.$platform);
     const PlatformIcon = platform.icon;
     const imageUrl = userImage(profile, 512);
     const { memo, editMemo, memoDialog } = useUserDialogMemoState({
