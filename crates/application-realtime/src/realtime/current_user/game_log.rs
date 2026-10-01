@@ -5,7 +5,7 @@ use vrcx_0_core::derived_keys;
 use vrcx_0_core::location::parse_location;
 use vrcx_0_core::text::first_owned;
 
-use crate::realtime::RealtimeCurrentUserAuthority;
+use vrcx_0_application_core::LocalGameContextSnapshot;
 
 use super::location::location_game_log_entry;
 use super::state::{
@@ -61,15 +61,21 @@ pub(super) fn close_remote_game_log_interval(
         });
 }
 
-pub(super) fn game_log_authority_patch(
-    authority: &RealtimeCurrentUserAuthority,
+pub(super) fn local_game_location_patch(
+    game: &LocalGameContextSnapshot,
 ) -> Option<Map<String, Value>> {
-    if !authority.is_game_running() {
+    let LocalGameContextSnapshot::Available {
+        is_game_running: true,
+        location: game_log_location,
+        destination: game_log_destination,
+        world_name,
+        ..
+    } = game
+    else {
         return None;
-    }
-    let game_log = authority.game_log()?;
-    let game_log_location = game_log.location.trim();
-    let game_log_destination = game_log.destination.trim();
+    };
+    let game_log_location = game_log_location.trim();
+    let game_log_destination = game_log_destination.trim();
     let (location, traveling_to_location) = if game_log_location.eq_ignore_ascii_case("traveling")
         && is_real_instance(game_log_destination)
     {
@@ -109,7 +115,7 @@ pub(super) fn game_log_authority_patch(
         derived_keys::TRAVELING_TO_LOCATION_PROJECTION.into(),
         parsed_traveling.to_frontend_value(traveling_to_location),
     );
-    let world_name = game_log.world_name.trim();
+    let world_name = world_name.trim();
     if !world_name.is_empty() {
         patch.insert("worldName".into(), Value::String(world_name.to_string()));
     }

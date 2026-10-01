@@ -6,10 +6,7 @@ use tokio::sync::watch;
 use vrcx_0_application_core::{Error, LocalGameContextSnapshot, Result};
 use vrcx_0_contracts::vrchat_api::VrchatScope as ApiScope;
 
-use crate::realtime::{
-    RealtimeCurrentUserAuthority, RealtimeCurrentUserGameLogContext, RealtimeCurrentUserOutput,
-    RealtimeSessionContext,
-};
+use crate::realtime::{RealtimeCurrentUserOutput, RealtimeSessionContext};
 
 use super::state::{ActiveRealtimeContext, CurrentUserRefreshStatus};
 use super::RealtimeHostRuntime;
@@ -30,7 +27,7 @@ impl RealtimeHostRuntime {
             let Some(output) = runtime.current_user.wake_pending_offline(
                 generation,
                 now,
-                runtime.current_user_authority(),
+                runtime.local_game_context(),
             ) else {
                 return;
             };
@@ -78,7 +75,7 @@ impl RealtimeHostRuntime {
             active.generation,
             snapshot,
             overlay_patch,
-            self.current_user_authority(),
+            self.local_game_context(),
         ) else {
             return Ok(false);
         };
@@ -138,7 +135,7 @@ impl RealtimeHostRuntime {
             snapshot,
             Value::Null,
             response_authority_fields,
-            self.current_user_authority(),
+            self.local_game_context(),
         ) else {
             return false;
         };
@@ -234,7 +231,7 @@ impl RealtimeHostRuntime {
             snapshot,
             overlay_patch,
             &[],
-            self.current_user_authority(),
+            self.local_game_context(),
         ) else {
             return Ok(false);
         };
@@ -266,25 +263,8 @@ impl RealtimeHostRuntime {
             && active.session_generation == expectation.session_generation
     }
 
-    pub(super) fn current_user_authority(&self) -> RealtimeCurrentUserAuthority {
-        let local_game_context = self.deps.local_game_context.snapshot();
-        match local_game_context {
-            LocalGameContextSnapshot::Unavailable => RealtimeCurrentUserAuthority::Unavailable,
-            LocalGameContextSnapshot::Available {
-                is_game_running,
-                location,
-                destination,
-                world_name,
-                ..
-            } => RealtimeCurrentUserAuthority::Available {
-                is_game_running,
-                game_log: Some(RealtimeCurrentUserGameLogContext {
-                    location,
-                    destination,
-                    world_name,
-                }),
-            },
-        }
+    pub(super) fn local_game_context(&self) -> LocalGameContextSnapshot {
+        self.deps.local_game_context.snapshot()
     }
 
     pub fn refresh_current_user_local_presence(&self) {
@@ -293,7 +273,7 @@ impl RealtimeHostRuntime {
         };
         let Some(output) = self
             .current_user
-            .refresh_local_presence(active.generation, self.current_user_authority())
+            .refresh_local_presence(active.generation, self.local_game_context())
         else {
             return;
         };
@@ -317,11 +297,8 @@ impl RealtimeHostRuntime {
         generation: u64,
         is_game_running: bool,
     ) -> Option<RealtimeCurrentUserOutput> {
-        let authority = self
-            .current_user_authority()
-            .with_game_running(is_game_running);
-        self.current_user
-            .apply_game_running_state(generation, authority)
+        let game = self.local_game_context().with_game_running(is_game_running);
+        self.current_user.apply_game_running_state(generation, game)
     }
 
     pub(super) fn current_user_transport_finalization_output(
@@ -329,7 +306,7 @@ impl RealtimeHostRuntime {
         generation: u64,
     ) -> Option<RealtimeCurrentUserOutput> {
         self.current_user
-            .finalize_transport(generation, self.current_user_authority())
+            .finalize_transport(generation, self.local_game_context())
     }
 
     pub(super) fn current_user_transport_interruption_output(
@@ -337,7 +314,7 @@ impl RealtimeHostRuntime {
         generation: u64,
     ) -> Option<RealtimeCurrentUserOutput> {
         self.current_user
-            .interrupt_transport(generation, self.current_user_authority())
+            .interrupt_transport(generation, self.local_game_context())
     }
 }
 

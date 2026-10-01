@@ -3,7 +3,7 @@ use vrcx_0_contracts::realtime::{
 };
 use vrcx_0_core::derived_keys;
 
-use crate::realtime::RealtimeCurrentUserAuthority;
+use vrcx_0_application_core::LocalGameContextSnapshot;
 
 use super::state::RealtimeCurrentUserStateSnapshot;
 use super::utils::{first_positive, EventTime};
@@ -11,7 +11,7 @@ use super::utils::{first_positive, EventTime};
 pub(super) fn apply_avatar_wear_transition(
     mut next: RealtimeCurrentUserStateSnapshot,
     previous: &RealtimeCurrentUserStateSnapshot,
-    authority: &RealtimeCurrentUserAuthority,
+    game: &LocalGameContextSnapshot,
     now: &EventTime,
     records_current_avatar_history: bool,
 ) -> (RealtimeCurrentUserStateSnapshot, RealtimePersistenceBatch) {
@@ -20,7 +20,7 @@ pub(super) fn apply_avatar_wear_transition(
     let previous_swap_time = previous.previous_avatar_swap_time;
     let mut persistence = RealtimePersistenceBatch::default();
 
-    if !authority.is_available() {
+    if !game.is_available() {
         next.previous_avatar_swap_time = previous_swap_time;
         match previous
             .raw
@@ -38,7 +38,7 @@ pub(super) fn apply_avatar_wear_transition(
         return (next, persistence);
     }
 
-    if !authority.is_game_running() {
+    if !game.is_game_running() {
         if !previous_avatar_id.is_empty() && previous_swap_time > 0 {
             persistence
                 .avatar_time_spent_upserts

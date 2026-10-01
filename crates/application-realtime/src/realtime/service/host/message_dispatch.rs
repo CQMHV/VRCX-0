@@ -124,7 +124,7 @@ impl RealtimeMessageSink for RealtimeHostRuntimeMessageSink {
             generation,
             &event_kind,
             payload,
-            self.runtime.current_user_authority(),
+            self.runtime.local_game_context(),
         ) {
             let overlay_patch = output.projection.patch.clone();
             let wake = output.wake;

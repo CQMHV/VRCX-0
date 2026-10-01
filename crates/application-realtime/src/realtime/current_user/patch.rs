@@ -5,13 +5,12 @@ use vrcx_0_core::presence::is_offline_location_proof;
 use vrcx_0_core::text::first_owned;
 
 use crate::realtime::runtime_types::{PENDING_OFFLINE_DELAY, PENDING_OFFLINE_DELAY_MS};
-use crate::realtime::{
-    RealtimeCurrentUserAuthority, RealtimeCurrentUserOutput, RealtimeCurrentUserProjection,
-};
+use crate::realtime::{RealtimeCurrentUserOutput, RealtimeCurrentUserProjection};
+use vrcx_0_application_core::LocalGameContextSnapshot;
 
 use super::avatar::apply_avatar_wear_transition;
 use super::game_log::{
-    close_remote_game_log_interval, game_log_authority_patch, reconcile_remote_game_log_interval,
+    close_remote_game_log_interval, local_game_location_patch, reconcile_remote_game_log_interval,
 };
 use super::location::{build_location_patch, location_game_state_patch};
 use super::presence::current_user_presence;
@@ -27,7 +26,7 @@ pub(super) fn apply_user_update(
     state: &mut RealtimeCurrentUserState,
     content: &Value,
     now: &EventTime,
-    authority: &RealtimeCurrentUserAuthority,
+    game: &LocalGameContextSnapshot,
 ) -> Option<RealtimeCurrentUserOutput> {
     let mut patch = content
         .get("user")
@@ -46,7 +45,7 @@ pub(super) fn apply_user_update(
         state,
         patch,
         now,
-        authority,
+        game,
         CurrentUserPatchOptions {
             applies_local_game_authority: true,
             ..CurrentUserPatchOptions::default()
@@ -58,7 +57,7 @@ pub(super) fn apply_user_location(
     state: &mut RealtimeCurrentUserState,
     content: &Value,
     now: &EventTime,
-    authority: &RealtimeCurrentUserAuthority,
+    game: &LocalGameContextSnapshot,
 ) -> Option<RealtimeCurrentUserOutput> {
     let event_user_id = normalize_id(&content.text_field("userId"));
     if event_user_id != state.current_user_id {
@@ -69,13 +68,13 @@ pub(super) fn apply_user_location(
         content.get("travelingToLocation"),
         content.get("worldId"),
     );
-    if authority.is_game_running() {
+    if game.is_game_running() {
         state.pending_offline = None;
         return apply_current_user_patch(
             state,
             patch,
             now,
-            authority,
+            game,
             CurrentUserPatchOptions {
                 applies_local_game_authority: true,
                 ..CurrentUserPatchOptions::default()
@@ -96,7 +95,7 @@ pub(super) fn apply_user_location(
             state,
             Map::new(),
             now,
-            authority,
+            game,
             CurrentUserPatchOptions {
                 wake: Some(PENDING_OFFLINE_DELAY),
                 ..CurrentUserPatchOptions::default()
@@ -108,7 +107,7 @@ pub(super) fn apply_user_location(
         state,
         patch,
         now,
-        authority,
+        game,
         CurrentUserPatchOptions {
             applies_local_game_authority: true,
             reconciles_remote_location: true,
@@ -122,7 +121,7 @@ pub(super) fn apply_current_user_patch(
     state: &mut RealtimeCurrentUserState,
     patch: Map<String, Value>,
     now: &EventTime,
-    authority: &RealtimeCurrentUserAuthority,
+    game: &LocalGameContextSnapshot,
     options: CurrentUserPatchOptions,
 ) -> Option<RealtimeCurrentUserOutput> {
     let previous = state.snapshot.clone();
@@ -135,7 +134,7 @@ pub(super) fn apply_current_user_patch(
     state.remote_snapshot =
         RealtimeCurrentUserStateSnapshot::from_map(remote_merged, &state.current_user_id);
 
-    let mut merged = if authority.is_game_running() {
+    let mut merged = if game.is_game_running() {
         let mut local_merged = previous.to_map();
         for (key, value) in &patch {
             local_merged.insert(key.clone(), value.clone());
@@ -144,9 +143,9 @@ pub(super) fn apply_current_user_patch(
     } else {
         state.remote_snapshot.to_map()
     };
-    if options.applies_local_game_authority && authority.is_game_running() {
-        if let Some(authority_patch) = game_log_authority_patch(authority) {
-            for (key, value) in &authority_patch {
+    if options.applies_local_game_authority && game.is_game_running() {
+        if let Some(local_patch) = local_game_location_patch(game) {
+            for (key, value) in &local_patch {
                 merged.insert(key.clone(), value.clone());
                 projection_patch.insert(key.clone(), value.clone());
             }
@@ -160,30 +159,29 @@ pub(super) fn apply_current_user_patch(
     let (snapshot, mut persistence) = apply_avatar_wear_transition(
         RealtimeCurrentUserStateSnapshot::from_map(merged, &state.current_user_id),
         &previous,
-        authority,
+        game,
         now,
         options.records_current_avatar_history,
     );
     append_self_profile_log_entries(&previous, &snapshot, now, &mut persistence);
-    if !authority.is_game_running() && options.reconciles_remote_location {
+    if !game.is_game_running() && options.reconciles_remote_location {
         copy_current_user_presence_patch(&snapshot, &mut projection_patch);
     }
 
-    if authority.is_game_running() {
+    if game.is_game_running() {
         close_remote_game_log_interval(state, now, &mut persistence);
     } else if options.records_remote_game_log {
         reconcile_remote_game_log_interval(
             state,
             &snapshot,
             now,
-            authority.game_log().is_some(),
+            game.is_available(),
             &mut persistence,
         );
     }
 
-    let writes_location_game_state = authority.is_available()
-        && options.reconciles_remote_location
-        && !authority.is_game_running();
+    let writes_location_game_state =
+        game.is_available() && options.reconciles_remote_location && !game.is_game_running();
     let game_state_patch = if writes_location_game_state {
         Some(location_game_state_patch(&snapshot, now))
     } else {
@@ -193,7 +191,7 @@ pub(super) fn apply_current_user_patch(
     let mut snapshot_map = snapshot.to_map();
     state.sequence = state.sequence.saturating_add(1);
     state.snapshot = snapshot;
-    insert_presence(state, authority, &mut projection_patch, &mut snapshot_map);
+    insert_presence(state, game, &mut projection_patch, &mut snapshot_map);
     Some(RealtimeCurrentUserOutput {
         owner_user_id: OwnerId::new(state.current_user_id.clone()),
         projection: RealtimeCurrentUserProjection {
@@ -209,11 +207,11 @@ pub(super) fn apply_current_user_patch(
 
 pub(super) fn insert_presence(
     state: &mut RealtimeCurrentUserState,
-    authority: &RealtimeCurrentUserAuthority,
+    game: &LocalGameContextSnapshot,
     projection_patch: &mut Map<String, Value>,
     snapshot_map: &mut Map<String, Value>,
 ) {
-    let presence = current_user_presence(state, authority);
+    let presence = current_user_presence(state, game);
     let value = serde_json::to_value(&presence).expect("PresenceView serializes to JSON");
     projection_patch.insert(derived_keys::PRESENCE.into(), value.clone());
     snapshot_map.insert(derived_keys::PRESENCE.into(), value);

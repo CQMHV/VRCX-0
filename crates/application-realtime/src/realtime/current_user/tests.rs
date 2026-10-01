@@ -2,7 +2,7 @@ use serde_json::json;
 use vrcx_0_contracts::game_log::{GameLogLocationEntry, GameLogLocationTimeUpdate};
 use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 
-use crate::realtime::{RealtimeCurrentUserAuthority, RealtimeCurrentUserGameLogContext};
+use vrcx_0_application_core::LocalGameContextSnapshot;
 
 use super::runtime::RealtimeCurrentUserRuntime;
 use super::state::{
@@ -10,21 +10,26 @@ use super::state::{
     CURRENT_USER_FALLBACK_AVATAR_RESPONSE_AUTHORITY_FIELDS,
 };
 
-fn remote_authority(game_log_enabled: bool) -> RealtimeCurrentUserAuthority {
-    RealtimeCurrentUserAuthority::Available {
+fn game_not_running(available: bool) -> LocalGameContextSnapshot {
+    if !available {
+        return LocalGameContextSnapshot::Unavailable;
+    }
+    LocalGameContextSnapshot::Available {
         is_game_running: false,
-        game_log: game_log_enabled.then(RealtimeCurrentUserGameLogContext::default),
+        location: String::new(),
+        destination: String::new(),
+        world_name: String::new(),
+        player_user_ids: Vec::new(),
     }
 }
 
-fn local_authority(location: &str, world_name: &str) -> RealtimeCurrentUserAuthority {
-    RealtimeCurrentUserAuthority::Available {
+fn game_running_at(location: &str, world_name: &str) -> LocalGameContextSnapshot {
+    LocalGameContextSnapshot::Available {
         is_game_running: true,
-        game_log: Some(RealtimeCurrentUserGameLogContext {
-            location: location.into(),
-            destination: String::new(),
-            world_name: world_name.into(),
-        }),
+        location: location.into(),
+        destination: String::new(),
+        world_name: world_name.into(),
+        player_user_ids: Vec::new(),
     }
 }
 
@@ -76,7 +81,7 @@ fn current_user_projection_serializes_object_shape() {
                 raw: String::new(),
                 received_at: "2026-05-15T00:00:00Z".into(),
             },
-            RealtimeCurrentUserAuthority::default(),
+            game_not_running(true),
         )
         .expect("current user location output");
 
@@ -144,7 +149,7 @@ fn refreshed_current_user_snapshot_preserves_local_authority_fields() {
                 "bio": "fresh bio"
             }),
             json!({}),
-            local_authority("wrld_auth:123", "Authoritative World"),
+            game_running_at("wrld_auth:123", "Authoritative World"),
         )
         .expect("refreshed snapshot should update profile fields");
 
@@ -193,7 +198,7 @@ fn refreshed_snapshot_with_stale_sequence_is_dropped() {
         .apply_ws_message(
             7,
             &current_user_location_message("wrld_remote:456", "", "2026-05-15T00:00:00Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("interleaved location apply");
 
@@ -204,7 +209,7 @@ fn refreshed_snapshot_with_stale_sequence_is_dropped() {
             json!({ "id": "usr_self", "bio": "stale bio" }),
             json!({}),
             &[],
-            remote_authority(true),
+            game_not_running(true),
         )
         .is_none());
     let fresh_sequence = runtime.snapshot_sequence(7).expect("sequence");
@@ -215,7 +220,7 @@ fn refreshed_snapshot_with_stale_sequence_is_dropped() {
             json!({ "id": "usr_self", "bio": "fresh bio" }),
             json!({}),
             &[],
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("fresh sequence applies");
     assert_eq!(output.projection.snapshot["bio"], json!("fresh bio"));
@@ -246,7 +251,7 @@ fn interleaved_avatar_and_fallback_selection_drops_the_stale_response() {
             }),
             json!({}),
             CURRENT_USER_AVATAR_RESPONSE_AUTHORITY_FIELDS,
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("avatar selection response applies");
     assert_eq!(
@@ -265,7 +270,7 @@ fn interleaved_avatar_and_fallback_selection_drops_the_stale_response() {
             }),
             json!({}),
             CURRENT_USER_FALLBACK_AVATAR_RESPONSE_AUTHORITY_FIELDS,
-            remote_authority(true),
+            game_not_running(true),
         )
         .is_none());
     let snapshot = runtime.snapshot_value().expect("snapshot");
@@ -290,9 +295,9 @@ fn response_authority_fields_override_the_local_authority_strip() {
             json!({ "id": "usr_self", "status": "busy" }),
             json!({}),
             &["status"],
-            remote_authority(true),
+            game_not_running(true),
         )
-        .expect("response authority field applies");
+        .expect("response game field applies");
 
     assert_eq!(output.projection.snapshot["status"], json!("busy"));
 }
@@ -309,7 +314,7 @@ fn unavailable_local_game_context_skips_game_dependent_side_effects() {
             "$previousAvatarSwapTime": 1_000
         }),
     );
-    let authority = RealtimeCurrentUserAuthority::Unavailable;
+    let game = LocalGameContextSnapshot::Unavailable;
 
     let output = runtime
         .apply_ws_message(
@@ -327,7 +332,7 @@ fn unavailable_local_game_context_skips_game_dependent_side_effects() {
                 raw: String::new(),
                 received_at: "2026-05-15T00:00:02Z".into(),
             },
-            authority.clone(),
+            game.clone(),
         )
         .expect("current user location output");
 
@@ -338,7 +343,7 @@ fn unavailable_local_game_context_skips_game_dependent_side_effects() {
     );
     assert!(output.projection.game_state_patch.is_none());
     assert!(output.persistence.is_empty());
-    assert!(runtime.apply_game_running_state(7, authority).is_none());
+    assert!(runtime.apply_game_running_state(7, game).is_none());
 }
 
 #[test]
@@ -373,7 +378,7 @@ fn running_local_game_keeps_authoritative_location_above_remote_ws_location() {
                 raw: String::new(),
                 received_at: "2026-05-15T00:00:00Z".into(),
             },
-            local_authority("wrld_local:123", "Local World"),
+            game_running_at("wrld_local:123", "Local World"),
         )
         .expect("current user location output");
 
@@ -409,7 +414,7 @@ fn stopped_local_game_projects_remote_location_as_online_and_starts_gamelog_inte
                 "",
                 "2026-05-15T00:00:00Z",
             ),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote location output");
 
@@ -445,7 +450,7 @@ fn false_remote_offline_keeps_location_until_same_location_cancels_pending() {
         .apply_ws_message(
             7,
             &current_user_location_message("wrld_remote:456", "", "2026-05-15T00:00:00Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote interval start");
 
@@ -453,7 +458,7 @@ fn false_remote_offline_keeps_location_until_same_location_cancels_pending() {
         .apply_ws_message(
             7,
             &current_user_location_message("offline:offline", "", "2026-05-15T00:00:10Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote offline pending output");
     assert_eq!(pending.wake, Some(std::time::Duration::from_secs(170)));
@@ -471,14 +476,14 @@ fn false_remote_offline_keeps_location_until_same_location_cancels_pending() {
         .apply_ws_message(
             7,
             &current_user_location_message("wrld_remote:456", "", "2026-05-15T00:00:10.004Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("same remote location should cancel pending");
 
     assert_eq!(resumed.wake, None);
     assert!(resumed.persistence.is_empty());
     assert!(runtime
-        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), remote_authority(true),)
+        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), game_not_running(true),)
         .is_none());
 }
 
@@ -495,15 +500,15 @@ fn an_earlier_wake_does_not_confirm_a_newer_pending_offline() {
         runtime.apply_ws_message(
             7,
             &current_user_location_message(location, "", received_at),
-            remote_authority(true),
+            game_not_running(true),
         );
     }
 
     assert!(runtime
-        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), remote_authority(true))
+        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), game_not_running(true))
         .is_none());
     let confirmed = runtime
-        .wake_pending_offline(7, "2026-05-15T00:03:10Z".into(), remote_authority(true))
+        .wake_pending_offline(7, "2026-05-15T00:03:10Z".into(), game_not_running(true))
         .expect("the newer pending offline confirms at its own deadline");
     assert_eq!(
         confirmed.projection.snapshot["$presence"]["kind"],
@@ -519,20 +524,20 @@ fn confirmed_remote_offline_ends_interval_and_same_location_can_start_again() {
         .apply_ws_message(
             7,
             &current_user_location_message("wrld_remote:456", "", "2026-05-15T00:00:00Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote interval start");
     let pending = runtime
         .apply_ws_message(
             7,
             &current_user_location_message("offline", "", "2026-05-15T00:00:10Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote offline pending output");
     assert!(pending.wake.is_some());
 
     let confirmed = runtime
-        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), remote_authority(true))
+        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), game_not_running(true))
         .expect("pending remote offline should fire");
 
     assert_eq!(
@@ -552,7 +557,7 @@ fn confirmed_remote_offline_ends_interval_and_same_location_can_start_again() {
         .apply_ws_message(
             7,
             &current_user_location_message("wrld_remote:456", "", "2026-05-15T00:03:20Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("same location after confirmed offline starts a new interval");
     assert_eq!(restarted.persistence.game_log_locations.len(), 1);
@@ -571,7 +576,7 @@ fn remote_presence_remains_visible_when_gamelog_is_disabled_without_writes() {
         .apply_ws_message(
             7,
             &current_user_location_message("wrld_remote:456", "", "2026-05-15T00:00:00Z"),
-            remote_authority(false),
+            game_not_running(false),
         )
         .expect("remote presence output");
 
@@ -590,21 +595,21 @@ fn local_game_start_invalidates_remote_offline_timer_and_keeps_local_authority()
         .apply_ws_message(
             7,
             &current_user_location_message("wrld_remote:456", "", "2026-05-15T00:00:00Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote interval start");
     let pending = runtime
         .apply_ws_message(
             7,
             &current_user_location_message("offline", "", "2026-05-15T00:00:10Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote offline pending output");
     assert!(pending.wake.is_some());
-    let local_authority = local_authority("wrld_local:123", "Local World");
+    let local_game = game_running_at("wrld_local:123", "Local World");
 
     let local = runtime
-        .apply_game_running_state(7, local_authority.clone())
+        .apply_game_running_state(7, local_game.clone())
         .expect("local game state output");
 
     assert_eq!(
@@ -616,7 +621,7 @@ fn local_game_start_invalidates_remote_offline_timer_and_keeps_local_authority()
         json!("online")
     );
     assert!(runtime
-        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), local_authority,)
+        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), local_game,)
         .is_none());
 }
 
@@ -636,19 +641,18 @@ fn stopping_local_game_does_not_start_remote_gamelog_from_stale_snapshot() {
         }),
     );
     runtime
-        .apply_game_running_state(7, local_authority("wrld_for_two:94665", "For Two"))
+        .apply_game_running_state(7, game_running_at("wrld_for_two:94665", "For Two"))
         .expect("local game state output");
 
     let stopped = runtime
         .apply_game_running_state(
             7,
-            RealtimeCurrentUserAuthority::Available {
+            LocalGameContextSnapshot::Available {
                 is_game_running: false,
-                game_log: Some(RealtimeCurrentUserGameLogContext {
-                    location: "wrld_for_two:94665".into(),
-                    destination: String::new(),
-                    world_name: "For Two".into(),
-                }),
+                location: "wrld_for_two:94665".into(),
+                destination: String::new(),
+                world_name: "For Two".into(),
+                player_user_ids: Vec::new(),
             },
         )
         .expect("stopped game state output");
@@ -669,14 +673,14 @@ fn reconnect_preserves_remote_interval_and_invalidates_old_pending_timer() {
         .apply_ws_message(
             7,
             &current_user_location_message("wrld_remote:456", "", "2026-05-15T00:00:00Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote interval start");
     let pending = runtime
         .apply_ws_message(
             7,
             &current_user_location_message("offline", "", "2026-05-15T00:00:10Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote offline pending output");
     assert!(pending.wake.is_some());
@@ -693,13 +697,13 @@ fn reconnect_preserves_remote_interval_and_invalidates_old_pending_timer() {
     );
 
     assert!(runtime
-        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), remote_authority(true),)
+        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), game_not_running(true),)
         .is_none());
     let duplicate = runtime
         .apply_ws_message(
             8,
             &current_user_location_message("wrld_remote:456", "", "2026-05-15T00:00:20Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("reconnected remote location output");
     assert!(duplicate.persistence.game_log_locations.is_empty());
@@ -708,12 +712,12 @@ fn reconnect_preserves_remote_interval_and_invalidates_old_pending_timer() {
         .apply_ws_message(
             8,
             &current_user_location_message("offline", "", "2026-05-15T00:00:30Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote offline after reconnect");
     assert!(pending.wake.is_some());
     let confirmed = runtime
-        .wake_pending_offline(8, "2026-05-15T00:03:20Z".into(), remote_authority(true))
+        .wake_pending_offline(8, "2026-05-15T00:03:20Z".into(), game_not_running(true))
         .expect("remote offline should close original interval");
 
     assert_eq!(
@@ -733,12 +737,12 @@ fn transport_interruption_does_not_end_remote_interval_or_change_presence() {
         .apply_ws_message(
             7,
             &current_user_location_message("wrld_remote:456", "", "2026-05-15T00:00:00Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote interval start");
 
     let finalized = runtime
-        .interrupt_transport(7, remote_authority(true))
+        .interrupt_transport(7, game_not_running(true))
         .expect("transport finalization output");
 
     assert_eq!(
@@ -763,12 +767,12 @@ fn explicit_transport_finalization_ends_remote_interval() {
         .apply_ws_message(
             7,
             &current_user_location_message("wrld_remote:456", "", "2026-05-15T00:00:00Z"),
-            remote_authority(true),
+            game_not_running(true),
         )
         .expect("remote interval start");
 
     let finalized = runtime
-        .finalize_transport(7, remote_authority(true))
+        .finalize_transport(7, game_not_running(true))
         .expect("explicit transport finalization output");
 
     assert_eq!(
@@ -796,7 +800,7 @@ fn current_user_presence_follows_the_local_game_then_remote_presence_then_active
     );
 
     let local = runtime
-        .refresh_local_presence(7, local_authority("wrld_local:1", "Local"))
+        .refresh_local_presence(7, game_running_at("wrld_local:1", "Local"))
         .expect("local presence output");
     assert_eq!(presence_of(&local)["kind"], "online");
     assert_eq!(
@@ -805,14 +809,14 @@ fn current_user_presence_follows_the_local_game_then_remote_presence_then_active
     );
     assert_eq!(presence_of(&local)["platform"], "standalonewindows");
     assert!(runtime
-        .refresh_local_presence(7, local_authority("wrld_local:1", "Local"))
+        .refresh_local_presence(7, game_running_at("wrld_local:1", "Local"))
         .is_none());
 
     let remote = runtime
         .apply_ws_message(
             7,
             &current_user_location_message("wrld_remote:2", "", "2026-05-15T00:00:00Z"),
-            remote_authority(false),
+            game_not_running(false),
         )
         .expect("remote presence output");
     assert_eq!(presence_of(&remote)["kind"], "online");
@@ -826,7 +830,7 @@ fn current_user_presence_follows_the_local_game_then_remote_presence_then_active
             7,
             json!({ "id": "usr_self" }),
             json!({ "location": "offline" }),
-            remote_authority(false),
+            game_not_running(false),
         )
         .expect("refreshed output");
     assert_eq!(presence_of(&confirmed_offline)["kind"], "active");
@@ -836,13 +840,12 @@ fn current_user_presence_follows_the_local_game_then_remote_presence_then_active
 fn current_user_presence_reports_the_travel_destination_from_the_local_game() {
     let runtime = RealtimeCurrentUserRuntime::new();
     runtime.set_snapshot("usr_self".into(), 7, json!({ "id": "usr_self" }));
-    let traveling = RealtimeCurrentUserAuthority::Available {
+    let traveling = LocalGameContextSnapshot::Available {
         is_game_running: true,
-        game_log: Some(RealtimeCurrentUserGameLogContext {
-            location: "traveling".into(),
-            destination: "wrld_next:3".into(),
-            world_name: String::new(),
-        }),
+        location: "traveling".into(),
+        destination: "wrld_next:3".into(),
+        world_name: String::new(),
+        player_user_ids: Vec::new(),
     };
 
     let output = runtime

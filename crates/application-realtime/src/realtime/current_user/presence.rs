@@ -1,14 +1,14 @@
 use vrcx_0_core::json::JsonExt;
 use vrcx_0_core::presence::{Place, PresencePlace, PresenceView};
 
-use crate::realtime::RealtimeCurrentUserAuthority;
+use vrcx_0_application_core::LocalGameContextSnapshot;
 
 use super::state::RealtimeCurrentUserState;
 use super::utils::has_remote_current_user_presence;
 
 pub(super) fn current_user_presence(
     state: &RealtimeCurrentUserState,
-    authority: &RealtimeCurrentUserAuthority,
+    game: &LocalGameContextSnapshot,
 ) -> PresenceView {
     let platform = state.snapshot.raw.text_field("last_platform");
     let online = |place: Place| PresenceView::Online {
@@ -16,10 +16,14 @@ pub(super) fn current_user_presence(
         platform: platform.clone(),
         online_since_ms: None,
     };
-    if authority.is_game_running() {
-        return online(authority.game_log().map_or(Place::Unknown, |game_log| {
-            Place::from_location(&game_log.location, &game_log.destination)
-        }));
+    if let LocalGameContextSnapshot::Available {
+        is_game_running: true,
+        location,
+        destination,
+        ..
+    } = game
+    {
+        return online(Place::from_location(location, destination));
     }
     let remote = &state.remote_snapshot;
     if state.pending_offline.is_some() || has_remote_current_user_presence(remote) {
