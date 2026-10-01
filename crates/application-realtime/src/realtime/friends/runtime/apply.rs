@@ -56,7 +56,7 @@ pub(super) fn apply_wake(
         &now.iso,
     ));
     if let Some(wake_at_ms) = step.wake_at_ms {
-        output.wake = Some(FriendWake::at(user_id, wake_at_ms, now.timestamp_ms));
+        output.wake = Some(FriendWake::at(user_id, wake_at_ms));
     }
     commit(
         state,
@@ -171,7 +171,7 @@ fn apply_change(
         }
     }
     if let Some(wake_at_ms) = step.wake_at_ms {
-        output.wake = Some(FriendWake::at(&user_id, wake_at_ms, now.timestamp_ms));
+        output.wake = Some(FriendWake::at(&user_id, wake_at_ms));
     }
     if step.refetch {
         push_profile_refetch_user_id(output, &user_id);

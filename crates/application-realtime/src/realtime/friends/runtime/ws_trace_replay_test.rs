@@ -111,10 +111,9 @@ mod tests {
         Some((uid, record))
     }
 
-    fn schedule(timers: &mut Vec<PendingTimer>, wake: &FriendWake, now_ms: i64) {
-        let delay_ms = i64::try_from(wake.deadline.delay.as_millis()).unwrap_or(i64::MAX);
+    fn schedule(timers: &mut Vec<PendingTimer>, wake: &FriendWake) {
         timers.push(PendingTimer {
-            deadline_ms: now_ms + delay_ms,
+            deadline_ms: wake.at_ms,
             uid: wake.user_id.clone(),
         });
     }
@@ -211,7 +210,7 @@ mod tests {
                     at_ms,
                 );
                 for wake in &effects.schedules {
-                    schedule(&mut timers, wake, at_ms);
+                    schedule(&mut timers, wake);
                 }
                 emit(
                     &mut observed,
@@ -233,7 +232,7 @@ mod tests {
             let feeds = match runtime.apply_ws_message(&payload) {
                 RealtimeFriendApplyResult::Output(output) => {
                     if let Some(wake) = &output.wake {
-                        schedule(&mut timers, wake, at_ms);
+                        schedule(&mut timers, wake);
                     }
                     output
                         .persistence

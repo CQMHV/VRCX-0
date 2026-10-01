@@ -127,11 +127,10 @@ impl RealtimeMessageSink for RealtimeHostRuntimeMessageSink {
             self.runtime.local_game_context(),
         ) {
             let overlay_patch = output.projection.patch.clone();
-            let wake = output.wake;
+            let wake_at_ms = output.wake_at_ms;
             self.runtime.apply_current_user_output(output);
-            if let Some(deadline) = wake {
-                self.runtime
-                    .schedule_current_user_wake(generation, deadline);
+            if let Some(at_ms) = wake_at_ms {
+                self.runtime.schedule_current_user_wake(generation, at_ms);
             }
             if is_user_update {
                 self.runtime.refresh_current_user_snapshot_after_update(

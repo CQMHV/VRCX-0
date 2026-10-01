@@ -5,7 +5,7 @@ use vrcx_0_core::presence::is_offline_location_proof;
 use vrcx_0_core::text::first_owned;
 
 use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY_MS;
-use crate::realtime::{RealtimeCurrentUserOutput, RealtimeCurrentUserProjection, WakeDeadline};
+use crate::realtime::{RealtimeCurrentUserOutput, RealtimeCurrentUserProjection};
 use vrcx_0_application_core::LocalGameContextSnapshot;
 
 use super::avatar::{apply_avatar_wear_transition, insert_avatar_swap_time};
@@ -85,7 +85,7 @@ pub(super) fn apply_user_location(
             now,
             game,
             CurrentUserPatchOptions {
-                wake: Some(WakeDeadline::new(deadline_ms, now.timestamp_ms)),
+                wake_at_ms: Some(deadline_ms),
                 ..CurrentUserPatchOptions::default()
             },
         );
@@ -189,7 +189,7 @@ pub(super) fn apply_current_user_patch(
         },
         snapshot: snapshot_map.into(),
         persistence,
-        wake: options.wake,
+        wake_at_ms: options.wake_at_ms,
     })
 }
 

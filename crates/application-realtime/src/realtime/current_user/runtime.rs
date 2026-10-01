@@ -301,7 +301,7 @@ impl RealtimeCurrentUserRuntime {
             },
             snapshot: snapshot_map.into(),
             persistence,
-            wake: None,
+            wake_at_ms: None,
         })
     }
 

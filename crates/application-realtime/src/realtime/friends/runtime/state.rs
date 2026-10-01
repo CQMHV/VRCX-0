@@ -232,7 +232,7 @@ impl RealtimeFriendsRuntime {
                         step.wake_at_ms
                     };
                     if let Some(wake_at_ms) = wake_at_ms {
-                        schedules.push(FriendWake::at(&user_id, wake_at_ms, now_ms));
+                        schedules.push(FriendWake::at(&user_id, wake_at_ms));
                     }
                     if step.refetch {
                         profile_refetch_user_ids.push(user_id.clone());
@@ -357,7 +357,6 @@ impl RealtimeFriendsRuntime {
         })?;
         roster.generation = generation;
         roster.baseline_revision = 0;
-        let now_ms = Utc::now().timestamp_millis();
         let schedules = roster
             .entries
             .iter()
@@ -365,7 +364,7 @@ impl RealtimeFriendsRuntime {
                 entry
                     .presence
                     .wake_at()
-                    .map(|wake_at_ms| FriendWake::at(user_id, wake_at_ms, now_ms))
+                    .map(|wake_at_ms| FriendWake::at(user_id, wake_at_ms))
             })
             .collect();
         let friend_user_ids = roster.entries.keys().cloned().collect();

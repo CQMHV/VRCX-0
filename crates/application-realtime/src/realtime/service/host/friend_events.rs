@@ -118,7 +118,7 @@ impl RealtimeHostRuntime {
     pub(super) fn schedule_friend_wake(self: &Arc<Self>, generation: u64, wake: FriendWake) {
         let runtime = Arc::clone(self);
         self.deps.tasks.spawn(async move {
-            sleep_until(wake.deadline).await;
+            sleep_until(wake.at_ms).await;
             runtime.wake_friend(generation, &wake.user_id);
         });
     }

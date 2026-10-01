@@ -3,7 +3,6 @@ use vrcx_0_core::derived_keys;
 use vrcx_0_core::json::JsonExt;
 use vrcx_0_core::presence::PresenceView;
 
-use crate::realtime::WakeDeadline;
 use vrcx_0_core::friends::normalize_user_id;
 
 #[derive(Clone, Debug, Default)]
@@ -36,7 +35,7 @@ pub(super) struct CurrentUserPatchOptions {
     pub(super) reconciles_remote_location: bool,
     pub(super) records_remote_game_log: bool,
     pub(super) records_current_avatar_history: bool,
-    pub(super) wake: Option<WakeDeadline>,
+    pub(super) wake_at_ms: Option<i64>,
 }
 
 #[derive(Clone, Debug, Default)]

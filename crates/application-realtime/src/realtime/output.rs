@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_contracts::realtime::RealtimePersistenceBatch;
 
@@ -19,32 +17,17 @@ pub struct FriendIconChange {
     pub created_at: String,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct WakeDeadline {
-    pub at_ms: i64,
-    pub delay: Duration,
-}
-
-impl WakeDeadline {
-    pub(crate) fn new(at_ms: i64, now_ms: i64) -> Self {
-        Self {
-            at_ms,
-            delay: Duration::from_millis(u64::try_from(at_ms - now_ms).unwrap_or(0)),
-        }
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FriendWake {
     pub user_id: String,
-    pub deadline: WakeDeadline,
+    pub at_ms: i64,
 }
 
 impl FriendWake {
-    pub(crate) fn at(user_id: &str, wake_at_ms: i64, now_ms: i64) -> Self {
+    pub(crate) fn at(user_id: &str, at_ms: i64) -> Self {
         Self {
             user_id: user_id.to_string(),
-            deadline: WakeDeadline::new(wake_at_ms, now_ms),
+            at_ms,
         }
     }
 }
@@ -106,7 +89,7 @@ pub struct RealtimeCurrentUserOutput {
     pub projection: RealtimeCurrentUserProjection,
     pub snapshot: RawJsonObject,
     pub persistence: RealtimePersistenceBatch,
-    pub wake: Option<WakeDeadline>,
+    pub wake_at_ms: Option<i64>,
 }
 
 #[derive(Clone, Debug, PartialEq)]

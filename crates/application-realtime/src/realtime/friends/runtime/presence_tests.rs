@@ -925,8 +925,12 @@ mod tests {
         let Some(wake) = output.wake.as_ref() else {
             panic!("offline should schedule pending timer");
         };
-        let delay = wake.deadline.delay;
-        assert_eq!(delay, std::time::Duration::from_secs(170));
+        assert_eq!(
+            wake.at_ms,
+            chrono::DateTime::parse_from_rfc3339("2026-05-15T00:02:50Z")
+                .expect("valid timestamp")
+                .timestamp_millis()
+        );
         let view = &output.projection.patches[0].presence.view;
         assert_eq!(view.section().as_str(), "online");
         assert_eq!(location_tag(view), Some("wrld_1:123"));

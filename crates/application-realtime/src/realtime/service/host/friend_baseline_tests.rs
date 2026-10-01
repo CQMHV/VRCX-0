@@ -10,6 +10,7 @@ use vrcx_0_core::OwnerId;
 #[test]
 fn sync_friend_snapshot_debounces_online_to_offline() -> Result<()> {
     let (_dir, runtime, active_session) = runtime_with_active_session("baseline-projection")?;
+    runtime.set_task_executor_for_test(DiscardTaskExecutor);
     let mut initial_friends = HashMap::new();
     initial_friends.insert(
         "usr_friend".to_string(),
@@ -87,6 +88,7 @@ fn sync_friend_snapshot_debounces_online_to_offline() -> Result<()> {
 fn sync_friend_snapshot_keeps_a_pending_offline_until_its_deadline() -> Result<()> {
     let (_dir, runtime, active_session) =
         runtime_with_active_session("baseline-confirmed-offline-feed")?;
+    runtime.set_task_executor_for_test(DiscardTaskExecutor);
     let mut initial_friends = HashMap::new();
     initial_friends.insert(
         "usr_friend".to_string(),
@@ -236,6 +238,7 @@ fn host_watermark_preserves_pending_created_after_capture() -> Result<()> {
     for (state_bucket, location) in [("online", "wrld_old:123"), ("offline", "offline")] {
         let (_dir, runtime, active_session) =
             runtime_with_active_session(&format!("host-stale-watermark-{state_bucket}"))?;
+        runtime.set_task_executor_for_test(DiscardTaskExecutor);
         runtime.runtime().sync_friend_snapshot(
             active_session.clone(),
             Some(7),
@@ -330,6 +333,7 @@ fn host_watermark_preserves_pending_created_after_capture() -> Result<()> {
 fn host_watermark_preserves_online_cancellation_after_capture() -> Result<()> {
     let (_dir, runtime, active_session) =
         runtime_with_active_session("host-online-cancel-watermark")?;
+    runtime.set_task_executor_for_test(DiscardTaskExecutor);
     runtime.runtime().sync_friend_snapshot(
         active_session.clone(),
         Some(7),

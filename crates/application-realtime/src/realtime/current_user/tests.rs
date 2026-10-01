@@ -405,7 +405,7 @@ fn stopped_local_game_projects_remote_location_as_online_and_starts_gamelog_inte
             group_name: "grp_remote".into(),
         }
     );
-    assert_eq!(output.wake, None);
+    assert_eq!(output.wake_at_ms, None);
 }
 
 #[test]
@@ -428,8 +428,12 @@ fn false_remote_offline_keeps_location_until_same_location_cancels_pending() {
         )
         .expect("remote offline pending output");
     assert_eq!(
-        pending.wake.map(|wake| wake.delay),
-        Some(std::time::Duration::from_secs(170))
+        pending.wake_at_ms,
+        Some(
+            chrono::DateTime::parse_from_rfc3339("2026-05-15T00:03:00Z")
+                .expect("valid timestamp")
+                .timestamp_millis()
+        )
     );
     assert_eq!(pending.snapshot["location"], json!("wrld_remote:456"));
     assert_eq!(pending.snapshot["$presence"]["kind"], json!("online"));
@@ -443,7 +447,7 @@ fn false_remote_offline_keeps_location_until_same_location_cancels_pending() {
         )
         .expect("same remote location should cancel pending");
 
-    assert_eq!(resumed.wake, None);
+    assert_eq!(resumed.wake_at_ms, None);
     assert!(resumed.persistence.is_empty());
     assert!(runtime
         .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), game_not_running(true),)
@@ -494,7 +498,7 @@ fn confirmed_remote_offline_ends_interval_and_same_location_can_start_again() {
             game_not_running(true),
         )
         .expect("remote offline pending output");
-    assert!(pending.wake.is_some());
+    assert!(pending.wake_at_ms.is_some());
 
     let confirmed = runtime
         .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), game_not_running(true))
@@ -559,7 +563,7 @@ fn local_game_start_invalidates_remote_offline_timer_and_keeps_local_authority()
             game_not_running(true),
         )
         .expect("remote offline pending output");
-    assert!(pending.wake.is_some());
+    assert!(pending.wake_at_ms.is_some());
     let local_game = game_running_at("wrld_local:123", "Local World");
 
     let local = runtime
@@ -628,7 +632,7 @@ fn reconnect_preserves_remote_interval_and_invalidates_old_pending_timer() {
             game_not_running(true),
         )
         .expect("remote offline pending output");
-    assert!(pending.wake.is_some());
+    assert!(pending.wake_at_ms.is_some());
 
     runtime.set_snapshot(
         "usr_self".into(),
@@ -660,7 +664,7 @@ fn reconnect_preserves_remote_interval_and_invalidates_old_pending_timer() {
             game_not_running(true),
         )
         .expect("remote offline after reconnect");
-    assert!(pending.wake.is_some());
+    assert!(pending.wake_at_ms.is_some());
     let confirmed = runtime
         .wake_pending_offline(8, "2026-05-15T00:03:20Z".into(), game_not_running(true))
         .expect("remote offline should close original interval");
