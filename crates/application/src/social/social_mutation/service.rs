@@ -418,7 +418,7 @@ async fn resolve_target_profile(
             target_user_id.to_string(),
             UserQueryOptions {
                 kind: UserQueryKind::LiveFriend,
-                cache_policy: UserQueryCachePolicy::UseCache,
+                cache_policy: UserQueryCachePolicy::Refresh,
             },
         )
         .await
