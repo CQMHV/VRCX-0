@@ -28,7 +28,7 @@ describe('buildUserHoverCardModel', () => {
         });
 
         expect(model.variant).toBe('in-instance');
-        expect(model.statusKey).toBe('join_me');
+        expect(model.statusKey).toBe('dialog.user.status.join_me');
         expect(model.displayName).toBe('Alice');
         expect(model.location.isRealInstance).toBe(true);
         expect(model.location.worldId).toBe(
@@ -49,7 +49,7 @@ describe('buildUserHoverCardModel', () => {
         });
 
         expect(model.variant).toBe('private');
-        expect(model.statusKey).toBe('online');
+        expect(model.statusKey).toBe('dialog.user.status.online');
     });
 
     it('shows the observed room for a private friend in my instance', () => {
@@ -81,7 +81,7 @@ describe('buildUserHoverCardModel', () => {
         });
 
         expect(model.variant).toBe('active');
-        expect(model.statusKey).toBe('active');
+        expect(model.statusKey).toBe('dialog.user.status.active');
         expect(model.statusDotClassName).toBe(
             'user-status-indicator online border-[var(--status-online)] bg-background'
         );

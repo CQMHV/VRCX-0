@@ -22,7 +22,6 @@ import type {
 } from '@/domain/friends/types';
 import { userImage } from '@/services/entityMediaService';
 import { timestampMsFromValue } from '@/shared/utils/dateTime';
-import { userStatusFromValue } from '@/shared/utils/friendStatus';
 import {
     locationSentinel,
     normalizeLocationStatus,
@@ -31,6 +30,7 @@ import {
 import { isRecord } from '@/shared/utils/record';
 import { normalizeString as normalizeId } from '@/shared/utils/string';
 import { resolveTrustColorKey } from '@/shared/utils/trustColors';
+import { userStatusLabelKey } from '@/shared/utils/userStatus';
 import { computeTrustLevel } from '@/shared/utils/userTransforms';
 
 type UserHoverCardVariant =
@@ -60,27 +60,6 @@ function recordOrEmpty(value: unknown): HoverCardRecord {
 
 function sidebarSeed(value: unknown): SidebarFriendRecord | null {
     return isRecord(value) ? value : null;
-}
-
-function statusKeyFromStatus(status: unknown) {
-    const normalized = userStatusFromValue(status);
-    if (normalized === 'join me') {
-        return 'join_me';
-    }
-    if (normalized === 'ask me') {
-        return 'ask_me';
-    }
-    if (normalized === 'busy') {
-        return 'busy';
-    }
-    if (normalized === 'active') {
-        return 'online';
-    }
-    return '';
-}
-
-function statusKeyFromPresence(status: unknown, state: FriendRosterBucket) {
-    return state === 'active' ? 'active' : statusKeyFromStatus(status);
 }
 
 function resolveTrust(identity: HoverCardRecord) {
@@ -184,7 +163,7 @@ export function buildUserHoverCardModel({
 
     const statusKey =
         hasPresence && state !== 'offline'
-            ? statusKeyFromPresence(status, state)
+            ? userStatusLabelKey({ $presence: presence, status })
             : '';
     const statusDotClassName = hasPresence
         ? presenceDotClassName(presence, status)

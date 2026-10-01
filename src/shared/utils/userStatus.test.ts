@@ -7,7 +7,11 @@ import {
     pendingPresence
 } from '@/test/presenceFixtures';
 
-import { resolveUserPresenceStatus, userStatusSortRank } from './userStatus';
+import {
+    resolveUserPresenceStatus,
+    userStatusLabelKey,
+    userStatusSortRank
+} from './userStatus';
 
 describe('userStatus', () => {
     it('normalizes legacy compact status strings', () => {
@@ -109,5 +113,26 @@ describe('userStatus', () => {
                 ref: { status: 'busy', $presence: onlinePresence() }
             })
         ).toBe('busy');
+    });
+
+    it('labels an active user as active and a leaving user as offline', () => {
+        expect(
+            userStatusLabelKey({
+                status: 'join me',
+                $presence: activePresence()
+            })
+        ).toBe('dialog.user.status.active');
+        expect(
+            userStatusLabelKey({
+                status: 'join me',
+                $presence: pendingPresence()
+            })
+        ).toBe('dialog.user.status.offline');
+        expect(
+            userStatusLabelKey({
+                status: 'join me',
+                $presence: onlinePresence()
+            })
+        ).toBe('dialog.user.status.join_me');
     });
 });

@@ -138,8 +138,19 @@ const statusLabelFallbacks: Readonly<Record<string, string>> = Object.freeze({
     traveling: 'Traveling'
 });
 
-function userStatusLabel(value: unknown, t?: TranslateFn) {
+function labelStatus(value: unknown) {
     const status = resolveUserPresenceStatus(value);
+    return status !== 'offline' && presenceOfSelfOrRef(value)?.kind === 'active'
+        ? 'state-active'
+        : status;
+}
+
+function userStatusLabelKey(value: unknown): string {
+    return statusLabelKeys[labelStatus(value)] ?? '';
+}
+
+function userStatusLabel(value: unknown, t?: TranslateFn) {
+    const status = labelStatus(value);
     if (!status) {
         return '';
     }
@@ -155,5 +166,6 @@ export {
     resolveUserPresenceStatus,
     userStatusIndicatorClassName,
     userStatusLabel,
+    userStatusLabelKey,
     userStatusSortRank
 };
