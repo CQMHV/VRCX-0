@@ -1,20 +1,7 @@
 use vrcx_0_application_core::FriendPlace;
-use vrcx_0_core::friends::FriendRecord;
-use vrcx_0_core::presence::{Place, PresenceEntry, PresencePlace, PresenceView};
+use vrcx_0_core::presence::{Place, PresencePlace, PresenceView};
 
-use super::evidence::Evidence;
 use super::model::Phase;
-
-pub(crate) fn baseline_presence_entry(record: &FriendRecord) -> PresenceEntry {
-    PresenceEntry {
-        rev: 0,
-        view: presence_view(&Phase::initial(
-            &Evidence::from_baseline(record).claim,
-            0,
-            false,
-        )),
-    }
-}
 
 pub(crate) fn dwell_place(phase: &Phase) -> FriendPlace {
     let Some(state) = phase.online_state() else {

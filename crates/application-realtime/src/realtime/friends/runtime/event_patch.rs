@@ -20,7 +20,7 @@ use super::persistence::{
     add_profile_diff_feed_entries, display_name, friend_log_upsert, friend_relationship_feed_entry,
     meaningful_name, meaningful_record_name, trust_level_feed_entry, FriendRelationshipFeedKind,
 };
-use super::presence_keys::strip_presence_keys;
+use super::presence_split::strip_presence_keys;
 use super::state::{FriendEntry, RealtimeFriendState};
 use super::utils::{first_owned, EventTime, JsonExt};
 

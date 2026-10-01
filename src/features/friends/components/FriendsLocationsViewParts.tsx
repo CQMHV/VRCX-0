@@ -9,15 +9,10 @@ import { useTranslation } from 'react-i18next';
 import { CurrentInstanceBadge } from '@/components/instances/CurrentInstanceBadge';
 import { EmptyState } from '@/components/layout/PageScaffold';
 import { Location } from '@/components/Location';
-import {
-    presenceCanRequestInvite,
-    presenceSection,
-    presenceTravelingTag
-} from '@/domain/friends/presence';
+import { presenceCanRequestInvite } from '@/domain/friends/presence';
 import type { FriendRecord } from '@/domain/friends/types';
 import { isSameInstanceLocation } from '@/domain/instances/instanceRoster';
 import { cn } from '@/lib/utils';
-import { normalizeLocationValue, parseLocation } from '@/shared/utils/location';
 import { useFriendLocationTimeStore } from '@/state/friendLocationTimeStore';
 import { Badge } from '@/ui/shadcn/badge';
 import { Button } from '@/ui/shadcn/button';
@@ -220,35 +215,9 @@ export function FriendsLocationCardItem({
     const rawLocation = target.rawLocation;
     const groupHint = localLocation ? '' : resolveFriendGroupName(friend);
     const presence = friend.$presence;
-    const travelingLocation = localLocation
-        ? ''
-        : presenceTravelingTag(presence);
-    const isTravelingLocation = Boolean(travelingLocation);
     const friendIsCurrentUser =
         normalizeId(friend.id) === normalizeId(currentUserId);
-    const friendIsOnline = presenceSection(presence) === 'online';
     const friendLocationAvailable = canUseFriendLocation(rawLocation);
-    const sectionLocation = normalizeLocationValue(section.rawLocation);
-    const sectionInstanceLocation = parseLocation(sectionLocation)
-        .isRealInstance
-        ? sectionLocation
-        : '';
-    const fallbackTimerLocation =
-        friendIsOnline &&
-        (sectionInstanceLocation ||
-            target.parsed.isRealInstance ||
-            isTravelingLocation)
-            ? isTravelingLocation
-                ? travelingLocation
-                : sectionInstanceLocation || rawLocation
-            : '';
-    let timerLocation = fallbackTimerLocation;
-    if (locationTime) {
-        timerLocation =
-            locationTime.sinceMs !== null && (localLocation || friendIsOnline)
-                ? locationTime.location
-                : '';
-    }
 
     return (
         <FriendLocationCard
@@ -258,7 +227,7 @@ export function FriendsLocationCardItem({
                 label: location.label,
                 groupHint,
                 raw: rawLocation,
-                timerLocation
+                timerLocation: locationTime?.location ?? ''
             }}
             presentation={{
                 density: densityConfig,

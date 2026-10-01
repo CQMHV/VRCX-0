@@ -56,7 +56,6 @@ pub(super) struct RealtimeCurrentUserStateSnapshot {
     pub(super) bio: String,
     pub(super) current_avatar: String,
     pub(super) current_avatar_image_url: String,
-    pub(super) state_bucket: String,
     pub(super) world_name: String,
     pub(super) previous_avatar_swap_time: i64,
 }
@@ -109,7 +108,6 @@ impl RealtimeCurrentUserStateSnapshot {
         self.bio = self.raw.text_field("bio");
         self.current_avatar = normalize_id(&self.raw.text_field("currentAvatar"));
         self.current_avatar_image_url = self.raw.text_field("currentAvatarImageUrl");
-        self.state_bucket = self.raw.text_field("stateBucket");
         self.world_name = self.raw.text_field("worldName");
         self.previous_avatar_swap_time = self
             .raw
@@ -125,9 +123,6 @@ pub(super) const CURRENT_USER_REFRESH_LOCAL_AUTHORITY_FIELDS: &[&str] = &[
     "offlineFriends",
     "status",
     "statusDescription",
-    "state",
-    "stateBucket",
-    "pendingOffline",
     "location",
     derived_keys::LOCATION_PROJECTION,
     derived_keys::LOCATION_UPDATED_AT,
@@ -167,6 +162,4 @@ pub(super) const CURRENT_USER_REMOTE_PRESENCE_FIELDS: &[&str] = &[
     derived_keys::TRAVELING_TO_LOCATION_PROJECTION,
     derived_keys::TRAVELING_TO_TIME,
     "worldName",
-    "state",
-    "stateBucket",
 ];

@@ -12,9 +12,7 @@ const CURRENT_USER_PRESENCE_FIELDS = [
     'travelingToWorld',
     'travelingToInstance',
     '$travelingToLocation',
-    '$travelingToTime',
-    'state',
-    'stateBucket'
+    '$travelingToTime'
 ];
 
 export function mergeCurrentUserPresenceFields<

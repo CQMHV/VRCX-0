@@ -1,32 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde_json::{Map, Value};
-use vrcx_0_core::friends::StateBucket;
-use vrcx_0_core::json::JsonExt;
 
 use super::state::RealtimeCurrentUserStateSnapshot;
-
-pub(super) fn resolve_state_bucket(
-    content: &Value,
-    patch: &Map<String, Value>,
-    previous: Option<&Map<String, Value>>,
-) -> Option<String> {
-    for value in [
-        content.text_field("state"),
-        content.text_field("stateBucket"),
-        patch.text_field("stateBucket"),
-        previous
-            .map(|previous| previous.text_field("stateBucket"))
-            .unwrap_or_default(),
-        previous
-            .map(|previous| previous.text_field("state"))
-            .unwrap_or_default(),
-    ] {
-        if let Some(bucket) = StateBucket::normalize(&value) {
-            return Some(bucket.as_str().into());
-        }
-    }
-    None
-}
 
 pub(super) fn map_from_json(value: Value) -> Map<String, Value> {
     value.as_object().cloned().unwrap_or_default()

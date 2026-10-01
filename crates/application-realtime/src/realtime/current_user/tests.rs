@@ -160,7 +160,10 @@ fn refreshed_current_user_snapshot_preserves_local_authority_fields() {
         output.projection.snapshot["statusDescription"],
         json!("Local status")
     );
-    assert_eq!(output.projection.snapshot["stateBucket"], json!("online"));
+    assert_eq!(
+        output.projection.snapshot["$presence"]["kind"],
+        json!("online")
+    );
     assert_eq!(
         output.projection.snapshot["location"],
         json!("wrld_auth:123")
@@ -412,8 +415,10 @@ fn stopped_local_game_projects_remote_location_as_online_and_starts_gamelog_inte
         )
         .expect("remote location output");
 
-    assert_eq!(output.projection.snapshot["state"], json!("online"));
-    assert_eq!(output.projection.snapshot["stateBucket"], json!("online"));
+    assert_eq!(
+        output.projection.snapshot["$presence"]["kind"],
+        json!("online")
+    );
     assert_eq!(
         output.projection.snapshot["location"],
         json!("wrld_remote:456~group(grp_remote)")
@@ -468,7 +473,10 @@ fn false_remote_offline_keeps_location_until_same_location_cancels_pending() {
         pending.projection.snapshot["location"],
         json!("wrld_remote:456")
     );
-    assert_eq!(pending.projection.snapshot["stateBucket"], json!("online"));
+    assert_eq!(
+        pending.projection.snapshot["$presence"]["kind"],
+        json!("online")
+    );
     assert!(pending.persistence.is_empty());
 
     let resumed = runtime
@@ -522,9 +530,8 @@ fn confirmed_remote_offline_ends_interval_and_same_location_can_start_again() {
         )
         .expect("pending remote offline should fire");
 
-    assert_eq!(confirmed.projection.snapshot["state"], json!("active"));
     assert_eq!(
-        confirmed.projection.snapshot["stateBucket"],
+        confirmed.projection.snapshot["$presence"]["kind"],
         json!("active")
     );
     assert_eq!(confirmed.projection.snapshot["location"], json!("offline"));
@@ -563,7 +570,10 @@ fn remote_presence_remains_visible_when_gamelog_is_disabled_without_writes() {
         )
         .expect("remote presence output");
 
-    assert_eq!(output.projection.snapshot["stateBucket"], json!("online"));
+    assert_eq!(
+        output.projection.snapshot["$presence"]["kind"],
+        json!("online")
+    );
     assert!(output.persistence.is_empty());
 }
 
@@ -598,7 +608,10 @@ fn local_game_start_invalidates_remote_offline_timer_and_keeps_local_authority()
         local.projection.snapshot["location"],
         json!("wrld_local:123")
     );
-    assert_eq!(local.projection.snapshot["stateBucket"], json!("online"));
+    assert_eq!(
+        local.projection.snapshot["$presence"]["kind"],
+        json!("online")
+    );
     assert!(runtime
         .fire_pending_offline(7, token, "2026-05-15T00:03:00Z".into(), local_authority,)
         .is_none());
@@ -747,7 +760,7 @@ fn transport_interruption_does_not_end_remote_interval_or_change_presence() {
         json!("wrld_remote:456")
     );
     assert_eq!(
-        finalized.projection.snapshot["stateBucket"],
+        finalized.projection.snapshot["$presence"]["kind"],
         json!("online")
     );
     assert!(finalized

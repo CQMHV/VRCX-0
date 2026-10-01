@@ -26,7 +26,7 @@ use super::event_patch::{
     apply_friend_event, apply_presence_evidence, apply_refetched_friend_profile_event,
     apply_trusted_friend_add_event, FriendEventKind,
 };
-use super::presence_keys::strip_record_presence;
+use super::presence_split::split_baseline_record;
 use super::utils::EventTime;
 
 #[derive(Clone, Debug)]
@@ -201,8 +201,7 @@ impl RealtimeFriendsRuntime {
                     record.display_name = entry.record.display_name.clone();
                 }
             }
-            let evidence = Evidence::from_baseline(&record);
-            strip_record_presence(&mut record);
+            let (record, evidence) = split_baseline_record(record);
             let presence = match existing_entry {
                 Some(entry) => {
                     let step = reduce(&entry.presence, &evidence, now_ms);

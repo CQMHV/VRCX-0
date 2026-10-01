@@ -21,9 +21,7 @@ use super::state::{
     CurrentUserPatchOptions, PendingCurrentUserOffline, RealtimeCurrentUserState,
     RealtimeCurrentUserStateSnapshot, CURRENT_USER_REMOTE_PRESENCE_FIELDS,
 };
-use super::utils::{
-    has_remote_current_user_presence, normalize_id, resolve_state_bucket, EventTime,
-};
+use super::utils::{has_remote_current_user_presence, normalize_id, EventTime};
 use vrcx_0_core::OwnerId;
 
 pub(super) fn apply_user_update(
@@ -41,10 +39,6 @@ pub(super) fn apply_user_update(
     let event_user_id = first_owned([patch.text_field("id"), content.text_field("userId")]);
     if event_user_id != state.current_user_id {
         return None;
-    }
-    let previous_snapshot = state.snapshot.to_map();
-    if let Some(state_bucket) = resolve_state_bucket(content, &patch, Some(&previous_snapshot)) {
-        patch.insert("stateBucket".into(), Value::String(state_bucket));
     }
     if patch.is_empty() {
         return None;
@@ -163,12 +157,9 @@ pub(super) fn apply_current_user_patch(
         }
     }
     merged.insert("id".into(), Value::String(state.current_user_id.clone()));
-    normalize_current_user_presence(
-        &mut merged,
-        authority.is_game_running()
-            || state.pending_offline.is_some()
-            || has_remote_current_user_presence(&state.remote_snapshot),
-    );
+    for key in ["state", "stateBucket", "pendingOffline"] {
+        merged.remove(key);
+    }
     projection_patch.insert("id".into(), Value::String(state.current_user_id.clone()));
     let (snapshot, mut persistence) = apply_avatar_wear_transition(
         RealtimeCurrentUserStateSnapshot::from_map(merged, &state.current_user_id),
@@ -178,11 +169,6 @@ pub(super) fn apply_current_user_patch(
         options.records_current_avatar_history,
     );
     append_self_profile_log_entries(&previous, &snapshot, now, &mut persistence);
-    projection_patch.insert("state".into(), Value::String(snapshot.state_bucket.clone()));
-    projection_patch.insert(
-        "stateBucket".into(),
-        Value::String(snapshot.state_bucket.clone()),
-    );
     if !authority.is_game_running() && options.reconciles_remote_location {
         copy_current_user_presence_patch(&snapshot, &mut projection_patch);
     }
@@ -238,13 +224,6 @@ pub(super) fn insert_presence(
     state.presence = Some(presence);
 }
 
-fn normalize_current_user_presence(merged: &mut Map<String, Value>, is_online: bool) {
-    let state_bucket = if is_online { "online" } else { "active" };
-    merged.insert("state".into(), Value::String(state_bucket.into()));
-    merged.insert("stateBucket".into(), Value::String(state_bucket.into()));
-    merged.remove("pendingOffline");
-}
-
 fn copy_current_user_presence_patch(
     snapshot: &RealtimeCurrentUserStateSnapshot,
     projection_patch: &mut Map<String, Value>,
@@ -257,7 +236,6 @@ fn copy_current_user_presence_patch(
             projection_patch.remove(*field);
         }
     }
-    projection_patch.remove("pendingOffline");
 }
 
 pub(super) fn merge_preserved_remote_presence(

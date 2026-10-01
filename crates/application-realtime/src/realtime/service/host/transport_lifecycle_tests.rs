@@ -605,6 +605,37 @@ fn replacement_session_does_not_inherit_friend_location_times() -> Result<()> {
 }
 
 #[test]
+fn pending_baseline_snapshot_carries_presence_views_instead_of_raw_fields() -> Result<()> {
+    let (_dir, runtime, active_session) =
+        runtime_with_active_session("pending-baseline-strips-presence")?;
+    runtime
+        .runtime()
+        .state
+        .lock()
+        .unwrap()
+        .connection
+        .active_context = None;
+
+    let watermark = runtime.runtime().capture_friend_baseline_watermark()?;
+    let outcome = runtime.runtime().sync_friend_snapshot_with_watermark(
+        active_session,
+        watermark,
+        online_friend_roster(),
+        FriendStatusVerdicts::default(),
+    )?;
+
+    let snapshot = outcome.snapshot.expect("pending baseline snapshot");
+    let friend = &snapshot.friends_by_id["usr_friend"];
+    assert!(friend.state.is_empty());
+    assert!(friend.location.is_empty());
+    assert!(matches!(
+        snapshot.presence_by_id["usr_friend"].view,
+        PresenceView::Online { .. }
+    ));
+    Ok(())
+}
+
+#[test]
 fn pending_baseline_start_emits_initial_location_time_snapshot() -> Result<()> {
     let (_dir, runtime, active_session) =
         runtime_with_active_session("pending-baseline-location-time")?;

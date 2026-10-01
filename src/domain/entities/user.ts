@@ -133,7 +133,6 @@ export type UserProfileEntity = EntityRecord & {
     queuedInstance?: string | null;
     receiveMobileInvitations?: boolean;
     state?: string;
-    stateBucket?: string;
     status?: string;
     statusDescription?: string;
     statusFirstTime?: boolean;

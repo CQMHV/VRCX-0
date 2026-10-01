@@ -9,7 +9,7 @@ use vrcx_0_application_core::{Error, Result};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
 
-use crate::realtime::friends::{baseline_presence_entry, player_joining_feed_entry};
+use crate::realtime::friends::{baseline_friend_view, player_joining_feed_entry};
 use crate::realtime::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendBaselineSyncOutcome,
     FriendProjection, FriendWake, RealtimeFriendOutput, RealtimeFriendSnapshot,
@@ -190,17 +190,21 @@ impl RealtimeHostRuntime {
                         friend_count,
                     }));
                 }
+                let (snapshot_friends_by_id, presence_by_id) = friends_by_id
+                    .iter()
+                    .map(|(user_id, record)| {
+                        let (record, presence) = baseline_friend_view(record);
+                        ((user_id.clone(), record), (user_id.clone(), presence))
+                    })
+                    .unzip();
                 let pending_snapshot = RealtimeFriendSnapshot {
                     current_user_id: requested_session.user_id.clone(),
                     endpoint: requested_session.endpoint.clone(),
                     websocket: requested_session.websocket.clone(),
                     generation: 0,
                     baseline_revision: 0,
-                    presence_by_id: friends_by_id
-                        .iter()
-                        .map(|(user_id, record)| (user_id.clone(), baseline_presence_entry(record)))
-                        .collect(),
-                    friends_by_id: friends_by_id.clone(),
+                    presence_by_id,
+                    friends_by_id: snapshot_friends_by_id,
                 };
                 state.friend_baseline.pending = Some(PendingFriendBaseline {
                     session: requested_session.clone(),

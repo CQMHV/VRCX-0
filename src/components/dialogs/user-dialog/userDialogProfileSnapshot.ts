@@ -46,7 +46,6 @@ const LOCAL_SNAPSHOT_REFRESH_FIELDS = [
     'status',
     'statusDescription',
     'state',
-    'stateBucket',
     'location',
     '$location',
     '$location_at',

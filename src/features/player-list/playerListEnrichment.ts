@@ -108,8 +108,6 @@ const PROFILE_PRESENCE_REFRESH_FIELDS = [
     '$presence',
     'status',
     'statusDescription',
-    'state',
-    'stateBucket',
     'location',
     '$location',
     '$location_at',

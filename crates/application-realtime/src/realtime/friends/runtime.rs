@@ -10,7 +10,7 @@ use super::super::{RealtimeFriendApplyResult, RealtimeFriendOutput};
 
 mod event_patch;
 mod persistence;
-mod presence_keys;
+mod presence_split;
 mod state;
 mod utils;
 
@@ -39,5 +39,6 @@ mod ws_trace_replay_test;
 
 pub use event_patch::is_friend_event_type;
 pub(crate) use persistence::{player_joining_feed_entry, trust_level_feed_entry};
+pub(crate) use presence_split::baseline_friend_view;
 pub use state::RealtimeFriendsRuntime;
 pub(crate) use state::SyntheticFriendEvent;

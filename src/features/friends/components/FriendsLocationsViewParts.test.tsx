@@ -187,16 +187,24 @@ describe('FriendsLocationCardItem', () => {
                 ])
             );
             expect(card?.getAttribute('data-timer-location')).toBe(
-                remoteLocation === 'offline' ? '' : 'wrld_remote:2'
+                remoteLocation === 'offline' ? 'offline' : 'wrld_remote:2'
             );
             expect(card?.getAttribute('data-source')).toBe('realtime');
         }
     );
 
-    it('passes the resolved room to the shared card timer', () => {
+    it('passes the stay clock room to the shared card timer', () => {
         const location = 'wrld_test:123';
         const friend = friendAt(location);
-        const html = renderToStaticMarkup(
+        useFriendLocationTimeStore.getState().replaceSnapshot([
+            {
+                userId: friend.id,
+                location,
+                sinceMs: 1_000,
+                source: 'realtime'
+            }
+        ]);
+        const { container } = render(
             <FriendsLocationCardItem
                 section={{
                     key: `instance:${location}`,
@@ -223,14 +231,15 @@ describe('FriendsLocationCardItem', () => {
             />
         );
 
-        expect(html).toContain('data-timer-location="wrld_test:123"');
-        expect(html).toContain('data-can-use-location="true"');
-        expect(html).toContain('data-can-send-invite="true"');
-        expect(html).toContain('data-can-request-invite="true"');
-        expect(html).toContain('data-can-boop="true"');
+        const card = container.querySelector('[data-timer-location]');
+        expect(card?.getAttribute('data-timer-location')).toBe(location);
+        expect(card?.getAttribute('data-can-use-location')).toBe('true');
+        expect(card?.getAttribute('data-can-send-invite')).toBe('true');
+        expect(card?.getAttribute('data-can-request-invite')).toBe('true');
+        expect(card?.getAttribute('data-can-boop')).toBe('true');
     });
 
-    it('uses the section room for an online friend with a hidden presence location', () => {
+    it('withholds the location for an online friend with a hidden presence location', () => {
         const location = 'wrld_test:123';
         const friend = friendAt('private');
         const html = renderToStaticMarkup(
@@ -260,11 +269,10 @@ describe('FriendsLocationCardItem', () => {
             />
         );
 
-        expect(html).toContain('data-timer-location="wrld_test:123"');
         expect(html).toContain('data-can-use-location="false"');
     });
 
-    it('keeps the section timer but withholds invite requests while the friend is pending offline', () => {
+    it('withholds invite requests while the friend is pending offline', () => {
         const location = 'wrld_test:123';
         const friend = friendAt(pendingPresence('private'));
         const html = renderToStaticMarkup(
@@ -294,7 +302,6 @@ describe('FriendsLocationCardItem', () => {
             />
         );
 
-        expect(html).toContain('data-timer-location="wrld_test:123"');
         expect(html).toContain('data-can-request-invite="false"');
     });
 

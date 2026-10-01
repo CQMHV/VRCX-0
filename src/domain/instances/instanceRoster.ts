@@ -21,8 +21,6 @@ const INSTANCE_USER_PRESENCE_FIELDS = [
     'travelingToWorld',
     'travelingToInstance',
     '$travelingToLocation',
-    'state',
-    'stateBucket',
     'status',
     'statusDescription'
 ];
