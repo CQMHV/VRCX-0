@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use vrcx_0_core::derived_keys;
 
 use serde_json::Value;
+use vrcx_0_core::friends::StateBucket;
 use vrcx_0_core::trust::{compute_trust_level, compute_user_platform};
 
 use super::super::{
@@ -15,7 +16,7 @@ use super::profile::{
 
 fn normalize_friend_entry(
     friend: Option<Value>,
-    state_bucket: &str,
+    state_bucket: StateBucket,
     existing_row: &Value,
 ) -> Value {
     let user_id = object_field_normalized(existing_row, &["userId", "user_id"]);
@@ -95,7 +96,7 @@ fn normalize_friend_entry(
     };
     object.insert("displayName".into(), Value::String(display_name));
     // location never participates in bucketing; the /auth/user list bucket is the only authority.
-    object.insert("state".into(), Value::String(state_bucket.to_string()));
+    object.insert("state".into(), state_bucket.as_str().into());
     object.insert(
         derived_keys::FRIEND_NUMBER.into(),
         number_value(friend_number),
@@ -127,7 +128,7 @@ fn normalize_friend_entry(
 
 pub(super) fn build_fast_roster_records(
     expected_ids: &[String],
-    state_by_id: &HashMap<String, String>,
+    state_by_id: &HashMap<String, StateBucket>,
     mut fetched_friends_by_id: HashMap<String, RemoteFriendProfile>,
 ) -> Map<String, Value> {
     let friend_order_numbers = expected_ids
@@ -150,8 +151,8 @@ pub(super) fn build_fast_roster_records(
         });
         let state_bucket = state_by_id
             .get(friend_id)
-            .map(String::as_str)
-            .unwrap_or("offline");
+            .copied()
+            .unwrap_or(StateBucket::Offline);
         let mut normalized_friend = normalize_friend_entry(friend, state_bucket, &existing_row);
         if let Some(object) = normalized_friend.as_object_mut() {
             object.insert(
@@ -169,10 +170,10 @@ pub(super) fn build_fast_roster_records(
     friends_by_id
 }
 
-pub(super) fn infer_state_from_platform(platform: &str) -> &'static str {
+pub(super) fn infer_state_from_platform(platform: &str) -> StateBucket {
     match platform {
-        "" | "offline" => "offline",
-        "web" => "active",
-        _ => "online",
+        "" | "offline" => StateBucket::Offline,
+        "web" => StateBucket::Active,
+        _ => StateBucket::Online,
     }
 }

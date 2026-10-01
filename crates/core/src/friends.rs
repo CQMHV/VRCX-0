@@ -257,10 +257,6 @@ pub fn normalize_user_id(value: &str) -> String {
     value.trim().to_string()
 }
 
-pub fn normalize_state_bucket(value: &str) -> Option<String> {
-    StateBucket::normalize(value).map(|bucket| bucket.as_str().to_string())
-}
-
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, specta::Type)]
 pub enum UserStatus {
     #[serde(rename = "active")]

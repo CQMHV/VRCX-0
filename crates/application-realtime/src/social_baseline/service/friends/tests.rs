@@ -1,3 +1,4 @@
+use vrcx_0_core::friends::StateBucket;
 use vrcx_0_core::presence::{Place, PresenceEntry, PresencePlace, PresenceView};
 
 use super::*;
@@ -11,10 +12,10 @@ fn collect_suspicious_only_targets_mismatched_or_traveling_friends() {
         "usr_offline".to_string(),
     ];
     let state_by_id = HashMap::from([
-        ("usr_online".to_string(), "online".to_string()),
-        ("usr_active_pc".to_string(), "active".to_string()),
-        ("usr_traveling".to_string(), "online".to_string()),
-        ("usr_offline".to_string(), "offline".to_string()),
+        ("usr_online".to_string(), StateBucket::Online),
+        ("usr_active_pc".to_string(), StateBucket::Active),
+        ("usr_traveling".to_string(), StateBucket::Online),
+        ("usr_offline".to_string(), StateBucket::Offline),
     ]);
     let profile = |id: &str, platform: &str, location: &str| {
         RemoteFriendProfile::from_raw(
@@ -54,7 +55,7 @@ fn collect_suspicious_only_targets_mismatched_or_traveling_friends() {
 #[test]
 fn collect_suspicious_flags_stale_online_friend() {
     let expected_ids = vec!["usr_stale".to_string()];
-    let state_by_id = HashMap::from([("usr_stale".to_string(), "online".to_string())]);
+    let state_by_id = HashMap::from([("usr_stale".to_string(), StateBucket::Online)]);
     let fetched_friends_by_id = HashMap::from([(
         "usr_stale".to_string(),
         RemoteFriendProfile::from_raw(
@@ -81,21 +82,21 @@ fn insert_fetched_friend_collects_profile_and_prefers_online_source() {
         &mut ordered,
         &mut seen,
         json!({ "id": "usr_friend", "state": "online", "location": "offline" }),
-        Some("offline"),
+        Some(StateBucket::Offline),
     );
     insert_fetched_friend(
         &mut fetched_friends_by_id,
         &mut ordered,
         &mut seen,
         json!({ "id": "usr_friend", "location": "wrld_live:123" }),
-        Some("online"),
+        Some(StateBucket::Online),
     );
 
     assert_eq!(ordered, vec!["usr_friend".to_string()]);
     let profile = fetched_friends_by_id
         .get("usr_friend")
         .expect("inserted friend profile");
-    assert_eq!(profile.source_state_bucket.as_deref(), Some("online"));
+    assert_eq!(profile.source_state_bucket, Some(StateBucket::Online));
     assert_eq!(
         object_field_string(&profile.raw, &["location"]),
         "wrld_live:123"
@@ -106,8 +107,8 @@ fn insert_fetched_friend_collects_profile_and_prefers_online_source() {
 fn fast_roster_records_use_current_user_ids_and_remote_profiles_without_friend_log() {
     let expected_ids = vec!["usr_online".to_string(), "usr_missing".to_string()];
     let state_by_id = HashMap::from([
-        ("usr_online".to_string(), "online".to_string()),
-        ("usr_missing".to_string(), "offline".to_string()),
+        ("usr_online".to_string(), StateBucket::Online),
+        ("usr_missing".to_string(), StateBucket::Offline),
     ]);
     let fetched_friends_by_id = HashMap::from([(
         "usr_online".to_string(),
@@ -119,7 +120,7 @@ fn fast_roster_records_use_current_user_ids_and_remote_profiles_without_friend_l
                 "platform": "standalonewindows",
                 "tags": ["system_trust_known"]
             }),
-            Some("online"),
+            Some(StateBucket::Online),
         )
         .expect("valid profile"),
     )]);
@@ -155,7 +156,7 @@ fn fast_roster_records_use_current_user_ids_and_remote_profiles_without_friend_l
 #[test]
 fn fast_roster_records_preserve_open_remote_profile_fields() {
     let expected_ids = vec!["usr_future".to_string()];
-    let state_by_id = HashMap::from([("usr_future".to_string(), "online".to_string())]);
+    let state_by_id = HashMap::from([("usr_future".to_string(), StateBucket::Online)]);
     let fetched_friends_by_id = HashMap::from([(
         "usr_future".to_string(),
         RemoteFriendProfile::from_raw(
@@ -167,7 +168,7 @@ fn fast_roster_records_preserve_open_remote_profile_fields() {
                     "nested": [1, { "unknown": true }]
                 }
             }),
-            Some("online"),
+            Some(StateBucket::Online),
         )
         .expect("valid profile"),
     )]);
@@ -188,7 +189,7 @@ fn fast_roster_records_preserve_open_remote_profile_fields() {
 #[test]
 fn placeholder_friend_uses_realtime_list_bucket() {
     let expected_ids = vec!["usr_stale".to_string()];
-    let state_by_id = HashMap::from([("usr_stale".to_string(), "online".to_string())]);
+    let state_by_id = HashMap::from([("usr_stale".to_string(), StateBucket::Online)]);
     let fetched_friends_by_id = HashMap::new();
 
     let friends_by_id =
@@ -207,7 +208,7 @@ fn placeholder_friend_uses_realtime_list_bucket() {
 #[test]
 fn placeholder_active_friend_is_kept_active() {
     let expected_ids = vec!["usr_active".to_string()];
-    let state_by_id = HashMap::from([("usr_active".to_string(), "active".to_string())]);
+    let state_by_id = HashMap::from([("usr_active".to_string(), StateBucket::Active)]);
     let fetched_friends_by_id = HashMap::new();
 
     let friends_by_id =
@@ -222,7 +223,7 @@ fn placeholder_active_friend_is_kept_active() {
 #[test]
 fn online_friend_in_private_world_stays_online() {
     let expected_ids = vec!["usr_priv".to_string()];
-    let state_by_id = HashMap::from([("usr_priv".to_string(), "online".to_string())]);
+    let state_by_id = HashMap::from([("usr_priv".to_string(), StateBucket::Online)]);
     let fetched_friends_by_id = HashMap::from([(
         "usr_priv".to_string(),
         RemoteFriendProfile::from_raw(
@@ -232,7 +233,7 @@ fn online_friend_in_private_world_stays_online() {
                 "location": "private",
                 "status": "ask me"
             }),
-            Some("online"),
+            Some(StateBucket::Online),
         )
         .expect("valid profile"),
     )]);
@@ -249,7 +250,7 @@ fn online_friend_in_private_world_stays_online() {
 #[test]
 fn list_bucket_decides_state_not_location() {
     let expected_ids = vec!["usr_inworld".to_string()];
-    let state_by_id = HashMap::from([("usr_inworld".to_string(), "offline".to_string())]);
+    let state_by_id = HashMap::from([("usr_inworld".to_string(), StateBucket::Offline)]);
     let fetched_friends_by_id = HashMap::from([(
         "usr_inworld".to_string(),
         RemoteFriendProfile::from_raw(
@@ -259,7 +260,7 @@ fn list_bucket_decides_state_not_location() {
                 "location": "wrld_1b754e93:1",
                 "status": "join me"
             }),
-            Some("offline"),
+            Some(StateBucket::Offline),
         )
         .expect("valid profile"),
     )]);
@@ -278,7 +279,7 @@ fn list_bucket_decides_state_not_location() {
 #[test]
 fn active_list_bucket_ignores_location() {
     let expected_ids = vec!["usr_active_inworld".to_string()];
-    let state_by_id = HashMap::from([("usr_active_inworld".to_string(), "active".to_string())]);
+    let state_by_id = HashMap::from([("usr_active_inworld".to_string(), StateBucket::Active)]);
     let fetched_friends_by_id = HashMap::from([(
         "usr_active_inworld".to_string(),
         RemoteFriendProfile::from_raw(
@@ -288,7 +289,7 @@ fn active_list_bucket_ignores_location() {
                 "location": "wrld_929c02a8:1",
                 "status": "join me"
             }),
-            Some("active"),
+            Some(StateBucket::Active),
         )
         .expect("valid profile"),
     )]);

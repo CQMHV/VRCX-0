@@ -6,7 +6,7 @@ use vrcx_0_application_core::{Error, Result};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_contracts::friend_log::{FriendLogCurrentEntryInput, FriendLogReplaceOptionsInput};
 use vrcx_0_contracts::realtime::{FriendLogDelete, FriendLogUpsert, RealtimePersistenceBatch};
-use vrcx_0_core::friends::{FriendBaselineEntry, FriendRecord};
+use vrcx_0_core::friends::{FriendBaselineEntry, FriendRecord, StateBucket};
 use vrcx_0_core::trust::{trust_level_changed, trust_level_differs};
 
 use crate::realtime::friends::trust_level_feed_entry;
@@ -15,14 +15,13 @@ use crate::realtime::RealtimeFriendSnapshot;
 use super::super::{
     auth_scope_matches, execute_vrchat_json_request, extend_unique,
     fetch_friend_statuses_concurrent, normalize_text, object_field_string,
-    refetch_users_concurrent, stale_friend_output, value_as_string, CurrentUserSnapshotView,
-    FriendBaselineSyncOutcome, Ordering, RawJson, SocialBaselineDeps,
-    SocialFriendRosterBaselineInput, SocialFriendRosterBaselineOutput,
+    refetch_users_concurrent, stale_friend_output, value_as_string, FriendBaselineSyncOutcome,
+    Ordering, RawJson, SocialBaselineDeps, SocialFriendRosterBaselineInput,
+    SocialFriendRosterBaselineOutput,
 };
+use super::current_user_snapshot::CurrentUserSnapshotView;
 use super::entry::{build_fast_roster_records, infer_state_from_platform};
-use super::profile::{
-    fetch_all_friends, insert_fetched_friend, normalize_state_bucket, RemoteFriendProfile,
-};
+use super::profile::{fetch_all_friends, insert_fetched_friend, RemoteFriendProfile};
 use vrcx_0_core::OwnerId;
 
 #[derive(Clone, Debug, Default)]
@@ -96,7 +95,7 @@ pub(crate) fn friend_log_relationship_candidates(
 
 pub(super) fn collect_suspicious_friend_ids(
     expected_ids: &[String],
-    state_by_id: &HashMap<String, String>,
+    state_by_id: &HashMap<String, StateBucket>,
     fetched_friends_by_id: &HashMap<String, RemoteFriendProfile>,
 ) -> Vec<String> {
     let mut suspicious = Vec::new();
@@ -106,8 +105,8 @@ pub(super) fn collect_suspicious_friend_ids(
         };
         let list_state = state_by_id
             .get(friend_id)
-            .map(String::as_str)
-            .unwrap_or("offline");
+            .copied()
+            .unwrap_or(StateBucket::Offline);
         let inferred = infer_state_from_platform(&object_field_string(&profile.raw, &["platform"]));
         let location = object_field_string(&profile.raw, &["location"]);
         if inferred != list_state || location == "traveling" {
@@ -180,7 +179,7 @@ pub(crate) async fn build_friend_roster_baseline(
             &mut fetched_friend_ids_ordered,
             &mut fetched_friend_ids_seen,
             friend,
-            Some("online"),
+            Some(StateBucket::Online),
         );
     }
     for friend in offline_friends {
@@ -189,7 +188,7 @@ pub(crate) async fn build_friend_roster_baseline(
             &mut fetched_friend_ids_ordered,
             &mut fetched_friend_ids_seen,
             friend,
-            Some("offline"),
+            Some(StateBucket::Offline),
         );
     }
 
@@ -212,16 +211,16 @@ pub(crate) async fn build_friend_roster_baseline(
     if !refetch_ids.is_empty() {
         let repaired = refetch_users_concurrent(&deps, &input.endpoint, refetch_ids).await;
         for (repaired_id, user) in repaired {
-            let repaired_bucket = normalize_state_bucket(&object_field_string(&user, &["state"]));
+            let repaired_bucket = StateBucket::normalize(&object_field_string(&user, &["state"]));
             let Some(mut profile) = RemoteFriendProfile::from_raw(user, None) else {
                 continue;
             };
             profile.source_state_bucket = fetched_friends_by_id
                 .get(&repaired_id)
-                .and_then(|existing| existing.source_state_bucket.clone());
+                .and_then(|existing| existing.source_state_bucket);
             fetched_friends_by_id.insert(repaired_id.clone(), profile);
-            if !repaired_bucket.is_empty() {
-                state_by_id.insert(repaired_id, repaired_bucket);
+            if let Some(bucket) = repaired_bucket {
+                state_by_id.insert(repaired_id, bucket);
             }
         }
     }
