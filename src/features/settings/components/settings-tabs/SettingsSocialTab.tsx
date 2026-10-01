@@ -100,32 +100,25 @@ export function SettingsSocialTab() {
     const knownUsers = useKnownUserOptions({
         enabled: hiddenUserPickerOpen,
         endpoint,
-        excludeUserId: currentUserId
+        excludeUserId: currentUserId,
+        query: hiddenUserSearch
     });
     const hiddenUserFacts = useKnownUserFacts(feedHiddenUsers, { endpoint });
-    const hiddenUserOptions = useMemo(() => {
-        const query = hiddenUserSearch.trim().toLowerCase();
-        return knownUsers
-            .map((user): UserOption => ({
-                value: normalizeUserId(user.id),
-                label:
-                    knownUserName(user) ||
-                    t('view.settings.social.hidden_feed.unknown_friend'),
-                user
-            }))
-            .filter((option) => {
-                if (!option.value || hiddenUserIds.has(option.value)) {
-                    return false;
-                }
-                if (!query) {
-                    return true;
-                }
-                return (
-                    option.label.toLowerCase().includes(query) ||
-                    option.value.toLowerCase().includes(query)
-                );
-            });
-    }, [hiddenUserIds, hiddenUserSearch, knownUsers, t]);
+    const hiddenUserOptions = useMemo(
+        () =>
+            knownUsers
+                .map((user): UserOption => ({
+                    value: normalizeUserId(user.id),
+                    label:
+                        knownUserName(user) ||
+                        t('view.settings.social.hidden_feed.unknown_friend'),
+                    user
+                }))
+                .filter(
+                    (option) => option.value && !hiddenUserIds.has(option.value)
+                ),
+        [hiddenUserIds, knownUsers, t]
+    );
     const hiddenFeedUserOptions = useMemo(
         () =>
             feedHiddenUsers.map((userId): UserOption => {
