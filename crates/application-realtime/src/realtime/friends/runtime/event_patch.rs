@@ -11,8 +11,8 @@ use vrcx_0_core::OwnerId;
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
 use crate::realtime::friends::presence::{
-    dwell_place, presence_feed, presence_view, reduce, Claim, Evidence, Phase, Source,
-    WsPresenceEvent,
+    dwell_place, presence_feed, presence_view, reduce, wake, Claim, Evidence, FriendEventKind,
+    Phase, Source,
 };
 use crate::realtime::{FriendIconChange, FriendWake, RealtimeFriendOutput};
 
@@ -30,76 +30,18 @@ mod record_transition;
 use patch_builders::{event_user_id, event_user_patch, normalize_patch_trust};
 pub(super) use record_transition::{merge_profile, record_string};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(super) enum FriendEventKind {
-    Add,
-    Delete,
-    Update,
-    Online,
-    Active,
-    Offline,
-    Location,
-}
-
-impl FriendEventKind {
-    pub(super) fn from_ws_event_kind(event_kind: &RealtimeWsEventKind) -> Option<Self> {
-        match event_kind {
-            RealtimeWsEventKind::FriendAdd => Some(Self::Add),
-            RealtimeWsEventKind::FriendDelete => Some(Self::Delete),
-            RealtimeWsEventKind::FriendUpdate => Some(Self::Update),
-            RealtimeWsEventKind::FriendOnline => Some(Self::Online),
-            RealtimeWsEventKind::FriendActive => Some(Self::Active),
-            RealtimeWsEventKind::FriendOffline => Some(Self::Offline),
-            RealtimeWsEventKind::FriendLocation => Some(Self::Location),
-            _ => None,
-        }
-    }
-}
-
 pub fn is_friend_event_type(message_type: &str) -> bool {
     RealtimeWsEventKind::from_name(message_type).is_friend()
 }
 
-pub(super) fn apply_friend_event(
-    state: &mut RealtimeFriendState,
-    event_kind: FriendEventKind,
-    content: &Value,
-    now: &EventTime,
-) -> Option<RealtimeFriendOutput> {
-    apply_friend_event_with_source(state, event_kind, content, now, Source::Ws)
-}
-
-pub(super) fn apply_refetched_friend_profile_event(
-    state: &mut RealtimeFriendState,
-    content: &Value,
-    now: &EventTime,
-) -> Option<RealtimeFriendOutput> {
-    apply_friend_event_with_source(state, FriendEventKind::Update, content, now, Source::Api)
-}
-
-pub(super) fn apply_trusted_friend_add_event(
-    state: &mut RealtimeFriendState,
-    content: &Value,
-    now: &EventTime,
-) -> Option<RealtimeFriendOutput> {
-    apply_friend_event_with_source(
-        state,
-        FriendEventKind::Add,
-        content,
-        now,
-        Source::TrustedAdd,
-    )
-}
-
-pub(super) fn apply_presence_evidence(
+pub(super) fn apply_wake(
     state: &mut RealtimeFriendState,
     user_id: &str,
-    evidence: &Evidence,
     now: &EventTime,
 ) -> Option<RealtimeFriendOutput> {
     let mut output = new_output(state)?;
     let previous = state.entry(user_id)?.clone();
-    let step = reduce(&previous.presence, evidence, now.timestamp_ms);
+    let step = wake(&previous.presence, now.timestamp_ms);
     if step.next == previous.presence && step.wake_at_ms.is_none() {
         return None;
     }
@@ -129,7 +71,7 @@ pub(super) fn apply_presence_evidence(
     Some(finish(output))
 }
 
-fn apply_friend_event_with_source(
+pub(super) fn apply_friend_event(
     state: &mut RealtimeFriendState,
     event_kind: FriendEventKind,
     content: &Value,
@@ -162,16 +104,9 @@ fn finish(mut output: RealtimeFriendOutput) -> RealtimeFriendOutput {
 
 fn evidence_for(event_kind: FriendEventKind, content: &Value, source: Source) -> Evidence {
     let user = content.get("user").unwrap_or(&Value::Null);
-    match (event_kind, source) {
-        (_, Source::Api | Source::TrustedAdd) => Evidence::from_profile(source, user),
-        (FriendEventKind::Online, _) => Evidence::from_ws(WsPresenceEvent::Online, content),
-        (FriendEventKind::Active, _) => Evidence::from_ws(WsPresenceEvent::Active, content),
-        (FriendEventKind::Offline, _) => Evidence::from_ws(WsPresenceEvent::Offline, content),
-        (FriendEventKind::Location, _) => Evidence::from_ws(WsPresenceEvent::Location, content),
-        (FriendEventKind::Update, _) => Evidence::from_ws(WsPresenceEvent::Update, content),
-        (FriendEventKind::Add | FriendEventKind::Delete, _) => {
-            Evidence::new(Source::Ws, Claim::Nothing)
-        }
+    match source {
+        Source::Api | Source::TrustedAdd => Evidence::from_profile(source, user),
+        _ => Evidence::from_ws(event_kind, content),
     }
 }
 

@@ -17,12 +17,17 @@ pub(crate) struct Step {
 }
 
 pub(crate) fn reduce(prev: &Phase, evidence: &Evidence, now_ms: i64) -> Step {
-    let next = match evidence.source {
-        Source::Timer => wake(prev, now_ms),
-        _ => observe(prev, evidence, now_ms),
-    };
-    let wake_at_ms = next.wake_at().filter(|at| prev.wake_at() != Some(*at));
+    let next = observe(prev, evidence, now_ms);
     let refetch = evidence.refetch_hint || needs_refetch(evidence, &next);
+    step(prev, next, refetch)
+}
+
+pub(crate) fn wake(prev: &Phase, now_ms: i64) -> Step {
+    step(prev, fire_due(prev, now_ms), false)
+}
+
+fn step(prev: &Phase, next: Phase, refetch: bool) -> Step {
+    let wake_at_ms = next.wake_at().filter(|at| prev.wake_at() != Some(*at));
     Step {
         next,
         wake_at_ms,
@@ -139,7 +144,7 @@ fn leave(
     }
 }
 
-fn wake(prev: &Phase, now_ms: i64) -> Phase {
+fn fire_due(prev: &Phase, now_ms: i64) -> Phase {
     match prev {
         Phase::PendingOffline {
             held,

@@ -14,7 +14,7 @@ use vrcx_0_core::OwnerId;
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
 use crate::realtime::friends::presence::{
-    dwell_place, presence_feed, presence_view, reduce, Evidence, Phase,
+    dwell_place, presence_feed, presence_view, reduce, FriendEventKind, Phase, Source,
 };
 use crate::realtime::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendWake, RealtimeFriendApplyResult,
@@ -22,10 +22,7 @@ use crate::realtime::{
     RealtimeFriendSnapshot,
 };
 
-use super::event_patch::{
-    apply_friend_event, apply_presence_evidence, apply_refetched_friend_profile_event,
-    apply_trusted_friend_add_event, FriendEventKind,
-};
+use super::event_patch::{apply_friend_event, apply_wake};
 use super::presence_split::split_baseline_record;
 use super::utils::EventTime;
 
@@ -62,12 +59,6 @@ pub(crate) struct FriendBaselineEffects {
 pub(crate) enum SyntheticFriendEvent {
     Delete { user_id: String },
     TrustedAdd { user_id: String, profile: Value },
-}
-
-#[derive(Clone, Copy)]
-enum FriendEventTrust {
-    Untrusted,
-    TrustedFriendAdd,
 }
 
 struct ExpectedFriendScope<'a> {
@@ -477,13 +468,7 @@ impl RealtimeFriendsRuntime {
             return RealtimeFriendApplyResult::Ignored;
         };
         let content = payload.json.get("content").unwrap_or(&Value::Null);
-        self.apply_friend_content(
-            event_kind,
-            content,
-            &payload.received_at,
-            None,
-            FriendEventTrust::Untrusted,
-        )
+        self.apply_friend_content(event_kind, content, &payload.received_at, None, Source::Ws)
     }
 
     pub(crate) fn apply_scoped_synthetic_event(
@@ -493,16 +478,16 @@ impl RealtimeFriendsRuntime {
         event: SyntheticFriendEvent,
         received_at: &str,
     ) -> RealtimeFriendApplyResult {
-        let (event_kind, content, trust) = match event {
+        let (event_kind, content, source) = match event {
             SyntheticFriendEvent::Delete { user_id } => (
                 FriendEventKind::Delete,
                 json!({ "userId": user_id }),
-                FriendEventTrust::Untrusted,
+                Source::Ws,
             ),
             SyntheticFriendEvent::TrustedAdd { user_id, profile } => (
                 FriendEventKind::Add,
                 json!({ "userId": user_id, "user": profile }),
-                FriendEventTrust::TrustedFriendAdd,
+                Source::TrustedAdd,
             ),
         };
         self.apply_friend_content(
@@ -513,7 +498,7 @@ impl RealtimeFriendsRuntime {
                 owner_user_id: expected_owner_user_id,
                 endpoint: expected_endpoint,
             }),
-            trust,
+            source,
         )
     }
 
@@ -523,7 +508,7 @@ impl RealtimeFriendsRuntime {
         content: &Value,
         received_at: &str,
         expected_scope: Option<ExpectedFriendScope<'_>>,
-        trust: FriendEventTrust,
+        source: Source,
     ) -> RealtimeFriendApplyResult {
         let now = EventTime::from_received_at(received_at);
         let mut state = self.lock_state();
@@ -537,14 +522,7 @@ impl RealtimeFriendsRuntime {
         }) {
             return RealtimeFriendApplyResult::MissingBaseline;
         }
-        let output = match trust {
-            FriendEventTrust::TrustedFriendAdd => {
-                apply_trusted_friend_add_event(&mut state, content, &now)
-            }
-            FriendEventTrust::Untrusted => {
-                apply_friend_event(&mut state, event_kind, content, &now)
-            }
-        };
+        let output = apply_friend_event(&mut state, event_kind, content, &now, source);
         finish_output(&mut state, output)
     }
 
@@ -570,14 +548,20 @@ impl RealtimeFriendsRuntime {
         }
         let content = json!({ "userId": user_id, "user": profile });
         let now = EventTime::from_received_at(received_at);
-        let output = apply_refetched_friend_profile_event(&mut state, &content, &now);
+        let output = apply_friend_event(
+            &mut state,
+            FriendEventKind::Update,
+            &content,
+            &now,
+            Source::Api,
+        );
         finish_output(&mut state, output)
     }
 
     pub fn wake(&self, user_id: &str, now_iso: &str) -> Option<RealtimeFriendOutput> {
         let mut state = self.lock_state();
         let now = EventTime::from_received_at(now_iso);
-        let mut output = apply_presence_evidence(&mut state, user_id, &Evidence::wake(), &now)?;
+        let mut output = apply_wake(&mut state, user_id, &now)?;
         stamp_output_revs(&mut state, &mut output);
         Some(output)
     }

@@ -2,11 +2,11 @@ use serde_json::json;
 use vrcx_0_core::friends::FriendRecord;
 use vrcx_0_core::presence::{LeaveTarget, Place, PresenceView};
 
-use super::evidence::{Claim, Evidence, Source, WsPresenceEvent};
+use super::evidence::{Claim, Evidence, FriendEventKind, Source};
 use super::feed::presence_feed;
 use super::model::{OnlineState, Phase, Stay};
 use super::reduce::{
-    reduce, Step, BASELINE_CONFLICT_WINDOW_MS, FLAP_WINDOW_MS, PENDING_OFFLINE_DELAY_MS,
+    reduce, wake, Step, BASELINE_CONFLICT_WINDOW_MS, FLAP_WINDOW_MS, PENDING_OFFLINE_DELAY_MS,
 };
 use super::view::presence_view;
 
@@ -377,10 +377,10 @@ fn timer_finalizes_pending_only_at_its_deadline() {
         LeaveTarget::Offline,
         T + 100,
     );
-    let early = reduce(&prev, &Evidence::wake(), T + 99);
+    let early = wake(&prev, T + 99);
     assert_eq!(early.next, prev);
 
-    let due = reduce(&prev, &Evidence::wake(), T + 100);
+    let due = wake(&prev, T + 100);
     assert_eq!(
         due.next,
         Phase::Offline {
@@ -393,7 +393,7 @@ fn timer_finalizes_pending_only_at_its_deadline() {
 
     let to_active = pending(online(inst("wrld_a:1"), T), LeaveTarget::Active, T + 100);
     assert_eq!(
-        reduce(&to_active, &Evidence::wake(), T + 100).next,
+        wake(&to_active, T + 100).next,
         Phase::Active {
             changed_ms: Some(T + 100),
             platform: PLATFORM.into()
@@ -626,13 +626,9 @@ fn alternating_between_two_instances_freezes_the_place_on_the_third_hop() {
     assert!(feed_types(&fourth.next, &fifth, T + 180_000).is_empty());
     assert_eq!(fifth.wake_at_ms, Some(T + 180_000 + FLAP_WINDOW_MS));
 
-    let quiet = reduce(
-        &fifth.next,
-        &Evidence::wake(),
-        T + 180_000 + FLAP_WINDOW_MS - 1,
-    );
+    let quiet = wake(&fifth.next, T + 180_000 + FLAP_WINDOW_MS - 1);
     assert_eq!(quiet.next, fifth.next);
-    let settled = reduce(&fifth.next, &Evidence::wake(), T + 180_000 + FLAP_WINDOW_MS);
+    let settled = wake(&fifth.next, T + 180_000 + FLAP_WINDOW_MS);
     assert_eq!(place_of(&settled.next), &inst("wrld_b:2"));
     assert_eq!(settled.next.online_state().unwrap().since_ms, T + 180_000);
     assert!(settled.next.online_state().unwrap().flap.is_none());
@@ -683,16 +679,16 @@ fn location_events_map_to_claims_by_identity_and_location_proof() {
             "user": { "id": "usr_friend", "location": "wrld_stale:9" }
         })
     };
-    let online_event = Evidence::from_ws(WsPresenceEvent::Location, &with_user("wrld_a:1"));
+    let online_event = Evidence::from_ws(FriendEventKind::Location, &with_user("wrld_a:1"));
     assert_eq!(online_event.claim, seen_online(inst("wrld_a:1")));
     assert!(!online_event.refetch_hint);
 
-    let offline_event = Evidence::from_ws(WsPresenceEvent::Location, &with_user("offline"));
+    let offline_event = Evidence::from_ws(FriendEventKind::Location, &with_user("offline"));
     assert_eq!(offline_event.claim, Claim::NotInGame);
     assert!(offline_event.refetch_hint);
 
     let anonymous = Evidence::from_ws(
-        WsPresenceEvent::Location,
+        FriendEventKind::Location,
         &json!({ "userId": "usr_friend", "location": "wrld_a:1" }),
     );
     assert_eq!(
@@ -703,7 +699,7 @@ fn location_events_map_to_claims_by_identity_and_location_proof() {
     );
 
     let embedded_only = Evidence::from_ws(
-        WsPresenceEvent::Location,
+        FriendEventKind::Location,
         &json!({ "user": { "id": "usr_friend", "location": "private" } }),
     );
     assert_eq!(
@@ -719,7 +715,7 @@ fn location_events_map_to_claims_by_identity_and_location_proof() {
 fn online_active_offline_and_update_events_map_to_claims() {
     assert_eq!(
         Evidence::from_ws(
-            WsPresenceEvent::Online,
+            FriendEventKind::Online,
             &json!({ "location": "traveling", "travelingToLocation": "wrld_b:2", "platform": PLATFORM }),
         )
         .claim,
@@ -728,18 +724,18 @@ fn online_active_offline_and_update_events_map_to_claims() {
         })
     );
     assert_eq!(
-        Evidence::from_ws(WsPresenceEvent::Active, &json!({ "platform": "web" })).claim,
+        Evidence::from_ws(FriendEventKind::Active, &json!({ "platform": "web" })).claim,
         Claim::Active {
             platform: "web".into()
         }
     );
     assert_eq!(
-        Evidence::from_ws(WsPresenceEvent::Offline, &json!({ "userId": "usr_friend" })).claim,
+        Evidence::from_ws(FriendEventKind::Offline, &json!({ "userId": "usr_friend" })).claim,
         Claim::Offline
     );
     assert_eq!(
         Evidence::from_ws(
-            WsPresenceEvent::Update,
+            FriendEventKind::Update,
             &json!({ "user": { "displayName": "Friend" } })
         )
         .claim,
@@ -747,7 +743,7 @@ fn online_active_offline_and_update_events_map_to_claims() {
     );
     assert_eq!(
         Evidence::from_ws(
-            WsPresenceEvent::Update,
+            FriendEventKind::Update,
             &json!({ "user": { "location": "private" } })
         )
         .claim,

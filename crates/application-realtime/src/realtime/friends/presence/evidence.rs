@@ -2,13 +2,14 @@ use serde_json::Value;
 use vrcx_0_core::friends::{FriendRecord, StateBucket};
 use vrcx_0_core::presence::{is_offline_location_proof, is_online_location_proof, Place};
 
+use crate::realtime::event_kind::RealtimeWsEventKind;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Source {
     Ws,
     Api,
     TrustedAdd,
     Baseline,
-    Timer,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -29,12 +30,29 @@ pub(crate) struct Evidence {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(crate) enum WsPresenceEvent {
+pub(crate) enum FriendEventKind {
+    Add,
+    Delete,
+    Update,
     Online,
     Active,
     Offline,
     Location,
-    Update,
+}
+
+impl FriendEventKind {
+    pub(crate) fn from_ws_event_kind(event_kind: &RealtimeWsEventKind) -> Option<Self> {
+        match event_kind {
+            RealtimeWsEventKind::FriendAdd => Some(Self::Add),
+            RealtimeWsEventKind::FriendDelete => Some(Self::Delete),
+            RealtimeWsEventKind::FriendUpdate => Some(Self::Update),
+            RealtimeWsEventKind::FriendOnline => Some(Self::Online),
+            RealtimeWsEventKind::FriendActive => Some(Self::Active),
+            RealtimeWsEventKind::FriendOffline => Some(Self::Offline),
+            RealtimeWsEventKind::FriendLocation => Some(Self::Location),
+            _ => None,
+        }
+    }
 }
 
 impl Evidence {
@@ -46,21 +64,17 @@ impl Evidence {
         }
     }
 
-    pub(crate) fn wake() -> Self {
-        Self::new(Source::Timer, Claim::Nothing)
-    }
-
-    pub(crate) fn from_ws(event: WsPresenceEvent, content: &Value) -> Self {
+    pub(crate) fn from_ws(event: FriendEventKind, content: &Value) -> Self {
         let platform = text(content.get("platform"));
         let claim = match event {
-            WsPresenceEvent::Online => Claim::Online {
+            FriendEventKind::Online => Claim::Online {
                 place: event_place(content),
                 platform,
             },
-            WsPresenceEvent::Active => Claim::Active { platform },
-            WsPresenceEvent::Offline => Claim::Offline,
-            WsPresenceEvent::Location => return location_evidence(content, platform),
-            WsPresenceEvent::Update => match content.get("user") {
+            FriendEventKind::Active => Claim::Active { platform },
+            FriendEventKind::Offline => Claim::Offline,
+            FriendEventKind::Location => return location_evidence(content, platform),
+            FriendEventKind::Update => match content.get("user") {
                 Some(user) if user.get("location").is_some() => Claim::Place {
                     place: Place::from_location(
                         &text(user.get("location")),
@@ -69,6 +83,7 @@ impl Evidence {
                 },
                 _ => Claim::Nothing,
             },
+            FriendEventKind::Add | FriendEventKind::Delete => Claim::Nothing,
         };
         Self::new(Source::Ws, claim)
     }
