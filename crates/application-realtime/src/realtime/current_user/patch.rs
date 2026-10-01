@@ -4,8 +4,8 @@ use vrcx_0_core::json::JsonExt;
 use vrcx_0_core::presence::is_offline_location_proof;
 use vrcx_0_core::text::first_owned;
 
-use crate::realtime::runtime_types::{PENDING_OFFLINE_DELAY, PENDING_OFFLINE_DELAY_MS};
-use crate::realtime::{RealtimeCurrentUserOutput, RealtimeCurrentUserProjection};
+use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY_MS;
+use crate::realtime::{RealtimeCurrentUserOutput, RealtimeCurrentUserProjection, WakeDeadline};
 use vrcx_0_application_core::LocalGameContextSnapshot;
 
 use super::avatar::apply_avatar_wear_transition;
@@ -87,17 +87,15 @@ pub(super) fn apply_user_location(
         if state.pending_offline.is_some() {
             return None;
         }
-        state.pending_offline = Some(PendingCurrentUserOffline {
-            deadline_ms: now.timestamp_ms + PENDING_OFFLINE_DELAY_MS,
-            patch,
-        });
+        let deadline_ms = now.timestamp_ms + PENDING_OFFLINE_DELAY_MS;
+        state.pending_offline = Some(PendingCurrentUserOffline { deadline_ms, patch });
         return apply_current_user_patch(
             state,
             Map::new(),
             now,
             game,
             CurrentUserPatchOptions {
-                wake: Some(PENDING_OFFLINE_DELAY),
+                wake: Some(WakeDeadline::new(deadline_ms, now.timestamp_ms)),
                 ..CurrentUserPatchOptions::default()
             },
         );

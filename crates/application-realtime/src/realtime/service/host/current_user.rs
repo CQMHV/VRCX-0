@@ -1,15 +1,14 @@
 use std::sync::Arc;
-use std::time::Duration;
 
 use serde_json::Value;
 use tokio::sync::watch;
 use vrcx_0_application_core::{Error, LocalGameContextSnapshot, Result};
 use vrcx_0_contracts::vrchat_api::VrchatScope as ApiScope;
 
-use crate::realtime::{RealtimeCurrentUserOutput, RealtimeSessionContext};
+use crate::realtime::{RealtimeCurrentUserOutput, RealtimeSessionContext, WakeDeadline};
 
 use super::state::{ActiveRealtimeContext, CurrentUserRefreshStatus};
-use super::RealtimeHostRuntime;
+use super::{sleep_until, RealtimeHostRuntime};
 
 #[derive(Clone, Copy, Debug)]
 pub struct RealtimeCurrentUserRefreshExpectation {
@@ -19,10 +18,14 @@ pub struct RealtimeCurrentUserRefreshExpectation {
 }
 
 impl RealtimeHostRuntime {
-    pub(super) fn schedule_current_user_wake(self: &Arc<Self>, generation: u64, delay: Duration) {
+    pub(super) fn schedule_current_user_wake(
+        self: &Arc<Self>,
+        generation: u64,
+        deadline: WakeDeadline,
+    ) {
         let runtime = Arc::clone(self);
         self.deps.tasks.spawn(async move {
-            tokio::time::sleep(delay).await;
+            sleep_until(deadline).await;
             let now = chrono::Utc::now().to_rfc3339();
             let Some(output) = runtime.current_user.wake_pending_offline(
                 generation,

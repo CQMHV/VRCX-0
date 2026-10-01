@@ -461,7 +461,10 @@ fn false_remote_offline_keeps_location_until_same_location_cancels_pending() {
             game_not_running(true),
         )
         .expect("remote offline pending output");
-    assert_eq!(pending.wake, Some(std::time::Duration::from_secs(170)));
+    assert_eq!(
+        pending.wake.map(|wake| wake.delay),
+        Some(std::time::Duration::from_secs(170))
+    );
     assert_eq!(
         pending.projection.snapshot["location"],
         json!("wrld_remote:456")

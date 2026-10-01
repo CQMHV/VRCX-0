@@ -21,7 +21,7 @@ pub use current_user::{
 pub use notifications::{normalize_v1_notification, normalize_v2_notification};
 pub use output::{
     FriendIconChange, FriendWake, RealtimeCurrentUserOutput, RealtimeFriendOutput,
-    RealtimeInstanceClosedOutput, RealtimeNotificationOutput,
+    RealtimeInstanceClosedOutput, RealtimeNotificationOutput, WakeDeadline,
 };
 pub use print_content_refresh::is_print_created_content_refresh;
 pub use projection::{

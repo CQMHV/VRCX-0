@@ -579,7 +579,7 @@ mod tests {
         else {
             panic!("friend-offline should produce an output");
         };
-        let delay = output.wake.expect("pending timer").delay;
+        let delay = output.wake.expect("pending timer").deadline.delay;
         let received_ms = chrono::DateTime::parse_from_rfc3339("2026-05-15T00:00:00Z")
             .expect("valid timestamp")
             .timestamp_millis();
@@ -596,7 +596,7 @@ mod tests {
         assert_eq!(effects.schedules.len(), 1);
         assert_eq!(effects.schedules[0].user_id, "usr_friend");
         assert_eq!(
-            effects.schedules[0].delay,
+            effects.schedules[0].deadline.delay,
             delay - std::time::Duration::from_millis(60_000)
         );
     }

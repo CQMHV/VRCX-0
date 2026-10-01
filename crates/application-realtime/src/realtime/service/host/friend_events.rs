@@ -8,7 +8,7 @@ use crate::realtime::{
 };
 
 use super::state::RealtimeHostRuntimeState;
-use super::RealtimeHostRuntime;
+use super::{sleep_until, RealtimeHostRuntime};
 
 impl RealtimeHostRuntime {
     fn is_friend_output_current_locked(
@@ -118,7 +118,7 @@ impl RealtimeHostRuntime {
     pub(super) fn schedule_friend_wake(self: &Arc<Self>, generation: u64, wake: FriendWake) {
         let runtime = Arc::clone(self);
         self.deps.tasks.spawn(async move {
-            tokio::time::sleep(wake.delay).await;
+            sleep_until(wake.deadline).await;
             runtime.wake_friend(generation, &wake.user_id);
         });
     }

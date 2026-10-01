@@ -925,7 +925,7 @@ mod tests {
         let Some(wake) = output.wake.as_ref() else {
             panic!("offline should schedule pending timer");
         };
-        let delay = wake.delay;
+        let delay = wake.deadline.delay;
         assert_eq!(delay, std::time::Duration::from_secs(170));
         let view = &output.projection.patches[0].presence.view;
         assert_eq!(view.section().as_str(), "online");

@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::time::Duration;
 
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -12,8 +11,7 @@ pub use vrcx_0_core::realtime::{
 
 use super::output::RealtimeFriendOutput;
 
-pub(crate) const PENDING_OFFLINE_DELAY: Duration = Duration::from_secs(170);
-pub(crate) const PENDING_OFFLINE_DELAY_MS: i64 = PENDING_OFFLINE_DELAY.as_millis() as i64;
+pub(crate) const PENDING_OFFLINE_DELAY_MS: i64 = 170_000;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RealtimeCachedUserProfile {

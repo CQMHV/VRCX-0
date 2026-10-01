@@ -3,9 +3,8 @@ use vrcx_0_core::derived_keys;
 use vrcx_0_core::json::JsonExt;
 use vrcx_0_core::presence::PresenceView;
 
-use std::time::Duration;
-
 use super::utils::normalize_id;
+use crate::realtime::WakeDeadline;
 
 #[derive(Clone, Debug, Default)]
 pub(super) struct RealtimeCurrentUserState {
@@ -38,7 +37,7 @@ pub(super) struct CurrentUserPatchOptions {
     pub(super) reconciles_remote_location: bool,
     pub(super) records_remote_game_log: bool,
     pub(super) records_current_avatar_history: bool,
-    pub(super) wake: Option<Duration>,
+    pub(super) wake: Option<WakeDeadline>,
 }
 
 #[derive(Clone, Debug, Default)]

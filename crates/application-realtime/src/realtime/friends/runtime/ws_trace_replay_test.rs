@@ -112,7 +112,7 @@ mod tests {
     }
 
     fn schedule(timers: &mut Vec<PendingTimer>, wake: &FriendWake, now_ms: i64) {
-        let delay_ms = i64::try_from(wake.delay.as_millis()).unwrap_or(i64::MAX);
+        let delay_ms = i64::try_from(wake.deadline.delay.as_millis()).unwrap_or(i64::MAX);
         timers.push(PendingTimer {
             deadline_ms: now_ms + delay_ms,
             uid: wake.user_id.clone(),

@@ -129,8 +129,9 @@ impl RealtimeMessageSink for RealtimeHostRuntimeMessageSink {
             let overlay_patch = output.projection.patch.clone();
             let wake = output.wake;
             self.runtime.apply_current_user_output(output);
-            if let Some(delay) = wake {
-                self.runtime.schedule_current_user_wake(generation, delay);
+            if let Some(deadline) = wake {
+                self.runtime
+                    .schedule_current_user_wake(generation, deadline);
             }
             if is_user_update {
                 self.runtime.refresh_current_user_snapshot_after_update(
