@@ -157,7 +157,7 @@ describe('friends locations row helpers', () => {
         expect(
             partitionFriendsByPrivateLocation(
                 [privateFriend, visible, seenFriend],
-                (friendId) => (friendId === 'usr_seen' ? 'wrld_seen:1' : null)
+                (friendId) => (friendId === 'usr_seen' ? 'wrld_seen:1' : '')
             )
         ).toEqual({
             visibleLocation: [visible, seenFriend],

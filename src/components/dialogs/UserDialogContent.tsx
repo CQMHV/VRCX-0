@@ -3,12 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
 import { buildFavoriteIdSet } from '@/domain/favorites/favoriteIdSet';
+import { localGameLocation } from '@/domain/friends/presence';
 import { recordKnownUser } from '@/services/domainIngestionService';
 import { userImage } from '@/services/entityMediaService';
 import { subscribeRecentActions } from '@/services/recentActionService';
 import { dialogTargetKey } from '@/services/userDialogSessionCacheService';
 import { isRecord } from '@/shared/utils/record';
 import { useDialogStore } from '@/state/dialogStore';
+import { useFriendLocationTimeStore } from '@/state/friendLocationTimeStore';
 
 import { UserDialogContentDialogs } from './user-dialog/components/UserDialogContentDialogs';
 import {
@@ -169,9 +171,13 @@ export function UserDialogContent({
     const currentSnapshotLocation = normalizeUserId(
         currentUserSnapshot?.$locationTag || currentUserSnapshot?.location
     );
+    const localLocation = useFriendLocationTimeStore((state) =>
+        localGameLocation(state.byUserId[normalizedUserId])
+    );
     const presenceLocation = resolveUserDialogTargetPresenceLocation({
         profile,
         targetUserId: normalizedUserId,
+        localLocation,
         currentLocation: currentGameLocation || currentSnapshotLocation,
         currentLocationPlayerIds: gameState?.currentLocationPlayerIds,
         currentLocationPlayers: gameState?.currentLocationPlayers,

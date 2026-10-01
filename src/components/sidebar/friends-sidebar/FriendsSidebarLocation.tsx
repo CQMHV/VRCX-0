@@ -14,11 +14,11 @@ import { LocationPendingText } from '@/components/location/LocationPendingText';
 import { RegionCodeBadge } from '@/components/location/RegionCodeBadge';
 import type { LocationMetadata } from '@/components/location/useLocationMetadata';
 import {
+    localGameLocation,
     presenceLocationTag,
     presenceOf,
     presenceSection,
-    presenceTravelingTag,
-    revealPrivateLocation
+    presenceTravelingTag
 } from '@/domain/friends/presence';
 import { cn } from '@/lib/utils';
 import { openGroupDialog, openWorldDialog } from '@/services/dialogService';
@@ -78,12 +78,7 @@ export function resolveFriendRowLocationState({
 }) {
     const displaySource = readFriendRef(friend);
     const presence = presenceOf(readFriendStatusSource(friend));
-    const localLocation =
-        !isCurrentUser &&
-        isGroupByInstance &&
-        locationTime?.source === 'gameLog'
-            ? locationTime.location
-            : '';
+    const localLocation = isCurrentUser ? '' : localGameLocation(locationTime);
     const friendState = localLocation
         ? 'online'
         : presence
@@ -93,11 +88,7 @@ export function resolveFriendRowLocationState({
         !presence || presence.kind === 'active'
             ? ''
             : presenceLocationTag(presence, { preferTraveling: false });
-    const friendLocation =
-        localLocation ||
-        (isCurrentUser
-            ? apiFriendLocation
-            : revealPrivateLocation(apiFriendLocation, locationTime?.location));
+    const friendLocation = localLocation || apiFriendLocation;
     const parsedFriendLocation = parseLocation(friendLocation);
     const isTraveling = locationSentinel(friendLocation) === 'traveling';
     const displayLocation = isTraveling ? 'traveling' : friendLocation;

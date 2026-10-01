@@ -10,6 +10,7 @@ import { CurrentInstanceBadge } from '@/components/instances/CurrentInstanceBadg
 import { EmptyState } from '@/components/layout/PageScaffold';
 import { Location } from '@/components/Location';
 import {
+    localGameLocation,
     presenceCanRequestInvite,
     presenceLiveInstanceTag
 } from '@/domain/friends/presence';
@@ -207,8 +208,7 @@ export function FriendsLocationCardItem({
     const locationTime = useFriendLocationTimeStore(
         (state) => state.byUserId[friend.id]
     );
-    const localLocation =
-        locationTime?.source === 'gameLog' ? locationTime.location : '';
+    const localLocation = localGameLocation(locationTime);
     const location = localLocation
         ? summarizeLocation(localLocation, null, t)
         : resolveLocationSummary(friend, t);

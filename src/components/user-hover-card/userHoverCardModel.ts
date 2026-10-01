@@ -12,8 +12,7 @@ import {
     presenceLocationTag,
     presenceOf,
     presenceSection,
-    presenceTravelingTag,
-    revealPrivateLocation
+    presenceTravelingTag
 } from '@/domain/friends/presence';
 import type {
     FriendProfileFields,
@@ -50,7 +49,7 @@ type HoverCardRecord = FriendRecordInput &
 type UserHoverCardModelInput = {
     seed?: HoverCardRecord | SidebarFriendRecord | null;
     profile?: HoverCardRecord | null;
-    observedLocation?: string | null;
+    localLocation?: string;
     nowMs: number;
 };
 
@@ -120,7 +119,7 @@ export function normalizeInstanceCounts(json: unknown) {
 export function buildUserHoverCardModel({
     seed = null,
     profile = null,
-    observedLocation = null,
+    localLocation = '',
     nowMs
 }: UserHoverCardModelInput) {
     const seedRecord = sidebarSeed(seed);
@@ -134,12 +133,11 @@ export function buildUserHoverCardModel({
     const hasPresence = Boolean(statusSource) && state !== null;
     const status = profileRecord?.status || statusSource?.status;
 
-    const rawLocation = presence
-        ? revealPrivateLocation(
-              presenceLocationTag(presence, { preferTraveling: false }),
-              observedLocation
-          )
-        : '';
+    const rawLocation =
+        localLocation ||
+        (presence
+            ? presenceLocationTag(presence, { preferTraveling: false })
+            : '');
     const isTraveling = locationSentinel(rawLocation) === 'traveling';
     const travelingTo = presence ? presenceTravelingTag(presence) : '';
     const effectiveLocation = isTraveling ? travelingTo : rawLocation;

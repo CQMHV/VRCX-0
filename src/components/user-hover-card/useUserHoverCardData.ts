@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import type { SidebarFriendRecord } from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
+import { localGameLocation } from '@/domain/friends/presence';
 import { useFriendLocationTimeEpoch } from '@/lib/useFriendLocationTimeEpoch';
 import { useNowMs } from '@/lib/useNowMs';
 import memoPersistenceRepository from '@/repositories/memoPersistenceRepository';
@@ -61,18 +62,20 @@ export function useUserHoverCardData({
         ReturnType<typeof worldProfileRepository.getWorldProfile>
     > | null>(null);
 
-    const observedLocation = useFriendLocationTimeStore((state) =>
-        normalizedUserId ? state.byUserId[normalizedUserId]?.location : null
+    const localLocation = useFriendLocationTimeStore((state) =>
+        normalizedUserId
+            ? localGameLocation(state.byUserId[normalizedUserId])
+            : ''
     );
     const model = useMemo(
         () =>
             buildUserHoverCardModel({
                 seed: effectiveSeed,
                 profile,
-                observedLocation,
+                localLocation,
                 nowMs
             }),
-        [effectiveSeed, nowMs, observedLocation, profile]
+        [effectiveSeed, localLocation, nowMs, profile]
     );
     const instanceEpoch = useFriendLocationTimeEpoch(
         normalizedUserId,

@@ -5,7 +5,6 @@ import {
 } from '@/shared/utils/friendStatus';
 import {
     normalizeLocationValue,
-    parseLocation,
     type ParsedLocation
 } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
@@ -185,14 +184,12 @@ export function resolveFriendPresenceLocation(
     return presence ? presenceLocationTag(presence, options) : '';
 }
 
-export function revealPrivateLocation(
-    location: string,
-    observedLocation: string | null | undefined
+export function localGameLocation(
+    time: { location: string; source: string } | null | undefined
 ): string {
-    const observed = normalizeLocationValue(observedLocation);
-    return location === 'private' && parseLocation(observed).isRealInstance
-        ? observed
-        : location;
+    return time?.source === 'gameLog'
+        ? normalizeLocationValue(time.location)
+        : '';
 }
 
 export function presenceLiveInstanceTag(

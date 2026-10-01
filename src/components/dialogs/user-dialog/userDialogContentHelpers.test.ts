@@ -13,6 +13,7 @@ describe('resolveUserDialogTargetPresenceLocation', () => {
                     $presence: offlinePresence
                 },
                 targetUserId: 'usr_target',
+                localLocation: '',
                 currentLocation: 'wrld_old:123',
                 currentLocationPlayerIds: ['usr_target'],
                 currentLocationPlayers: [],
@@ -35,6 +36,7 @@ describe('resolveUserDialogTargetPresenceLocation', () => {
                     $presence: onlinePresence('private')
                 },
                 targetUserId: 'usr_target',
+                localLocation: '',
                 currentLocation,
                 currentLocationPlayerIds: ['usr_self', 'usr_target']
             })
@@ -46,6 +48,7 @@ describe('resolveUserDialogTargetPresenceLocation', () => {
             resolveUserDialogTargetPresenceLocation({
                 profile: { id: 'usr_target', $presence: offlinePresence },
                 targetUserId: 'usr_target',
+                localLocation: '',
                 currentLocation,
                 currentLocationPlayerIds: ['usr_target']
             })
@@ -60,6 +63,7 @@ describe('resolveUserDialogTargetPresenceLocation', () => {
                     $presence: onlinePresence('private')
                 },
                 targetUserId: 'usr_target',
+                localLocation: '',
                 currentLocation,
                 currentLocationPlayerIds: ['usr_other']
             })
@@ -75,6 +79,7 @@ describe('resolveUserDialogTargetPresenceLocation', () => {
                     $presence: onlinePresence('private')
                 },
                 targetUserId: 'usr_friend',
+                localLocation: '',
                 currentLocation,
                 currentLocationPlayerIds: [],
                 currentLocationPlayers: [
@@ -96,6 +101,18 @@ describe('resolveUserDialogTargetPresenceLocation', () => {
         ).toBe(currentLocation);
     });
 
+    it('uses the local game room over any presence for a friend in my instance', () => {
+        expect(
+            resolveUserDialogTargetPresenceLocation({
+                profile: { id: 'usr_target', $presence: offlinePresence },
+                targetUserId: 'usr_target',
+                localLocation: currentLocation,
+                currentLocation,
+                currentLocationPlayerIds: []
+            })
+        ).toBe(currentLocation);
+    });
+
     it('keeps a visible presence location instead of overriding it', () => {
         const visibleLocation = 'wrld_visible:456';
 
@@ -106,6 +123,7 @@ describe('resolveUserDialogTargetPresenceLocation', () => {
                     $presence: onlinePresence(visibleLocation)
                 },
                 targetUserId: 'usr_target',
+                localLocation: '',
                 currentLocation,
                 currentLocationPlayerIds: ['usr_target']
             })
@@ -120,6 +138,7 @@ describe('resolveUserDialogTargetPresenceLocation', () => {
                     $presence: onlinePresence('private')
                 },
                 targetUserId: 'usr_target',
+                localLocation: '',
                 currentLocation: 'traveling',
                 currentLocationPlayerIds: ['usr_target']
             })

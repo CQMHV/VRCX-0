@@ -45,7 +45,7 @@ describe('buildFriendWorldGroups', () => {
                 friend('g', '')
             ],
             '',
-            () => null
+            () => ''
         );
 
         expect(
@@ -86,7 +86,7 @@ describe('buildFriendWorldGroups', () => {
                 friend('d', 'wrld_here:6')
             ],
             'wrld_here:6',
-            () => null
+            () => ''
         );
 
         expect(groups.map((group) => group.worldId)).toEqual([
@@ -113,7 +113,7 @@ describe('buildFriendWorldGroups', () => {
                 friend('b', 'wrld_dest:3', { worldName: 'Destination' })
             ],
             '',
-            () => null
+            () => ''
         );
 
         expect(groups).toHaveLength(1);
@@ -127,7 +127,7 @@ describe('buildFriendWorldGroups', () => {
         const groups = buildFriendWorldGroups(
             [friend('a', 'wrld_here:5'), friend('b', 'private')],
             '',
-            (friendId) => (friendId === 'b' ? 'wrld_here:5' : null)
+            (friendId) => (friendId === 'b' ? 'wrld_here:5' : '')
         );
 
         expect(groups).toHaveLength(1);

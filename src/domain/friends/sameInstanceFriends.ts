@@ -1,4 +1,5 @@
 import {
+    localGameLocation,
     presenceLiveInstanceTag,
     presenceOfSelfOrRef
 } from '@/domain/friends/presence';
@@ -212,12 +213,14 @@ function buildSameInstanceFriendGroups<TFriend>(
             locationTimes?.[
                 firstUserId(source?.id, source?.userId, source?.user_id)
             ];
-        if (time?.source !== 'gameLog' && !isOnlineSameInstanceFriend(friend)) {
+        const localLocation = localGameLocation(time);
+        if (!localLocation && !isOnlineSameInstanceFriend(friend)) {
             continue;
         }
         const location =
-            time?.location ??
-            resolveSameInstanceFriendLocation(friend, lastLocation);
+            localLocation ||
+            (time?.location ??
+                resolveSameInstanceFriendLocation(friend, lastLocation));
         if (!isRealInstance(location)) {
             continue;
         }

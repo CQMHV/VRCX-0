@@ -7,7 +7,7 @@ import {
 } from '@/domain/favorites/favoriteGroupSelection';
 import { buildFavoriteIdSet } from '@/domain/favorites/favoriteIdSet';
 import type { FavoriteGroup, FavoriteGroupMap } from '@/domain/favorites/types';
-import { presenceOf } from '@/domain/friends/presence';
+import { localGameLocation, presenceOf } from '@/domain/friends/presence';
 import {
     buildSameInstanceFriendGroups,
     resolveObservedPlayerUserIds
@@ -728,7 +728,7 @@ export function useFriendsLocationsPageDerivedState({
                 privateLocation: privateFriends
             } = partitionFriendsByPrivateLocation(
                 remainingFriends,
-                (friendId) => locationTimes[friendId]?.location
+                (friendId) => localGameLocation(locationTimes[friendId])
             );
             const privateSections: FriendsLocationsSection[] =
                 privateFriends.length
@@ -846,7 +846,7 @@ export function useFriendsLocationsPageDerivedState({
         const groups = buildFriendWorldGroups(
             worldViewFriends,
             currentInviteLocation,
-            (friendId) => locationTimes[friendId]?.location
+            (friendId) => localGameLocation(locationTimes[friendId])
         );
         if (!currentUserRecord) {
             return groups;
@@ -871,9 +871,8 @@ export function useFriendsLocationsPageDerivedState({
     ]);
     const privateWorldFriends = useMemo<FriendRecord[]>(
         () =>
-            partitionFriendsByPrivateLocation(
-                worldViewFriends,
-                (friendId) => locationTimes[friendId]?.location
+            partitionFriendsByPrivateLocation(worldViewFriends, (friendId) =>
+                localGameLocation(locationTimes[friendId])
             ).privateLocation,
         [locationTimes, worldViewFriends]
     );

@@ -36,7 +36,7 @@ export type FriendsLocationsWorldGroup = {
 export function buildFriendWorldGroups(
     friends: readonly FriendRecord[],
     currentLocation: string,
-    observedLocationOf: (friendId: string) => string | null | undefined
+    localLocationOf: (friendId: string) => string
 ): FriendsLocationsWorldGroup[] {
     const groupsByWorldId = new Map<string, FriendsLocationsWorldGroup>();
     const instancesByLocation = new Map<
@@ -45,10 +45,7 @@ export function buildFriendWorldGroups(
     >();
 
     for (const friend of friends) {
-        const target = friendLocationTarget(
-            friend,
-            observedLocationOf(friend.id)
-        );
+        const target = friendLocationTarget(friend, localLocationOf(friend.id));
         if (!target.worldId || target.isOffline || target.isPrivate) {
             continue;
         }

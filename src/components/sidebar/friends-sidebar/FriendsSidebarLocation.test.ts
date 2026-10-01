@@ -58,7 +58,7 @@ describe('resolveFriendRowLocationState', () => {
         expect(state.groupByInstanceTimerVisible).toBe(false);
     });
 
-    it('uses the backend-projected room when a busy friend API location is private', () => {
+    it('uses the local game room when a busy friend API location is private', () => {
         const friend = {
             id: 'usr_busy',
             status: 'busy',
@@ -66,7 +66,7 @@ describe('resolveFriendRowLocationState', () => {
         };
         const locationTime = {
             location: 'wrld_current:123',
-            source: 'realtime' as const,
+            source: 'gameLog' as const,
             sinceMs: 1_700_000_000_000
         };
         const state = resolveFriendRowLocationState({

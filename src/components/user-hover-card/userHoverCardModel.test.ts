@@ -52,7 +52,7 @@ describe('buildUserHoverCardModel', () => {
         expect(model.statusKey).toBe('dialog.user.status.online');
     });
 
-    it('shows the observed room for a private friend in my instance', () => {
+    it('shows the local game room for a private friend in my instance', () => {
         const model = buildUserHoverCardModel({
             seed: {
                 id: 'usr_2',
@@ -60,7 +60,7 @@ describe('buildUserHoverCardModel', () => {
                 $presence: onlinePresence('private')
             },
             profile: null,
-            observedLocation: REAL_INSTANCE,
+            localLocation: REAL_INSTANCE,
             nowMs: NOW
         });
 

@@ -121,6 +121,7 @@ export function resolvePlatformMeta(platform: unknown) {
 export function resolveUserDialogTargetPresenceLocation({
     profile,
     targetUserId,
+    localLocation,
     currentLocation,
     currentLocationPlayerIds,
     currentLocationPlayers,
@@ -128,11 +129,15 @@ export function resolveUserDialogTargetPresenceLocation({
 }: {
     profile: unknown;
     targetUserId: string;
+    localLocation: string;
     currentLocation: string;
     currentLocationPlayerIds: readonly string[];
     currentLocationPlayers?: readonly CurrentInstanceRosterPlayer[];
     friendsById?: Record<string, unknown>;
 }) {
+    if (localLocation) {
+        return localLocation;
+    }
     const presenceLocation = resolveFriendPresenceLocation(profile, {
         preferTraveling: true
     });
