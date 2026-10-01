@@ -124,16 +124,6 @@ impl RealtimeCurrentUserRuntime {
         Some(state.sequence)
     }
 
-    pub fn apply_refreshed_snapshot(
-        &self,
-        generation: u64,
-        snapshot: serde_json::Value,
-        overlay_patch: serde_json::Value,
-        game: LocalGameContextSnapshot,
-    ) -> Option<RealtimeCurrentUserOutput> {
-        self.apply_refreshed_snapshot_inner(generation, None, snapshot, overlay_patch, game)
-    }
-
     pub fn apply_refreshed_snapshot_if_sequence(
         &self,
         generation: u64,
@@ -142,28 +132,11 @@ impl RealtimeCurrentUserRuntime {
         overlay_patch: serde_json::Value,
         game: LocalGameContextSnapshot,
     ) -> Option<RealtimeCurrentUserOutput> {
-        self.apply_refreshed_snapshot_inner(
-            generation,
-            Some(expected_sequence),
-            snapshot,
-            overlay_patch,
-            game,
-        )
-    }
-
-    fn apply_refreshed_snapshot_inner(
-        &self,
-        generation: u64,
-        expected_sequence: Option<u64>,
-        snapshot: serde_json::Value,
-        overlay_patch: serde_json::Value,
-        game: LocalGameContextSnapshot,
-    ) -> Option<RealtimeCurrentUserOutput> {
         let mut state = self.lock_state();
         if state.generation != generation || state.current_user_id.is_empty() {
             return None;
         }
-        if expected_sequence.is_some_and(|expected_sequence| state.sequence != expected_sequence) {
+        if state.sequence != expected_sequence {
             return None;
         }
         let event_user_id = snapshot

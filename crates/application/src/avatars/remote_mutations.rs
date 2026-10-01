@@ -85,7 +85,11 @@ pub async fn select_avatar(
             if let Ok(snapshot) = serde_json::from_str::<serde_json::Value>(&response.data) {
                 applied = deps
                     .realtime
-                    .apply_current_user_refreshed_snapshot_if_sequence(expectation, snapshot);
+                    .apply_current_user_refreshed_snapshot_if_sequence(
+                        expectation,
+                        snapshot,
+                        serde_json::Value::Null,
+                    );
             }
         }
     }

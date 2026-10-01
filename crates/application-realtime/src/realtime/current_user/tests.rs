@@ -129,8 +129,9 @@ fn refreshed_current_user_snapshot_preserves_local_authority_fields() {
     );
 
     let output = runtime
-        .apply_refreshed_snapshot(
+        .apply_refreshed_snapshot_if_sequence(
             7,
+            runtime.snapshot_sequence(7).expect("sequence"),
             json!({
                 "id": "usr_self",
                 "displayName": "Self Fresh",
@@ -797,8 +798,9 @@ fn current_user_presence_follows_the_local_game_then_remote_presence_then_active
     );
 
     let confirmed_offline = runtime
-        .apply_refreshed_snapshot(
+        .apply_refreshed_snapshot_if_sequence(
             7,
+            runtime.snapshot_sequence(7).expect("sequence"),
             json!({ "id": "usr_self" }),
             json!({ "location": "offline" }),
             game_not_running(false),
