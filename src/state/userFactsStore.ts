@@ -12,7 +12,6 @@ type UserFactInput = Omit<Partial<UserFact>, 'endpoint' | 'id' | 'updatedAt'> &
     };
 
 interface UserFactsStoreState {
-    version: number;
     usersByKey: Record<string, UserFact>;
     userIdsByEndpoint: Record<string, Set<string>>;
     order: string[];
@@ -24,9 +23,8 @@ const USER_FACTS_NON_FRIEND_CAPACITY = 1000;
 
 const initialState: Pick<
     UserFactsStoreState,
-    'version' | 'usersByKey' | 'userIdsByEndpoint' | 'order'
+    'usersByKey' | 'userIdsByEndpoint' | 'order'
 > = {
-    version: 0,
     usersByKey: {},
     userIdsByEndpoint: {},
     order: []
@@ -154,7 +152,6 @@ export const useUserFactsStore = create<UserFactsStoreState>((set) => ({
                 );
             }
             const nextState = {
-                version: state.version + 1,
                 usersByKey,
                 userIdsByEndpoint,
                 order
