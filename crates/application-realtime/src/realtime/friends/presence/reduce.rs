@@ -3,9 +3,8 @@ use vrcx_0_core::presence::{LeaveTarget, Place};
 use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY_MS;
 
 use super::evidence::{Claim, Evidence, Source};
-use super::model::{Flap, Hop, OnlineState, Phase, Stay};
+use super::model::{OnlineState, Phase, Stay};
 
-pub(crate) const FLAP_WINDOW_MS: i64 = 180_000;
 pub(crate) const BASELINE_CONFLICT_WINDOW_MS: i64 = 300_000;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -145,14 +144,6 @@ fn fire_due(prev: &Phase, now_ms: i64) -> Phase {
             target,
             deadline_ms,
         } if now_ms >= *deadline_ms => Phase::left(*target, held.platform.clone(), now_ms),
-        Phase::Online(state)
-            if state
-                .flap
-                .as_ref()
-                .is_some_and(|flap| now_ms - flap.last_hop_ms >= FLAP_WINDOW_MS) =>
-        {
-            Phase::Online(settle(state))
-        }
         _ => prev.clone(),
     }
 }
@@ -200,25 +191,7 @@ fn observe_place(state: &OnlineState, place: &Place, source: Source, now_ms: i64
 
 fn advance(state: &OnlineState, place: &Place, now_ms: i64) -> OnlineState {
     let mut next = state.clone();
-    next.hops.retain(|hop| now_ms - hop.at_ms <= FLAP_WINDOW_MS);
-    if *place == Place::Unknown {
-        return next;
-    }
-    if let Some(flap) = next.flap.as_mut() {
-        if let Some(tag) = place
-            .instance_tag()
-            .filter(|tag| flap.pair.iter().any(|end| end == tag))
-        {
-            if flap.latest != tag {
-                flap.latest = tag.to_string();
-                flap.latest_since_ms = now_ms;
-                flap.last_hop_ms = now_ms;
-            }
-            return next;
-        }
-        next.flap = None;
-    }
-    if *place == state.place {
+    if *place == Place::Unknown || *place == state.place {
         return next;
     }
     match (&state.place, place) {
@@ -235,25 +208,6 @@ fn advance(state: &OnlineState, place: &Place, now_ms: i64) -> OnlineState {
             next.since_ms = now_ms;
             return next;
         }
-        (Place::Instance(from), Place::Instance(to)) => {
-            let same_pair = |hop: &&Hop| {
-                (hop.from == *from && hop.to == *to) || (hop.from == *to && hop.to == *from)
-            };
-            if next.hops.iter().filter(same_pair).count() >= 2 {
-                next.flap = Some(Flap {
-                    pair: [from.clone(), to.clone()],
-                    latest: to.clone(),
-                    latest_since_ms: now_ms,
-                    last_hop_ms: now_ms,
-                });
-                return next;
-            }
-            next.hops.push(Hop {
-                from: from.clone(),
-                to: to.clone(),
-                at_ms: now_ms,
-            });
-        }
         _ => {}
     }
     let restored = next
@@ -263,19 +217,5 @@ fn advance(state: &OnlineState, place: &Place, now_ms: i64) -> OnlineState {
         .map(|stay| stay.since_ms);
     next.place = place.clone();
     next.since_ms = restored.unwrap_or(now_ms);
-    next
-}
-
-fn settle(state: &OnlineState) -> OnlineState {
-    let mut next = state.clone();
-    let Some(flap) = next.flap.take() else {
-        return next;
-    };
-    next.hops.clear();
-    if state.place.instance_tag() != Some(flap.latest.as_str()) {
-        next.place = Place::Instance(flap.latest);
-        next.since_ms = flap.latest_since_ms;
-        next.travel_from = None;
-    }
     next
 }

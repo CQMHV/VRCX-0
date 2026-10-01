@@ -1,7 +1,6 @@
 use vrcx_0_core::presence::{LeaveTarget, Place};
 
 use super::evidence::Claim;
-use super::reduce::FLAP_WINDOW_MS;
 
 #[derive(Clone, Debug, PartialEq)]
 pub(crate) enum Phase {
@@ -28,29 +27,12 @@ pub(crate) struct OnlineState {
     pub(crate) platform: String,
     pub(crate) online_since_ms: Option<i64>,
     pub(crate) live_ms: Option<i64>,
-    pub(crate) hops: Vec<Hop>,
-    pub(crate) flap: Option<Flap>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub(crate) struct Stay {
     pub(crate) tag: String,
     pub(crate) since_ms: i64,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub(crate) struct Hop {
-    pub(crate) from: String,
-    pub(crate) to: String,
-    pub(crate) at_ms: i64,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub(crate) struct Flap {
-    pub(crate) pair: [String; 2],
-    pub(crate) latest: String,
-    pub(crate) latest_since_ms: i64,
-    pub(crate) last_hop_ms: i64,
 }
 
 impl Phase {
@@ -78,9 +60,6 @@ impl Phase {
     pub(crate) fn wake_at(&self) -> Option<i64> {
         match self {
             Self::PendingOffline { deadline_ms, .. } => Some(*deadline_ms),
-            Self::Online(OnlineState {
-                flap: Some(flap), ..
-            }) => Some(flap.last_hop_ms + FLAP_WINDOW_MS),
             _ => None,
         }
     }
@@ -124,8 +103,6 @@ impl OnlineState {
             platform,
             online_since_ms,
             live_ms: live.then_some(now_ms),
-            hops: Vec::new(),
-            flap: None,
         }
     }
 }

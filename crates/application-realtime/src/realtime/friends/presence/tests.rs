@@ -5,7 +5,7 @@ use vrcx_0_core::presence::{LeaveTarget, Place, PresenceView};
 use super::evidence::{Claim, Evidence, FriendEventKind, Source};
 use super::feed::{joining_feed, presence_feed};
 use super::model::{OnlineState, Phase, Stay};
-use super::reduce::{reduce, wake, Step, BASELINE_CONFLICT_WINDOW_MS, FLAP_WINDOW_MS};
+use super::reduce::{reduce, wake, Step, BASELINE_CONFLICT_WINDOW_MS};
 use super::view::presence_view;
 use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY_MS;
 
@@ -398,10 +398,7 @@ fn pending_wakes_at_its_deadline() {
 fn moving_between_instances_writes_gps_with_the_stay_duration() {
     let prev = online(inst("wrld_a:1"), T - 90_000);
     let step = reduce(&prev, &ev(Source::Ws, seen_online(inst("wrld_b:2"))), T);
-    assert_eq!(
-        step.next,
-        online(inst("wrld_b:2"), T).with_hop("wrld_a:1", "wrld_b:2", T)
-    );
+    assert_eq!(step.next, online(inst("wrld_b:2"), T));
     let entries = feed(&prev, &step, T);
     assert_eq!(entries.len(), 1);
     assert_eq!(entries[0]["type"], "GPS");
@@ -589,72 +586,6 @@ fn baseline_location_replaces_a_place_that_came_from_an_earlier_baseline() {
     assert_eq!(place_of(&step.next), &inst("wrld_a:1"));
 }
 
-fn hop(prev: &Phase, tag: &str, now_ms: i64) -> Step {
-    reduce(prev, &ev(Source::Ws, seen_online(inst(tag))), now_ms)
-}
-
-#[test]
-fn alternating_between_two_instances_freezes_the_place_on_the_third_hop() {
-    let start = online(inst("wrld_a:1"), T - 60_000);
-    let first = hop(&start, "wrld_b:2", T);
-    let second = hop(&first.next, "wrld_a:1", T + 45_000);
-    let third = hop(&second.next, "wrld_b:2", T + 90_000);
-    assert_eq!(feed_types(&start, &first, T), ["GPS"]);
-    assert_eq!(feed_types(&first.next, &second, T + 45_000), ["GPS"]);
-    assert_eq!(place_of(&third.next), &inst("wrld_a:1"));
-    assert!(feed_types(&second.next, &third, T + 90_000).is_empty());
-    assert_eq!(third.wake_at_ms, Some(T + 90_000 + FLAP_WINDOW_MS));
-
-    let fourth = hop(&third.next, "wrld_a:1", T + 135_000);
-    let fifth = hop(&fourth.next, "wrld_b:2", T + 180_000);
-    assert_eq!(place_of(&fifth.next), &inst("wrld_a:1"));
-    assert_eq!(fifth.next.online_state().unwrap().since_ms, T + 45_000);
-    assert!(feed_types(&fourth.next, &fifth, T + 180_000).is_empty());
-    assert_eq!(fifth.wake_at_ms, Some(T + 180_000 + FLAP_WINDOW_MS));
-
-    let quiet = wake(&fifth.next, T + 180_000 + FLAP_WINDOW_MS - 1);
-    assert_eq!(quiet.next, fifth.next);
-    let settled = wake(&fifth.next, T + 180_000 + FLAP_WINDOW_MS);
-    assert_eq!(place_of(&settled.next), &inst("wrld_b:2"));
-    assert_eq!(settled.next.online_state().unwrap().since_ms, T + 180_000);
-    assert!(settled.next.online_state().unwrap().flap.is_none());
-    assert_eq!(
-        feed_types(&fifth.next, &settled, T + 180_000 + FLAP_WINDOW_MS),
-        ["GPS"]
-    );
-}
-
-#[test]
-fn flapping_ends_at_a_place_outside_the_pair() {
-    let mut phase = online(inst("wrld_a:1"), T);
-    for (tag, at) in [("wrld_b:2", 1), ("wrld_a:1", 2), ("wrld_b:2", 3)] {
-        phase = hop(&phase, tag, T + at).next;
-    }
-    let escaped = hop(&phase, "wrld_c:3", T + 4);
-    assert_eq!(place_of(&escaped.next), &inst("wrld_c:3"));
-    assert!(escaped.next.online_state().unwrap().flap.is_none());
-    let entries = feed(&phase, &escaped, T + 4);
-    assert_eq!(entries[0]["previousLocation"], "wrld_a:1");
-}
-
-#[test]
-fn hops_older_than_the_window_do_not_count_as_flapping() {
-    let first = hop(&online(inst("wrld_a:1"), T), "wrld_b:2", T);
-    let second = hop(&first.next, "wrld_a:1", T + FLAP_WINDOW_MS + 1);
-    let third = hop(&second.next, "wrld_b:2", T + FLAP_WINDOW_MS + 2);
-    assert_eq!(place_of(&third.next), &inst("wrld_b:2"));
-    assert!(third.next.online_state().unwrap().flap.is_none());
-}
-
-#[test]
-fn flapping_wakes_to_settle() {
-    let mut phase = online(inst("wrld_a:1"), T);
-    for (tag, at) in [("wrld_b:2", 1), ("wrld_a:1", 2), ("wrld_b:2", 3)] {
-        phase = hop(&phase, tag, T + at).next;
-    }
-    assert_eq!(phase.wake_at(), Some(T + 3 + FLAP_WINDOW_MS));
-}
-
 #[test]
 fn location_events_map_to_claims_by_identity_and_location_proof() {
     let with_user = |location: &str| {
@@ -794,18 +725,4 @@ fn views_expose_the_held_place_while_pending() {
     assert_eq!(target, LeaveTarget::Active);
     assert_eq!(deadline_ms, T + 100);
     assert_eq!(presence_view(&Phase::offline()), PresenceView::Offline);
-}
-
-impl Phase {
-    fn with_hop(self, from: &str, to: &str, at_ms: i64) -> Self {
-        let Phase::Online(mut state) = self else {
-            return self;
-        };
-        state.hops.push(super::model::Hop {
-            from: from.into(),
-            to: to.into(),
-            at_ms,
-        });
-        Phase::Online(state)
-    }
 }
