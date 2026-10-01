@@ -4,6 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { CurrentUserSocialStatusDialog } from '@/components/dialogs/user-dialog/UserSelfEditDialogs';
 import { useLocationMetadataBatch } from '@/components/location/useLocationMetadata';
 import { useVirtualSidebarRows } from '@/components/sidebar/useVirtualSidebarRows';
+import {
+    collectFavoriteGroupFriendIds,
+    resolveSelectedFavoriteGroupKeys
+} from '@/domain/favorites/favoriteGroupSelection';
 import { buildFavoriteIdSet } from '@/domain/favorites/favoriteIdSet';
 import type { FavoriteGroup } from '@/domain/favorites/types';
 import {
@@ -304,51 +308,39 @@ export function FriendsSidebar({
         ],
         [favoriteFriendGroups, localFriendFavoriteGroups, localFriendFavorites]
     );
-    const selectedFavoriteGroupKeys = useMemo(() => {
-        const configured = Array.isArray(prefs.sidebarFavoriteGroups)
-            ? prefs.sidebarFavoriteGroups.filter(Boolean)
-            : [];
-        return new Set<string>(
-            configured.length ? configured : allFavoriteGroupKeys
-        );
-    }, [allFavoriteGroupKeys, prefs.sidebarFavoriteGroups]);
     const hasFavoriteGroupFilter = useMemo(
         () =>
             Array.isArray(prefs.sidebarFavoriteGroups) &&
             prefs.sidebarFavoriteGroups.length > 0,
         [prefs.sidebarFavoriteGroups]
     );
-    const selectedFavoriteIds = useMemo(() => {
-        if (!allFavoriteGroupKeys.length) {
-            return favoriteIds;
-        }
-        const ids = new Set<string>();
-        for (const key of selectedFavoriteGroupKeys) {
-            if (key.startsWith('local:')) {
-                for (const id of localFriendFavorites?.[key.slice(6)] || []) {
-                    const normalized = normalizeId(id);
-                    if (normalized) {
-                        ids.add(normalized);
-                    }
-                }
-            } else {
-                for (const id of groupedFavoriteFriendIdsByGroupKey?.[key] ||
-                    []) {
-                    const normalized = normalizeId(id);
-                    if (normalized) {
-                        ids.add(normalized);
-                    }
-                }
-            }
-        }
-        return ids;
-    }, [
-        allFavoriteGroupKeys,
-        favoriteIds,
-        groupedFavoriteFriendIdsByGroupKey,
-        localFriendFavorites,
-        selectedFavoriteGroupKeys
-    ]);
+    const selectedFavoriteGroupKeys = useMemo(
+        () =>
+            new Set(
+                resolveSelectedFavoriteGroupKeys(
+                    prefs.sidebarFavoriteGroups,
+                    allFavoriteGroupKeys
+                )
+            ),
+        [allFavoriteGroupKeys, prefs.sidebarFavoriteGroups]
+    );
+    const selectedFavoriteIds = useMemo(
+        () =>
+            allFavoriteGroupKeys.length
+                ? collectFavoriteGroupFriendIds(
+                      selectedFavoriteGroupKeys,
+                      groupedFavoriteFriendIdsByGroupKey,
+                      localFriendFavorites
+                  )
+                : favoriteIds,
+        [
+            allFavoriteGroupKeys,
+            favoriteIds,
+            groupedFavoriteFriendIdsByGroupKey,
+            localFriendFavorites,
+            selectedFavoriteGroupKeys
+        ]
+    );
     const excludedFavoriteIds = hasFavoriteGroupFilter
         ? selectedFavoriteIds
         : favoriteIds;

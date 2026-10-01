@@ -1,6 +1,10 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import {
+    collectFavoriteGroupFriendIds,
+    resolveSelectedFavoriteGroupKeys
+} from '@/domain/favorites/favoriteGroupSelection';
 import { buildFavoriteIdSet } from '@/domain/favorites/favoriteIdSet';
 import type { FavoriteGroup, FavoriteGroupMap } from '@/domain/favorites/types';
 import { presenceOf } from '@/domain/friends/presence';
@@ -264,44 +268,33 @@ export function useFriendsLocationsPageDerivedState({
         ],
         [favoriteFriendGroups, localFriendFavoriteGroups, localFriendFavorites]
     );
-    const selectedFavoriteGroupKeys = useMemo<Set<string>>(() => {
-        const configured = sidebarFavoritePrefs.selectedGroups.filter(
-            (groupKey) => allFavoriteGroupKeys.includes(groupKey)
-        );
-        return new Set(configured.length ? configured : allFavoriteGroupKeys);
-    }, [allFavoriteGroupKeys, sidebarFavoritePrefs.selectedGroups]);
-    const selectedFavoriteIds = useMemo<Set<string>>(() => {
-        if (!allFavoriteGroupKeys.length) {
-            return favoriteIds;
-        }
-        const ids = new Set<string>();
-        for (const groupKey of selectedFavoriteGroupKeys) {
-            if (groupKey.startsWith('local:')) {
-                for (const id of localFriendFavorites?.[groupKey.slice(6)] ||
-                    []) {
-                    const normalized = normalizeString(id);
-                    if (normalized) {
-                        ids.add(normalized);
-                    }
-                }
-                continue;
-            }
-            for (const id of groupedFavoriteFriendIdsByGroupKey?.[groupKey] ||
-                []) {
-                const normalized = normalizeString(id);
-                if (normalized) {
-                    ids.add(normalized);
-                }
-            }
-        }
-        return ids;
-    }, [
-        allFavoriteGroupKeys,
-        favoriteIds,
-        groupedFavoriteFriendIdsByGroupKey,
-        localFriendFavorites,
-        selectedFavoriteGroupKeys
-    ]);
+    const selectedFavoriteGroupKeys = useMemo<Set<string>>(
+        () =>
+            new Set(
+                resolveSelectedFavoriteGroupKeys(
+                    sidebarFavoritePrefs.selectedGroups,
+                    allFavoriteGroupKeys
+                )
+            ),
+        [allFavoriteGroupKeys, sidebarFavoritePrefs.selectedGroups]
+    );
+    const selectedFavoriteIds = useMemo<Set<string>>(
+        () =>
+            allFavoriteGroupKeys.length
+                ? collectFavoriteGroupFriendIds(
+                      selectedFavoriteGroupKeys,
+                      groupedFavoriteFriendIdsByGroupKey,
+                      localFriendFavorites
+                  )
+                : favoriteIds,
+        [
+            allFavoriteGroupKeys,
+            favoriteIds,
+            groupedFavoriteFriendIdsByGroupKey,
+            localFriendFavorites,
+            selectedFavoriteGroupKeys
+        ]
+    );
     const onlineFriends = useMemo<FriendRecord[]>(
         () =>
             sortFriendsBySidebarPrefs(
