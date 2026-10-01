@@ -1,3 +1,4 @@
+import { resolveFriendPresenceLocation } from '@/domain/friends/presence';
 import {
     isExplicitlyOfflineFriend,
     resolveObservedPlayerUserId
@@ -7,10 +8,7 @@ import {
     firstText,
     isSameInstanceLocation
 } from '@/domain/instances/instanceRoster';
-import {
-    parseLocation,
-    resolveFriendPresenceLocation
-} from '@/shared/utils/location';
+import { parseLocation } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 
 function filterVisibleUserDialogLocationUsers<TUser>({

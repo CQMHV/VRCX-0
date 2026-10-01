@@ -1,15 +1,13 @@
 import { AppleIcon, MonitorIcon, RectangleGogglesIcon } from 'lucide-react';
 
+import { resolveFriendPresenceLocation } from '@/domain/friends/presence';
 import {
     isExplicitlyOfflineFriend,
     resolveObservedPlayerUserIds
 } from '@/domain/friends/sameInstanceFriends';
 import type { CurrentInstanceRosterPlayer } from '@/domain/instances/currentInstanceRoster';
 import { hasGroupIdPrefix } from '@/shared/constants/vrchatIds';
-import {
-    parseLocation,
-    resolveFriendPresenceLocation
-} from '@/shared/utils/location';
+import { parseLocation } from '@/shared/utils/location';
 export { resolveCurrentInviteLocation } from '@/shared/utils/invite';
 
 import { normalizeUserId } from './userProfileFields';

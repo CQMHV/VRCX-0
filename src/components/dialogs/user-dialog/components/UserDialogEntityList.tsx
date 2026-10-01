@@ -12,10 +12,13 @@ import { FadeInImage } from '@/components/media/FadeInImage';
 import { resolveSidebarStatusDotClassName } from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
 import { UserDetailTile } from '@/components/UserDetailTile';
 import type { EntityRecord } from '@/domain/entities/shared';
-import { presenceOf, presencePlace } from '@/domain/friends/presence';
+import {
+    presenceOf,
+    presencePlace,
+    resolveFriendPresenceLocation
+} from '@/domain/friends/presence';
 import { useNowMs } from '@/lib/useNowMs';
 import { cn } from '@/lib/utils';
-import { resolveFriendPresenceLocation } from '@/shared/utils/location';
 import { userStatusLabel } from '@/shared/utils/userStatus';
 import { Button } from '@/ui/shadcn/button';
 

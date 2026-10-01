@@ -8,17 +8,20 @@ import type {
 } from '@/domain/friends/types';
 import { hasUserIdPrefix } from '@/shared/constants/vrchatIds';
 import { isRealInstance } from '@/shared/utils/instance';
-import {
-    isLastLocationFriend,
-    normalizeLocationValue,
-    type FriendListMembership
-} from '@/shared/utils/location';
+import { normalizeLocationValue } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 
 type FriendPresenceRecord = FriendRecordInput &
     Partial<FriendProfileFields> & {
         ref?: FriendPresenceRecord | null;
     };
+
+type FriendListMembershipValue = boolean | object | null | undefined;
+type FriendListMembership =
+    | ReadonlySet<string>
+    | ReadonlyMap<string, FriendListMembershipValue>
+    | readonly string[]
+    | Readonly<Record<string, FriendListMembershipValue>>;
 
 type SameInstanceLastLocation = {
     friendList?: FriendListMembership;
@@ -64,6 +67,26 @@ function friendPresenceSource(friend: unknown): FriendPresenceRecord | null {
         ...direct,
         ref: null
     };
+}
+
+function isLastLocationFriend(
+    lastLocation: SameInstanceLastLocation | null | undefined,
+    friend: FriendPresenceRecord | null
+): boolean {
+    const friendId = text(friend?.id) || text(friend?.userId);
+    const friendList = lastLocation?.friendList;
+    if (!friendId || !friendList) {
+        return false;
+    }
+    if (friendList instanceof Set || friendList instanceof Map) {
+        return friendList.has(friendId);
+    }
+    if (Array.isArray(friendList)) {
+        return friendList.some(
+            (candidate) => normalizeLocationValue(candidate) === friendId
+        );
+    }
+    return Boolean(Reflect.get(friendList, friendId));
 }
 
 function text(value: unknown): string {

@@ -1,6 +1,7 @@
 import { finiteLocationNumber } from '@/components/location/locationModel';
 import type { EntityRecord } from '@/domain/entities/shared';
 import type { WorldProfileRecord } from '@/domain/entities/world';
+import { resolveFriendPresenceLocation } from '@/domain/friends/presence';
 import {
     isExplicitlyOfflineFriend,
     resolveObservedPlayerUserId
@@ -10,10 +11,7 @@ import type {
     CurrentInstanceRosterPlayer
 } from '@/domain/instances/currentInstanceRoster';
 import { hasGroupIdPrefix } from '@/shared/constants/vrchatIds';
-import {
-    parseLocation,
-    resolveFriendPresenceLocation
-} from '@/shared/utils/location';
+import { parseLocation } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 
 import {

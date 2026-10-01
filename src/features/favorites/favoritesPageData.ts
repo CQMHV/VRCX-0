@@ -7,14 +7,14 @@ import type {
 } from '@/domain/favorites/types';
 import {
     presenceSection,
-    presenceTravelingTag
+    presenceTravelingTag,
+    resolveFriendPresenceLocation
 } from '@/domain/friends/presence';
 import type {
     FriendProfileFields,
     FriendRecordInput
 } from '@/domain/friends/types';
 import { userImage } from '@/services/entityMediaService';
-import { resolveFriendPresenceLocation } from '@/shared/utils/location';
 
 import { hasDisplayableEntityDetail } from './favoriteEntityDetails';
 import {

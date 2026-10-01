@@ -181,6 +181,14 @@ export function presenceLocationTag(
         : location.tag;
 }
 
+export function resolveFriendPresenceLocation(
+    value: unknown,
+    options: { preferTraveling?: boolean; requireInstance?: boolean } = {}
+): string {
+    const presence = presenceOfSelfOrRef(value);
+    return presence ? presenceLocationTag(presence, options) : '';
+}
+
 export function presenceLiveInstanceTag(
     view: PresenceView,
     { preferTraveling = true }: { preferTraveling?: boolean } = {}

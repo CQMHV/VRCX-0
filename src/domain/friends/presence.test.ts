@@ -5,12 +5,18 @@ import {
     USER_STATUS_INDICATOR_CLASS_NAMES
 } from '@/shared/utils/friendStatus';
 import { parseLocation } from '@/shared/utils/location';
+import {
+    activePresence,
+    onlinePresence,
+    pendingPresence
+} from '@/test/presenceFixtures';
 
 import {
     parsePresenceById,
     presenceDotClassName,
     presencePlace,
     presenceSection,
+    resolveFriendPresenceLocation,
     type PresenceView
 } from './presence';
 
@@ -81,5 +87,54 @@ describe('presence', () => {
             `${USER_STATUS_INDICATOR_CLASS_NAMES.active} border-[var(--status-online)] bg-background`
         );
         expect(presenceDotClassName(undefined, 'active')).toBe('');
+    });
+});
+
+describe('resolveFriendPresenceLocation with presence views', () => {
+    const traveling: PresenceView = {
+        kind: 'online',
+        place: {
+            location: parseLocation('traveling'),
+            travelingTo: parseLocation('wrld_dest:2')
+        },
+        platform: 'android',
+        onlineSinceMs: null
+    };
+
+    it('reads the place from the presence view instead of raw fields', () => {
+        expect(
+            resolveFriendPresenceLocation({
+                location: 'offline',
+                $presence: onlinePresence('wrld_a:1')
+            })
+        ).toBe('wrld_a:1');
+        expect(
+            resolveFriendPresenceLocation({
+                $presence: pendingPresence('wrld_a:1')
+            })
+        ).toBe('wrld_a:1');
+        expect(
+            resolveFriendPresenceLocation({ $presence: activePresence() })
+        ).toBe('offline');
+        expect(
+            resolveFriendPresenceLocation(
+                { $presence: activePresence() },
+                { requireInstance: true }
+            )
+        ).toBe('');
+        expect(
+            resolveFriendPresenceLocation({
+                $presence: onlinePresence('private')
+            })
+        ).toBe('private');
+        expect(
+            resolveFriendPresenceLocation({ ref: { $presence: traveling } })
+        ).toBe('wrld_dest:2');
+        expect(
+            resolveFriendPresenceLocation(
+                { $presence: traveling },
+                { preferTraveling: false }
+            )
+        ).toBe('traveling');
     });
 });

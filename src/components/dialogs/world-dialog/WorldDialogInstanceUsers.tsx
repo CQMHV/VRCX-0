@@ -12,7 +12,11 @@ import {
     type SidebarFriendRecord
 } from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
 import { UserDetailTile } from '@/components/UserDetailTile';
-import { presenceOf, presencePlace } from '@/domain/friends/presence';
+import {
+    presenceOf,
+    presencePlace,
+    resolveFriendPresenceLocation
+} from '@/domain/friends/presence';
 import {
     createInstanceUserRow,
     firstText,
@@ -28,7 +32,6 @@ import userProfileRepository from '@/repositories/userProfileRepository';
 import { openUserDialog } from '@/services/dialogService';
 import { userImage } from '@/services/entityMediaService';
 import { hasGroupIdPrefix } from '@/shared/constants/vrchatIds';
-import { resolveFriendPresenceLocation } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 import { userStatusLabel } from '@/shared/utils/userStatus';
 import { useRuntimeStore } from '@/state/runtimeStore';

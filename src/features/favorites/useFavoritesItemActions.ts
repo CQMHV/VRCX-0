@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { FavoriteKind } from '@/domain/favorites/types';
+import { resolveFriendPresenceLocation } from '@/domain/friends/presence';
 import type { FriendRecord, FriendRosterById } from '@/domain/friends/types';
 import type { AvatarCacheOutput } from '@/platform/tauri/bindings';
 import avatarLocalRepository from '@/repositories/avatarLocalRepository';
@@ -18,10 +19,7 @@ import {
 import { selfInviteToInstance } from '@/services/launchService';
 import { toast } from '@/services/toastService';
 import { checkCanInviteSelf } from '@/shared/utils/invite';
-import {
-    parseLocation,
-    resolveFriendPresenceLocation
-} from '@/shared/utils/location';
+import { parseLocation } from '@/shared/utils/location';
 import { useModalStore } from '@/state/modalStore';
 
 import { normalizeFavoriteEntityId as normalizeEntityId } from './favoritesItems';

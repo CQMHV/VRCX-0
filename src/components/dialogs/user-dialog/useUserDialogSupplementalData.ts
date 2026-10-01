@@ -7,6 +7,7 @@ import {
     type SetStateAction
 } from 'react';
 
+import { resolveFriendPresenceLocation } from '@/domain/friends/presence';
 import type { LoadStatus } from '@/domain/shared/types';
 import friendLogHistoryRepository from '@/repositories/friendLogHistoryRepository';
 import gameLogRepository from '@/repositories/gameLogRepository';
@@ -21,7 +22,6 @@ import {
     type UserDialogPreviousInstance,
     type UserDialogStats
 } from '@/services/userDialogSessionCacheService';
-import { resolveFriendPresenceLocation } from '@/shared/utils/location';
 
 import { isSameLocationTag } from './userDialogContentHelpers';
 import {

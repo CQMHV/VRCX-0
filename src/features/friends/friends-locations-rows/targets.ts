@@ -1,8 +1,9 @@
-import { presenceOf, presenceTravelingTag } from '@/domain/friends/presence';
 import {
-    parseLocation,
+    presenceOf,
+    presenceTravelingTag,
     resolveFriendPresenceLocation
-} from '@/shared/utils/location';
+} from '@/domain/friends/presence';
+import { parseLocation } from '@/shared/utils/location';
 
 import {
     localized,

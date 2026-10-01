@@ -1,8 +1,3 @@
-import {
-    presenceLocationTag,
-    presenceOfSelfOrRef
-} from '@/domain/friends/presence';
-
 import { normalizeString } from './string';
 
 export interface ParsedLocation extends Record<string, unknown> {
@@ -447,23 +442,6 @@ function translateAccessType(
 
 export { parseLocation, displayLocation, resolveRegion, translateAccessType };
 
-type FriendListMembershipValue = boolean | object | null | undefined;
-type FriendListMembership =
-    | ReadonlySet<string>
-    | ReadonlyMap<string, FriendListMembershipValue>
-    | readonly string[]
-    | Readonly<Record<string, FriendListMembershipValue>>;
-
-interface LastLocation {
-    friendList?: FriendListMembership;
-    location?: string | null;
-}
-
-interface ResolveFriendPresenceOptions {
-    preferTraveling?: boolean;
-    requireInstance?: boolean;
-}
-
 interface LocationTextOptions {
     hint?: string;
     worldName?: string;
@@ -538,55 +516,6 @@ function locationSentinel(value: unknown): LocationSentinel | '' {
 }
 
 export { locationSentinel, normalizeLocationStatus, normalizeLocationValue };
-export type { FriendListMembership };
-
-function getObject(value: unknown): LocationRecord | null {
-    return value && typeof value === 'object'
-        ? (value as LocationRecord)
-        : null;
-}
-
-function getFriendId(friend: unknown): string {
-    const direct = getObject(friend);
-    const ref = getObject(direct?.ref);
-    return normalizeLocationValue(
-        direct?.id || direct?.userId || ref?.id || ref?.userId
-    );
-}
-
-function isLastLocationFriend(
-    lastLocation: LastLocation | null | undefined,
-    friend: unknown
-): boolean {
-    const friendId = getFriendId(friend);
-    if (!friendId) {
-        return false;
-    }
-    const friendList = lastLocation?.friendList;
-    if (friendList instanceof Set || friendList instanceof Map) {
-        return friendList.has(friendId);
-    }
-    if (Array.isArray(friendList)) {
-        return friendList.some(
-            (candidate) => normalizeLocationValue(candidate) === friendId
-        );
-    }
-    return Boolean(
-        friendList &&
-        typeof friendList === 'object' &&
-        Reflect.get(friendList, friendId)
-    );
-}
-
-function resolveFriendPresenceLocation(
-    friend: unknown,
-    options: ResolveFriendPresenceOptions = {}
-): string {
-    const presence = presenceOfSelfOrRef(friend);
-    return presence ? presenceLocationTag(presence, options) : '';
-}
-
-export { isLastLocationFriend, resolveFriendPresenceLocation };
 
 /**
  * Get the display text for a location — synchronous, pure function.
