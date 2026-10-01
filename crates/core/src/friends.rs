@@ -191,7 +191,6 @@ pub struct FriendBaselinePresence {
     pub state: CompactString,
     pub location: String,
     pub traveling_to_location: String,
-    pub world_id: String,
     pub platform: CompactString,
 }
 
@@ -414,7 +413,6 @@ mod tests {
                 state: "online".into(),
                 location: "wrld_a:1".into(),
                 traveling_to_location: "wrld_b:2".into(),
-                world_id: "wrld_a".into(),
                 platform: "standalonewindows".into(),
             }
         );
