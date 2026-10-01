@@ -1,6 +1,6 @@
 import { resolveFriendPresenceLocation } from '@/domain/friends/presence';
 import {
-    isExplicitlyOfflineFriend,
+    isOfflineOrLeavingFriend,
     resolveObservedPlayerUserId
 } from '@/domain/friends/sameInstanceFriends';
 import {
@@ -47,7 +47,7 @@ function filterVisibleUserDialogLocationUsers<TUser>({
             (userId === normalizedOwnerId ||
                 userId === normalizedCurrentUserId ||
                 (friend &&
-                    !isExplicitlyOfflineFriend(friend) &&
+                    !isOfflineOrLeavingFriend(friend) &&
                     !friendIsElsewhere &&
                     (!memberUserIds || memberUserIds.has(userId))))
         );

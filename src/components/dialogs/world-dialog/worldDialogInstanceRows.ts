@@ -3,7 +3,7 @@ import type { EntityRecord } from '@/domain/entities/shared';
 import type { WorldProfileRecord } from '@/domain/entities/world';
 import { resolveFriendPresenceLocation } from '@/domain/friends/presence';
 import {
-    isExplicitlyOfflineFriend,
+    isOfflineOrLeavingFriend,
     resolveObservedPlayerUserId
 } from '@/domain/friends/sameInstanceFriends';
 import type {
@@ -153,7 +153,7 @@ export function buildWorldDialogDisplayInstanceRows({
             };
         })
         .filter(
-            (player) => !isExplicitlyOfflineFriend(friendsById[player.userId])
+            (player) => !isOfflineOrLeavingFriend(friendsById[player.userId])
         );
     const currentInstanceRow: WorldDialogInstanceRow | null =
         parsedCurrentInstanceLocation?.worldId &&
@@ -273,7 +273,7 @@ export function buildWorldDialogDisplayInstanceRows({
                 : [currentInstanceRow, ...normalizedInstanceRows]
             : normalizedInstanceRows;
     const friendLocations = Object.values(friendsById || {})
-        .filter((friend) => !isExplicitlyOfflineFriend(friend))
+        .filter((friend) => !isOfflineOrLeavingFriend(friend))
         .map((friend) => ({
             friend,
             location: resolveFriendPresenceLocation(friend, {
@@ -352,7 +352,7 @@ export function buildWorldDialogDisplayInstanceRows({
                 requireInstance: true
             });
             return Boolean(
-                !isExplicitlyOfflineFriend(friend) &&
+                !isOfflineOrLeavingFriend(friend) &&
                 (!friendLocation || sameLocationTag(friendLocation, location))
             );
         });

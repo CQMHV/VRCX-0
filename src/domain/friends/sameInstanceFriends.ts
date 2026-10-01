@@ -166,7 +166,7 @@ function isOnlineSameInstanceFriend(friend: unknown): boolean {
     return presenceOfSelfOrRef(friend)?.kind === 'online';
 }
 
-function isExplicitlyOfflineFriend(friend: unknown): boolean {
+function isOfflineOrLeavingFriend(friend: unknown): boolean {
     const kind = presenceOfSelfOrRef(friend)?.kind;
     return kind === 'offline' || kind === 'pendingOffline';
 }
@@ -246,7 +246,7 @@ function buildSameInstanceFriendGroups<TFriend>(
 
 export {
     buildSameInstanceFriendGroups,
-    isExplicitlyOfflineFriend,
+    isOfflineOrLeavingFriend,
     resolveObservedPlayerUserId,
     resolveObservedPlayerUserIds,
     resolveSameInstanceFriendLocation

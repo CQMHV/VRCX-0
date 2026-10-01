@@ -2,7 +2,7 @@ import { AppleIcon, MonitorIcon, RectangleGogglesIcon } from 'lucide-react';
 
 import { resolveFriendPresenceLocation } from '@/domain/friends/presence';
 import {
-    isExplicitlyOfflineFriend,
+    isOfflineOrLeavingFriend,
     resolveObservedPlayerUserIds
 } from '@/domain/friends/sameInstanceFriends';
 import type { CurrentInstanceRosterPlayer } from '@/domain/instances/currentInstanceRoster';
@@ -138,7 +138,7 @@ export function resolveUserDialogTargetPresenceLocation({
     const normalizedTargetUserId = normalizeUserId(targetUserId);
     if (
         normalizedTargetUserId &&
-        isExplicitlyOfflineFriend(friendsById[normalizedTargetUserId])
+        isOfflineOrLeavingFriend(friendsById[normalizedTargetUserId])
     ) {
         return 'offline';
     }
