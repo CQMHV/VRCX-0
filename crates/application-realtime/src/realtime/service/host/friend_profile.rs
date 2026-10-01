@@ -22,7 +22,7 @@ const FRIEND_PROFILE_REFETCH_THROTTLE_MS: i64 = 10_000;
 #[derive(Clone, Copy)]
 pub(super) struct FriendProfileRefreshExpectation {
     pub(super) generation: u64,
-    pub(super) sequence: u64,
+    pub(super) rev: u64,
 }
 
 impl RealtimeHostRuntime {
@@ -70,10 +70,10 @@ impl RealtimeHostRuntime {
         {
             return Ok(false);
         }
-        match self.friends.apply_refetched_user_profile_if_sequence(
+        match self.friends.apply_refetched_user_profile_if_rev(
             active.generation,
             &normalized_user_id,
-            expectation.sequence,
+            expectation.rev,
             profile,
             &chrono::Utc::now().to_rfc3339(),
         ) {
@@ -267,7 +267,7 @@ impl RealtimeHostRuntime {
             .deps
             .remote_requests
             .user(endpoint.clone(), user_id_input)?;
-        let refresh_expectation = self.capture_friend_state_sequence(&user_id);
+        let refresh_expectation = self.capture_friend_rev(&user_id);
         if options.cache_policy == UserQueryCachePolicy::Refresh {
             self.user_query_cache
                 .invalidate_user(&endpoint, &user_id)
@@ -326,10 +326,7 @@ impl RealtimeHostRuntime {
         Ok(value)
     }
 
-    fn capture_friend_state_sequence(
-        &self,
-        user_id: &str,
-    ) -> Option<FriendProfileRefreshExpectation> {
+    fn capture_friend_rev(&self, user_id: &str) -> Option<FriendProfileRefreshExpectation> {
         let generation = {
             let state = self.state.lock().ok()?;
             state
@@ -339,11 +336,8 @@ impl RealtimeHostRuntime {
                 .map(|active| active.generation)?
         };
         self.friends
-            .friend_state_sequence_for_user(generation, user_id)
-            .map(|sequence| FriendProfileRefreshExpectation {
-                generation,
-                sequence,
-            })
+            .friend_rev_of(generation, user_id)
+            .map(|rev| FriendProfileRefreshExpectation { generation, rev })
     }
 
     pub async fn invalidate_user_query_cache(&self, endpoint: &str, user_id: &str) {
@@ -437,9 +431,7 @@ impl RealtimeHostRuntime {
                 if recent {
                     continue;
                 }
-                let Some(expected_sequence) = self
-                    .friends
-                    .friend_state_sequence_for_user(active.generation, &user_id)
+                let Some(expected_rev) = self.friends.friend_rev_of(active.generation, &user_id)
                 else {
                     continue;
                 };
@@ -447,16 +439,16 @@ impl RealtimeHostRuntime {
                     .friend_profile
                     .refetches
                     .insert(user_id.clone(), now_ms);
-                refetches.push((user_id, expected_sequence));
+                refetches.push((user_id, expected_rev));
             }
             (active, refetches)
         };
-        for (user_id, expected_sequence) in refetches {
+        for (user_id, expected_rev) in refetches {
             let runtime = Arc::clone(self);
             let active = active.clone();
             self.deps.tasks.spawn(async move {
                 runtime
-                    .refetch_friend_profile(active, user_id, expected_sequence)
+                    .refetch_friend_profile(active, user_id, expected_rev)
                     .await;
             });
         }
@@ -466,7 +458,7 @@ impl RealtimeHostRuntime {
         self: Arc<Self>,
         active: ActiveRealtimeContext,
         user_id: String,
-        expected_sequence: u64,
+        expected_rev: u64,
     ) {
         {
             let state = match self.state.lock() {
@@ -546,10 +538,10 @@ impl RealtimeHostRuntime {
                     return;
                 }
             }
-            match self.friends.apply_refetched_user_profile_if_sequence(
+            match self.friends.apply_refetched_user_profile_if_rev(
                 active.generation,
                 &user_id,
-                expected_sequence,
+                expected_rev,
                 profile,
                 &chrono::Utc::now().to_rfc3339(),
             ) {

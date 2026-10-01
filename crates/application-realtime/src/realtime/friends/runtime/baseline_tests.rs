@@ -452,7 +452,7 @@ mod tests {
             output.wake.is_some(),
             "offline should schedule pending timer"
         );
-        let watermark = runtime.baseline_causal_watermark().friend_state_sequence;
+        let watermark = runtime.baseline_causal_watermark().friend_rev;
 
         let effects = runtime.set_baseline_with_effects(
             FriendRosterBaseline {

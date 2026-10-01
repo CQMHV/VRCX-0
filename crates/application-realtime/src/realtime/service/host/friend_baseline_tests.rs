@@ -1585,10 +1585,10 @@ fn apply_friend_profile_refresh_updates_existing_friend_only() -> Result<()> {
         .runtime()
         .sync_friend_snapshot(active_session.clone(), Some(7), friends_by_id)?;
 
-    let friend_sequence = runtime
+    let friend_rev = runtime
         .runtime()
         .friends
-        .friend_state_sequence_for_user(7, "usr_friend")
+        .friend_rev_of(7, "usr_friend")
         .expect("friend should have a causal sequence");
     let updated = runtime.runtime().apply_friend_profile_refresh(
         active_session.endpoint.clone(),
@@ -1601,7 +1601,7 @@ fn apply_friend_profile_refresh_updates_existing_friend_only() -> Result<()> {
         }),
         FriendProfileRefreshExpectation {
             generation: 7,
-            sequence: friend_sequence,
+            rev: friend_rev,
         },
     )?;
     let stranger_added = runtime.runtime().apply_friend_profile_refresh(
@@ -1614,7 +1614,7 @@ fn apply_friend_profile_refresh_updates_existing_friend_only() -> Result<()> {
         }),
         FriendProfileRefreshExpectation {
             generation: 7,
-            sequence: 0,
+            rev: 0,
         },
     )?;
 

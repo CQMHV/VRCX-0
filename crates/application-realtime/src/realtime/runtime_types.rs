@@ -59,7 +59,7 @@ pub struct FriendBaselineResult {
 pub struct FriendBaselineCausalWatermark {
     pub generation: Option<u64>,
     pub baseline_revision: Option<u64>,
-    pub friend_state_sequence: u64,
+    pub friend_rev: u64,
     pub friend_log_sequence: u64,
 }
 

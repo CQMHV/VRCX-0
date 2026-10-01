@@ -325,7 +325,7 @@ impl RealtimeHostRuntime {
                 },
                 active.generation,
                 baseline_revision,
-                causal_watermark.map(|watermark| watermark.friend_state_sequence),
+                causal_watermark.map(|watermark| watermark.friend_rev),
                 chrono::Utc::now().timestamp_millis(),
             );
             FriendBaselineApplyPlan {

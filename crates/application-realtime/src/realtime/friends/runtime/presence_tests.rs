@@ -1085,7 +1085,7 @@ mod tests {
 
         let runtime = runtime_with_online_friend("wrld_1:123");
         let before_snapshot = runtime.snapshot().expect("baseline snapshot");
-        let before_sequence = runtime.friend_state_sequence_for_user(1, "usr_friend");
+        let before_rev = runtime.friend_rev_of(1, "usr_friend");
 
         let result = runtime.apply_ws_message(&RealtimeWsMessagePayload {
             json: json!({
@@ -1104,10 +1104,7 @@ mod tests {
 
         assert!(matches!(result, RealtimeFriendApplyResult::Ignored));
         assert_eq!(runtime.snapshot(), Some(before_snapshot));
-        assert_eq!(
-            runtime.friend_state_sequence_for_user(1, "usr_friend"),
-            before_sequence
-        );
+        assert_eq!(runtime.friend_rev_of(1, "usr_friend"), before_rev);
     }
 
     #[test]

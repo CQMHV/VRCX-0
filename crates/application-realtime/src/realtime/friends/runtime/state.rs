@@ -77,8 +77,8 @@ struct ExpectedFriendScope<'a> {
 
 #[derive(Debug, Default)]
 pub(super) struct RealtimeFriendState {
-    pub(super) friend_state_sequence: u64,
-    pub(super) friend_state_sequence_by_user: HashMap<String, u64>,
+    pub(super) friend_rev: u64,
+    pub(super) friend_rev_by_user: HashMap<String, u64>,
     pub(super) roster: Option<Roster>,
     pub(super) friend_user_ids_snapshot: Option<Arc<HashSet<String>>>,
     pub(super) instance_dwell: Arc<InstanceDwellRegistry>,
@@ -93,8 +93,8 @@ impl RealtimeFriendState {
         self.roster.as_ref()?.entries.get(user_id)
     }
 
-    fn sequence_of(&self, user_id: &str) -> u64 {
-        self.friend_state_sequence_by_user
+    fn rev_of(&self, user_id: &str) -> u64 {
+        self.friend_rev_by_user
             .get(user_id)
             .copied()
             .unwrap_or_default()
@@ -121,7 +121,7 @@ impl RealtimeFriendsRuntime {
         FriendBaselineCausalWatermark {
             generation: state.roster.as_ref().map(|roster| roster.generation),
             baseline_revision: state.roster.as_ref().map(|roster| roster.baseline_revision),
-            friend_state_sequence: state.friend_state_sequence,
+            friend_rev: state.friend_rev,
             friend_log_sequence: 0,
         }
     }
@@ -147,7 +147,7 @@ impl RealtimeFriendsRuntime {
         baseline: FriendRosterBaseline,
         generation: u64,
         baseline_revision: u64,
-        friend_state_sequence_watermark: Option<u64>,
+        friend_rev_watermark: Option<u64>,
         now_ms: i64,
     ) -> FriendBaselineEffects {
         let baseline = baseline.normalized();
@@ -157,7 +157,7 @@ impl RealtimeFriendsRuntime {
             .single()
             .map(|time| time.to_rfc3339())
             .unwrap_or_default();
-        let watermark = friend_state_sequence_watermark.unwrap_or(0);
+        let watermark = friend_rev_watermark.unwrap_or(0);
         let replaced = state.roster.take();
         let previous_ids = replaced
             .as_ref()
@@ -174,7 +174,7 @@ impl RealtimeFriendsRuntime {
             .as_ref()
             .is_none_or(|roster| roster.generation != generation);
         if new_generation {
-            state.friend_state_sequence_by_user.clear();
+            state.friend_rev_by_user.clear();
         }
         let mut confirmed_feed_entries = Vec::new();
         let mut schedules = Vec::new();
@@ -184,7 +184,7 @@ impl RealtimeFriendsRuntime {
             let existing_entry = existing
                 .as_ref()
                 .and_then(|roster| roster.entries.get(&user_id));
-            if existing.is_some() && state.sequence_of(&user_id) > watermark {
+            if existing.is_some() && state.rev_of(&user_id) > watermark {
                 if let Some(entry) = existing_entry {
                     entries.insert(user_id, entry.clone());
                 }
@@ -236,7 +236,7 @@ impl RealtimeFriendsRuntime {
         }
         if let Some(existing) = existing.as_ref() {
             for (user_id, entry) in &existing.entries {
-                if !entries.contains_key(user_id) && state.sequence_of(user_id) > watermark {
+                if !entries.contains_key(user_id) && state.rev_of(user_id) > watermark {
                     entries.insert(user_id.clone(), entry.clone());
                 }
             }
@@ -290,12 +290,10 @@ impl RealtimeFriendsRuntime {
             state.invalidate_friend_user_ids_snapshot();
         }
         if !changed_user_ids.is_empty() {
-            state.friend_state_sequence = state.friend_state_sequence.saturating_add(1);
-            let sequence = state.friend_state_sequence;
+            state.friend_rev = state.friend_rev.saturating_add(1);
+            let rev = state.friend_rev;
             for user_id in changed_user_ids {
-                state
-                    .friend_state_sequence_by_user
-                    .insert(user_id, sequence);
+                state.friend_rev_by_user.insert(user_id, rev);
             }
         }
 
@@ -317,7 +315,7 @@ impl RealtimeFriendsRuntime {
         let mut state = self.lock_state();
         state.roster = None;
         state.invalidate_friend_user_ids_snapshot();
-        state.friend_state_sequence_by_user.clear();
+        state.friend_rev_by_user.clear();
         state.instance_dwell.clear();
     }
 
@@ -344,7 +342,7 @@ impl RealtimeFriendsRuntime {
             })
             .collect();
         let friend_user_ids = roster.entries.keys().cloned().collect();
-        state.friend_state_sequence_by_user.clear();
+        state.friend_rev_by_user.clear();
         Some((friend_user_ids, schedules))
     }
 
@@ -447,11 +445,7 @@ impl RealtimeFriendsRuntime {
                 .is_some_and(|roster| roster.entries.contains_key(user_id))
     }
 
-    pub(crate) fn friend_state_sequence_for_user(
-        &self,
-        generation: u64,
-        user_id: &str,
-    ) -> Option<u64> {
+    pub(crate) fn friend_rev_of(&self, generation: u64, user_id: &str) -> Option<u64> {
         let user_id = user_id.trim();
         let state = self.lock_state();
         let roster = state.roster.as_ref()?;
@@ -461,7 +455,7 @@ impl RealtimeFriendsRuntime {
         {
             return None;
         }
-        Some(state.sequence_of(user_id))
+        Some(state.rev_of(user_id))
     }
 
     pub fn apply_ws_message(
@@ -554,11 +548,11 @@ impl RealtimeFriendsRuntime {
         finish_output(&mut state, output)
     }
 
-    pub(crate) fn apply_refetched_user_profile_if_sequence(
+    pub(crate) fn apply_refetched_user_profile_if_rev(
         &self,
         generation: u64,
         user_id: &str,
-        expected_sequence: u64,
+        expected_rev: u64,
         profile: Value,
         received_at: &str,
     ) -> RealtimeFriendApplyResult {
@@ -570,7 +564,7 @@ impl RealtimeFriendsRuntime {
         if roster.generation != generation
             || user_id.is_empty()
             || !roster.entries.contains_key(user_id)
-            || state.sequence_of(user_id) != expected_sequence
+            || state.rev_of(user_id) != expected_rev
         {
             return RealtimeFriendApplyResult::Ignored;
         }
@@ -584,7 +578,7 @@ impl RealtimeFriendsRuntime {
         let mut state = self.lock_state();
         let now = EventTime::from_received_at(now_iso);
         let mut output = apply_presence_evidence(&mut state, user_id, &Evidence::wake(), &now)?;
-        record_output_friend_state_sequence(&mut state, &mut output);
+        stamp_output_revs(&mut state, &mut output);
         Some(output)
     }
 
@@ -620,7 +614,7 @@ fn finish_output(
     let Some(mut output) = output else {
         return RealtimeFriendApplyResult::Ignored;
     };
-    record_output_friend_state_sequence(state, &mut output);
+    stamp_output_revs(state, &mut output);
     RealtimeFriendApplyResult::Output(Box::new(output))
 }
 
@@ -635,7 +629,7 @@ fn presence_entries(
             (
                 user_id.clone(),
                 PresenceEntry {
-                    rev: state.sequence_of(user_id),
+                    rev: state.rev_of(user_id),
                     view: presence_view(&entry.presence),
                 },
             )
@@ -661,10 +655,7 @@ fn current_friend_roster_snapshot(
     }))
 }
 
-fn record_output_friend_state_sequence(
-    state: &mut RealtimeFriendState,
-    output: &mut RealtimeFriendOutput,
-) {
+fn stamp_output_revs(state: &mut RealtimeFriendState, output: &mut RealtimeFriendOutput) {
     let user_ids = output
         .projection
         .patches
@@ -675,15 +666,13 @@ fn record_output_friend_state_sequence(
     if user_ids.is_empty() {
         return;
     }
-    state.friend_state_sequence = state.friend_state_sequence.saturating_add(1);
-    let sequence = state.friend_state_sequence;
+    state.friend_rev = state.friend_rev.saturating_add(1);
+    let rev = state.friend_rev;
     for user_id in user_ids {
-        state
-            .friend_state_sequence_by_user
-            .insert(user_id, sequence);
+        state.friend_rev_by_user.insert(user_id, rev);
     }
     for patch in &mut output.projection.patches {
-        patch.presence.rev = sequence;
+        patch.presence.rev = rev;
     }
 }
 

@@ -626,10 +626,10 @@ fn bulk_profile_refresh_applies_when_friend_sequence_matches() -> Result<()> {
         7,
         1,
     );
-    let expected_sequence = runtime
+    let expected_rev = runtime
         .runtime()
         .friends
-        .friend_state_sequence_for_user(7, "usr_friend")
+        .friend_rev_of(7, "usr_friend")
         .expect("friend should have a causal sequence");
     let profile = json!({
         "id": "usr_friend",
@@ -645,7 +645,7 @@ fn bulk_profile_refresh_applies_when_friend_sequence_matches() -> Result<()> {
         profile.clone(),
         FriendProfileRefreshExpectation {
             generation: 6,
-            sequence: expected_sequence,
+            rev: expected_rev,
         },
     )?);
     assert!(runtime.runtime().apply_friend_profile_refresh(
@@ -654,7 +654,7 @@ fn bulk_profile_refresh_applies_when_friend_sequence_matches() -> Result<()> {
         profile,
         FriendProfileRefreshExpectation {
             generation: 7,
-            sequence: expected_sequence,
+            rev: expected_rev,
         },
     )?);
 
@@ -686,10 +686,10 @@ fn bulk_profile_refresh_is_discarded_when_friend_sequence_advanced() -> Result<(
         7,
         1,
     );
-    let stale_sequence = runtime
+    let stale_rev = runtime
         .runtime()
         .friends
-        .friend_state_sequence_for_user(7, "usr_friend")
+        .friend_rev_of(7, "usr_friend")
         .expect("friend should have a causal sequence");
 
     // A websocket update advances the friend-state sequence past the captured one.
@@ -723,7 +723,7 @@ fn bulk_profile_refresh_is_discarded_when_friend_sequence_advanced() -> Result<(
         }),
         FriendProfileRefreshExpectation {
             generation: 7,
-            sequence: stale_sequence,
+            rev: stale_rev,
         },
     )?);
 
@@ -843,10 +843,10 @@ async fn cached_user_response_does_not_revert_display_name() -> Result<()> {
         .tasks
         .set_executor(DiscardTaskExecutor);
 
-    let rename_sequence = runtime
+    let rename_rev = runtime
         .runtime()
         .friends
-        .friend_state_sequence_for_user(7, "usr_friend")
+        .friend_rev_of(7, "usr_friend")
         .expect("friend should have a causal sequence");
     assert!(runtime.runtime().apply_friend_profile_refresh(
         active_session.endpoint.clone(),
@@ -859,7 +859,7 @@ async fn cached_user_response_does_not_revert_display_name() -> Result<()> {
         }),
         FriendProfileRefreshExpectation {
             generation: 7,
-            sequence: rename_sequence,
+            rev: rename_rev,
         },
     )?);
 
