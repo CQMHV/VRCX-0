@@ -5,13 +5,13 @@ import {
 } from '@/domain/friends/presence';
 import { parseLocation } from '@/shared/utils/location';
 
+import { resolveFriendGroupName, resolveFriendWorldName } from './names';
 import {
     localized,
     normalizeFriendsLocationId,
     resolveWorldIdCandidate,
     sourceFromFriend
 } from './normalization';
-import { resolveFriendGroupName, resolveFriendWorldName } from './presence';
 import type {
     FriendLocationFriend,
     FriendLocationTarget,

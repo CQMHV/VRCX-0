@@ -1,4 +1,3 @@
-import type { SameInstanceLastLocation } from '@/domain/friends/sameInstanceFriends';
 import type {
     FriendProfileFields,
     FriendRecord,
@@ -34,8 +33,6 @@ export type FriendLocationRecord = FriendRecordInput &
     };
 
 export type FriendLocationFriend = FriendRecord | FriendLocationRecord;
-
-export type FriendsLocationsLastLocation = SameInstanceLastLocation;
 
 export type SameInstanceGroup<
     TFriend extends FriendLocationFriend = FriendLocationFriend

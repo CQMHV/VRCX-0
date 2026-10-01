@@ -49,8 +49,6 @@ export type SidebarPreferences = {
     sidebarSortMethod3?: FriendSortMethod | '';
 };
 
-export type LastLocationSnapshot = SameInstanceLastLocation;
-
 type SidebarStatusOptions = {
     hideNonFriend?: boolean;
 };
@@ -182,7 +180,7 @@ export function sortActiveRows<TRow extends SidebarFriendRecord>(
 export function buildSameInstanceGroups(
     rows: readonly SidebarFriendRecord[],
     prefs: SidebarPreferences,
-    lastLocation: LastLocationSnapshot | null | undefined,
+    lastLocation: SameInstanceLastLocation | null | undefined,
     locationTimes?: Readonly<Record<string, FriendLocationTimeEntry>>,
     sortContext?: FriendSortContext
 ) {

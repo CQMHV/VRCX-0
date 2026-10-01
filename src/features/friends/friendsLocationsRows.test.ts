@@ -7,7 +7,6 @@ import {
 } from '@/test/presenceFixtures';
 
 import {
-    buildSameInstanceGroups,
     isFriendInPrivateLocation,
     normalizeDisplayText,
     normalizeFriendsLocationId,
@@ -89,66 +88,6 @@ describe('friends locations row helpers', () => {
                 Local: ['usr_2', '']
             })
         ]).toEqual(['usr_1', 'usr_2']);
-    });
-
-    it('groups friends who share the same concrete instance location', () => {
-        const sharedLocation = 'wrld_aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa:123';
-        const soloLocation = 'wrld_bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb:456';
-        const first = {
-            id: 'usr_1',
-            displayName: 'First',
-            $presence: onlinePresence(sharedLocation)
-        };
-        const second = {
-            id: 'usr_2',
-            displayName: 'Second',
-            $presence: onlinePresence(sharedLocation)
-        };
-        const solo = {
-            id: 'usr_3',
-            displayName: 'Solo',
-            $presence: onlinePresence(soloLocation)
-        };
-
-        expect(buildSameInstanceGroups([first, solo, second])).toEqual([
-            {
-                location: sharedLocation,
-                friends: [first, second]
-            }
-        ]);
-    });
-
-    it('matches the sidebar threshold for the current instance', () => {
-        const currentLocation = 'wrld_aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa:123';
-        const otherLocation = 'wrld_bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb:456';
-        const friendWithCurrentUser = {
-            id: 'usr_1',
-            displayName: 'With current user',
-            $presence: onlinePresence(currentLocation)
-        };
-        const soloElsewhere = {
-            id: 'usr_2',
-            displayName: 'Solo elsewhere',
-            $presence: onlinePresence(otherLocation)
-        };
-
-        expect(
-            buildSameInstanceGroups([friendWithCurrentUser, soloElsewhere], {
-                location: currentLocation
-            })
-        ).toEqual([]);
-        expect(
-            buildSameInstanceGroups(
-                [friendWithCurrentUser, soloElsewhere],
-                { location: currentLocation },
-                { includeCurrentUser: true }
-            )
-        ).toEqual([
-            {
-                location: currentLocation,
-                friends: [friendWithCurrentUser]
-            }
-        ]);
     });
 
     it('matches search text against friend and location summary fields', () => {

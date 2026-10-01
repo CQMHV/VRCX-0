@@ -1,7 +1,11 @@
 import { hasWorldIdPrefix } from '@/shared/constants/vrchatIds';
 import { isRecord } from '@/shared/utils/record';
 
-import type { FriendLocationRecord, TranslationFn } from './types';
+import type {
+    FriendLocationFriend,
+    FriendLocationRecord,
+    TranslationFn
+} from './types';
 
 export { isRecord };
 
@@ -134,4 +138,26 @@ export function resolveDisplayWorldName(...values: unknown[]) {
         }
     }
     return '';
+}
+
+export function uniqueFriendsById<TFriend extends FriendLocationFriend>(
+    friends: TFriend[] | null
+) {
+    const seen = new Set<string>();
+    const rows: TFriend[] = [];
+    for (const friend of friends ?? []) {
+        const id = normalizeFriendsLocationId(
+            isRecord(friend) ? friend.id || friend.userId : ''
+        );
+        if (!id) {
+            rows.push(friend);
+            continue;
+        }
+        if (seen.has(id)) {
+            continue;
+        }
+        seen.add(id);
+        rows.push(friend);
+    }
+    return rows;
 }

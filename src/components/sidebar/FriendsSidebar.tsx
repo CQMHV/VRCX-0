@@ -10,7 +10,10 @@ import {
     presenceLiveInstanceTag,
     presenceSection
 } from '@/domain/friends/presence';
-import { resolveObservedPlayerUserIds } from '@/domain/friends/sameInstanceFriends';
+import {
+    resolveObservedPlayerUserIds,
+    type SameInstanceLastLocation
+} from '@/domain/friends/sameInstanceFriends';
 import type { FriendRecord, FriendRosterById } from '@/domain/friends/types';
 import { useFriendSortContext } from '@/lib/useFriendStats';
 import { subscribeRecentActions } from '@/services/recentActionService';
@@ -36,7 +39,6 @@ import {
     resolveCurrentInviteLocation,
     sortActiveRows,
     sortRows,
-    type LastLocationSnapshot,
     type SidebarFriendRecord,
     type SidebarPreferences
 } from './friends-sidebar/friendsSidebarModel';
@@ -184,7 +186,7 @@ export function FriendsSidebar({
         () => resolveCurrentInviteLocation(gameState, currentUser),
         [currentUser, gameState]
     );
-    const currentLocationSnapshot = useMemo<LastLocationSnapshot>(
+    const currentLocationSnapshot = useMemo<SameInstanceLastLocation>(
         () => ({
             location: currentInviteLocation,
             friendList: new Set(

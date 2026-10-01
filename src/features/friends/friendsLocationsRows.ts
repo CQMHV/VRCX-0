@@ -4,15 +4,13 @@ export {
     normalizeDisplayText,
     normalizeFriendsLocationId,
     resolveDisplayWorldName,
-    resolveWorldIdCandidate
+    resolveWorldIdCandidate,
+    uniqueFriendsById
 } from './friends-locations-rows/normalization';
 export {
-    buildSameInstanceGroups,
-    isShareableInstanceLocation,
     resolveFriendGroupName,
-    resolveFriendWorldName,
-    uniqueFriendsById
-} from './friends-locations-rows/presence';
+    resolveFriendWorldName
+} from './friends-locations-rows/names';
 export {
     isFriendInPrivateLocation,
     locationTarget,

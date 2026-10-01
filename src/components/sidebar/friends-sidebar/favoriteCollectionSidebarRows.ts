@@ -1,10 +1,10 @@
+import type { SameInstanceLastLocation } from '@/domain/friends/sameInstanceFriends';
 import type { FriendSortContext } from '@/shared/utils/friend';
 import { normalizeString as normalizeId } from '@/shared/utils/string';
 import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
 
 import {
     buildSameInstanceGroups,
-    type LastLocationSnapshot,
     type SameInstanceGroup,
     type SidebarFriendRecord,
     type SidebarPreferences
@@ -109,7 +109,7 @@ export function buildFavoriteCollectionSameInstanceGroups({
 }: {
     rows: readonly SidebarFriendRecord[];
     prefs: SidebarPreferences;
-    currentLocationSnapshot: LastLocationSnapshot;
+    currentLocationSnapshot: SameInstanceLastLocation;
     locationTimes?: Readonly<Record<string, FriendLocationTimeEntry>>;
     sortContext?: FriendSortContext;
 }): SameInstanceGroup[] {

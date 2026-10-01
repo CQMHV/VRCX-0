@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next';
 
 import type { FavoriteGroup, FavoriteGroupMap } from '@/domain/favorites/types';
 import { presenceOf } from '@/domain/friends/presence';
-import { resolveObservedPlayerUserIds } from '@/domain/friends/sameInstanceFriends';
+import {
+    buildSameInstanceFriendGroups,
+    resolveObservedPlayerUserIds
+} from '@/domain/friends/sameInstanceFriends';
 import type { FriendRecord, FriendRosterById } from '@/domain/friends/types';
 import type { CurrentInstanceRosterPlayer } from '@/domain/instances/currentInstanceRoster';
 import {
@@ -33,7 +36,6 @@ import {
     type FriendsLocationsDensity
 } from './friendsLocationsDensity';
 import {
-    buildSameInstanceGroups,
     normalizeFriendsLocationId as normalizeId,
     partitionFriendsByPrivateLocation,
     resolveFriendsLocationsCurrentInviteLocation as resolveCurrentInviteLocation,
@@ -409,7 +411,7 @@ export function useFriendsLocationsPageDerivedState({
                   sortContext
               )
             : onlineFriends;
-        const groups = buildSameInstanceGroups(
+        const groups = buildSameInstanceFriendGroups(
             candidates,
             currentLocationSnapshot,
             {
