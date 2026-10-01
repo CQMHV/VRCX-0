@@ -89,57 +89,22 @@ impl RealtimeHostRuntime {
     pub(super) fn refresh_current_user_snapshot_after_update(
         self: &Arc<Self>,
         generation: u64,
-        session: RealtimeSessionContext,
         overlay_patch: serde_json::Map<String, Value>,
     ) {
         let runtime = Arc::clone(self);
         self.deps.tasks.spawn(async move {
-            let request = match runtime
-                .deps
-                .remote_requests
-                .current_user(session.endpoint.clone())
+            if !runtime
+                .active_current_user_context()
+                .is_some_and(|active| active.generation == generation)
             {
-                Ok(request) => request,
-                Err(error) => {
-                    tracing::warn!("Realtime current user refresh input failed: {error}");
-                    return;
-                }
-            };
-            let response = match runtime
-                .deps
-                .web
-                .execute_api(request, ApiScope::Vrchat)
-                .await
-            {
-                Ok(result) => result,
-                Err(error) => {
-                    tracing::warn!("Realtime current user refresh failed: {error}");
-                    return;
-                }
-            };
-            if !(200..300).contains(&response.status) {
-                tracing::warn!(
-                    status = response.status,
-                    "Realtime current user refresh returned non-success"
-                );
                 return;
             }
-            let snapshot = match serde_json::from_str::<Value>(&response.data) {
-                Ok(snapshot) => snapshot,
-                Err(error) => {
-                    tracing::warn!("Realtime current user refresh json failed: {error}");
-                    return;
-                }
-            };
-            let Some(output) = runtime.current_user.apply_refreshed_snapshot(
-                generation,
-                snapshot,
-                serde_json::Value::Object(overlay_patch),
-                runtime.current_user_authority(),
-            ) else {
-                return;
-            };
-            runtime.apply_current_user_output(output);
+            if let Err(error) = runtime
+                .refresh_current_user_once(Value::Object(overlay_patch))
+                .await
+            {
+                tracing::warn!("Realtime current user refresh failed: {error}");
+            }
         });
     }
 

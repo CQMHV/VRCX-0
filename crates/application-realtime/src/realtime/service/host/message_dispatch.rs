@@ -135,7 +135,6 @@ impl RealtimeMessageSink for RealtimeHostRuntimeMessageSink {
             if is_user_update {
                 self.runtime.refresh_current_user_snapshot_after_update(
                     generation,
-                    session.clone(),
                     overlay_patch.into_map(),
                 );
             }
