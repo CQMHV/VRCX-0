@@ -13,11 +13,10 @@ use crate::realtime::friends::trust_level_feed_entry;
 use crate::realtime::RealtimeFriendSnapshot;
 
 use super::super::{
-    auth_scope_matches, execute_vrchat_json_request, extend_unique,
-    fetch_friend_statuses_concurrent, normalize_text, object_field_string,
-    refetch_users_concurrent, stale_friend_output, value_as_string, FriendBaselineSyncOutcome,
-    Ordering, RawJson, SocialBaselineDeps, SocialFriendRosterBaselineInput,
-    SocialFriendRosterBaselineOutput,
+    auth_scope_matches, execute_vrchat_json_request, fetch_friend_statuses_concurrent,
+    normalize_text, object_field_string, refetch_users_concurrent, stale_friend_output,
+    value_as_string, FriendBaselineSyncOutcome, Ordering, RawJson, SocialBaselineDeps,
+    SocialFriendRosterBaselineInput, SocialFriendRosterBaselineOutput,
 };
 use super::current_user_snapshot::CurrentUserSnapshotView;
 use super::entry::{build_fast_roster_records, infer_state_from_platform};
@@ -152,7 +151,6 @@ pub(crate) async fn build_friend_roster_baseline(
     let CurrentUserSnapshotView {
         mut state_by_id,
         state_order_ids,
-        friend_ids: snapshot_friend_ids,
         has_friend_list,
         ..
     } = current_user;
@@ -162,10 +160,7 @@ pub(crate) async fn build_friend_roster_baseline(
             friends_by_id: None,
         });
     }
-    let mut expected_ids = Vec::new();
-    let mut expected_seen = HashSet::new();
-    extend_unique(&mut expected_ids, &mut expected_seen, state_order_ids);
-    extend_unique(&mut expected_ids, &mut expected_seen, snapshot_friend_ids);
+    let expected_ids = state_order_ids;
 
     let online_friends = fetch_all_friends(&deps, &input.endpoint, false).await?;
     let offline_friends = fetch_all_friends(&deps, &input.endpoint, true).await?;

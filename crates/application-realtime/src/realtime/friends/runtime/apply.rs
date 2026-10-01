@@ -15,7 +15,6 @@ use crate::realtime::friends::presence::{
 };
 use crate::realtime::{FriendIconChange, FriendWake, RealtimeFriendOutput};
 
-use super::presence_split::strip_presence_keys;
 use super::social_feed::{
     add_profile_diff_feed_entries, display_name, friend_log_upsert, friend_relationship_feed_entry,
     meaningful_name, meaningful_record_name, trust_level_feed_entry, FriendRelationshipFeedKind,
@@ -28,7 +27,7 @@ use vrcx_0_core::text::first_owned;
 mod event_user;
 mod profile_merge;
 
-use event_user::{event_user_id, event_user_patch, normalize_patch_trust};
+use event_user::{event_user_id, event_user_patch, normalize_patch_trust, strip_presence_keys};
 pub(super) use profile_merge::{merge_profile, record_string};
 
 pub(super) fn apply_wake(

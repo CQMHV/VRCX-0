@@ -610,7 +610,7 @@ fn session_replacement_cancels_old_run_without_blocking_the_new_owner() -> Resul
 }
 
 #[test]
-fn bulk_profile_refresh_applies_when_friend_sequence_matches() -> Result<()> {
+fn bulk_profile_refresh_applies_when_friend_rev_matches() -> Result<()> {
     let (_dir, runtime, active_session) =
         runtime_with_active_session("friend-profile-bulk-load-refresh")?;
     runtime.runtime().friends.set_baseline(
@@ -670,7 +670,7 @@ fn bulk_profile_refresh_applies_when_friend_sequence_matches() -> Result<()> {
 }
 
 #[test]
-fn bulk_profile_refresh_is_discarded_when_friend_sequence_advanced() -> Result<()> {
+fn bulk_profile_refresh_is_discarded_when_friend_rev_advanced() -> Result<()> {
     let (_dir, runtime, active_session) =
         runtime_with_active_session("friend-profile-bulk-load-refresh-stale")?;
     runtime.runtime().friends.set_baseline(

@@ -1,9 +1,17 @@
 use serde_json::{json, Value};
 use vrcx_0_core::derived_keys;
-use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::friends::{FriendRecord, FRIEND_PRESENCE_KEYS};
 use vrcx_0_core::trust::compute_trust_level;
 
 use vrcx_0_core::json::{text_of, JsonExt};
+
+pub(super) fn strip_presence_keys(patch: &mut Value) {
+    if let Some(patch) = patch.as_object_mut() {
+        for key in FRIEND_PRESENCE_KEYS {
+            patch.remove(*key);
+        }
+    }
+}
 
 pub(super) fn normalize_patch_trust(patch: &mut Value, previous: Option<&FriendRecord>) {
     let Some(object) = patch.as_object_mut() else {

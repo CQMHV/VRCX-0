@@ -585,7 +585,7 @@ mod tests {
     }
 
     #[test]
-    fn refetched_profile_applies_when_friend_sequence_is_unchanged() {
+    fn refetched_profile_applies_when_friend_rev_is_unchanged() {
         let runtime = runtime_with_online_status("ask me");
         let refetch_rev = runtime
             .friend_rev_of(1, "usr_friend")

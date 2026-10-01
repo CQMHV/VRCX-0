@@ -452,10 +452,6 @@ impl RealtimeHostRuntime {
         self.friends.roster_snapshot()
     }
 
-    pub fn friend_session_context(&self) -> Option<RealtimeSessionContext> {
-        self.friends.session_context()
-    }
-
     pub fn current_user_snapshot(&self) -> Option<serde_json::Value> {
         self.current_user.snapshot_value()
     }

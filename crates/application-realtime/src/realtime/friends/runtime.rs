@@ -11,7 +11,6 @@ use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 use super::super::{RealtimeFriendApplyResult, RealtimeFriendOutput};
 
 mod apply;
-mod presence_split;
 mod social_feed;
 mod state;
 
@@ -38,7 +37,6 @@ mod profile_tests;
 #[cfg(test)]
 mod ws_trace_replay_test;
 
-pub(crate) use presence_split::baseline_friend_view;
 pub(crate) use social_feed::trust_level_feed_entry;
 pub use state::RealtimeFriendsRuntime;
 pub(crate) use state::SyntheticFriendEvent;

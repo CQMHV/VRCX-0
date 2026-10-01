@@ -9,7 +9,6 @@ pub(super) struct CurrentUserSnapshotView {
     pub(super) user_id: String,
     pub(super) state_by_id: HashMap<String, StateBucket>,
     pub(super) state_order_ids: Vec<String>,
-    pub(super) friend_ids: Vec<String>,
     pub(super) has_friend_list: bool,
 }
 
@@ -36,7 +35,6 @@ impl CurrentUserSnapshotView {
             user_id: object_field_string(snapshot, &["id"]),
             state_by_id,
             state_order_ids,
-            friend_ids: string_array_field(snapshot, "friends"),
             has_friend_list: object_field(snapshot, "friends").is_some_and(Value::is_array),
         }
     }
