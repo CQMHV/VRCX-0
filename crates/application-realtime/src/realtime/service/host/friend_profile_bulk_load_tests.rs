@@ -12,31 +12,8 @@ use super::test_support::*;
 use super::*;
 use crate::realtime::UserQueryKind;
 use vrcx_0_application_core::vrchat_api::VrchatApiResponse;
-use vrcx_0_application_core::{
-    RuntimeAuthScope, RuntimeTask, RuntimeTaskExecutor, RuntimeTaskHandle,
-};
+use vrcx_0_application_core::RuntimeAuthScope;
 use vrcx_0_core::friends::{FriendBaselineEntry, FriendRecord};
-
-#[derive(Clone, Copy)]
-struct DiscardTaskExecutor;
-
-struct FinishedTaskHandle;
-
-impl RuntimeTaskExecutor for DiscardTaskExecutor {
-    fn spawn(&self, _task: RuntimeTask) -> Box<dyn RuntimeTaskHandle> {
-        Box::new(FinishedTaskHandle)
-    }
-}
-
-impl RuntimeTaskHandle for FinishedTaskHandle {
-    fn abort(&self) {}
-
-    fn is_finished(&self) -> bool {
-        true
-    }
-
-    fn join_or_abort(&mut self, _timeout: Duration) {}
-}
 
 fn friend_record(extra: serde_json::Value) -> FriendRecord {
     let mut value = extra;

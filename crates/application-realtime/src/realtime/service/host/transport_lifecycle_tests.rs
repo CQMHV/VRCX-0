@@ -1,38 +1,13 @@
 use std::collections::HashMap;
-use std::time::Duration;
 
 use super::test_support::*;
 use super::*;
 use crate::realtime::{RealtimeSessionContext, RealtimeTransportLifecycleEvent};
 use vrcx_0_application_core::HostSessionGameProcessStatus as GameProcessStatus;
-use vrcx_0_application_core::{
-    InstanceRosterMember, InstanceRosterSnapshot, RuntimeTask, RuntimeTaskExecutor,
-    RuntimeTaskHandle,
-};
+use vrcx_0_application_core::{InstanceRosterMember, InstanceRosterSnapshot};
 use vrcx_0_core::friends::{FriendBaselineEntry, FriendBaselinePresence, FriendRecord};
 use vrcx_0_core::presence::PresenceView;
 use vrcx_0_core::OwnerId;
-
-#[derive(Clone, Copy)]
-struct DiscardTaskExecutor;
-
-struct FinishedTaskHandle;
-
-impl RuntimeTaskExecutor for DiscardTaskExecutor {
-    fn spawn(&self, _task: RuntimeTask) -> Box<dyn RuntimeTaskHandle> {
-        Box::new(FinishedTaskHandle)
-    }
-}
-
-impl RuntimeTaskHandle for FinishedTaskHandle {
-    fn abort(&self) {}
-
-    fn is_finished(&self) -> bool {
-        true
-    }
-
-    fn join_or_abort(&mut self, _timeout: Duration) {}
-}
 
 fn active_transport(runtime: &TestRealtimeHostRuntime) -> RealtimeTransportStartResult {
     let active = runtime

@@ -207,6 +207,34 @@ impl TestRealtimeHostRuntime {
 }
 
 #[cfg(test)]
+#[derive(Clone, Copy)]
+pub(super) struct DiscardTaskExecutor;
+
+#[cfg(test)]
+struct FinishedTaskHandle;
+
+#[cfg(test)]
+impl RuntimeTaskExecutor for DiscardTaskExecutor {
+    fn spawn(
+        &self,
+        _task: vrcx_0_application_core::RuntimeTask,
+    ) -> Box<dyn vrcx_0_application_core::RuntimeTaskHandle> {
+        Box::new(FinishedTaskHandle)
+    }
+}
+
+#[cfg(test)]
+impl vrcx_0_application_core::RuntimeTaskHandle for FinishedTaskHandle {
+    fn abort(&self) {}
+
+    fn is_finished(&self) -> bool {
+        true
+    }
+
+    fn join_or_abort(&mut self, _timeout: std::time::Duration) {}
+}
+
+#[cfg(test)]
 pub(super) mod config_store {
     use vrcx_0_application_core::Result;
 

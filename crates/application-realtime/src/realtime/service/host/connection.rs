@@ -206,7 +206,6 @@ impl RealtimeHostRuntime {
                 }
             }
             state.friend_profile.refetches.clear();
-            state.world_enrichment.fetches.clear();
             state.world_enrichment.inflight.clear();
             state.world_enrichment.pending_corrections.clear();
             state.automation.invite.clear_all();
@@ -574,7 +573,6 @@ impl RealtimeHostRuntime {
                         state.connection.generation = state.connection.generation.saturating_add(1);
                         state.friend_baseline.queued = None;
                         state.friend_profile.refetches.clear();
-                        state.world_enrichment.fetches.clear();
                         state.world_enrichment.inflight.clear();
                         state.world_enrichment.pending_corrections.clear();
                         let _ = self.cancel_tx.send(state.connection.generation);
@@ -606,7 +604,6 @@ impl RealtimeHostRuntime {
                     state.connection.active_context = None;
                     state.friend_baseline.queued = None;
                     state.friend_profile.refetches.clear();
-                    state.world_enrichment.fetches.clear();
                     state.world_enrichment.inflight.clear();
                     state.world_enrichment.pending_corrections.clear();
                     let _ = self.cancel_tx.send(state.connection.generation);

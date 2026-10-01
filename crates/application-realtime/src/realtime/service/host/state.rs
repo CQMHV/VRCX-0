@@ -142,7 +142,6 @@ pub(super) struct FriendProfileState {
 
 #[derive(Default)]
 pub(super) struct WorldEnrichmentState {
-    pub(super) fetches: HashMap<String, i64>,
     pub(super) inflight: HashSet<String>,
     pub(super) pending_corrections: HashMap<String, Vec<PendingEntryCorrection>>,
 }
