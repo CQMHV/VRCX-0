@@ -86,27 +86,20 @@ describe('compareByStatus', () => {
 });
 
 describe('compareByLastSeen', () => {
-    it('returns 0 when ref is undefined', () => {
-        expect(compareByLastSeen({}, {})).toBe(0);
-    });
-
-    it('sorts more recent $lastSeen first', () => {
-        const earlier = { ref: { $lastSeen: '2024-01-01T00:00:00Z' } };
-        const later = { ref: { $lastSeen: '2024-01-02T00:00:00Z' } };
+    it('sorts the most recently seen friend first', () => {
+        const earlier = '2024-01-01T00:00:00Z';
+        const later = '2024-01-02T00:00:00Z';
         expect(compareByLastSeen(later, earlier)).toBeLessThan(0);
         expect(compareByLastSeen(earlier, later)).toBeGreaterThan(0);
+        expect(compareByLastSeen(earlier, earlier)).toBe(0);
     });
 
-    it('returns 0 for equal $lastSeen', () => {
-        const a = { ref: { $lastSeen: '2024-01-01T00:00:00Z' } };
-        const b = { ref: { $lastSeen: '2024-01-01T00:00:00Z' } };
-        expect(compareByLastSeen(a, b)).toBe(0);
-    });
-
-    it('sorts entry with empty $lastSeen before non-empty (active longest)', () => {
-        const withDate = { ref: { $lastSeen: '2024-01-01T00:00:00Z' } };
-        const noTimestamp = { ref: { $lastSeen: '' } };
-        expect(compareByLastSeen(withDate, noTimestamp)).toBeGreaterThan(0);
+    it('sorts friends never seen after the ones seen', () => {
+        expect(compareByLastSeen('2024-01-01T00:00:00Z', '')).toBeLessThan(0);
+        expect(
+            compareByLastSeen(undefined, '2024-01-01T00:00:00Z')
+        ).toBeGreaterThan(0);
+        expect(compareByLastSeen(undefined, '')).toBe(0);
     });
 });
 

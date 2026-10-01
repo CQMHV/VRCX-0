@@ -38,7 +38,7 @@ describe('friendsSidebarModel time in instance sorting', () => {
                     friend('usr_short')
                 ],
                 { sidebarSortMethod1: 'Sort by Time in Instance' },
-                (friendId) => staySince[friendId]
+                { staySinceMs: (friendId) => staySince[friendId] }
             ).map((row) => row.id)
         ).toEqual(['usr_short', 'usr_long', 'usr_pending']);
     });

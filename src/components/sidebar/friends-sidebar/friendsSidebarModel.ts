@@ -4,7 +4,7 @@ import {
     sortStatus,
     type FriendSortItem,
     type FriendSortMethod,
-    type FriendStaySince
+    type FriendSortContext
 } from '@/shared/utils/friend';
 import { isRecord } from '@/shared/utils/record';
 import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
@@ -35,7 +35,6 @@ import { computeTrustLevel } from '@/shared/utils/userTransforms';
 export type SidebarFriendRecord = FriendRecordInput &
     Partial<FriendProfileFields> & {
         $friendNumber?: number;
-        $lastSeen?: string | number;
         $location_at?: string | number | null;
         $online_for?: string | number;
         $userColour?: string;
@@ -346,7 +345,7 @@ export function toLegacyFriendSortRow(
 export function sortRows<TRow extends SidebarFriendRecord>(
     rows: readonly TRow[],
     prefs: SidebarPreferences,
-    staySince?: FriendStaySince
+    sortContext?: FriendSortContext
 ): readonly TRow[] {
     const methods = [
         prefs.sidebarSortMethod1,
@@ -356,7 +355,7 @@ export function sortRows<TRow extends SidebarFriendRecord>(
     if (!methods.length) {
         return rows;
     }
-    const sort = getFriendsSortFunction(methods, staySince);
+    const sort = getFriendsSortFunction(methods, sortContext);
     return [...rows].sort((left, right) =>
         sort(toLegacyFriendSortRow(left), toLegacyFriendSortRow(right))
     );
@@ -365,9 +364,9 @@ export function sortRows<TRow extends SidebarFriendRecord>(
 export function sortActiveRows<TRow extends SidebarFriendRecord>(
     rows: readonly TRow[],
     prefs: SidebarPreferences,
-    staySince?: FriendStaySince
+    sortContext?: FriendSortContext
 ): TRow[] {
-    const sortedRows = sortRows(rows, prefs, staySince);
+    const sortedRows = sortRows(rows, prefs, sortContext);
     return [...sortedRows].sort(compareByActiveStatus);
 }
 
@@ -375,11 +374,11 @@ export function buildSameInstanceGroups(
     rows: readonly SidebarFriendRecord[],
     prefs: SidebarPreferences,
     lastLocation: LastLocationSnapshot | null | undefined,
-    locationTimes?: Readonly<Record<string, FriendLocationTimeEntry>>
+    locationTimes?: Readonly<Record<string, FriendLocationTimeEntry>>,
+    sortContext?: FriendSortContext
 ) {
-    const staySince = (friendId: string) => locationTimes?.[friendId]?.sinceMs;
     return buildSameInstanceFriendGroups(
-        sortRows(rows, prefs, staySince),
+        sortRows(rows, prefs, sortContext),
         lastLocation,
         {
             includeCurrentUser: true,

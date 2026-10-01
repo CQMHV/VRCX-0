@@ -18,7 +18,6 @@ type ComparableRef = Record<string, unknown> & {
 
 type ComparableRecord = Record<string, unknown> & {
     $friendNumber?: number;
-    $lastSeen?: ComparableFieldValue;
     created_at?: string;
     displayName?: string;
     id?: string;
@@ -183,8 +182,11 @@ function compareByLastActiveRef(
     return isLessThan(a.last_activity, b.last_activity) ? 1 : -1;
 }
 
-function compareByLastSeen(a: ComparableRecord, b: ComparableRecord): number {
-    return compareByActivityField(a, b, '$lastSeen');
+function compareByLastSeen(aLastSeen?: string, bLastSeen?: string): number {
+    if (!aLastSeen || !bLastSeen) {
+        return Number(!aLastSeen) - Number(!bLastSeen);
+    }
+    return compareActivityValues(aLastSeen, bLastSeen);
 }
 
 function compareByActivityField(

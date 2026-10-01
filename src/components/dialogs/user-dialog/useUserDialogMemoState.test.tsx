@@ -245,8 +245,7 @@ describe('useUserDialogMemoState', () => {
             userId: 'usr_friend',
             patch: {
                 note: 'Updated VRChat note',
-                memo: 'Updated local note',
-                $nickName: 'Updated local note'
+                memo: 'Updated local note'
             }
         });
     });

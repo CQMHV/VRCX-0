@@ -165,18 +165,12 @@ export type UserProfileEntity = EntityRecord & {
     $isProbableTroll?: boolean;
     $isTroll?: boolean;
     $isVRCPlus?: boolean;
-    $joinCount?: number;
     $languages?: string[];
-    $lastSeen?: string;
     $moderations?: EntityRecord;
-    $mutualCount?: number;
-    $mutualOptedOut?: boolean;
-    $nickName?: string;
     $offline_for?: number | null;
     $platform?: string;
     $previousLocation?: string;
     $profileSource?: string;
-    $timeSpent?: number;
     $travelingToLocation?: UserTravelingLocation;
     $trustClass?: string;
     $trustLevel?: string;

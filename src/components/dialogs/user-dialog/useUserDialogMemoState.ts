@@ -138,9 +138,7 @@ export function useUserDialogMemoState({
             ...(noteChanged && noteResult.status === 'fulfilled'
                 ? { note: nextNote }
                 : {}),
-            ...(memoResult.status === 'fulfilled'
-                ? { memo: nextMemo, $nickName: nextMemo }
-                : {})
+            ...(memoResult.status === 'fulfilled' ? { memo: nextMemo } : {})
         };
         const saveSucceeded =
             noteResult.status === 'fulfilled' &&

@@ -24,14 +24,18 @@ type FriendSortMethod =
 
 type FriendSortItem = ComparableRecord;
 type FriendComparator = (a: FriendSortItem, b: FriendSortItem) => number;
-type FriendStaySince = (friendId: string) => number | null | undefined;
+type FriendSortContext = {
+    staySinceMs?: (friendId: string) => number | null | undefined;
+    lastSeen?: (friendId: string) => string | undefined;
+};
 
 function getFriendsSortFunction(
     sortMethods: FriendSortMethod[],
-    staySince?: FriendStaySince
+    { staySinceMs, lastSeen }: FriendSortContext = {}
 ): FriendComparator {
+    const friendId = (item: FriendSortItem) => String(item.id ?? '');
     const stayStart = (item: FriendSortItem) =>
-        staySince?.(String(item.id ?? '')) ?? undefined;
+        staySinceMs?.(friendId(item)) ?? undefined;
     const sorts: FriendComparator[] = [];
     for (const sortMethod of sortMethods) {
         switch (sortMethod) {
@@ -48,7 +52,12 @@ function getFriendsSortFunction(
                 sorts.push(compareByLastActive);
                 break;
             case 'Sort by Last Seen':
-                sorts.push(compareByLastSeen);
+                sorts.push((a, b) =>
+                    compareByLastSeen(
+                        lastSeen?.(friendId(a)),
+                        lastSeen?.(friendId(b))
+                    )
+                );
                 break;
             case 'Sort by Time in Instance':
                 sorts.push((a: FriendSortItem, b: FriendSortItem) => {
@@ -101,4 +110,4 @@ function getFriendsSortFunction(
 }
 
 export { getFriendsSortFunction, sortStatus };
-export type { FriendSortItem, FriendSortMethod, FriendStaySince };
+export type { FriendSortContext, FriendSortItem, FriendSortMethod };

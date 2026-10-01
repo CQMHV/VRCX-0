@@ -12,8 +12,12 @@ import {
 } from '@/domain/friends/presence';
 import { resolveObservedPlayerUserIds } from '@/domain/friends/sameInstanceFriends';
 import type { FriendRecord, FriendRosterById } from '@/domain/friends/types';
+import {
+    useFriendStatsById,
+    useFriendStatsHydration
+} from '@/lib/useFriendStats';
 import { subscribeRecentActions } from '@/services/recentActionService';
-import type { FriendStaySince } from '@/shared/utils/friend';
+import type { FriendSortContext } from '@/shared/utils/friend';
 import {
     buildLocalInstanceActionGateMap,
     checkCanInvite,
@@ -160,12 +164,30 @@ export function FriendsSidebar({
         prefs.sidebarSortMethod2,
         prefs.sidebarSortMethod3
     ].includes('Sort by Time in Instance');
-    const staySince = useMemo<FriendStaySince | undefined>(
+    const sortsByLastSeen = [
+        prefs.sidebarSortMethod1,
+        prefs.sidebarSortMethod2,
+        prefs.sidebarSortMethod3
+    ].includes('Sort by Last Seen');
+    useFriendStatsHydration(sortsByLastSeen);
+    const friendStatsById = useFriendStatsById();
+    const staySinceMs = useMemo(
         () =>
             sortsByStay
-                ? (friendId) => locationTimesByUserId[friendId]?.sinceMs
+                ? (friendId: string) => locationTimesByUserId[friendId]?.sinceMs
                 : undefined,
         [locationTimesByUserId, sortsByStay]
+    );
+    const lastSeen = useMemo(
+        () =>
+            sortsByLastSeen
+                ? (friendId: string) => friendStatsById[friendId]?.lastSeen
+                : undefined,
+        [friendStatsById, sortsByLastSeen]
+    );
+    const sortContext = useMemo<FriendSortContext>(
+        () => ({ staySinceMs, lastSeen }),
+        [lastSeen, staySinceMs]
     );
     const {
         favoriteFriendGroups,
@@ -303,9 +325,9 @@ export function FriendsSidebar({
                 favoriteCollectionIdSet.has(normalizeId(friend?.id))
             ),
             prefs,
-            staySince
+            sortContext
         );
-    }, [favoriteCollectionIdSet, prefs, rows, staySince]);
+    }, [favoriteCollectionIdSet, prefs, rows, sortContext]);
     const allFavoriteGroupKeys = useMemo(
         () => [
             ...(favoriteFriendGroups || [])
@@ -377,9 +399,11 @@ export function FriendsSidebar({
             rows,
             prefs,
             currentLocationSnapshot,
-            locationTimesByUserId
+            locationTimesByUserId,
+            sortContext
         );
     }, [
+        sortContext,
         currentLocationSnapshot,
         favoriteCollectionTab,
         locationTimesByUserId,
@@ -394,9 +418,11 @@ export function FriendsSidebar({
             rows: favoriteCollectionRows,
             prefs,
             currentLocationSnapshot,
-            locationTimes: locationTimesByUserId
+            locationTimes: locationTimesByUserId,
+            sortContext
         });
     }, [
+        sortContext,
         currentLocationSnapshot,
         favoriteCollectionRows,
         favoriteCollectionTab,
@@ -428,7 +454,7 @@ export function FriendsSidebar({
                     !favoriteCollectionSameInstanceIds.has(friend.id)
             ),
             prefs,
-            staySince
+            sortContext
         );
     }, [
         favoriteCollectionIdSet,
@@ -436,7 +462,7 @@ export function FriendsSidebar({
         friendsById,
         prefs,
         visibleOnlineIds,
-        staySince
+        sortContext
     ]);
     const favoriteCollectionActiveRows = useMemo(() => {
         if (!favoriteCollectionIdSet) {
@@ -449,7 +475,7 @@ export function FriendsSidebar({
                     !favoriteCollectionSameInstanceIds.has(friend.id)
             ),
             prefs,
-            staySince
+            sortContext
         );
     }, [
         activeIds,
@@ -457,7 +483,7 @@ export function FriendsSidebar({
         favoriteCollectionSameInstanceIds,
         friendsById,
         prefs,
-        staySince
+        sortContext
     ]);
     const favoriteCollectionOfflineRows = useMemo(() => {
         if (!favoriteCollectionIdSet) {
@@ -470,7 +496,7 @@ export function FriendsSidebar({
                     !favoriteCollectionSameInstanceIds.has(friend.id)
             ),
             prefs,
-            staySince
+            sortContext
         );
     }, [
         favoriteCollectionIdSet,
@@ -478,7 +504,7 @@ export function FriendsSidebar({
         friendsById,
         offlineIds,
         prefs,
-        staySince
+        sortContext
     ]);
     const sameInstanceIds = useMemo(
         () =>
@@ -505,7 +531,7 @@ export function FriendsSidebar({
                 );
             }),
             prefs,
-            staySince
+            sortContext
         );
     }, [
         favoriteCollectionTab,
@@ -513,7 +539,7 @@ export function FriendsSidebar({
         rows,
         sameInstanceIds,
         selectedFavoriteIds,
-        staySince
+        sortContext
     ]);
     const onlineRows = useMemo(() => {
         if (favoriteCollectionTab) {
@@ -529,7 +555,7 @@ export function FriendsSidebar({
                     )
             ),
             prefs,
-            staySince
+            sortContext
         );
     }, [
         excludedFavoriteIds,
@@ -538,7 +564,7 @@ export function FriendsSidebar({
         prefs,
         sameInstanceIds,
         visibleOnlineIds,
-        staySince
+        sortContext
     ]);
     const activeRows = useMemo(() => {
         if (favoriteCollectionTab) {
@@ -553,7 +579,7 @@ export function FriendsSidebar({
                     )
             ),
             prefs,
-            staySince
+            sortContext
         );
     }, [
         activeIds,
@@ -561,7 +587,7 @@ export function FriendsSidebar({
         friendsById,
         prefs,
         sameInstanceIds,
-        staySince
+        sortContext
     ]);
     const offlineRows = useMemo(() => {
         if (favoriteCollectionTab) {
@@ -576,7 +602,7 @@ export function FriendsSidebar({
                     )
             ),
             prefs,
-            staySince
+            sortContext
         );
     }, [
         favoriteCollectionTab,
@@ -584,7 +610,7 @@ export function FriendsSidebar({
         friendsById,
         prefs,
         sameInstanceIds,
-        staySince
+        sortContext
     ]);
     const favoriteGroupSections = useMemo(() => {
         if (!prefs.isSidebarDivideByFriendGroup) {
@@ -657,7 +683,7 @@ export function FriendsSidebar({
                 sections.push({
                     key: group.key,
                     label: group.displayName || group.name || group.key,
-                    rows: sortRows(rowsForGroup, prefs, staySince)
+                    rows: sortRows(rowsForGroup, prefs, sortContext)
                 });
             }
         }
@@ -676,7 +702,7 @@ export function FriendsSidebar({
                 sections.push({
                     key: `local:${groupName}`,
                     label: groupName,
-                    rows: sortRows(rowsForGroup, prefs, staySince)
+                    rows: sortRows(rowsForGroup, prefs, sortContext)
                 });
             }
         }
@@ -702,7 +728,7 @@ export function FriendsSidebar({
         prefs,
         selectedFavoriteGroupKeys,
         t,
-        staySince
+        sortContext
     ]);
 
     const virtualRows = useMemo<SidebarVirtualRow[]>(() => {

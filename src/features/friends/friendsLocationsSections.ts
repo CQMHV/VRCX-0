@@ -2,7 +2,7 @@ import type { FavoriteGroupMap } from '@/domain/favorites/types';
 import {
     getFriendsSortFunction,
     sortStatus,
-    type FriendStaySince
+    type FriendSortContext
 } from '@/shared/utils/friend';
 import type { FriendSortMethod } from '@/shared/utils/friend';
 import { userStatusFromValue } from '@/shared/utils/friendStatus';
@@ -265,14 +265,14 @@ function toLegacyFriendSortRow(friend: FriendLocationFriend) {
 export function sortFriendsBySidebarPrefs<TFriend extends FriendLocationFriend>(
     friends: TFriend[],
     sortMethods: readonly string[] | null | undefined,
-    staySince?: FriendStaySince
+    sortContext?: FriendSortContext
 ) {
     const methods = [...(sortMethods ?? [])].filter(isFriendSortMethod);
     if (!methods.length) {
         return friends;
     }
 
-    const sort = getFriendsSortFunction(methods, staySince);
+    const sort = getFriendsSortFunction(methods, sortContext);
     return [...friends].sort((left, right) =>
         sort(
             toLegacyFriendSortRow(left) as Parameters<typeof sort>[0],
@@ -286,11 +286,11 @@ export function sortActiveFriendsBySidebarPrefs<
 >(
     friends: TFriend[],
     sortMethods: readonly string[] | null | undefined,
-    staySince?: FriendStaySince
+    sortContext?: FriendSortContext
 ) {
-    return [...sortFriendsBySidebarPrefs(friends, sortMethods, staySince)].sort(
-        compareByActiveStatus
-    );
+    return [
+        ...sortFriendsBySidebarPrefs(friends, sortMethods, sortContext)
+    ].sort(compareByActiveStatus);
 }
 
 function resolveFavoriteGroupLabels(
