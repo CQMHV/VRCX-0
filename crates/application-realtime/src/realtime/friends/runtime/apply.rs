@@ -10,8 +10,8 @@ use vrcx_0_core::trust::{trust_level_changed, trust_level_differs};
 use vrcx_0_core::OwnerId;
 
 use crate::realtime::friends::presence::{
-    dwell_place, presence_feed, presence_view, reduce, wake, Claim, Evidence, FriendEventKind,
-    Phase, Source,
+    dwell_place, joining_feed, presence_feed, presence_view, reduce, wake, Claim, Evidence,
+    FriendEventKind, Phase, Source,
 };
 use crate::realtime::{FriendIconChange, FriendWake, RealtimeFriendOutput};
 
@@ -221,18 +221,13 @@ fn create_entry(
         output.projection.friend_log_changed = true;
     }
     let record = merge_profile(None, user_id, patch);
-    output.projection.feed_entries.extend(
-        presence_feed(
-            user_id,
-            &record,
-            &Phase::offline(),
-            &presence,
-            now.timestamp_ms,
-            &now.iso,
-        )
-        .into_iter()
-        .filter(|entry| matches!(entry, FeedLiveEntry::OnPlayerJoining { .. })),
-    );
+    output.projection.feed_entries.extend(joining_feed(
+        user_id,
+        &record,
+        &Phase::offline(),
+        &presence,
+        &now.iso,
+    ));
     commit(state, output, user_id, FriendEntry { record, presence });
     Some(())
 }

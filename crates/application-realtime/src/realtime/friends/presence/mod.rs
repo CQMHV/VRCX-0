@@ -8,7 +8,7 @@ mod view;
 mod tests;
 
 pub(crate) use evidence::{Claim, Evidence, FriendEventKind, Source};
-pub(crate) use feed::presence_feed;
+pub(crate) use feed::{joining_feed, presence_feed};
 pub(crate) use model::Phase;
 pub(crate) use reduce::{reduce, wake};
 pub(crate) use view::{dwell_place, presence_view};

@@ -9,7 +9,7 @@ use vrcx_0_application_core::{Error, Result};
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_core::friends::{FriendBaselineEntry, FriendRecord, FriendRosterBaseline};
 
-use crate::realtime::friends::{baseline_friend_view, player_joining_feed_entry};
+use crate::realtime::friends::baseline_friend_view;
 use crate::realtime::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendBaselineSyncOutcome,
     FriendProjection, FriendWake, RealtimeFriendOutput, RealtimeFriendSnapshot,
@@ -39,6 +39,7 @@ struct FriendBaselineApplyPlan {
     previous_snapshot: Option<RealtimeFriendSnapshot>,
     schedules: Vec<FriendWake>,
     confirmed_feed_entries: Vec<FeedLiveEntry>,
+    joining_feed_entries: Vec<FeedLiveEntry>,
     profile_refetch_user_ids: Vec<String>,
     location_time_snapshot: Option<Vec<vrcx_0_application_core::FriendLocationTime>>,
 }
@@ -144,6 +145,7 @@ impl RealtimeHostRuntime {
             previous_snapshot,
             schedules: baseline_schedules,
             confirmed_feed_entries,
+            joining_feed_entries,
             profile_refetch_user_ids,
             location_time_snapshot,
         } = {
@@ -334,6 +336,7 @@ impl RealtimeHostRuntime {
                 previous_snapshot,
                 schedules: baseline_effects.schedules,
                 confirmed_feed_entries: baseline_effects.confirmed_feed_entries,
+                joining_feed_entries: baseline_effects.joining_feed_entries,
                 profile_refetch_user_ids: baseline_effects.profile_refetch_user_ids,
                 location_time_snapshot: baseline_effects.location_time_snapshot,
             }
@@ -354,6 +357,14 @@ impl RealtimeHostRuntime {
                 FriendProjection::new(result.generation, result.baseline_revision)
             });
             projection.location_time_snapshot = Some(location_time_snapshot);
+        }
+        if !joining_feed_entries.is_empty() {
+            baseline_projection
+                .get_or_insert_with(|| {
+                    FriendProjection::new(result.generation, result.baseline_revision)
+                })
+                .feed_entries
+                .extend(joining_feed_entries);
         }
         drop(previous_snapshot);
         if let Some(snapshot) = canonical_snapshot.as_ref() {
@@ -445,7 +456,6 @@ fn friend_snapshot_diff_projection(
     previous: Option<&crate::realtime::RealtimeFriendSnapshot>,
     next: &crate::realtime::RealtimeFriendSnapshot,
 ) -> Option<FriendProjection> {
-    let created_at = chrono::Utc::now().to_rfc3339();
     let mut projection = FriendProjection::new(next.generation, next.baseline_revision);
 
     if let Some(previous) = previous {
@@ -475,13 +485,6 @@ fn friend_snapshot_diff_projection(
         if unchanged {
             continue;
         }
-        let joining_entry = player_joining_feed_entry(
-            &user_id,
-            &record.display_name,
-            previous_presence.map(|previous| &previous.view),
-            &presence.view,
-            &created_at,
-        );
         projection
             .patches
             .push(crate::realtime::FriendProjectionPatch {
@@ -489,9 +492,6 @@ fn friend_snapshot_diff_projection(
                 record: record.clone(),
                 presence,
             });
-        if let Some(entry) = joining_entry {
-            projection.feed_entries.push(entry);
-        }
     }
 
     (!projection.patches.is_empty() || !projection.removals.is_empty()).then_some(projection)

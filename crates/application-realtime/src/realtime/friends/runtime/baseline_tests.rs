@@ -626,6 +626,49 @@ mod tests {
     }
 
     #[test]
+    fn baseline_announces_joining_once_per_generation() {
+        let traveling = || {
+            let mut baseline = single_friend_baseline("online", "traveling");
+            if let Some(entry) = baseline.friends_by_id.get_mut("usr_friend") {
+                entry.presence.traveling_to_location = "wrld_2:456".into();
+            }
+            baseline
+        };
+        let joining_user_ids = |effects: &state::FriendBaselineEffects| {
+            effects
+                .joining_feed_entries
+                .iter()
+                .map(|entry| {
+                    let entry = entry.to_json();
+                    assert_eq!(entry["type"], "OnPlayerJoining");
+                    entry["userId"].as_str().unwrap_or_default().to_string()
+                })
+                .collect::<Vec<_>>()
+        };
+        let runtime = RealtimeFriendsRuntime::default();
+        let settled = runtime.set_baseline_with_effects(
+            single_friend_baseline("online", "wrld_1:123"),
+            1,
+            0,
+            None,
+            1_800_000_000_000,
+        );
+        assert!(joining_user_ids(&settled).is_empty());
+
+        let departed =
+            runtime.set_baseline_with_effects(traveling(), 1, 1, None, 1_800_000_001_000);
+        assert_eq!(joining_user_ids(&departed), ["usr_friend"]);
+
+        let still_traveling =
+            runtime.set_baseline_with_effects(traveling(), 1, 2, None, 1_800_000_002_000);
+        assert!(joining_user_ids(&still_traveling).is_empty());
+
+        let reconnected =
+            runtime.set_baseline_with_effects(traveling(), 2, 0, None, 1_800_000_003_000);
+        assert_eq!(joining_user_ids(&reconnected), ["usr_friend"]);
+    }
+
+    #[test]
     fn same_generation_baseline_emits_online_for_friend_that_came_online() {
         for previous_state in ["offline", "active"] {
             let runtime = RealtimeFriendsRuntime::default();

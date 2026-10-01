@@ -3,7 +3,6 @@ use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_contracts::realtime::FriendLogUpsert;
 use vrcx_0_core::derived_keys;
 use vrcx_0_core::friends::FriendRecord;
-use vrcx_0_core::presence::PresenceView;
 
 use crate::realtime::RealtimeFriendOutput;
 
@@ -140,34 +139,6 @@ pub(super) fn friend_relationship_feed_entry(
         user_id.to_string(),
         display_name(user_id, patch, previous),
     )
-}
-
-pub(crate) fn player_joining_feed_entry(
-    user_id: &str,
-    display_name: &str,
-    previous: Option<&PresenceView>,
-    current: &PresenceView,
-    created_at: &str,
-) -> Option<FeedLiveEntry> {
-    let was_traveling = previous
-        .and_then(PresenceView::place)
-        .is_some_and(|place| place.location.is_traveling);
-    let place = current.place()?;
-    let destination = place.traveling_to.as_ref()?;
-    if was_traveling {
-        return None;
-    }
-    Some(FeedLiveEntry::OnPlayerJoining {
-        created_at: created_at.to_string(),
-        user_id: user_id.to_string(),
-        display_name: display_name.to_string(),
-        location: place.location.tag.clone(),
-        traveling_to_location: destination.tag.clone(),
-        world_name: None,
-        world_id: None,
-        display_location: None,
-        owner_user_id: String::new(),
-    })
 }
 
 pub(super) fn display_name(

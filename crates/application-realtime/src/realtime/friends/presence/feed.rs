@@ -33,6 +33,19 @@ pub(crate) fn presence_feed(
     entries
 }
 
+pub(crate) fn joining_feed(
+    user_id: &str,
+    record: &FriendRecord,
+    prev: &Phase,
+    next: &Phase,
+    created_at: &str,
+) -> Option<FeedLiveEntry> {
+    let Phase::Online(after) = next else {
+        return None;
+    };
+    FeedNames::new(user_id, record, created_at).joining(prev.online_state(), after)
+}
+
 struct FeedNames<'a> {
     user_id: &'a str,
     record: &'a FriendRecord,

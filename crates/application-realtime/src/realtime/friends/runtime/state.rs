@@ -14,7 +14,8 @@ use vrcx_0_core::OwnerId;
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
 use crate::realtime::friends::presence::{
-    dwell_place, presence_feed, presence_view, reduce, Evidence, FriendEventKind, Phase, Source,
+    dwell_place, joining_feed, presence_feed, presence_view, reduce, Evidence, FriendEventKind,
+    Phase, Source,
 };
 use crate::realtime::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendWake, RealtimeFriendApplyResult,
@@ -51,6 +52,7 @@ pub(crate) struct FriendBaselineEffects {
     pub(crate) result: FriendBaselineResult,
     pub(crate) schedules: Vec<FriendWake>,
     pub(crate) confirmed_feed_entries: Vec<FeedLiveEntry>,
+    pub(crate) joining_feed_entries: Vec<FeedLiveEntry>,
     pub(crate) profile_refetch_user_ids: Vec<String>,
     pub(crate) location_time_snapshot: Option<Vec<FriendLocationTime>>,
 }
@@ -168,6 +170,8 @@ impl RealtimeFriendsRuntime {
             state.friend_rev_by_user.clear();
         }
         let mut confirmed_feed_entries = Vec::new();
+        let mut joining_feed_entries = Vec::new();
+        let unseen = Phase::offline();
         let mut schedules = Vec::new();
         let mut profile_refetch_user_ids = Vec::new();
         let mut entries = HashMap::with_capacity(baseline.friends_by_id.len());
@@ -230,6 +234,12 @@ impl RealtimeFriendsRuntime {
                 }
                 None => Phase::initial(&evidence.claim, now_ms, false),
             };
+            let shown = existing_entry
+                .filter(|_| !new_generation)
+                .map_or(&unseen, |entry| &entry.presence);
+            if let Some(entry) = joining_feed(&user_id, &record, shown, &presence, &now_iso) {
+                joining_feed_entries.push((user_id.clone(), entry));
+            }
             entries.insert(user_id, FriendEntry { record, presence });
         }
         if let Some(existing) = existing.as_ref() {
@@ -295,6 +305,7 @@ impl RealtimeFriendsRuntime {
             }
         }
 
+        joining_feed_entries.sort_by(|(left, _), (right, _)| left.cmp(right));
         FriendBaselineEffects {
             result: FriendBaselineResult {
                 accepted: true,
@@ -304,6 +315,10 @@ impl RealtimeFriendsRuntime {
             },
             schedules,
             confirmed_feed_entries,
+            joining_feed_entries: joining_feed_entries
+                .into_iter()
+                .map(|(_, entry)| entry)
+                .collect(),
             profile_refetch_user_ids,
             location_time_snapshot,
         }
