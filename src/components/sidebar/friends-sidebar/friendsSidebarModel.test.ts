@@ -11,8 +11,7 @@ import {
     buildSameInstanceGroups,
     readFriendStatusSource,
     resolveSidebarStatusDotClassName,
-    sortRows,
-    toLegacyFriendSortRow
+    sortRows
 } from './friendsSidebarModel';
 
 describe('friendsSidebarModel time in instance sorting', () => {
@@ -97,7 +96,6 @@ describe('friendsSidebarModel friend status source', () => {
             $presence: onlinePresence('wrld_live:123')
         };
         expect(readFriendStatusSource(friend)).toMatchObject(live);
-        expect(toLegacyFriendSortRow(friend).ref).toMatchObject(live);
     });
 });
 

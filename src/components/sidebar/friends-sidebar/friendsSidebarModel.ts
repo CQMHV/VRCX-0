@@ -1,7 +1,6 @@
 import {
+    compareByActiveStatus,
     getFriendsSortFunction,
-    sortStatus,
-    type FriendSortItem,
     type FriendSortMethod,
     type FriendSortContext
 } from '@/shared/utils/friend';
@@ -16,7 +15,6 @@ import type {
     FriendProfileFields,
     FriendRecordInput
 } from '@/domain/friends/types';
-import { userStatusFromValue } from '@/shared/utils/friendStatus';
 import { getTrustColor, type TrustColorMap } from '@/shared/utils/trustColors';
 import { computeTrustLevel } from '@/shared/utils/userTransforms';
 
@@ -139,29 +137,6 @@ export function resolveTrustNameColour(
     return getTrustColor(friend, trustColor);
 }
 
-function activeStatusSortValue(friend: SidebarFriendRecord) {
-    const source = readFriendStatusSource(friend);
-    const normalizedStatus = userStatusFromValue(source?.status);
-    if (
-        normalizedStatus === 'join me' ||
-        normalizedStatus === 'ask me' ||
-        normalizedStatus === 'busy'
-    ) {
-        return normalizedStatus;
-    }
-    return 'active';
-}
-
-function compareByActiveStatus(
-    left: SidebarFriendRecord,
-    right: SidebarFriendRecord
-) {
-    return sortStatus(
-        activeStatusSortValue(left),
-        activeStatusSortValue(right)
-    );
-}
-
 export function resolveSidebarStatusDotClassName(
     friend: SidebarFriendRecord | null | undefined,
     { hideNonFriend = true }: SidebarStatusOptions = {}
@@ -178,22 +153,6 @@ export function resolveSidebarStatusDotClassName(
     return presenceDotClassName(presenceOf(source), source.status);
 }
 
-export function toLegacyFriendSortRow(
-    friend: SidebarFriendRecord
-): FriendSortItem {
-    const ref = readFriendRef(friend);
-    return {
-        ...friend,
-        name:
-            friend?.name ||
-            friend?.displayName ||
-            friend?.username ||
-            friend?.id ||
-            '',
-        ref: ref && ref !== friend ? { ...ref, ...friend } : friend
-    } as FriendSortItem;
-}
-
 export function sortRows<TRow extends SidebarFriendRecord>(
     rows: readonly TRow[],
     prefs: SidebarPreferences,
@@ -208,9 +167,7 @@ export function sortRows<TRow extends SidebarFriendRecord>(
         return rows;
     }
     const sort = getFriendsSortFunction(methods, sortContext);
-    return [...rows].sort((left, right) =>
-        sort(toLegacyFriendSortRow(left), toLegacyFriendSortRow(right))
-    );
+    return [...rows].sort(sort);
 }
 
 export function sortActiveRows<TRow extends SidebarFriendRecord>(

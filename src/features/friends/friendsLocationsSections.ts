@@ -1,11 +1,10 @@
 import type { FavoriteGroupMap } from '@/domain/favorites/types';
 import {
+    compareByActiveStatus,
     getFriendsSortFunction,
-    sortStatus,
     type FriendSortContext
 } from '@/shared/utils/friend';
 import type { FriendSortMethod } from '@/shared/utils/friend';
-import { userStatusFromValue } from '@/shared/utils/friendStatus';
 import { isRecord } from '@/shared/utils/record';
 
 import {
@@ -20,15 +19,6 @@ import {
 } from './friendsLocationsRows';
 
 type TranslationFn = (key: string, options?: Record<string, unknown>) => string;
-
-type FriendSectionRecord = Record<string, unknown> & {
-    displayName?: string | null;
-    id?: string | null;
-    name?: string | null;
-    ref?: FriendSectionRecord | null;
-    status?: string | null;
-    username?: string | null;
-};
 
 type FavoriteGroupOption = {
     key?: string;
@@ -209,62 +199,6 @@ export function compareFavoriteGroups(
     );
 }
 
-function readFriendRef(
-    friend: FriendLocationFriend | null | undefined
-): FriendSectionRecord {
-    if (!isRecord(friend)) {
-        return {};
-    }
-    return isRecord(friend.ref) ? friend.ref : friend;
-}
-
-function readFriendStatusSource(
-    friend: FriendLocationFriend | null | undefined
-) {
-    const ref = readFriendRef(friend);
-    if (!ref || ref === friend) {
-        return isRecord(friend) ? friend : {};
-    }
-    return {
-        ...friend,
-        ...ref
-    };
-}
-
-function activeStatusSortValue(friend: FriendLocationFriend) {
-    const source = readFriendStatusSource(friend);
-    const status = userStatusFromValue(source?.status);
-    if (status === 'join me' || status === 'ask me' || status === 'busy') {
-        return status;
-    }
-    return 'active';
-}
-
-function compareByActiveStatus(
-    left: FriendLocationFriend,
-    right: FriendLocationFriend
-) {
-    return sortStatus(
-        activeStatusSortValue(left),
-        activeStatusSortValue(right)
-    );
-}
-
-function toLegacyFriendSortRow(friend: FriendLocationFriend) {
-    const ref = readFriendRef(friend);
-    const source = isRecord(friend) ? friend : {};
-    return {
-        ...source,
-        name:
-            source.name ||
-            source.displayName ||
-            source.username ||
-            source.id ||
-            '',
-        ref: ref && ref !== friend ? { ...source, ...ref } : source
-    };
-}
-
 export function sortFriendsBySidebarPrefs<TFriend extends FriendLocationFriend>(
     friends: TFriend[],
     sortMethods: readonly string[] | null | undefined,
@@ -276,12 +210,7 @@ export function sortFriendsBySidebarPrefs<TFriend extends FriendLocationFriend>(
     }
 
     const sort = getFriendsSortFunction(methods, sortContext);
-    return [...friends].sort((left, right) =>
-        sort(
-            toLegacyFriendSortRow(left) as Parameters<typeof sort>[0],
-            toLegacyFriendSortRow(right) as Parameters<typeof sort>[1]
-        )
-    );
+    return [...friends].sort(sort);
 }
 
 export function sortActiveFriendsBySidebarPrefs<

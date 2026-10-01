@@ -15,32 +15,21 @@ import {
 } from './compare';
 
 describe('compareByStatus', () => {
-    it('returns 0 when either ref is undefined', () => {
-        expect(compareByStatus({}, {})).toBe(0);
-        expect(compareByStatus({ ref: { status: 'active' } }, {})).toBe(0);
-    });
-
     it('returns 0 for identical statuses', () => {
-        const a = { ref: { $presence: onlinePresence(), status: 'active' } };
-        const b = { ref: { $presence: onlinePresence(), status: 'active' } };
+        const a = { $presence: onlinePresence(), status: 'active' };
+        const b = { $presence: onlinePresence(), status: 'active' };
         expect(compareByStatus(a, b)).toBe(0);
     });
 
     it('sorts offline state last regardless of status value', () => {
-        const offline = {
-            ref: { $presence: offlinePresence, status: 'join me' }
-        };
-        const online = { ref: { $presence: onlinePresence(), status: 'busy' } };
+        const offline = { $presence: offlinePresence, status: 'join me' };
+        const online = { $presence: onlinePresence(), status: 'busy' };
         expect(compareByStatus(offline, online)).toBeGreaterThan(0);
     });
 
     it('sorts online before offline in both directions (antisymmetric)', () => {
-        const onlineBusy = {
-            ref: { $presence: onlinePresence(), status: 'busy' }
-        };
-        const offlineJoinMe = {
-            ref: { $presence: offlinePresence, status: 'join me' }
-        };
+        const onlineBusy = { $presence: onlinePresence(), status: 'busy' };
+        const offlineJoinMe = { $presence: offlinePresence, status: 'join me' };
         expect(compareByStatus(onlineBusy, offlineJoinMe)).toBeLessThan(0);
         expect(compareByStatus(offlineJoinMe, onlineBusy)).toBeGreaterThan(0);
         expect(compareByStatus(onlineBusy, offlineJoinMe)).toBe(
@@ -49,49 +38,48 @@ describe('compareByStatus', () => {
     });
 
     it('orders by status priority when neither is offline state', () => {
-        const joinMe = {
-            ref: { $presence: onlinePresence(), status: 'join me' }
-        };
-        const busy = { ref: { $presence: onlinePresence(), status: 'busy' } };
+        const joinMe = { $presence: onlinePresence(), status: 'join me' };
+        const busy = { $presence: onlinePresence(), status: 'busy' };
         expect(compareByStatus(joinMe, busy)).toBeLessThan(0);
         expect(compareByStatus(busy, joinMe)).toBeGreaterThan(0);
     });
 
     it('orders two offline friends by status priority', () => {
-        const joinMe = {
-            ref: { $presence: offlinePresence, status: 'join me' }
-        };
-        const busy = { ref: { $presence: offlinePresence, status: 'busy' } };
+        const joinMe = { $presence: offlinePresence, status: 'join me' };
+        const busy = { $presence: offlinePresence, status: 'busy' };
         expect(compareByStatus(joinMe, busy)).toBeLessThan(0);
         expect(compareByStatus(busy, joinMe)).toBeGreaterThan(0);
     });
 
     it('is antisymmetric for two offline friends with differing status', () => {
-        const a = { ref: { $presence: offlinePresence, status: 'ask me' } };
-        const b = { ref: { $presence: offlinePresence, status: 'active' } };
+        const a = { $presence: offlinePresence, status: 'ask me' };
+        const b = { $presence: offlinePresence, status: 'active' };
         expect(compareByStatus(a, b)).toBe(-compareByStatus(b, a));
     });
 
     it('returns 0 for two offline friends with identical status', () => {
-        const a = { ref: { $presence: offlinePresence, status: 'busy' } };
-        const b = { ref: { $presence: offlinePresence, status: 'busy' } };
+        const a = { $presence: offlinePresence, status: 'busy' };
+        const b = { $presence: offlinePresence, status: 'busy' };
         expect(compareByStatus(a, b)).toBe(0);
     });
 
     it('sorts an all-offline list stably and idempotently', () => {
         const rows = [
-            { id: 'busy', ref: { $presence: offlinePresence, status: 'busy' } },
+            { id: 'busy', $presence: offlinePresence, status: 'busy' },
             {
                 id: 'joinMe',
-                ref: { $presence: offlinePresence, status: 'join me' }
+                $presence: offlinePresence,
+                status: 'join me'
             },
             {
                 id: 'askMe',
-                ref: { $presence: offlinePresence, status: 'ask me' }
+                $presence: offlinePresence,
+                status: 'ask me'
             },
             {
                 id: 'active',
-                ref: { $presence: offlinePresence, status: 'active' }
+                $presence: offlinePresence,
+                status: 'active'
             }
         ];
         const sorted = [...rows].sort(compareByStatus);
@@ -127,18 +115,14 @@ describe('compareByLastSeen', () => {
 });
 
 describe('compareByLastActive', () => {
-    it('returns 0 when ref is undefined', () => {
-        expect(compareByLastActive({}, {})).toBe(0);
-    });
-
     it('compares by last_activity when neither is online', () => {
         const recent = {
             $presence: offlinePresence,
-            ref: { last_activity: '2024-01-02T00:00:00Z' }
+            last_activity: '2024-01-02T00:00:00Z'
         };
         const older = {
             $presence: offlinePresence,
-            ref: { last_activity: '2024-01-01T00:00:00Z' }
+            last_activity: '2024-01-01T00:00:00Z'
         };
         expect(compareByLastActive(recent, older)).toBeLessThan(0);
     });
@@ -146,7 +130,7 @@ describe('compareByLastActive', () => {
     it('ranks online friends by when they came online, unknown last', () => {
         const onlineSince = (onlineSinceMs: number | null) => {
             const $presence = { ...onlinePresence(), onlineSinceMs };
-            return { $presence, ref: { $presence } };
+            return { $presence };
         };
         const earlier = onlineSince(1_000);
         const later = onlineSince(2_000);
@@ -188,32 +172,22 @@ describe('compareByLocationAt', () => {
 });
 
 describe('compareByPrivate', () => {
-    it('returns 0 when either ref is undefined', () => {
-        expect(compareByPrivate({}, {})).toBe(0);
-        expect(
-            compareByPrivate(
-                { ref: { $presence: onlinePresence('private') } },
-                {}
-            )
-        ).toBe(0);
-    });
-
     it('sorts private location after non-private', () => {
-        const priv = { ref: { $presence: onlinePresence('private') } };
-        const pub = { ref: { $presence: onlinePresence('wrld_abc:12345') } };
+        const priv = { $presence: onlinePresence('private') };
+        const pub = { $presence: onlinePresence('wrld_abc:12345') };
         expect(compareByPrivate(priv, pub)).toBeGreaterThan(0);
         expect(compareByPrivate(pub, priv)).toBeLessThan(0);
     });
 
     it('returns 0 when both are private', () => {
-        const a = { ref: { $presence: onlinePresence('private') } };
-        const b = { ref: { $presence: onlinePresence('private') } };
+        const a = { $presence: onlinePresence('private') };
+        const b = { $presence: onlinePresence('private') };
         expect(compareByPrivate(a, b)).toBe(0);
     });
 
     it('returns 0 when neither is private', () => {
-        const a = { ref: { $presence: onlinePresence('wrld_abc:1') } };
-        const b = { ref: { $presence: onlinePresence('wrld_abc:2') } };
+        const a = { $presence: onlinePresence('wrld_abc:1') };
+        const b = { $presence: onlinePresence('wrld_abc:2') };
         expect(compareByPrivate(a, b)).toBe(0);
     });
 });

@@ -5,12 +5,11 @@ import {
     compareByLastSeen,
     compareByLocation,
     compareByLocationAt,
-    compareByName,
     compareByPrivate,
     compareByStatus,
     type ComparableRecord
 } from './compare';
-import { sortStatus } from './friendStatus';
+import { sortStatus, userStatusFromValue } from './friendStatus';
 
 type FriendSortMethod =
     | 'Sort Alphabetically'
@@ -34,13 +33,17 @@ function getFriendsSortFunction(
     { staySinceMs, lastSeen }: FriendSortContext = {}
 ): FriendComparator {
     const friendId = (item: FriendSortItem) => String(item.id ?? '');
+    const friendName = (item: FriendSortItem) =>
+        String(item.name || item.displayName || item.username || item.id || '');
     const stayStart = (item: FriendSortItem) =>
         staySinceMs?.(friendId(item)) ?? undefined;
     const sorts: FriendComparator[] = [];
     for (const sortMethod of sortMethods) {
         switch (sortMethod) {
             case 'Sort Alphabetically':
-                sorts.push(compareByName);
+                sorts.push((a, b) =>
+                    friendName(a).localeCompare(friendName(b))
+                );
                 break;
             case 'Sort Private to Bottom':
                 sorts.push(compareByPrivate);
@@ -61,12 +64,6 @@ function getFriendsSortFunction(
                 break;
             case 'Sort by Time in Instance':
                 sorts.push((a: FriendSortItem, b: FriendSortItem) => {
-                    if (
-                        typeof a.ref === 'undefined' ||
-                        typeof b.ref === 'undefined'
-                    ) {
-                        return 0;
-                    }
                     const aKind = presenceOf(a)?.kind;
                     const bKind = presenceOf(b)?.kind;
                     const aPending = aKind === 'pendingOffline';
@@ -78,8 +75,8 @@ function getFriendsSortFunction(
                     }
 
                     return compareByLocationAt(
-                        b.ref,
-                        a.ref,
+                        b,
+                        a,
                         stayStart(b),
                         stayStart(a)
                     );
@@ -106,5 +103,16 @@ function getFriendsSortFunction(
     };
 }
 
-export { getFriendsSortFunction, sortStatus };
+function activeStatusRank(item: FriendSortItem) {
+    const status = userStatusFromValue(item.status);
+    return status === 'join me' || status === 'ask me' || status === 'busy'
+        ? status
+        : 'active';
+}
+
+function compareByActiveStatus(a: FriendSortItem, b: FriendSortItem) {
+    return sortStatus(activeStatusRank(a), activeStatusRank(b));
+}
+
+export { compareByActiveStatus, getFriendsSortFunction, sortStatus };
 export type { FriendSortContext, FriendSortItem, FriendSortMethod };

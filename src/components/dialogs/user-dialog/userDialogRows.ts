@@ -4,7 +4,7 @@ import { hasGroupIdPrefix } from '@/shared/constants/vrchatIds';
 import {
     compareByDisplayName,
     compareByFriendOrder,
-    compareByLastActiveRef,
+    compareByLastActive,
     type ComparableRecord,
     type Comparator
 } from '@/shared/utils/compare';
@@ -180,7 +180,7 @@ export function sortMutualFriendRows<T extends ComparableRecord>(
 ) {
     const comparers: Record<UserDialogMutualFriendSort, Comparator> = {
         alphabetical: compareByDisplayName,
-        lastActive: compareByLastActiveRef,
+        lastActive: compareByLastActive,
         friendOrder: compareByFriendOrder
     };
     const comparer = comparers[sortBy];
