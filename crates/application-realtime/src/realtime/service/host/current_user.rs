@@ -124,7 +124,6 @@ impl RealtimeHostRuntime {
         &self,
         expectation: RealtimeCurrentUserRefreshExpectation,
         snapshot: Value,
-        response_authority_fields: &[&str],
     ) -> bool {
         if !self
             .active_current_user_context()
@@ -137,7 +136,6 @@ impl RealtimeHostRuntime {
             expectation.sequence,
             snapshot,
             Value::Null,
-            response_authority_fields,
             self.local_game_context(),
         ) else {
             return false;
@@ -233,7 +231,6 @@ impl RealtimeHostRuntime {
             expectation.sequence,
             snapshot,
             overlay_patch,
-            &[],
             self.local_game_context(),
         ) else {
             return Ok(false);

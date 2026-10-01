@@ -12,7 +12,3 @@ mod utils;
 mod tests;
 
 pub use runtime::RealtimeCurrentUserRuntime;
-pub use state::{
-    CURRENT_USER_AVATAR_RESPONSE_AUTHORITY_FIELDS,
-    CURRENT_USER_FALLBACK_AVATAR_RESPONSE_AUTHORITY_FIELDS,
-};

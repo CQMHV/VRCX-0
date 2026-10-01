@@ -30,10 +30,6 @@ pub use realtime::{
     UserQueryKind, UserQueryOptions,
 };
 pub use realtime::{normalize_v1_notification, normalize_v2_notification};
-pub use realtime::{
-    CURRENT_USER_AVATAR_RESPONSE_AUTHORITY_FIELDS,
-    CURRENT_USER_FALLBACK_AVATAR_RESPONSE_AUTHORITY_FIELDS,
-};
 pub use social_baseline::{
     build_favorites_baseline, build_favorites_baseline_from_friend_ids,
     build_synced_friend_roster_baseline, FavoriteBaselineSnapshot, SocialBaselineDeps,

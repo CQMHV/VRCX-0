@@ -41,16 +41,7 @@ pub(super) fn apply_user_update(
     if patch.is_empty() {
         return None;
     }
-    apply_current_user_patch(
-        state,
-        patch,
-        now,
-        game,
-        CurrentUserPatchOptions {
-            applies_local_game_authority: true,
-            ..CurrentUserPatchOptions::default()
-        },
-    )
+    apply_current_user_patch(state, patch, now, game, CurrentUserPatchOptions::default())
 }
 
 pub(super) fn apply_user_location(
@@ -75,10 +66,7 @@ pub(super) fn apply_user_location(
             patch,
             now,
             game,
-            CurrentUserPatchOptions {
-                applies_local_game_authority: true,
-                ..CurrentUserPatchOptions::default()
-            },
+            CurrentUserPatchOptions::default(),
         );
     }
     if is_offline_location_proof(&patch.text_field("location"))
@@ -107,7 +95,6 @@ pub(super) fn apply_user_location(
         now,
         game,
         CurrentUserPatchOptions {
-            applies_local_game_authority: true,
             reconciles_remote_location: true,
             records_remote_game_log: true,
             ..CurrentUserPatchOptions::default()
@@ -141,7 +128,7 @@ pub(super) fn apply_current_user_patch(
     } else {
         state.remote_snapshot.to_map()
     };
-    if options.applies_local_game_authority && game.is_game_running() {
+    if game.is_game_running() {
         if let Some(local_patch) = local_game_location_patch(game) {
             for (key, value) in &local_patch {
                 merged.insert(key.clone(), value.clone());

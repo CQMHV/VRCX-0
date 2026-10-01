@@ -5,10 +5,6 @@ use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 use vrcx_0_application_core::LocalGameContextSnapshot;
 
 use super::runtime::RealtimeCurrentUserRuntime;
-use super::state::{
-    CURRENT_USER_AVATAR_RESPONSE_AUTHORITY_FIELDS,
-    CURRENT_USER_FALLBACK_AVATAR_RESPONSE_AUTHORITY_FIELDS,
-};
 
 fn game_not_running(available: bool) -> LocalGameContextSnapshot {
     if !available {
@@ -208,7 +204,6 @@ fn refreshed_snapshot_with_stale_sequence_is_dropped() {
             stale_sequence,
             json!({ "id": "usr_self", "bio": "stale bio" }),
             json!({}),
-            &[],
             game_not_running(true),
         )
         .is_none());
@@ -219,7 +214,6 @@ fn refreshed_snapshot_with_stale_sequence_is_dropped() {
             fresh_sequence,
             json!({ "id": "usr_self", "bio": "fresh bio" }),
             json!({}),
-            &[],
             game_not_running(true),
         )
         .expect("fresh sequence applies");
@@ -250,7 +244,6 @@ fn interleaved_avatar_and_fallback_selection_drops_the_stale_response() {
                 "fallbackAvatar": "avtr_old_fallback"
             }),
             json!({}),
-            CURRENT_USER_AVATAR_RESPONSE_AUTHORITY_FIELDS,
             game_not_running(true),
         )
         .expect("avatar selection response applies");
@@ -269,37 +262,12 @@ fn interleaved_avatar_and_fallback_selection_drops_the_stale_response() {
                 "fallbackAvatar": "avtr_new_fallback"
             }),
             json!({}),
-            CURRENT_USER_FALLBACK_AVATAR_RESPONSE_AUTHORITY_FIELDS,
             game_not_running(true),
         )
         .is_none());
     let snapshot = runtime.snapshot_value().expect("snapshot");
     assert_eq!(snapshot["currentAvatar"], json!("avtr_new"));
     assert_eq!(snapshot["fallbackAvatar"], json!("avtr_old_fallback"));
-}
-
-#[test]
-fn response_authority_fields_override_the_local_authority_strip() {
-    let runtime = RealtimeCurrentUserRuntime::new();
-    runtime.set_snapshot(
-        "usr_self".into(),
-        7,
-        json!({ "id": "usr_self", "status": "join me" }),
-    );
-    let sequence = runtime.snapshot_sequence(7).expect("sequence");
-
-    let output = runtime
-        .apply_refreshed_snapshot_if_sequence(
-            7,
-            sequence,
-            json!({ "id": "usr_self", "status": "busy" }),
-            json!({}),
-            &["status"],
-            game_not_running(true),
-        )
-        .expect("response game field applies");
-
-    assert_eq!(output.projection.snapshot["status"], json!("busy"));
 }
 
 #[test]

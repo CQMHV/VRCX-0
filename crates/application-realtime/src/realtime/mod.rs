@@ -14,10 +14,6 @@ pub(crate) mod user_facts;
 pub(crate) mod user_query_cache;
 
 pub use connection::{RealtimeMessageSink, RealtimeTransport, RealtimeTransportFuture};
-pub use current_user::{
-    CURRENT_USER_AVATAR_RESPONSE_AUTHORITY_FIELDS,
-    CURRENT_USER_FALLBACK_AVATAR_RESPONSE_AUTHORITY_FIELDS,
-};
 pub use notifications::{normalize_v1_notification, normalize_v2_notification};
 pub use output::{
     FriendIconChange, FriendWake, RealtimeCurrentUserOutput, RealtimeFriendOutput,

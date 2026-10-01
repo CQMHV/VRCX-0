@@ -33,7 +33,6 @@ pub(super) struct RemoteGameLogInterval {
 
 #[derive(Default)]
 pub(super) struct CurrentUserPatchOptions {
-    pub(super) applies_local_game_authority: bool,
     pub(super) reconciles_remote_location: bool,
     pub(super) records_remote_game_log: bool,
     pub(super) records_current_avatar_history: bool,
@@ -136,16 +135,6 @@ pub(super) const CURRENT_USER_REFRESH_LOCAL_AUTHORITY_FIELDS: &[&str] = &[
     derived_keys::PREVIOUS_LOCATION,
     derived_keys::PREVIOUS_LOCATION_UPDATED_AT,
 ];
-
-pub const CURRENT_USER_AVATAR_RESPONSE_AUTHORITY_FIELDS: &[&str] = &[
-    "currentAvatar",
-    "currentAvatarImageUrl",
-    "currentAvatarName",
-    "currentAvatarTags",
-    "currentAvatarThumbnailImageUrl",
-];
-
-pub const CURRENT_USER_FALLBACK_AVATAR_RESPONSE_AUTHORITY_FIELDS: &[&str] = &["fallbackAvatar"];
 
 pub(super) const CURRENT_USER_REMOTE_PRESENCE_FIELDS: &[&str] = &[
     "location",

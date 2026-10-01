@@ -129,7 +129,7 @@ impl RealtimeCurrentUserRuntime {
         overlay_patch: serde_json::Value,
         game: LocalGameContextSnapshot,
     ) -> Option<RealtimeCurrentUserOutput> {
-        self.apply_refreshed_snapshot_inner(generation, None, snapshot, overlay_patch, &[], game)
+        self.apply_refreshed_snapshot_inner(generation, None, snapshot, overlay_patch, game)
     }
 
     pub fn apply_refreshed_snapshot_if_sequence(
@@ -138,7 +138,6 @@ impl RealtimeCurrentUserRuntime {
         expected_sequence: u64,
         snapshot: serde_json::Value,
         overlay_patch: serde_json::Value,
-        response_authority_fields: &[&str],
         game: LocalGameContextSnapshot,
     ) -> Option<RealtimeCurrentUserOutput> {
         self.apply_refreshed_snapshot_inner(
@@ -146,7 +145,6 @@ impl RealtimeCurrentUserRuntime {
             Some(expected_sequence),
             snapshot,
             overlay_patch,
-            response_authority_fields,
             game,
         )
     }
@@ -157,7 +155,6 @@ impl RealtimeCurrentUserRuntime {
         expected_sequence: Option<u64>,
         snapshot: serde_json::Value,
         overlay_patch: serde_json::Value,
-        response_authority_fields: &[&str],
         game: LocalGameContextSnapshot,
     ) -> Option<RealtimeCurrentUserOutput> {
         let mut state = self.lock_state();
@@ -175,7 +172,9 @@ impl RealtimeCurrentUserRuntime {
             return None;
         }
         let mut patch = snapshot.as_object().cloned().unwrap_or_default();
-        remove_current_user_refresh_local_authority_fields(&mut patch, response_authority_fields);
+        for field in CURRENT_USER_REFRESH_LOCAL_AUTHORITY_FIELDS {
+            patch.remove(*field);
+        }
         if let Some(overlay) = overlay_patch.as_object() {
             for (key, value) in overlay {
                 patch.insert(key.clone(), value.clone());
@@ -186,10 +185,7 @@ impl RealtimeCurrentUserRuntime {
             patch,
             &EventTime::now(),
             &game,
-            CurrentUserPatchOptions {
-                applies_local_game_authority: true,
-                ..CurrentUserPatchOptions::default()
-            },
+            CurrentUserPatchOptions::default(),
         )
     }
 
@@ -214,7 +210,6 @@ impl RealtimeCurrentUserRuntime {
             &EventTime::now(),
             &game,
             CurrentUserPatchOptions {
-                applies_local_game_authority: true,
                 reconciles_remote_location: !game.is_game_running(),
                 records_current_avatar_history: game.is_game_running(),
                 ..CurrentUserPatchOptions::default()
@@ -239,10 +234,7 @@ impl RealtimeCurrentUserRuntime {
             Map::new(),
             &EventTime::now(),
             &game,
-            CurrentUserPatchOptions {
-                applies_local_game_authority: true,
-                ..CurrentUserPatchOptions::default()
-            },
+            CurrentUserPatchOptions::default(),
         )
     }
 
@@ -339,17 +331,5 @@ impl RealtimeCurrentUserRuntime {
 
     fn lock_state(&self) -> std::sync::MutexGuard<'_, RealtimeCurrentUserState> {
         self.state.lock().unwrap_or_else(|error| error.into_inner())
-    }
-}
-
-fn remove_current_user_refresh_local_authority_fields(
-    patch: &mut Map<String, Value>,
-    response_authority_fields: &[&str],
-) {
-    for field in CURRENT_USER_REFRESH_LOCAL_AUTHORITY_FIELDS {
-        if response_authority_fields.contains(field) {
-            continue;
-        }
-        patch.remove(*field);
     }
 }
