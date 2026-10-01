@@ -726,7 +726,10 @@ export function useFriendsLocationsPageDerivedState({
             const {
                 visibleLocation: availableFriends,
                 privateLocation: privateFriends
-            } = partitionFriendsByPrivateLocation(remainingFriends);
+            } = partitionFriendsByPrivateLocation(
+                remainingFriends,
+                (friendId) => locationTimes[friendId]?.location
+            );
             const privateSections: FriendsLocationsSection[] =
                 privateFriends.length
                     ? [
@@ -804,6 +807,7 @@ export function useFriendsLocationsPageDerivedState({
         favoriteGroupLabelsByFriendId,
         favoriteGroupSections,
         favoriteIds,
+        locationTimes,
         onlineWithoutSameInstanceFriends,
         sameInstanceGroups,
         sameInstanceFriends,
@@ -841,7 +845,8 @@ export function useFriendsLocationsPageDerivedState({
         }
         const groups = buildFriendWorldGroups(
             worldViewFriends,
-            currentInviteLocation
+            currentInviteLocation,
+            (friendId) => locationTimes[friendId]?.location
         );
         if (!currentUserRecord) {
             return groups;
@@ -857,11 +862,20 @@ export function useFriendsLocationsPageDerivedState({
                     : instance
             )
         }));
-    }, [currentInviteLocation, currentUserRecord, viewMode, worldViewFriends]);
+    }, [
+        currentInviteLocation,
+        currentUserRecord,
+        locationTimes,
+        viewMode,
+        worldViewFriends
+    ]);
     const privateWorldFriends = useMemo<FriendRecord[]>(
         () =>
-            partitionFriendsByPrivateLocation(worldViewFriends).privateLocation,
-        [worldViewFriends]
+            partitionFriendsByPrivateLocation(
+                worldViewFriends,
+                (friendId) => locationTimes[friendId]?.location
+            ).privateLocation,
+        [locationTimes, worldViewFriends]
     );
     const worldIds = useMemo(
         () => worldGroups.map((group) => group.worldId),

@@ -44,7 +44,8 @@ describe('buildFriendWorldGroups', () => {
                 friend('f', offlinePresence),
                 friend('g', '')
             ],
-            ''
+            '',
+            () => null
         );
 
         expect(
@@ -84,7 +85,8 @@ describe('buildFriendWorldGroups', () => {
                 friend('c', 'wrld_here:5'),
                 friend('d', 'wrld_here:6')
             ],
-            'wrld_here:6'
+            'wrld_here:6',
+            () => null
         );
 
         expect(groups.map((group) => group.worldId)).toEqual([
@@ -110,11 +112,25 @@ describe('buildFriendWorldGroups', () => {
                 }),
                 friend('b', 'wrld_dest:3', { $worldName: 'Destination' })
             ],
-            ''
+            '',
+            () => null
         );
 
         expect(groups).toHaveLength(1);
         expect(groups[0].nameHint).toBe('Destination');
+        expect(groups[0].instances[0].friends.map((entry) => entry.id)).toEqual(
+            ['a', 'b']
+        );
+    });
+
+    it('places a private friend seen in the local game into that instance', () => {
+        const groups = buildFriendWorldGroups(
+            [friend('a', 'wrld_here:5'), friend('b', 'private')],
+            '',
+            (friendId) => (friendId === 'b' ? 'wrld_here:5' : null)
+        );
+
+        expect(groups).toHaveLength(1);
         expect(groups[0].instances[0].friends.map((entry) => entry.id)).toEqual(
             ['a', 'b']
         );

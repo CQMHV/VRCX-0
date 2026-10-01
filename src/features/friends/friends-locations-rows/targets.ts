@@ -1,7 +1,8 @@
 import {
     presenceOf,
     presenceTravelingTag,
-    resolveFriendPresenceLocation
+    resolveFriendPresenceLocation,
+    revealPrivateLocation
 } from '@/domain/friends/presence';
 import { parseLocation } from '@/shared/utils/location';
 import { normalizeString } from '@/shared/utils/string';
@@ -37,25 +38,39 @@ export function locationTarget(rawLocation: string): FriendLocationTarget {
 }
 
 export function friendLocationTarget(
-    friend: FriendLocationFriend | null | undefined
+    friend: FriendLocationFriend | null | undefined,
+    observedLocation?: string | null
 ): FriendLocationTarget {
-    return locationTarget(resolveFriendPresenceLocation(friend));
+    return locationTarget(
+        revealPrivateLocation(
+            resolveFriendPresenceLocation(friend),
+            observedLocation
+        )
+    );
 }
 
 export function isFriendInPrivateLocation(
-    friend: FriendLocationFriend | null | undefined
+    friend: FriendLocationFriend | null | undefined,
+    observedLocation?: string | null
 ) {
-    const target = friendLocationTarget(friend);
-    return target.isPrivate;
+    return friendLocationTarget(friend, observedLocation).isPrivate;
 }
 
 export function partitionFriendsByPrivateLocation<
     TFriend extends FriendLocationFriend
->(friends: TFriend[]) {
+>(
+    friends: TFriend[],
+    observedLocationOf: (friendId: string) => string | null | undefined
+) {
     const visibleLocation: TFriend[] = [];
     const privateLocation: TFriend[] = [];
     for (const friend of friends) {
-        if (isFriendInPrivateLocation(friend)) {
+        if (
+            isFriendInPrivateLocation(
+                friend,
+                observedLocationOf(normalizeString(friend?.id))
+            )
+        ) {
             privateLocation.push(friend);
         } else {
             visibleLocation.push(friend);

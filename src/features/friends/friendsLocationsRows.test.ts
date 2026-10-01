@@ -135,6 +135,12 @@ describe('friends locations row helpers', () => {
                 $presence: onlinePresence('wrld_123:456')
             })
         ).toBe(false);
+        expect(
+            isFriendInPrivateLocation(
+                { $presence: onlinePresence('private') },
+                'wrld_seen:1'
+            )
+        ).toBe(false);
 
         const visible = {
             id: 'usr_visible',
@@ -144,10 +150,17 @@ describe('friends locations row helpers', () => {
             id: 'usr_private',
             $presence: onlinePresence('private')
         };
+        const seenFriend = {
+            id: 'usr_seen',
+            $presence: onlinePresence('private')
+        };
         expect(
-            partitionFriendsByPrivateLocation([privateFriend, visible])
+            partitionFriendsByPrivateLocation(
+                [privateFriend, visible, seenFriend],
+                (friendId) => (friendId === 'usr_seen' ? 'wrld_seen:1' : null)
+            )
         ).toEqual({
-            visibleLocation: [visible],
+            visibleLocation: [visible, seenFriend],
             privateLocation: [privateFriend]
         });
     });
