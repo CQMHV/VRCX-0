@@ -43,16 +43,12 @@ pub(super) struct CurrentUserPatchOptions {
 pub(super) struct RealtimeCurrentUserStateSnapshot {
     pub(super) raw: Map<String, Value>,
     pub(super) user_id: String,
-    pub(super) display_name: String,
     pub(super) location: String,
     pub(super) traveling_to_location: String,
-    pub(super) world_id: String,
-    pub(super) instance_id: String,
     pub(super) status: String,
     pub(super) status_description: String,
     pub(super) bio: String,
     pub(super) current_avatar: String,
-    pub(super) current_avatar_image_url: String,
     pub(super) world_name: String,
     pub(super) previous_avatar_swap_time: i64,
 }
@@ -95,16 +91,12 @@ impl RealtimeCurrentUserStateSnapshot {
 
     fn refresh_typed_fields(&mut self) {
         self.user_id = normalize_user_id(&self.raw.text_field("id"));
-        self.display_name = self.raw.text_field("displayName");
         self.location = self.raw.text_field("location");
         self.traveling_to_location = self.raw.text_field("travelingToLocation");
-        self.world_id = self.raw.text_field("worldId");
-        self.instance_id = self.raw.text_field("instanceId");
         self.status = self.raw.text_field("status");
         self.status_description = self.raw.text_field("statusDescription");
         self.bio = self.raw.text_field("bio");
         self.current_avatar = normalize_user_id(&self.raw.text_field("currentAvatar"));
-        self.current_avatar_image_url = self.raw.text_field("currentAvatarImageUrl");
         self.world_name = self.raw.text_field("worldName");
         self.previous_avatar_swap_time = self
             .raw
