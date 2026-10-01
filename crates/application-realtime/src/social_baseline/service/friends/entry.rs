@@ -2,9 +2,6 @@ use std::collections::HashMap;
 use vrcx_0_core::derived_keys;
 
 use serde_json::Value;
-use vrcx_0_application_core::Result;
-use vrcx_0_core::friends::FriendRecord;
-use vrcx_0_core::presence::PresenceEntry;
 use vrcx_0_core::trust::{compute_trust_level, compute_user_platform};
 
 use super::super::{
@@ -170,30 +167,6 @@ pub(super) fn build_fast_roster_records(
     }
 
     friends_by_id
-}
-
-pub(super) fn build_roster_snapshot_from_records(
-    user_id: &str,
-    records_by_id: &HashMap<String, FriendRecord>,
-    presence_by_id: &HashMap<String, PresenceEntry>,
-    generation: u64,
-) -> Result<Value> {
-    let mut friends_by_id = Map::new();
-    for (friend_id, record) in records_by_id {
-        friends_by_id.insert(friend_id.clone(), serde_json::to_value(record)?);
-    }
-    let mut snapshot = build_roster_snapshot(user_id, friends_by_id);
-    snapshot["presenceById"] = serde_json::to_value(presence_by_id)?;
-    snapshot["generation"] = generation.into();
-    Ok(snapshot)
-}
-
-fn build_roster_snapshot(user_id: &str, friends_by_id: Map<String, Value>) -> Value {
-    json!({
-        "currentUserId": user_id,
-        "friendsById": friends_by_id,
-        "detail": ""
-    })
 }
 
 pub(super) fn infer_state_from_platform(platform: &str) -> &'static str {

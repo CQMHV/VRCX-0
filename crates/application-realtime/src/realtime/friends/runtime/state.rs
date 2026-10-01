@@ -400,17 +400,15 @@ impl RealtimeFriendsRuntime {
     }
 
     pub fn roster_snapshot(&self) -> serde_json::Result<Option<RealtimeFriendRosterSnapshot>> {
-        let state = self.lock_state();
-        let Some(roster) = state.roster.as_ref() else {
+        let Some(snapshot) = self.snapshot() else {
             return Ok(None);
         };
-        let snapshot = current_friend_roster_snapshot(&state, roster)?;
         Ok(Some(RealtimeFriendRosterSnapshot {
-            current_user_id: roster.current_user_id.clone(),
-            endpoint: roster.endpoint.clone(),
-            websocket: roster.websocket.clone(),
-            friend_count: roster.entries.len(),
-            snapshot: snapshot.into(),
+            friend_count: snapshot.friends_by_id.len(),
+            snapshot: snapshot.to_roster_json()?.into(),
+            current_user_id: snapshot.current_user_id,
+            endpoint: snapshot.endpoint,
+            websocket: snapshot.websocket,
         }))
     }
 
@@ -619,24 +617,6 @@ fn presence_entries(
             )
         })
         .collect()
-}
-
-fn current_friend_roster_snapshot(
-    state: &RealtimeFriendState,
-    roster: &Roster,
-) -> serde_json::Result<Value> {
-    let friends_by_id = roster
-        .entries
-        .iter()
-        .map(|(user_id, entry)| (user_id.clone(), &entry.record))
-        .collect::<HashMap<_, _>>();
-    Ok(json!({
-        "currentUserId": roster.current_user_id,
-        "friendsById": serde_json::to_value(friends_by_id)?,
-        "presenceById": serde_json::to_value(presence_entries(state, roster))?,
-        "generation": roster.generation,
-        "detail": "",
-    }))
 }
 
 fn stamp_output_revs(state: &mut RealtimeFriendState, output: &mut RealtimeFriendOutput) {

@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::time::Duration;
 
 use serde::Serialize;
+use serde_json::{json, Value};
 use vrcx_0_core::friends::FriendRecord;
 use vrcx_0_core::json::RawJson;
 use vrcx_0_core::presence::PresenceEntry;
@@ -29,6 +30,18 @@ pub struct RealtimeFriendSnapshot {
     pub baseline_revision: u64,
     pub friends_by_id: HashMap<String, FriendRecord>,
     pub presence_by_id: HashMap<String, PresenceEntry>,
+}
+
+impl RealtimeFriendSnapshot {
+    pub(crate) fn to_roster_json(&self) -> serde_json::Result<Value> {
+        Ok(json!({
+            "currentUserId": self.current_user_id,
+            "friendsById": serde_json::to_value(&self.friends_by_id)?,
+            "presenceById": serde_json::to_value(&self.presence_by_id)?,
+            "generation": self.generation,
+            "detail": "",
+        }))
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]

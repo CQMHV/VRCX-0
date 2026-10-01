@@ -19,9 +19,7 @@ use super::super::{
     FriendBaselineSyncOutcome, Ordering, RawJson, SocialBaselineDeps,
     SocialFriendRosterBaselineInput, SocialFriendRosterBaselineOutput,
 };
-use super::entry::{
-    build_fast_roster_records, build_roster_snapshot_from_records, infer_state_from_platform,
-};
+use super::entry::{build_fast_roster_records, infer_state_from_platform};
 use super::profile::{
     fetch_all_friends, insert_fetched_friend, normalize_state_bucket, RemoteFriendProfile,
 };
@@ -257,12 +255,7 @@ fn replace_friend_roster_baseline_snapshot(
     snapshot: &RealtimeFriendSnapshot,
 ) -> Result<()> {
     output.count = u32::try_from(snapshot.friends_by_id.len()).unwrap_or(u32::MAX);
-    output.snapshot = Some(RawJson::from(build_roster_snapshot_from_records(
-        &output.user_id,
-        &snapshot.friends_by_id,
-        &snapshot.presence_by_id,
-        snapshot.generation,
-    )?));
+    output.snapshot = Some(RawJson::from(snapshot.to_roster_json()?));
     Ok(())
 }
 
