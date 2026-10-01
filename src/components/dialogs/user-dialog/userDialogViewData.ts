@@ -110,32 +110,6 @@ function estimatedOnlineDuration(profile: DialogRecord, nowMs?: number) {
     return nowMs - lastLoginMs;
 }
 
-function resolvePresenceActivityAt(profile: DialogRecord) {
-    return (
-        validTimestampValue(profile?.last_activity) ||
-        validTimestampValue(profile?.locationUpdatedAt) ||
-        validTimestampValue(profile?.$location_at) ||
-        validTimestampValue(profile?.locationAt) ||
-        validTimestampValue(profile?.location_at) ||
-        validTimestampValue(profile?.statusUpdatedAt) ||
-        validTimestampValue(profile?.status_updated_at) ||
-        validTimestampValue(profile?.statusAt) ||
-        validTimestampValue(profile?.status_at) ||
-        validTimestampValue(profile?.$status_at) ||
-        validTimestampValue(profile?.statusDescriptionUpdatedAt) ||
-        validTimestampValue(profile?.status_description_updated_at) ||
-        validTimestampValue(profile?.statusDescriptionAt) ||
-        validTimestampValue(profile?.status_description_at) ||
-        validTimestampValue(profile?.$status_description_at) ||
-        validTimestampValue(profile?.stateUpdatedAt) ||
-        validTimestampValue(profile?.state_updated_at) ||
-        validTimestampValue(profile?.stateAt) ||
-        validTimestampValue(profile?.state_at) ||
-        validTimestampValue(profile?.$state_at) ||
-        ''
-    );
-}
-
 function resolveFriendedAt(profile: DialogRecord) {
     const friendship = record(profile.friendship);
     const relationship = record(profile.relationship);
@@ -437,7 +411,7 @@ export function buildUserDialogProfileSummary({
     const friendNumber =
         Number(profile.$friendNumber ?? profile.friendNumber ?? 0) || 0;
     const estimatedOnlineDurationMs = estimatedOnlineDuration(profile, nowMs);
-    const presenceActivityAt = resolvePresenceActivityAt(profile);
+    const presenceActivityAt = validTimestampValue(profile?.last_activity);
     const friendedAt = normalizedText(
         userStats.friendedAt || resolveFriendedAt(profile)
     );

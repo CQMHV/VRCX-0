@@ -98,9 +98,6 @@ function userStatusSortRank(value: unknown) {
     if (status === 'active') {
         return 1;
     }
-    if (status === 'state-active') {
-        return 4;
-    }
     if (status === 'ask me') {
         return 2;
     }
@@ -109,9 +106,6 @@ function userStatusSortRank(value: unknown) {
     }
     if (status === 'offline') {
         return 5;
-    }
-    if (status === 'private' || status === 'traveling') {
-        return 4;
     }
     return 4;
 }

@@ -156,8 +156,6 @@ export function createDefaultUserRef<TUser extends UserRecord>(
         worldId: '',
         fallbackAvatar: '',
         $location: {},
-        $location_at: Date.now(),
-        $travelingToTime: Date.now(),
         $isVRCPlus: false,
         $isModerator: false,
         $isTroll: false,
