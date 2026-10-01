@@ -9,7 +9,6 @@ use vrcx_0_core::presence::PresenceEntry;
 use vrcx_0_core::trust::{trust_level_changed, trust_level_differs};
 use vrcx_0_core::OwnerId;
 
-use crate::realtime::event_kind::RealtimeWsEventKind;
 use crate::realtime::friends::presence::{
     dwell_place, presence_feed, presence_view, reduce, wake, Claim, Evidence, FriendEventKind,
     Phase, Source,
@@ -31,10 +30,6 @@ mod profile_merge;
 
 use event_user::{event_user_id, event_user_patch, normalize_patch_trust};
 pub(super) use profile_merge::{merge_profile, record_string};
-
-pub fn is_friend_event_type(message_type: &str) -> bool {
-    RealtimeWsEventKind::from_name(message_type).is_friend()
-}
 
 pub(super) fn apply_wake(
     state: &mut RealtimeFriendState,

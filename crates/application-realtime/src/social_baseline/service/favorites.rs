@@ -14,7 +14,7 @@ use super::{
     SocialBaselineDeps, SocialFavoritesBaselineInput, SocialFavoritesBaselineOutput,
     SocialFavoritesBaselineRequest, FAVORITES_PAGE_SIZE, FAVORITE_GROUPS_PAGE_SIZE,
 };
-use crate::{FavoriteBaselineSnapshot, FavoriteGroupOutput};
+use crate::social_baseline::types::{FavoriteBaselineSnapshot, FavoriteGroupOutput};
 use vrcx_0_core::OwnerId;
 
 const MAX_FAVORITE_GROUPS_KEY: &str = "maxFavoriteGroups";

@@ -16,24 +16,18 @@ pub mod test_support {
 
 pub use ports::{RealtimeRemoteRequests, RealtimeStore};
 pub use realtime::{
-    is_friend_event_type, is_print_created_content_refresh, FriendBaselineCausalWatermark,
-    FriendBaselineResult, FriendBaselineSyncOutcome, FriendProfileBulkLoadStatus,
-    FriendProfileLoadStatusPayload, FriendProjection, FriendProjectionObserver,
-    FriendProjectionPatch, FriendProjectionSink, PendingOfflineTimerAction,
-    RealtimeCachedUserProfile, RealtimeCurrentUserAuthority, RealtimeCurrentUserGameLogContext,
-    RealtimeCurrentUserOutput, RealtimeCurrentUserProjection,
-    RealtimeCurrentUserRefreshExpectation, RealtimeCurrentUserSnapshotSink,
-    RealtimeEntryCorrection, RealtimeEntryCorrectionFields, RealtimeEntryCorrectionStream,
-    RealtimeFeedPatch, RealtimeFeedProjection, RealtimeFeedUpsert, RealtimeFriendApplyResult,
-    RealtimeFriendOutput, RealtimeFriendRecordSnapshot, RealtimeFriendRosterSnapshot,
-    RealtimeFriendSnapshot, RealtimeFriendsRuntime, RealtimeHostRuntime, RealtimeHostRuntimeDeps,
-    RealtimeInstanceClosedOutput, RealtimeInstanceClosedProjection, RealtimeInstanceQueueKind,
-    RealtimeInstanceQueueProjection, RealtimeMessageSink, RealtimeNotificationOutput,
-    RealtimeNotificationProjection, RealtimeNotificationUpsert, RealtimeSessionContext,
-    RealtimeStopRequest, RealtimeTransport, RealtimeTransportFuture,
-    RealtimeTransportLifecycleEvent, RealtimeTransportStartResult, RealtimeTransportTermination,
-    RealtimeUserProjection, RealtimeWsMessagePayload, RealtimeWsStatus, RealtimeWsStatusPayload,
-    SyntheticFriendEventOutcome, UserQueryCachePolicy, UserQueryKind, UserQueryOptions,
+    is_print_created_content_refresh, FriendProfileBulkLoadStatus, FriendProfileLoadStatusPayload,
+    FriendProjection, FriendProjectionObserver, FriendProjectionPatch, FriendProjectionSink,
+    RealtimeCurrentUserProjection, RealtimeCurrentUserSnapshotSink, RealtimeEntryCorrection,
+    RealtimeEntryCorrectionFields, RealtimeEntryCorrectionStream, RealtimeFeedProjection,
+    RealtimeFriendRosterSnapshot, RealtimeFriendSnapshot, RealtimeHostRuntime,
+    RealtimeHostRuntimeDeps, RealtimeInstanceClosedProjection, RealtimeInstanceQueueKind,
+    RealtimeInstanceQueueProjection, RealtimeMessageSink, RealtimeNotificationProjection,
+    RealtimeNotificationUpsert, RealtimeSessionContext, RealtimeStopRequest, RealtimeTransport,
+    RealtimeTransportFuture, RealtimeTransportLifecycleEvent, RealtimeTransportStartResult,
+    RealtimeTransportTermination, RealtimeUserProjection, RealtimeWsMessagePayload,
+    RealtimeWsStatus, RealtimeWsStatusPayload, SyntheticFriendEventOutcome, UserQueryCachePolicy,
+    UserQueryKind, UserQueryOptions,
 };
 pub use realtime::{normalize_v1_notification, normalize_v2_notification};
 pub use realtime::{
@@ -42,8 +36,7 @@ pub use realtime::{
 };
 pub use social_baseline::{
     build_favorites_baseline, build_favorites_baseline_from_friend_ids,
-    build_favorites_baseline_from_friend_records, build_synced_friend_roster_baseline,
-    FavoriteBaselineSnapshot, FavoriteGroupOutput, FriendStatusVerdicts, SocialBaselineDeps,
+    build_synced_friend_roster_baseline, FavoriteBaselineSnapshot, SocialBaselineDeps,
     SocialFavoritesBaselineInput, SocialFavoritesBaselineOutput, SocialFavoritesBaselineRequest,
-    SocialFriendRosterBaselineInput, SocialFriendRosterBaselineOutput, SyncedFriendRosterBaseline,
+    SocialFriendRosterBaselineInput, SocialFriendRosterBaselineOutput,
 };

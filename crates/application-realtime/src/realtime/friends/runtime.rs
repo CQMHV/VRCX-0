@@ -37,7 +37,6 @@ mod profile_tests;
 #[cfg(test)]
 mod ws_trace_replay_test;
 
-pub use apply::is_friend_event_type;
 pub(crate) use presence_split::baseline_friend_view;
 pub(crate) use social_feed::{player_joining_feed_entry, trust_level_feed_entry};
 pub use state::RealtimeFriendsRuntime;

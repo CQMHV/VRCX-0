@@ -59,7 +59,6 @@ mod world_cache;
 #[cfg(test)]
 mod world_cache_tests;
 
-pub use current_user::RealtimeCurrentUserRefreshExpectation;
 pub use friend_mutation::SyntheticFriendEventOutcome;
 pub use friend_profile_bulk_load::{FriendProfileBulkLoadStatus, FriendProfileLoadStatusPayload};
 pub use state::{

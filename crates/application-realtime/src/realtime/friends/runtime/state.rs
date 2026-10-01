@@ -117,6 +117,7 @@ impl RealtimeFriendsRuntime {
         }
     }
 
+    #[cfg(any(test, feature = "test-utils"))]
     pub fn set_baseline(
         &self,
         baseline: FriendRosterBaseline,
@@ -447,6 +448,7 @@ impl RealtimeFriendsRuntime {
         Some(state.rev_of(user_id))
     }
 
+    #[cfg(test)]
     pub fn apply_ws_message(
         &self,
         payload: &RealtimeWsMessagePayload,

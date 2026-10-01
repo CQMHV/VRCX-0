@@ -18,7 +18,6 @@ pub use current_user::{
     CURRENT_USER_AVATAR_RESPONSE_AUTHORITY_FIELDS,
     CURRENT_USER_FALLBACK_AVATAR_RESPONSE_AUTHORITY_FIELDS,
 };
-pub use friends::{is_friend_event_type, RealtimeFriendsRuntime};
 pub use notifications::{normalize_v1_notification, normalize_v2_notification};
 pub use output::{
     FriendIconChange, FriendWake, RealtimeCurrentUserOutput, RealtimeFriendOutput,
@@ -41,8 +40,7 @@ pub use runtime_types::{
     RealtimeWsMessagePayload, RealtimeWsStatus, RealtimeWsStatusPayload,
 };
 pub use service::{
-    FriendProfileBulkLoadStatus, FriendProfileLoadStatusPayload,
-    RealtimeCurrentUserRefreshExpectation, RealtimeCurrentUserSnapshotSink, RealtimeHostRuntime,
-    RealtimeHostRuntimeDeps, RealtimeStopRequest, SyntheticFriendEventOutcome,
+    FriendProfileBulkLoadStatus, FriendProfileLoadStatusPayload, RealtimeCurrentUserSnapshotSink,
+    RealtimeHostRuntime, RealtimeHostRuntimeDeps, RealtimeStopRequest, SyntheticFriendEventOutcome,
 };
 pub use user_query_cache::{UserQueryCachePolicy, UserQueryKind, UserQueryOptions};

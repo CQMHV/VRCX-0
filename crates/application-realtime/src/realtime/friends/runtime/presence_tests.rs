@@ -1060,29 +1060,7 @@ mod tests {
     }
 
     #[test]
-    fn friend_event_type_set_is_exact_and_state_only_update_is_ignored() {
-        for message_type in [
-            "friend-add",
-            "friend-delete",
-            "friend-update",
-            "friend-online",
-            "friend-active",
-            "friend-offline",
-            "friend-location",
-        ] {
-            assert!(is_friend_event_type(message_type), "{message_type}");
-        }
-        for message_type in [
-            "",
-            "friend",
-            "friend-request",
-            "notification",
-            "user-update",
-            "instance-queue",
-        ] {
-            assert!(!is_friend_event_type(message_type), "{message_type}");
-        }
-
+    fn state_only_update_is_ignored() {
         let runtime = runtime_with_online_friend("wrld_1:123");
         let before_snapshot = runtime.snapshot().expect("baseline snapshot");
         let before_rev = runtime.friend_rev_of(1, "usr_friend");
