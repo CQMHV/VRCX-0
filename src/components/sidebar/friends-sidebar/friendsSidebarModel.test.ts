@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import {
     activePresence,
+    offlinePresence,
     onlinePresence,
     pendingPresence
 } from '@/test/presenceFixtures';
 
 import {
     buildSameInstanceGroups,
-    readFriendRefLocation,
     readFriendStatusSource,
     resolveSidebarStatusDotClassName,
     sortRows,
@@ -51,15 +51,13 @@ describe('friendsSidebarModel same-instance groups', () => {
         const friendWithCurrentUser = {
             id: 'usr_1',
             displayName: 'With current user',
-            state: 'online',
-            location: currentLocation,
+            $presence: onlinePresence(currentLocation),
             $location_at: 1
         };
         const soloElsewhere = {
             id: 'usr_2',
             displayName: 'Solo elsewhere',
-            state: 'online',
-            location: otherLocation,
+            $presence: onlinePresence(otherLocation),
             $location_at: 1
         };
 
@@ -84,84 +82,58 @@ describe('friendsSidebarModel friend status source', () => {
         const friend = {
             id: 'usr_friend',
             displayName: 'Friend',
-            state: 'online',
-            location: 'wrld_live:123',
             status: 'join me',
+            $presence: onlinePresence('wrld_live:123'),
             ref: {
                 id: 'usr_friend',
                 displayName: 'Friend',
-                state: 'offline',
-                location: 'offline',
-                status: 'active'
+                status: 'active',
+                $presence: offlinePresence
             }
         };
 
-        const source = readFriendStatusSource(friend);
-        const sortRow = toLegacyFriendSortRow(friend);
-
-        expect(source).toMatchObject({
-            state: 'online',
-            location: 'wrld_live:123',
-            status: 'join me'
-        });
-        expect(readFriendRefLocation(friend)).toBe('wrld_live:123');
-        expect(sortRow.ref).toMatchObject({
-            state: 'online',
-            location: 'wrld_live:123',
-            status: 'join me'
-        });
+        const live = {
+            status: 'join me',
+            $presence: onlinePresence('wrld_live:123')
+        };
+        expect(readFriendStatusSource(friend)).toMatchObject(live);
+        expect(toLegacyFriendSortRow(friend).ref).toMatchObject(live);
     });
 });
 
-describe('friendsSidebarModel current user status dot', () => {
-    it('uses the solid account status while the realtime view is online', () => {
-        const currentUser = {
-            id: 'usr_self',
+describe('friendsSidebarModel status dot', () => {
+    it('uses the solid status while online', () => {
+        const friend = {
+            id: 'usr_friend',
             status: 'busy',
             $presence: onlinePresence('wrld_local:1')
         };
 
-        expect(resolveSidebarStatusDotClassName(currentUser, currentUser)).toBe(
+        expect(resolveSidebarStatusDotClassName(friend)).toBe(
             'user-status-indicator busy bg-[var(--status-busy)]'
         );
     });
 
-    it('uses the hollow account status while the realtime view is only active', () => {
-        const currentUser = {
-            id: 'usr_self',
+    it('uses the hollow status while only active', () => {
+        const friend = {
+            id: 'usr_friend',
             status: 'busy',
             $presence: activePresence()
         };
 
-        expect(resolveSidebarStatusDotClassName(currentUser, currentUser)).toBe(
+        expect(resolveSidebarStatusDotClassName(friend)).toBe(
             'user-status-indicator busy border-[var(--status-busy)] bg-background'
         );
     });
-});
 
-describe('friendsSidebarModel ordinary friend status dot', () => {
-    const currentUser = { id: 'usr_self' };
-
-    it('uses the solid status for an ordinary online friend', () => {
-        const friend = {
-            id: 'usr_friend',
-            status: 'busy',
-            $presence: onlinePresence()
-        };
-
-        expect(resolveSidebarStatusDotClassName(friend, currentUser)).toBe(
-            'user-status-indicator busy bg-[var(--status-busy)]'
-        );
-    });
-
-    it('keeps an ordinary pending friend offline', () => {
+    it('shows a pending friend as offline', () => {
         const friend = {
             id: 'usr_friend',
             status: 'join me',
             $presence: pendingPresence()
         };
 
-        expect(resolveSidebarStatusDotClassName(friend, currentUser)).toBe(
+        expect(resolveSidebarStatusDotClassName(friend)).toBe(
             'user-status-indicator offline bg-[var(--status-offline)]'
         );
     });

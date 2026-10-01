@@ -121,10 +121,6 @@ export function resolvePlatformMeta(platform: unknown) {
     };
 }
 
-export function resolvePresenceLocation(profile: unknown) {
-    return resolveFriendPresenceLocation(profile);
-}
-
 export function resolveUserDialogTargetPresenceLocation({
     profile,
     targetUserId,
@@ -140,7 +136,7 @@ export function resolveUserDialogTargetPresenceLocation({
     currentLocationPlayers?: readonly CurrentInstanceRosterPlayer[];
     friendsById?: Record<string, unknown>;
 }) {
-    const presenceLocation = resolvePresenceLocation(profile);
+    const presenceLocation = resolveFriendPresenceLocation(profile);
     const normalizedTargetUserId = normalizeUserId(targetUserId);
     if (
         normalizedTargetUserId &&

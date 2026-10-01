@@ -193,6 +193,11 @@ mod tests {
     #[test]
     fn field_tables_cover_every_serialized_friend_record_key() {
         let record = FriendRecord {
+            state: "online".into(),
+            location: "wrld_a:1".into(),
+            traveling_to_location: "wrld_b:2".into(),
+            world_id: "wrld_a".into(),
+            platform: "standalonewindows".into(),
             date_joined: "2026-01-01".into(),
             last_activity: "2026-01-01T00:00:00Z".into(),
             last_login: "2026-01-01T00:00:00Z".into(),

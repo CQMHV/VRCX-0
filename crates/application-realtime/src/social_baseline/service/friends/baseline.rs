@@ -296,9 +296,9 @@ async fn build_friend_roster_baseline_inner(
             fetched_friends_by_id,
         );
         let count = snapshot
-            .get("orderedFriendIds")
-            .and_then(Value::as_array)
-            .map_or(0, Vec::len);
+            .get("friendsById")
+            .and_then(Value::as_object)
+            .map_or(0, serde_json::Map::len);
         let friends_by_id = snapshot
             .get("friendsById")
             .cloned()

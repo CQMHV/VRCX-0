@@ -1,9 +1,5 @@
 import { hasGroupIdPrefix } from '@/shared/constants/vrchatIds';
-import {
-    parseLocation,
-    resolveFriendPresenceLocation,
-    type FriendListMembership
-} from '@/shared/utils/location';
+import { parseLocation } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 
 type InstanceRosterRecord = Record<string, unknown>;
@@ -31,15 +27,6 @@ const INSTANCE_USER_PRESENCE_FIELDS = [
     'statusDescription',
     'pendingOffline'
 ];
-
-interface ResolvePresenceLocationOptions {
-    preferTraveling?: boolean;
-    requireInstance?: boolean;
-    lastLocation?: {
-        friendList?: FriendListMembership;
-        location?: string | null;
-    } | null;
-}
 
 interface BuildInstanceRosterRowsInput {
     includeProfileFallback?: boolean;
@@ -359,13 +346,6 @@ export function isSameInstanceLocation(left: unknown, right: unknown): boolean {
         leftLocation.worldId === rightLocation.worldId &&
         leftLocation.instanceId === rightLocation.instanceId
     );
-}
-
-export function resolvePresenceLocation(
-    profile: unknown,
-    options: ResolvePresenceLocationOptions = {}
-): string {
-    return resolveFriendPresenceLocation(profile, options);
 }
 
 export function buildInstanceRosterRows({

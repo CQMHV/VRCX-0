@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod tests {
+    use super::super::presence_test_support::{friend_view, is_pending_offline, location_tag};
     use super::super::*;
 
     #[test]
@@ -42,8 +43,9 @@ mod tests {
             panic!("friend-location should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "offline");
-        assert_eq!(output.projection.patches[0].patch.location, "offline");
+        let view = &output.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "offline");
+        assert_eq!(location_tag(view), None);
         assert_eq!(output.profile_refetch_user_ids, vec!["usr_friend"]);
     }
 
@@ -93,16 +95,17 @@ mod tests {
             panic!("friend-location should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "offline");
+        assert_eq!(
+            output.projection.patches[0]
+                .presence
+                .view
+                .section()
+                .as_str(),
+            "offline"
+        );
         assert_eq!(output.profile_refetch_user_ids, vec!["usr_friend"]);
         assert_eq!(
-            runtime
-                .snapshot()
-                .unwrap()
-                .friends_by_id
-                .get("usr_friend")
-                .unwrap()
-                .state,
+            friend_view(&runtime, "usr_friend").section().as_str(),
             "offline"
         );
     }
@@ -153,16 +156,19 @@ mod tests {
             panic!("friend-location should produce an output");
         };
 
-        let patch = &output.projection.patches[0].patch;
+        let view = &output.projection.patches[0].presence.view;
         assert!(
             output.wake.is_some(),
             "offline location should schedule pending timer"
         );
-        assert_eq!(output.projection.patches[0].patch.state, "online");
+        assert_eq!(view.section().as_str(), "online");
         assert!(output.persistence.feed_entries.is_empty());
-        assert_eq!(patch.location, "wrld_1:123");
-        assert_eq!(patch.extra["pendingOffline"], true);
+        assert_eq!(location_tag(view), Some("wrld_1:123"));
+        assert!(is_pending_offline(view));
         let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
-        assert_eq!(fired.projection.patches[0].patch.state, "offline");
+        assert_eq!(
+            fired.projection.patches[0].presence.view.section().as_str(),
+            "offline"
+        );
     }
 }

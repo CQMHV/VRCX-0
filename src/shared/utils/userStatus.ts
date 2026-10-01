@@ -1,5 +1,4 @@
 import { isPresenceView, presenceStatusKey } from '@/domain/friends/presence';
-import { hasWorldIdPrefix } from '@/shared/constants/vrchatIds';
 
 type UserStatusSource = Record<string, unknown>;
 
@@ -51,70 +50,11 @@ function resolveUserPresenceStatus(value: unknown) {
     const source = asUserStatusSource(
         record.ref && typeof record.ref === 'object' ? record.ref : record
     );
+    const status = record.status || source.status;
     const presence = record.$presence ?? source.$presence;
-    if (isPresenceView(presence)) {
-        return presenceStatusKey(presence, record.status || source.status);
-    }
-    if (record.pendingOffline || source?.pendingOffline) {
-        return 'offline';
-    }
-    const lastLocation =
-        record.lastLocation ||
-        record.last_location ||
-        record.$lastLocation ||
-        source?.lastLocation ||
-        source?.last_location ||
-        source?.$lastLocation;
-    const recordLocation = asUserStatusSource(record.$location);
-    const sourceLocation = asUserStatusSource(source.$location);
-    const lastLocationRecord = asUserStatusSource(lastLocation);
-    const status = normalizePresenceText(record.status || source?.status);
-    const state = normalizePresenceText(record.state || source?.state);
-    const location = normalizePresenceText(
-        record.location ||
-            recordLocation.tag ||
-            record.$locationTag ||
-            source?.location ||
-            sourceLocation.tag ||
-            source?.$locationTag ||
-            (typeof lastLocation === 'string'
-                ? lastLocation
-                : lastLocationRecord.location ||
-                  lastLocationRecord.tag ||
-                  asUserStatusSource(lastLocationRecord.$location).tag)
-    );
-    if (state === 'offline' || status === 'offline' || location === 'offline') {
-        return 'offline';
-    }
-    if (
-        !status &&
-        !state &&
-        (location === 'private' || location === 'traveling')
-    ) {
-        return location;
-    }
-    if (status === 'join me') {
-        return 'join me';
-    }
-    if (status === 'ask me') {
-        return 'ask me';
-    }
-    if (status === 'busy') {
-        return 'busy';
-    }
-    if (state === 'active') {
-        return 'state-active';
-    }
-    if (state === 'online') {
-        return 'active';
-    }
-    if (status === 'active') {
-        return 'active';
-    }
-    if (hasWorldIdPrefix(location)) {
-        return 'active';
-    }
-    return status || state;
+    return isPresenceView(presence)
+        ? presenceStatusKey(presence, status)
+        : normalizePresenceText(status);
 }
 
 function userStatusIndicatorClassName(

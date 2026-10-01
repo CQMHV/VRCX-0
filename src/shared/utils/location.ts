@@ -1,6 +1,5 @@
 import { isPresenceView, presenceLocationTag } from '@/domain/friends/presence';
 
-import { isRealInstance } from './instance';
 import { normalizeString } from './string';
 
 export interface ParsedLocation extends Record<string, unknown> {
@@ -69,14 +68,6 @@ type ParsedBooleanField =
     | 'strict'
     | 'ageGate';
 
-const SENTINEL_LOCATION_VALUES = new Set([
-    'offline',
-    'offline:offline',
-    'private',
-    'private:private',
-    'traveling',
-    'traveling:traveling'
-]);
 const SHORT_NAME_QUALIFIER = '&shortName=';
 
 const PARSED_LOCATION_STRING_FIELDS: ParsedStringField[] = [
@@ -468,7 +459,6 @@ interface LastLocation {
 interface ResolveFriendPresenceOptions {
     preferTraveling?: boolean;
     requireInstance?: boolean;
-    lastLocation?: LastLocation | null;
 }
 
 interface LocationTextOptions {
@@ -553,68 +543,12 @@ function getObject(value: unknown): LocationRecord | null {
         : null;
 }
 
-function getFriendLocationValues(
-    friend: unknown,
-    field: 'location' | 'traveling'
-): unknown[] {
-    const direct = getObject(friend);
-    const ref = getObject(direct?.ref);
-    if (field === 'traveling') {
-        if (ref) {
-            return [ref.travelingToLocation, ref.$travelingToLocation];
-        }
-        return [direct?.travelingToLocation, direct?.$travelingToLocation];
-    }
-    if (ref) {
-        return [ref.location, ref.$location?.tag, ref.$locationTag];
-    }
-    return [direct?.location, direct?.$location?.tag, direct?.$locationTag];
-}
-
-function isSentinelLocationValue(value: unknown): boolean {
-    const normalized = normalizeLocationValue(value).toLowerCase();
-    return SENTINEL_LOCATION_VALUES.has(normalized);
-}
-
-function normalizeSentinelLocationValue(value: unknown): string {
-    const normalized = normalizeLocationValue(value).toLowerCase();
-    return isSentinelLocationValue(normalized) ? normalized.split(':')[0] : '';
-}
-
-function resolveCurrentFriendLocationValue(friend: unknown): string {
-    const direct = getObject(friend);
-    const ref = getObject(direct?.ref);
-    const values = ref ? [ref.location] : [direct?.location];
-    for (const value of values) {
-        const normalized = normalizeLocationValue(value);
-        if (normalized) {
-            return normalized;
-        }
-    }
-    return '';
-}
-
-function resolveCurrentFriendLocationSentinel(friend: unknown): string {
-    return normalizeSentinelLocationValue(
-        resolveCurrentFriendLocationValue(friend)
-    );
-}
-
 function getFriendId(friend: unknown): string {
     const direct = getObject(friend);
     const ref = getObject(direct?.ref);
     return normalizeLocationValue(
         direct?.id || direct?.userId || ref?.id || ref?.userId
     );
-}
-
-function isConcreteInstanceLocation(location: unknown): boolean {
-    const normalized = normalizeLocationValue(location);
-    if (!isRealInstance(normalized)) {
-        return false;
-    }
-    const parsed = parseLocation(normalized);
-    return Boolean(parsed.worldId && parsed.instanceId);
 }
 
 function isLastLocationFriend(
@@ -643,112 +577,16 @@ function isLastLocationFriend(
 
 function resolveFriendPresenceLocation(
     friend: unknown,
-    {
-        preferTraveling = true,
-        requireInstance = false,
-        lastLocation = null
-    }: ResolveFriendPresenceOptions = {}
+    options: ResolveFriendPresenceOptions = {}
 ): string {
     const direct = getObject(friend);
     const presence = direct?.$presence ?? getObject(direct?.ref)?.$presence;
-    if (isPresenceView(presence)) {
-        return presenceLocationTag(presence, {
-            preferTraveling,
-            requireInstance
-        });
-    }
-    const currentLocation = resolveCurrentFriendLocationValue(friend);
-    const currentSentinel = resolveCurrentFriendLocationSentinel(friend);
-    if (currentSentinel === 'offline' || currentSentinel === 'private') {
-        return requireInstance ? '' : currentSentinel;
-    }
-
-    const currentLocationIsConcrete =
-        isConcreteInstanceLocation(currentLocation);
-    const canUseLegacyLocationFields =
-        currentLocationIsConcrete || currentSentinel === 'traveling';
-    const orderedFields: Array<'location' | 'traveling'> =
-        preferTraveling && currentSentinel === 'traveling'
-            ? ['traveling', 'location']
-            : ['location', 'traveling'];
-    for (const field of orderedFields) {
-        if (field === 'location' && currentSentinel === 'traveling') {
-            continue;
-        }
-        const values =
-            field === 'location' && !canUseLegacyLocationFields
-                ? [currentLocation]
-                : getFriendLocationValues(friend, field);
-        for (const value of values) {
-            const normalized = normalizeLocationValue(value);
-            if (!normalized || !isRealInstance(normalized)) {
-                continue;
-            }
-            if (requireInstance && !isConcreteInstanceLocation(normalized)) {
-                continue;
-            }
-            return normalized;
-        }
-    }
-    if (currentSentinel === 'traveling') {
-        return requireInstance ? '' : 'traveling';
-    }
-    const lastLocationValue = currentLocationIsConcrete
-        ? normalizeLocationValue(lastLocation?.location)
+    return isPresenceView(presence)
+        ? presenceLocationTag(presence, options)
         : '';
-    if (lastLocationValue && isLastLocationFriend(lastLocation, friend)) {
-        if (!requireInstance || isConcreteInstanceLocation(lastLocationValue)) {
-            return lastLocationValue;
-        }
-    }
-    return '';
 }
 
-/**
- *
- * @param {Array} friendsArr
- * @param {object} lastLocation - last location from location store
- * @param {Set} lastLocation.friendList
- * @param {string} lastLocation.location
- */
-function getFriendsLocations(
-    friendsArr: unknown[],
-    lastLocation?: LastLocation | null
-): string {
-    if (!friendsArr?.length) {
-        return '';
-    }
-    for (const friend of friendsArr) {
-        for (const value of getFriendLocationValues(friend, 'location')) {
-            const location = normalizeLocationValue(value);
-            if (isRealInstance(location)) {
-                return location;
-            }
-        }
-    }
-    for (const friend of friendsArr) {
-        for (const value of getFriendLocationValues(friend, 'traveling')) {
-            const location = normalizeLocationValue(value);
-            if (isRealInstance(location)) {
-                return location;
-            }
-        }
-    }
-    if (lastLocation) {
-        for (const friend of friendsArr) {
-            if (isLastLocationFriend(lastLocation, friend)) {
-                return normalizeLocationValue(lastLocation.location);
-            }
-        }
-    }
-    return resolveCurrentFriendLocationValue(friendsArr[0]);
-}
-
-export {
-    getFriendsLocations,
-    isLastLocationFriend,
-    resolveFriendPresenceLocation
-};
+export { isLastLocationFriend, resolveFriendPresenceLocation };
 
 /**
  * Get the display text for a location — synchronous, pure function.

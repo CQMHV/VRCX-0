@@ -55,10 +55,6 @@ import {
 
 import { FeedExpandedRow } from './FeedExpandedRow';
 
-function resolvePresenceLocation(profile: unknown) {
-    return resolveFriendPresenceLocation(profile);
-}
-
 function formatTimestampParts(value: string | null | undefined) {
     if (!value) {
         return { date: '-', time: '' };
@@ -133,7 +129,7 @@ function FeedUserLink({
         displayUser,
         cachedDisplayName
     );
-    const location = resolvePresenceLocation(friend || knownUser);
+    const location = resolveFriendPresenceLocation(friend || knownUser);
     const parsedLocation = parseLocation(location);
     const worldTarget = parsedLocation.worldId || '';
     const worldDialogTarget =

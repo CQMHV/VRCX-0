@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use vrcx_0_core::friends::FriendRecord;
 use vrcx_0_core::location::parse_location;
+use vrcx_0_core::presence::PresenceView;
 
 use crate::server::VrcxMcpServer;
 
@@ -27,14 +28,25 @@ impl VrcxMcpServer {
             .realtime_runtime
             .friend_snapshot()
             .into_iter()
-            .flat_map(|snapshot| snapshot.friends_by_id.into_values())
+            .flat_map(|snapshot| {
+                let presence_by_id = snapshot.presence_by_id;
+                snapshot
+                    .friends_by_id
+                    .into_iter()
+                    .map(move |(user_id, friend)| {
+                        let view = presence_by_id
+                            .get(&user_id)
+                            .map_or(PresenceView::Offline, |entry| entry.view.clone());
+                        (friend, view)
+                    })
+            })
             .collect::<Vec<_>>();
         structured_result(build_online_friends_output(friends, input))
     }
 }
 
 fn build_online_friends_output(
-    friends: Vec<FriendRecord>,
+    friends: Vec<(FriendRecord, PresenceView)>,
     input: OnlineFriendsParams,
 ) -> OnlineFriendsOutput {
     let states = input
@@ -49,9 +61,11 @@ fn build_online_friends_output(
 
     let mut rows = friends
         .into_iter()
-        .filter(|friend| normalized_states.contains(friend.state.as_str()))
-        .map(|friend| {
-            let parsed = parse_location(&friend.location);
+        .filter(|(_, view)| normalized_states.contains(view.section().as_str()))
+        .map(|(friend, view)| {
+            let parsed = view
+                .place()
+                .map_or_else(|| parse_location("offline"), |place| place.location.clone());
             let display_name = friend.display_name_or_id();
             let world_name = friend
                 .extra
@@ -63,17 +77,17 @@ fn build_online_friends_output(
             OnlineFriendRow {
                 user_id: friend.id,
                 display_name,
-                state: friend.state,
-                location: include_location.then_some(friend.location),
+                state: view.section().as_str().into(),
+                location: include_location.then_some(parsed.tag.clone()),
                 world_id: include_location.then_some(parsed.world_id),
                 world_name: include_location.then_some(world_name),
                 instance_access_type: include_location
                     .then_some(normalize_access_bucket(&parsed.access_type)),
                 status: friend.status,
-                platform: if friend.platform.is_empty() {
+                platform: if view.platform().is_empty() {
                     friend.last_platform
                 } else {
-                    friend.platform
+                    view.platform().into()
                 },
             }
         })

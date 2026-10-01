@@ -451,9 +451,8 @@ impl RealtimeHostRuntime {
 
     pub fn friend_roster_snapshot(
         &self,
-        previous_order: &[String],
     ) -> serde_json::Result<Option<crate::realtime::RealtimeFriendRosterSnapshot>> {
-        self.friends.roster_snapshot(previous_order)
+        self.friends.roster_snapshot()
     }
 
     pub fn friend_session_context(&self) -> Option<RealtimeSessionContext> {

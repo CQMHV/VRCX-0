@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { firstNonNegativeLocationNumber } from '@/components/location/locationModel';
 import type { GroupInstanceRecord } from '@/domain/entities/group';
 import {
+    isExplicitlyOfflineFriend,
     resolveObservedPlayerUserId,
     resolveObservedPlayerUserIds,
     resolveSameInstanceFriendLocation
@@ -14,7 +15,6 @@ import {
     mergeInstanceUser as mergeLocationUser,
     mergeInstanceUserRows as mergeLocationUserRows,
     pushInstanceUserSource as pushLocationUserSource,
-    resolvePresenceLocation,
     userDisplayName,
     type InstanceRosterRow
 } from '@/domain/instances/instanceRoster';
@@ -28,7 +28,10 @@ import {
 } from '@/services/domainIngestionService';
 import { hasUserIdPrefix } from '@/shared/constants/vrchatIds';
 import { checkCanInvite } from '@/shared/utils/invite';
-import { parseLocation } from '@/shared/utils/location';
+import {
+    parseLocation,
+    resolveFriendPresenceLocation
+} from '@/shared/utils/location';
 import { normalizeString } from '@/shared/utils/string';
 
 import {
@@ -42,10 +45,7 @@ import {
     resolveOwnerId,
     resolveOwnerSeed
 } from './userDialogLocationOwner';
-import {
-    filterVisibleUserDialogLocationUsers,
-    shouldIncludeUserDialogLocationFriend
-} from './userDialogLocationUsers';
+import { filterVisibleUserDialogLocationUsers } from './userDialogLocationUsers';
 import { normalizeUserId } from './userProfileFields';
 
 const locationUserProfileFetchConcurrency = 4;
@@ -276,7 +276,7 @@ export function useUserDialogLocationPanel({
         let active = true;
 
         const activeLocation =
-            presenceLocation || resolvePresenceLocation(profile);
+            presenceLocation || resolveFriendPresenceLocation(profile);
         const parsedLocation = parseLocation(activeLocation);
         if (
             !profile?.id ||
@@ -362,15 +362,9 @@ export function useUserDialogLocationPanel({
         }
 
         for (const friend of recordValues(friendsById)) {
-            if (!userIsAtLocation(friend)) {
-                continue;
-            }
             if (
-                !shouldIncludeUserDialogLocationFriend({
-                    currentLocationMatches,
-                    currentLocationPlayerIds,
-                    friend
-                })
+                !userIsAtLocation(friend) ||
+                isExplicitlyOfflineFriend(friend)
             ) {
                 continue;
             }
@@ -381,33 +375,19 @@ export function useUserDialogLocationPanel({
             mergeLocationUser(rowsById, friend);
         }
 
-        const locationMetadata = record(profile?.$location);
-        pushLocationUserSource(
-            [
-                locationMetadata.users,
-                locationMetadata.players,
-                locationMetadata.friends
-            ],
-            (user) => mergeLocationUser(rowsById, user)
-        );
-
         const canFetchInstance = Boolean(
             parsedLocation.worldId && parsedLocation.instanceId
         );
         const ownerId = resolveOwnerId(
-            locationMetadata,
+            null,
             parsedLocation.userId,
             parsedLocation.groupId
         );
-        const ownerSeed = resolveOwnerSeed(
-            locationMetadata,
-            ownerId,
-            knownUsersById
-        );
+        const ownerSeed = resolveOwnerSeed(null, ownerId, knownUsersById);
         const ownerPromise = loadLocationOwner({
             ownerId,
             ownerSeed,
-            groupFallback: resolveGroupFallback(locationMetadata, ownerId)
+            groupFallback: resolveGroupFallback(null, ownerId)
         });
         let instancePromise: Promise<Record<string, unknown> | null>;
         if (canFetchInstance) {
@@ -517,21 +497,17 @@ export function useUserDialogLocationPanel({
                         endpoint: currentEndpoint,
                         instances: [
                             {
-                                ...locationMetadata,
+                                ...parsedLocation,
                                 ...instance,
                                 location: activeLocation,
                                 worldId: parsedLocation.worldId,
                                 instanceId: parsedLocation.instanceId,
-                                users:
-                                    instance?.users ||
-                                    locationMetadata.users ||
-                                    locationMetadata.friends,
+                                users: instance?.users,
                                 players:
                                     instance?.players ||
                                     (snapshotPlayers.length
                                         ? snapshotPlayers
-                                        : null) ||
-                                    locationMetadata.players,
+                                        : undefined),
                                 usersById: instance?.usersById,
                                 userIds: instance?.userIds
                             }
@@ -552,8 +528,7 @@ export function useUserDialogLocationPanel({
                             currentLocationPlayers: snapshotPlayers,
                             currentWorldName:
                                 playerSnapshot?.context?.worldName ||
-                                normalizeString(instance?.worldName) ||
-                                normalizeString(locationMetadata.worldName)
+                                normalizeString(instance?.worldName)
                         });
                     }
 
@@ -698,7 +673,7 @@ export function useUserDialogLocationPanel({
 
     function refreshLocationPanel(requestLocation: string): void {
         const activeLocation =
-            presenceLocation || resolvePresenceLocation(profile);
+            presenceLocation || resolveFriendPresenceLocation(profile);
         if (
             requestLocation &&
             activeLocation &&

@@ -2,12 +2,13 @@ use serde_json::Value;
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_contracts::realtime::FriendLogUpsert;
 use vrcx_0_core::derived_keys;
-use vrcx_0_core::friends::{FriendRecord, StateBucket};
+use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::presence::PresenceView;
 
 use crate::realtime::RealtimeFriendOutput;
 
 use super::event_patch::record_string;
-use super::utils::{first_owned, parse_location, string_or_previous, JsonExt};
+use super::utils::{first_owned, string_or_previous, JsonExt};
 
 #[derive(Clone, Copy, Debug)]
 pub(super) enum FriendRelationshipFeedKind {
@@ -99,12 +100,13 @@ pub(super) fn add_profile_diff_feed_entries(
     output: &mut RealtimeFriendOutput,
     user_id: &str,
     patch: &Value,
-    previous: Option<&FriendRecord>,
+    previous: &FriendRecord,
+    previous_online: bool,
     created_at: &str,
 ) {
-    let Some(previous) = previous.filter(|previous| is_online_state(previous)) else {
+    if !previous_online {
         return;
-    };
+    }
     let status_changed = patch_field_changed(patch, previous, "status");
     let status_description_changed = patch_field_changed(patch, previous, "statusDescription");
     let next_status = string_or_previous(patch, previous, "status");
@@ -141,22 +143,28 @@ pub(super) fn friend_relationship_feed_entry(
 
 pub(crate) fn player_joining_feed_entry(
     user_id: &str,
-    was_traveling: bool,
-    current: &FriendRecord,
+    display_name: &str,
+    previous: Option<&PresenceView>,
+    current: &PresenceView,
     created_at: &str,
 ) -> Option<FeedLiveEntry> {
-    if was_traveling
-        || !parse_location(&current.location).is_traveling
-        || current.traveling_to_location.trim().is_empty()
-    {
+    let was_traveling = previous
+        .and_then(PresenceView::place)
+        .is_some_and(|place| place.location.is_traveling);
+    let place = current.place()?;
+    let destination = place
+        .traveling_to
+        .as_ref()
+        .filter(|destination| place.location.is_traveling && !destination.tag.trim().is_empty())?;
+    if was_traveling {
         return None;
     }
     Some(FeedLiveEntry::OnPlayerJoining {
         created_at: created_at.to_string(),
         user_id: user_id.to_string(),
-        display_name: current.display_name.to_string(),
-        location: current.location.clone(),
-        traveling_to_location: current.traveling_to_location.clone(),
+        display_name: display_name.to_string(),
+        location: place.location.tag.clone(),
+        traveling_to_location: destination.tag.clone(),
         world_name: None,
         world_id: None,
         display_location: None,
@@ -190,8 +198,4 @@ pub(super) fn meaningful_name(value: &Value, user_id: &str) -> String {
         user_id,
     )
     .unwrap_or_default()
-}
-
-fn is_online_state(record: &FriendRecord) -> bool {
-    StateBucket::Online.matches(&record.state)
 }

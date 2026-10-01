@@ -4,7 +4,6 @@ import type {
     FriendRecord,
     FriendRecordInput
 } from '@/domain/friends/types';
-import type { InstanceRosterTimestamp } from '@/domain/instances/instanceRoster';
 import type { parseLocation } from '@/shared/utils/location';
 
 export type TranslationFn = (
@@ -29,10 +28,7 @@ export type FriendLocationRecord = FriendRecordInput &
         name?: string | null;
         ref?: FriendLocationRecord | null;
         shortCode?: string | null;
-        stateBucket?: string;
         tag?: string | null;
-        travelingToLocation?: string | null;
-        travelingToTime?: InstanceRosterTimestamp | null;
         travelingToWorld?: string | null;
         world?: FriendLocationRecord | null;
         worldId?: string | null;

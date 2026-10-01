@@ -8,7 +8,7 @@ mod tests {
     use std::env;
     use std::fs;
     use vrcx_0_contracts::feed_live::FeedLiveEntry;
-    use vrcx_0_core::friends::StateBucket;
+    use vrcx_0_core::presence::PresenceView;
 
     struct PendingTimer {
         deadline_ms: i64,
@@ -20,24 +20,17 @@ mod tests {
             return BTreeMap::new();
         };
         snapshot
-            .friends_by_id
+            .presence_by_id
             .iter()
-            .map(|(uid, record)| {
-                let section = StateBucket::normalize(&record.state)
-                    .map(|bucket| bucket.as_str())
-                    .unwrap_or("unknown");
-                let location = match section {
-                    "online" => match record.location.trim() {
-                        "" | "offline" | "offline:offline" => "unknown",
-                        location => location,
-                    },
-                    _ => "",
+            .map(|(uid, entry)| {
+                let view = &entry.view;
+                let section = view.section().as_str();
+                let location = match view.place().map(|place| place.location.tag.trim()) {
+                    None => "",
+                    Some("" | "offline" | "offline:offline") => "unknown",
+                    Some(location) => location,
                 };
-                let pending = record
-                    .extra
-                    .get("pendingOffline")
-                    .and_then(Value::as_bool)
-                    .unwrap_or(false);
+                let pending = matches!(view, PresenceView::PendingOffline { .. });
                 (
                     uid.clone(),
                     json!({ "section": section, "pending": pending, "location": location }),

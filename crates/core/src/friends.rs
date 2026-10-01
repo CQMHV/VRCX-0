@@ -99,16 +99,16 @@ pub struct FriendRecord {
     pub display_name: CompactString,
     #[serde(default)]
     pub username: String,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "CompactString::is_empty", default)]
     #[specta(type = String)]
     pub state: CompactString,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "String::is_empty", default)]
     pub location: String,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "String::is_empty", default)]
     pub traveling_to_location: String,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "String::is_empty", default)]
     pub world_id: String,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "CompactString::is_empty", default)]
     #[specta(type = String)]
     pub platform: CompactString,
     #[serde(default, alias = "last_platform")]

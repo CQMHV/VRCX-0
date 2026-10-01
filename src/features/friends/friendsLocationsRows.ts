@@ -11,18 +11,20 @@ export {
     isShareableInstanceLocation,
     resolveFriendGroupName,
     resolveFriendWorldName,
-    resolvePresenceLocation,
     uniqueFriendsById
 } from './friends-locations-rows/presence';
 export {
     isFriendInPrivateLocation,
+    locationTarget,
     partitionFriendsByPrivateLocation,
     resolveLocationSummary,
     resolveLocationTarget,
-    resolveWorldDialogTarget
+    resolveWorldDialogTarget,
+    summarizeLocation
 } from './friends-locations-rows/targets';
 export type {
     FriendLocationFriend,
+    FriendLocationTarget,
     SameInstanceGroup
 } from './friends-locations-rows/types';
 export { resolveCurrentInviteLocation as resolveFriendsLocationsCurrentInviteLocation } from '@/shared/utils/invite';

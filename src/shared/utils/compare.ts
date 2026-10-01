@@ -11,8 +11,6 @@ type ComparableFieldValue = string | number | undefined;
 type ComparableRef = Record<string, unknown> & {
     last_activity?: ComparableFieldValue;
     last_login?: ComparableFieldValue;
-    location?: string;
-    state?: string;
     status?: string;
 };
 
@@ -23,11 +21,9 @@ type ComparableRecord = Record<string, unknown> & {
     id?: string;
     last_activity?: ComparableFieldValue;
     last_login?: ComparableFieldValue;
-    location?: string;
     memberCount?: number;
     name?: string;
     ref?: ComparableRef;
-    state?: string;
     updated_at?: string;
 };
 type Comparator = (a: ComparableRecord, b: ComparableRecord) => number;
@@ -53,9 +49,7 @@ function isGreaterThan(
 
 function isOnlineRecord(record: ComparableRecord | ComparableRef): boolean {
     const presence = presenceOf(record);
-    return presence
-        ? presenceSection(presence) === 'online'
-        : record.state === 'online';
+    return presence ? presenceSection(presence) === 'online' : false;
 }
 
 function recordPlace(record: ComparableRecord | ComparableRef) {
@@ -122,14 +116,8 @@ function compareByStatus(a: ComparableRecord, b: ComparableRecord): number {
     if (typeof a.ref === 'undefined' || typeof b.ref === 'undefined') {
         return 0;
     }
-    const aPresence = presenceOf(a.ref);
-    const bPresence = presenceOf(b.ref);
-    const aOffline = aPresence
-        ? presenceSection(aPresence) === 'offline'
-        : a.ref.state === 'offline';
-    const bOffline = bPresence
-        ? presenceSection(bPresence) === 'offline'
-        : b.ref.state === 'offline';
+    const aOffline = presenceOf(a.ref)?.kind === 'offline';
+    const bOffline = presenceOf(b.ref)?.kind === 'offline';
     if (aOffline && !bOffline) {
         return 1;
     }

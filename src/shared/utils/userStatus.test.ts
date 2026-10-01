@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
     activePresence,
+    offlinePresence,
     onlinePresence,
     pendingPresence
 } from '@/test/presenceFixtures';
@@ -19,19 +20,19 @@ describe('userStatus', () => {
         );
     });
 
-    it('treats pending offline and offline fields as offline', () => {
+    it('treats pending offline and offline presence as offline', () => {
         expect(
             resolveUserPresenceStatus({
-                pendingOffline: true,
+                $presence: pendingPresence(),
                 status: 'join me'
             })
         ).toBe('offline');
-        expect(
-            resolveUserPresenceStatus({ state: 'active', location: 'offline' })
-        ).toBe('offline');
+        expect(resolveUserPresenceStatus({ $presence: offlinePresence })).toBe(
+            'offline'
+        );
         expect(
             resolveUserPresenceStatus({
-                ref: { state: 'online', location: 'offline:offline' }
+                ref: { $presence: offlinePresence }
             })
         ).toBe('offline');
     });
@@ -40,29 +41,34 @@ describe('userStatus', () => {
         expect(
             resolveUserPresenceStatus({
                 status: 'join me',
-                location: 'wrld_123:1'
+                $presence: onlinePresence('wrld_123:1')
             })
         ).toBe('join me');
         expect(
             resolveUserPresenceStatus({
                 status: 'ask me',
-                location: 'wrld_123:1'
+                $presence: onlinePresence('wrld_123:1')
             })
         ).toBe('ask me');
         expect(
             resolveUserPresenceStatus({
                 status: 'busy',
-                location: 'wrld_123:1'
+                $presence: onlinePresence('wrld_123:1')
             })
         ).toBe('busy');
-        expect(resolveUserPresenceStatus({ location: 'wrld_123:1' })).toBe(
-            'active'
-        );
+        expect(
+            resolveUserPresenceStatus({
+                $presence: onlinePresence('wrld_123:1')
+            })
+        ).toBe('active');
     });
 
     it('keeps state active distinct from online active for presence ordering', () => {
-        expect(resolveUserPresenceStatus({ state: 'active' })).toBe(
+        expect(resolveUserPresenceStatus({ $presence: activePresence() })).toBe(
             'state-active'
+        );
+        expect(resolveUserPresenceStatus({ $presence: onlinePresence() })).toBe(
+            'active'
         );
     });
 

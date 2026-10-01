@@ -5,7 +5,6 @@ import { presenceSection } from '@/domain/friends/presence';
 import {
     FRIEND_PROFILE_BOOLEAN_FIELDS,
     FRIEND_PROFILE_STRING_FIELDS,
-    type FriendLocationProjection,
     type FriendPatchEntry,
     type FriendPresenceById,
     type FriendProfileFields,
@@ -42,15 +41,6 @@ function normalizeOptionalBoolean(value: unknown): boolean | undefined {
     return typeof value === 'boolean' ? value : undefined;
 }
 
-function normalizeOptionalTimestamp(
-    value: unknown
-): number | string | null | undefined {
-    if (typeof value === 'number' || typeof value === 'string') {
-        return value;
-    }
-    return value === null ? null : undefined;
-}
-
 function normalizeOptionalStringArray(
     value: unknown,
     previous?: string[]
@@ -69,19 +59,6 @@ function normalizeOptionalArray(
         return previous;
     }
     return Array.isArray(value) ? [...value] : undefined;
-}
-
-function normalizeOptionalLocationProjection(
-    value: unknown,
-    previous?: FriendLocationProjection | null
-): FriendLocationProjection | null | undefined {
-    if (value === previous) {
-        return previous;
-    }
-    if (value === null) {
-        return null;
-    }
-    return isRecord(value) ? { ...value } : undefined;
 }
 
 function normalizeFriendProfileFields(
@@ -103,30 +80,6 @@ function normalizeFriendProfileFields(
         }
     }
 
-    const location = normalizeOptionalLocationProjection(
-        source.$location,
-        previous?.$location
-    );
-    if (location !== undefined) {
-        profile.$location = location;
-    }
-    const locationAt = normalizeOptionalTimestamp(source.$location_at);
-    if (locationAt !== undefined) {
-        profile.$location_at = locationAt;
-    }
-    const previousLocationAt = normalizeOptionalTimestamp(
-        source.$previousLocation_at
-    );
-    if (previousLocationAt !== undefined) {
-        profile.$previousLocation_at = previousLocationAt;
-    }
-    const travelingToLocation = normalizeOptionalLocationProjection(
-        source.$travelingToLocation,
-        previous?.$travelingToLocation
-    );
-    if (travelingToLocation !== undefined) {
-        profile.$travelingToLocation = travelingToLocation;
-    }
     const badges = normalizeOptionalArray(source.badges, previous?.badges);
     if (badges !== undefined) {
         profile.badges = badges;

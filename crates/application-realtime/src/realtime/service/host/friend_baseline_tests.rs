@@ -4,6 +4,7 @@ use super::friend_profile::FriendProfileRefreshExpectation;
 use super::test_support::*;
 use super::*;
 use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::presence::PresenceView;
 use vrcx_0_core::OwnerId;
 
 #[test]
@@ -66,16 +67,9 @@ fn sync_friend_snapshot_debounces_online_to_offline() -> Result<()> {
     assert_eq!(projection.payload["baselineRevision"], 1);
     assert_eq!(projection.payload["patches"].as_array().unwrap().len(), 1);
     assert_eq!(projection.payload["patches"][0]["userId"], "usr_friend");
-    assert_eq!(projection.payload["patches"][0]["patch"]["state"], "online");
-    assert_eq!(projection.payload["patches"][0]["patch"]["state"], "online");
-    assert_eq!(
-        projection.payload["patches"][0]["patch"]["location"],
-        "wrld_old:123"
-    );
-    assert_eq!(
-        projection.payload["patches"][0]["patch"]["pendingOffline"],
-        true
-    );
+    let view = &projection.payload["patches"][0]["presence"]["view"];
+    assert_eq!(view["kind"], "pendingOffline");
+    assert_eq!(view["place"]["location"]["tag"], "wrld_old:123");
     Ok(())
 }
 
@@ -140,16 +134,12 @@ fn sync_friend_snapshot_persists_feed_when_refresh_confirms_pending_offline() ->
         .find(|event| event.name == "realtimeFriendProjection")
         .expect("confirmed offline refresh should emit a friend projection");
     assert_eq!(
-        projection.payload["patches"][0]["patch"]["state"],
+        projection.payload["patches"][0]["presence"]["view"]["kind"],
         "offline"
     );
     assert_eq!(
         projection.payload["patches"][0]["patch"]["displayName"],
         "Friend Fresh Name"
-    );
-    assert_eq!(
-        projection.payload["patches"][0]["patch"]["pendingOffline"],
-        false
     );
     assert!(projection.payload["feedEntries"]
         .as_array()
@@ -276,9 +266,9 @@ fn host_watermark_preserves_pending_created_after_capture() -> Result<()> {
         )?;
 
         let snapshot = runtime.runtime().friend_snapshot().unwrap();
-        let friend = snapshot.friends_by_id.get("usr_friend").unwrap();
-        assert_eq!(friend.state, "online");
-        assert_eq!(friend.extra.get("pendingOffline"), Some(&json!(true)));
+        let view = &snapshot.presence_by_id["usr_friend"].view;
+        assert_eq!(view.section().as_str(), "online");
+        assert!(matches!(view, PresenceView::PendingOffline { .. }));
         assert!(runtime
             .runtime()
             .deps
@@ -390,11 +380,14 @@ fn host_watermark_preserves_online_cancellation_after_capture() -> Result<()> {
     )?;
 
     let snapshot = outcome.snapshot.expect("canonical friend snapshot");
-    let friend = snapshot.friends_by_id.get("usr_friend").unwrap();
+    let view = &snapshot.presence_by_id["usr_friend"].view;
     assert!(outcome.result.accepted);
-    assert_eq!(friend.state, "online");
-    assert_eq!(friend.location, "wrld_new:456");
-    assert_ne!(friend.extra.get("pendingOffline"), Some(&json!(true)));
+    assert_eq!(view.section().as_str(), "online");
+    assert_eq!(
+        view.place().expect("online place").location.tag,
+        "wrld_new:456"
+    );
+    assert!(!matches!(view, PresenceView::PendingOffline { .. }));
     assert!(runtime
         .runtime()
         .deps
@@ -1630,7 +1623,15 @@ fn apply_friend_profile_refresh_updates_existing_friend_only() -> Result<()> {
     assert!(updated);
     assert!(!stranger_added);
     assert_eq!(friend.display_name, "Fresh Friend");
-    assert_eq!(friend.location, "wrld_fresh:456");
+    assert_eq!(
+        snapshot.presence_by_id["usr_friend"]
+            .view
+            .place()
+            .expect("online place")
+            .location
+            .tag,
+        "wrld_fresh:456"
+    );
     assert!(!snapshot.friends_by_id.contains_key("usr_stranger"));
     Ok(())
 }

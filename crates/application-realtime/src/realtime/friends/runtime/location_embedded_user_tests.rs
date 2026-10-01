@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod tests {
+    use super::super::presence_test_support::{friend_view, is_pending_offline, location_tag};
     use super::super::*;
 
     #[test]
@@ -47,20 +48,14 @@ mod tests {
             panic!("friend-location should produce an output");
         };
 
-        let patch = &output.projection.patches[0].patch;
-        assert_eq!(output.projection.patches[0].patch.state, "online");
+        let view = &output.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "online");
         assert_eq!(output.persistence.feed_entries[0].to_json()["type"], "GPS");
-        assert_eq!(patch.location, "wrld_2:456");
+        assert_eq!(location_tag(view), Some("wrld_2:456"));
         assert!(output.profile_refetch_user_ids.is_empty());
         assert_eq!(
-            runtime
-                .snapshot()
-                .unwrap()
-                .friends_by_id
-                .get("usr_friend")
-                .unwrap()
-                .location,
-            "wrld_2:456"
+            location_tag(&friend_view(&runtime, "usr_friend")),
+            Some("wrld_2:456")
         );
     }
 
@@ -108,16 +103,17 @@ mod tests {
             panic!("friend-location should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "online");
+        assert_eq!(
+            output.projection.patches[0]
+                .presence
+                .view
+                .section()
+                .as_str(),
+            "online"
+        );
         assert!(output.persistence.feed_entries.is_empty());
         assert_eq!(
-            runtime
-                .snapshot()
-                .unwrap()
-                .friends_by_id
-                .get("usr_friend")
-                .unwrap()
-                .state,
+            friend_view(&runtime, "usr_friend").section().as_str(),
             "online"
         );
     }
@@ -179,10 +175,10 @@ mod tests {
             panic!("friend-location should produce an output");
         };
 
-        let patch = &output.projection.patches[0].patch;
-        assert_eq!(output.projection.patches[0].patch.state, "online");
+        let view = &output.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "online");
         assert!(output.persistence.feed_entries.is_empty());
-        assert_eq!(patch.extra["pendingOffline"], true);
+        assert!(is_pending_offline(view));
         assert_eq!(output.profile_refetch_user_ids, vec!["usr_friend"]);
         assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_some());
     }

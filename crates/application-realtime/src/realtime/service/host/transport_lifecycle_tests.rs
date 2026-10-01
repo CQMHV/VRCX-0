@@ -9,6 +9,7 @@ use vrcx_0_application_core::{
     RuntimeTaskHandle,
 };
 use vrcx_0_core::friends::FriendRecord;
+use vrcx_0_core::presence::PresenceView;
 use vrcx_0_core::OwnerId;
 
 #[derive(Clone, Copy)]
@@ -49,6 +50,19 @@ fn active_transport(runtime: &TestRealtimeHostRuntime) -> RealtimeTransportStart
     }
 }
 
+fn online_friend_roster() -> HashMap<String, FriendRecord> {
+    HashMap::from([(
+        "usr_friend".to_string(),
+        FriendRecord {
+            id: "usr_friend".into(),
+            display_name: "Friend".into(),
+            state: "online".into(),
+            location: "wrld_old:123".into(),
+            ..FriendRecord::default()
+        },
+    )])
+}
+
 fn seed_online_friend(
     runtime: &TestRealtimeHostRuntime,
     session: &RealtimeSessionContext,
@@ -57,20 +71,26 @@ fn seed_online_friend(
     runtime.runtime().sync_friend_snapshot(
         session.clone(),
         Some(generation),
-        [(
-            "usr_friend".to_string(),
-            FriendRecord {
-                id: "usr_friend".into(),
-                display_name: "Friend".into(),
-                state: "online".into(),
-                location: "wrld_old:123".into(),
-                ..FriendRecord::default()
-            },
-        )]
-        .into_iter()
-        .collect(),
+        online_friend_roster(),
     )?;
     Ok(())
+}
+
+fn friend_view(runtime: &TestRealtimeHostRuntime) -> PresenceView {
+    runtime
+        .runtime()
+        .friend_snapshot()
+        .expect("friend baseline")
+        .presence_by_id
+        .remove("usr_friend")
+        .expect("friend presence")
+        .view
+}
+
+fn friend_place_tag(runtime: &TestRealtimeHostRuntime) -> Option<String> {
+    friend_view(runtime)
+        .place()
+        .map(|place| place.location.tag.clone())
 }
 
 fn local_friend_roster(joined_at_ms: i64) -> InstanceRosterSnapshot {
@@ -192,7 +212,7 @@ fn local_mode_stop_after_disconnect_clears_the_previous_session() -> Result<()> 
     let (_dir, runtime, session) = runtime_with_active_session("local-mode-disconnected-stop")?;
     let transport = active_transport(&runtime);
     seed_online_friend(&runtime, &session, transport.generation)?;
-    let friends = runtime.runtime().friend_snapshot().unwrap().friends_by_id;
+    let friends = online_friend_roster();
     runtime
         .runtime()
         .deps
@@ -338,7 +358,7 @@ fn fresh_baseline_reconnect_preserves_location_time_without_new_game_logs() -> R
         .instance_dwell
         .observe_roster(&local_friend_roster(1_000));
     let expected_times = runtime.runtime().deps.instance_dwell.snapshot();
-    let fresh_friends = runtime.runtime().friend_snapshot().unwrap().friends_by_id;
+    let fresh_friends = online_friend_roster();
     let RealtimeFriendApplyResult::Output(output) =
         runtime
             .runtime()
@@ -393,11 +413,10 @@ fn fresh_baseline_reconnect_preserves_location_time_without_new_game_logs() -> R
         projection.payload["locationTimeSnapshot"],
         serde_json::to_value(expected_times).unwrap()
     );
-    assert_eq!(
-        runtime.runtime().friend_snapshot().unwrap().friends_by_id["usr_friend"].extra
-            ["pendingOffline"],
-        true
-    );
+    assert!(matches!(
+        friend_view(&runtime),
+        PresenceView::PendingOffline { .. }
+    ));
 
     for location in ["traveling", "wrld_old:123"] {
         runtime.handle_active_friend_ws_message_for_test(&RealtimeWsMessagePayload {
@@ -433,11 +452,10 @@ fn fresh_placeholder_baseline_confirms_pending_offline_before_syncing_location_t
         raw: "{}".into(),
         received_at: "2026-07-20T00:00:00Z".into(),
     });
-    assert_eq!(
-        runtime.runtime().friend_snapshot().unwrap().friends_by_id["usr_friend"].extra
-            ["pendingOffline"],
-        true,
-    );
+    assert!(matches!(
+        friend_view(&runtime),
+        PresenceView::PendingOffline { .. }
+    ));
     runtime.runtime().finish_realtime_transport(
         old_transport,
         RealtimeTransportTermination::UnexpectedExit {
@@ -468,10 +486,7 @@ fn fresh_placeholder_baseline_confirms_pending_offline_before_syncing_location_t
         json!({"id": active_session.user_id}),
     )?;
 
-    let snapshot = runtime.runtime().friend_snapshot().unwrap();
-    let friend = &snapshot.friends_by_id["usr_friend"];
-    assert_eq!(friend.state, "offline");
-    assert_eq!(friend.extra["pendingOffline"], false);
+    assert_eq!(friend_view(&runtime), PresenceView::Offline);
     assert_eq!(
         runtime.runtime().deps.instance_dwell.snapshot()[0].since_ms,
         None
@@ -551,7 +566,7 @@ fn replacement_session_does_not_inherit_friend_location_times() -> Result<()> {
             .deps
             .instance_dwell
             .observe_roster(&local_friend_roster(1_000));
-        let friends = runtime.runtime().friend_snapshot().unwrap().friends_by_id;
+        let friends = online_friend_roster();
         runtime.runtime().finish_realtime_transport(
             old_transport,
             RealtimeTransportTermination::UnexpectedExit {
@@ -878,10 +893,7 @@ fn unexpected_exit_keeps_old_roster_until_pending_baseline_replacement_starts() 
     );
 
     assert!(!runtime.runtime().transport_is_active(&old_transport));
-    assert_eq!(
-        runtime.runtime().friend_snapshot().unwrap().friends_by_id["usr_friend"].location,
-        "wrld_old:123"
-    );
+    assert_eq!(friend_place_tag(&runtime).as_deref(), Some("wrld_old:123"));
 
     let watermark = runtime.runtime().capture_friend_baseline_watermark()?;
     assert_eq!(watermark.generation, None);
@@ -905,8 +917,8 @@ fn unexpected_exit_keeps_old_roster_until_pending_baseline_replacement_starts() 
     )?;
     assert!(outcome.result.accepted);
     assert_eq!(
-        runtime.runtime().friend_snapshot().unwrap().friends_by_id["usr_friend"].location,
-        "wrld_old:123",
+        friend_place_tag(&runtime).as_deref(),
+        Some("wrld_old:123"),
         "the last visible roster should remain stable during the reconnect gap"
     );
 
@@ -923,8 +935,8 @@ fn unexpected_exit_keeps_old_roster_until_pending_baseline_replacement_starts() 
         json!({"id": active_session.user_id.clone()}),
     )?;
     assert_eq!(
-        runtime.runtime().friend_snapshot().unwrap().friends_by_id["usr_friend"].location,
-        "wrld_fresh:456"
+        friend_place_tag(&runtime).as_deref(),
+        Some("wrld_fresh:456")
     );
 
     let sink = RealtimeHostRuntimeMessageSink {
@@ -1003,8 +1015,8 @@ fn reconnect_without_a_fresh_baseline_preserves_the_latest_canonical_roster() ->
     assert_eq!(snapshot.generation, replacement.generation);
     assert_eq!(snapshot.baseline_revision, 0);
     assert_eq!(
-        snapshot.friends_by_id["usr_friend"].location,
-        "wrld_latest:456"
+        friend_place_tag(&runtime).as_deref(),
+        Some("wrld_latest:456")
     );
     Ok(())
 }
@@ -1034,12 +1046,10 @@ fn reconnect_without_a_fresh_baseline_keeps_pending_offline() -> Result<()> {
         output.wake.is_some(),
         "friend-offline should schedule a pending timer"
     );
-    assert_eq!(
-        runtime.runtime().friend_snapshot().unwrap().friends_by_id["usr_friend"]
-            .extra
-            .get("pendingOffline"),
-        Some(&json!(true))
-    );
+    assert!(matches!(
+        friend_view(&runtime),
+        PresenceView::PendingOffline { .. }
+    ));
 
     runtime.runtime().finish_realtime_transport(
         old_transport,
@@ -1062,11 +1072,10 @@ fn reconnect_without_a_fresh_baseline_keeps_pending_offline() -> Result<()> {
         json!({"id": active_session.user_id}),
     )?;
 
-    let snapshot = runtime.runtime().friend_snapshot().unwrap();
-    assert_eq!(
-        snapshot.friends_by_id["usr_friend"].extra["pendingOffline"],
-        true
-    );
+    assert!(matches!(
+        friend_view(&runtime),
+        PresenceView::PendingOffline { .. }
+    ));
     let fired = runtime
         .runtime()
         .friends
@@ -1190,7 +1199,13 @@ fn friend_ws_dispatch_fans_out_one_canonical_output() -> Result<()> {
         .get("usr_friend")
         .expect("friend-add should update the canonical snapshot");
     assert_eq!(friend.display_name, "Friend");
-    assert_eq!(friend.state, "offline");
+    assert_eq!(
+        snapshot.presence_by_id["usr_friend"]
+            .view
+            .section()
+            .as_str(),
+        "offline"
+    );
 
     let current = friend_log_current_list(runtime.database(), active_session.user_id.clone())?;
     assert_eq!(current.len(), 1);

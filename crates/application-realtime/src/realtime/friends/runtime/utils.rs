@@ -17,8 +17,6 @@ pub(super) use vrcx_0_core::json::JsonExt;
 
 pub(super) use vrcx_0_core::text::first_owned;
 
-pub(super) use vrcx_0_core::location::parse_location;
-
 pub(super) struct EventTime {
     pub(super) iso: String,
     pub(super) timestamp_ms: i64,

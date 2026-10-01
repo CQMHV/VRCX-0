@@ -1,5 +1,8 @@
 #[cfg(test)]
 mod tests {
+    use vrcx_0_core::presence::PresenceView;
+
+    use super::super::presence_test_support::{friend_view, is_pending_offline, location_tag};
     use super::super::*;
 
     fn friend_with_trust() -> FriendRecord {
@@ -117,7 +120,14 @@ mod tests {
             panic!("friend-online should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "online");
+        assert_eq!(
+            output.projection.patches[0]
+                .presence
+                .view
+                .section()
+                .as_str(),
+            "online"
+        );
         assert_eq!(
             output.persistence.feed_entries[0].to_json()["type"],
             "Online"
@@ -510,9 +520,17 @@ mod tests {
         );
         assert!(output.projection.friend_log_changed);
         let snapshot = runtime.snapshot().unwrap();
-        let friend = &snapshot.friends_by_id["usr_friend"];
-        assert_eq!(friend.display_name, "New Name");
-        assert_eq!(friend.state, "active");
+        assert_eq!(
+            snapshot.friends_by_id["usr_friend"].display_name,
+            "New Name"
+        );
+        assert_eq!(
+            snapshot.presence_by_id["usr_friend"]
+                .view
+                .section()
+                .as_str(),
+            "active"
+        );
     }
 
     #[test]
@@ -568,13 +586,13 @@ mod tests {
         );
         assert!(output.projection.friend_log_changed);
         let snapshot = runtime.snapshot().unwrap();
-        let friend = &snapshot.friends_by_id["usr_friend"];
-        assert_eq!(friend.display_name, "New Name");
-        assert_eq!(friend.state, "online");
         assert_eq!(
-            friend.extra.get("pendingOffline").and_then(Value::as_bool),
-            Some(true)
+            snapshot.friends_by_id["usr_friend"].display_name,
+            "New Name"
         );
+        let view = &snapshot.presence_by_id["usr_friend"].view;
+        assert_eq!(view.section().as_str(), "online");
+        assert!(is_pending_offline(view));
     }
 
     #[test]
@@ -792,13 +810,23 @@ mod tests {
             panic!("friend-active should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "online");
+        assert_eq!(
+            output.projection.patches[0]
+                .presence
+                .view
+                .section()
+                .as_str(),
+            "online"
+        );
         assert!(
             output.wake.is_some(),
             "online->active should schedule pending timer"
         );
         let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
-        assert_eq!(fired.projection.patches[0].patch.state, "active");
+        assert_eq!(
+            fired.projection.patches[0].presence.view.section().as_str(),
+            "active"
+        );
     }
 
     #[test]
@@ -841,16 +869,17 @@ mod tests {
         };
         let delay = wake.delay;
         assert_eq!(delay, std::time::Duration::from_secs(170));
-        assert_eq!(output.projection.patches[0].patch.state, "online");
-        assert_eq!(output.projection.patches[0].patch.location, "wrld_1:123");
-        assert_eq!(
-            output.projection.patches[0].patch.extra["pendingOffline"],
-            true
-        );
+        let view = &output.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "online");
+        assert_eq!(location_tag(view), Some("wrld_1:123"));
+        assert!(is_pending_offline(view));
 
         let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
 
-        assert_eq!(fired.projection.patches[0].patch.state, "offline");
+        assert_eq!(
+            fired.projection.patches[0].presence.view.section().as_str(),
+            "offline"
+        );
         assert_eq!(
             fired.persistence.feed_entries[0].to_json()["type"],
             "Offline"
@@ -895,13 +924,23 @@ mod tests {
         else {
             panic!("friend-active should produce an output");
         };
-        assert_eq!(output.projection.patches[0].patch.state, "online");
+        assert_eq!(
+            output.projection.patches[0]
+                .presence
+                .view
+                .section()
+                .as_str(),
+            "online"
+        );
         assert!(
             output.wake.is_some(),
             "online->active should schedule pending timer"
         );
         let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
-        assert_eq!(fired.projection.patches[0].patch.state, "active");
+        assert_eq!(
+            fired.projection.patches[0].presence.view.section().as_str(),
+            "active"
+        );
     }
 
     #[test]
@@ -956,7 +995,10 @@ mod tests {
 
         assert!(matches!(repeated, RealtimeFriendApplyResult::Ignored));
         let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
-        assert_eq!(fired.projection.patches[0].patch.state, "offline");
+        assert_eq!(
+            fired.projection.patches[0].presence.view.section().as_str(),
+            "offline"
+        );
     }
 
     #[test]
@@ -1011,7 +1053,10 @@ mod tests {
 
         assert!(matches!(repeated, RealtimeFriendApplyResult::Ignored));
         let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
-        assert_eq!(fired.projection.patches[0].patch.state, "active");
+        assert_eq!(
+            fired.projection.patches[0].presence.view.section().as_str(),
+            "active"
+        );
     }
 
     #[test]
@@ -1108,11 +1153,9 @@ mod tests {
 
         assert!(online.wake.is_none());
         assert!(online.persistence.feed_entries.is_empty());
-        assert_eq!(online.projection.patches[0].patch.state, "online");
-        assert_eq!(
-            online.projection.patches[0].patch.extra["pendingOffline"],
-            false
-        );
+        let view = &online.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "online");
+        assert!(!is_pending_offline(view));
         assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_none());
     }
 
@@ -1207,9 +1250,7 @@ mod tests {
             }),
             RealtimeFriendApplyResult::Output(_)
         ));
-        let readded = &runtime.snapshot().unwrap().friends_by_id["usr_friend"];
-        assert_eq!(readded.state, "offline");
-        assert_eq!(readded.extra.get("pendingOffline"), Some(&json!(false)));
+        assert_eq!(friend_view(&runtime, "usr_friend"), PresenceView::Offline);
     }
 
     #[test]
@@ -1268,9 +1309,7 @@ mod tests {
             panic!("trusted friend add should produce an output");
         };
 
-        let friend = &runtime.snapshot().unwrap().friends_by_id["usr_friend"];
-        assert_eq!(friend.state, "offline");
-        assert_eq!(friend.extra.get("pendingOffline"), Some(&json!(false)));
+        assert_eq!(friend_view(&runtime, "usr_friend"), PresenceView::Offline);
         let feed_types = output
             .persistence
             .feed_entries

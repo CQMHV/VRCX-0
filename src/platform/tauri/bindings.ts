@@ -4275,7 +4275,6 @@ export type FriendProjectionPatch = {
     userId: string;
     patch: FriendRecord;
     presence: PresenceEntry;
-    stateBucketAuthority: FriendStateBucketAuthority;
 };
 export type FriendRecord = Partial<{
     [key in string]:
@@ -4303,7 +4302,6 @@ export type FriendRecord = Partial<{
     last_login?: string | null;
     last_mobile?: string | null;
 };
-export type FriendStateBucketAuthority = 'explicit' | 'preserve';
 export type GameClientEvent =
     | { kind: 'crashRelaunchDecision'; payload: CrashRelaunchDecisionPayload }
     | { kind: 'debugLoggingOutcome'; payload: DebugLoggingOutcome }

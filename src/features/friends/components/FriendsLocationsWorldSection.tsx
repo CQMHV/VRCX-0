@@ -17,7 +17,6 @@ import { userImage } from '@/services/entityMediaService';
 import { accessTypeLocaleKeyMap } from '@/shared/constants/accessType';
 import { parseLocation, translateAccessType } from '@/shared/utils/location';
 import { normalizeString } from '@/shared/utils/string';
-import { useRuntimeStore } from '@/state/runtimeStore';
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar';
 import { Skeleton } from '@/ui/shadcn/skeleton';
 import { Spinner } from '@/ui/shadcn/spinner';
@@ -119,10 +118,6 @@ export function FriendsLocationsFriendChips({
     twoLine: boolean;
     onOpenUser: (friend: FriendRecord) => void;
 }) {
-    const currentUserSnapshot = useRuntimeStore(
-        (state) => state.auth.currentUserSnapshot
-    );
-
     return (
         <div className="grid min-w-0 grid-cols-[repeat(auto-fill,minmax(0,200px))] gap-1.5">
             {friends.map((friend) => (
@@ -133,8 +128,9 @@ export function FriendsLocationsFriendChips({
                     twoLine={twoLine}
                     statusDotClassName={resolveSidebarStatusDotClassName(
                         friend,
-                        currentUserSnapshot,
-                        { hideNonFriend: false }
+                        {
+                            hideNonFriend: false
+                        }
                     )}
                     onOpen={() => onOpenUser(friend)}
                 />

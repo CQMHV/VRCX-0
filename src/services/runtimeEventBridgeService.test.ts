@@ -1562,8 +1562,7 @@ describe('runtimeEventBridgeService', () => {
                             displayName: userId,
                             state: 'offline'
                         },
-                        stateBucket: 'offline',
-                        stateBucketAuthority: 'preserve'
+                        stateBucket: 'offline'
                     }
                 ],
                 removals: [],
@@ -1603,8 +1602,7 @@ describe('runtimeEventBridgeService', () => {
                         displayName: 'usr_stale',
                         state: 'online'
                     },
-                    stateBucket: 'online',
-                    stateBucketAuthority: 'explicit'
+                    stateBucket: 'online'
                 }
             ],
             removals: [],
@@ -1625,8 +1623,7 @@ describe('runtimeEventBridgeService', () => {
                         displayName: 'usr_live',
                         state: 'online'
                     },
-                    stateBucket: 'online',
-                    stateBucketAuthority: 'explicit'
+                    stateBucket: 'online'
                 }
             ],
             removals: [],

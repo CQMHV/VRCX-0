@@ -1,4 +1,3 @@
-import { presenceOf } from '@/domain/friends/presence';
 import {
     isExplicitlyOfflineFriend,
     resolveObservedPlayerUserId
@@ -6,48 +5,13 @@ import {
 import {
     buildInstanceRosterRows,
     firstText,
-    isSameInstanceLocation,
-    resolvePresenceLocation
+    isSameInstanceLocation
 } from '@/domain/instances/instanceRoster';
-import { parseLocation } from '@/shared/utils/location';
+import {
+    parseLocation,
+    resolveFriendPresenceLocation
+} from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
-
-function shouldIncludeUserDialogLocationFriend({
-    currentLocationMatches,
-    currentLocationPlayerIds,
-    friend
-}: {
-    currentLocationMatches: boolean;
-    currentLocationPlayerIds: ReadonlySet<string>;
-    friend: unknown;
-}): boolean {
-    const friendRecord = isRecord(friend) ? friend : {};
-    const friendId = firstText(
-        friendRecord.id,
-        friendRecord.userId,
-        friendRecord.user_id
-    );
-    const presence = presenceOf(friendRecord);
-    const isOnline = presence
-        ? presence.kind === 'online'
-        : firstText(
-              friendRecord.stateBucket,
-              friendRecord.state
-          ).toLowerCase() === 'online';
-    const observedInCurrentInstance = Boolean(
-        currentLocationMatches &&
-        friendId &&
-        currentLocationPlayerIds.has(friendId)
-    );
-    if (isExplicitlyOfflineFriend(friend)) {
-        return false;
-    }
-    return Boolean(
-        observedInCurrentInstance ||
-        isOnline ||
-        !parseLocation(resolvePresenceLocation(friend)).isPrivate
-    );
-}
 
 function filterVisibleUserDialogLocationUsers<TUser>({
     currentUserId,
@@ -74,7 +38,7 @@ function filterVisibleUserDialogLocationUsers<TUser>({
         const userRecord: Record<string, unknown> = isRecord(user) ? user : {};
         const userId = firstText(userRecord.id, userRecord.userId);
         const friend = userId ? friendDirectory[userId] : null;
-        const friendLocation = resolvePresenceLocation(friend);
+        const friendLocation = resolveFriendPresenceLocation(friend);
         const friendIsElsewhere = Boolean(
             location &&
             parseLocation(friendLocation).isRealInstance &&
@@ -196,7 +160,4 @@ export function buildUserDialogLocationUsers({
     };
 }
 
-export {
-    filterVisibleUserDialogLocationUsers,
-    shouldIncludeUserDialogLocationFriend
-};
+export { filterVisibleUserDialogLocationUsers };

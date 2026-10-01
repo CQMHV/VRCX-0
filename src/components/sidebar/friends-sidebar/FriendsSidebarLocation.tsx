@@ -13,12 +13,11 @@ import { LocationPendingText } from '@/components/location/LocationPendingText';
 import { RegionCodeBadge } from '@/components/location/RegionCodeBadge';
 import type { LocationMetadata } from '@/components/location/useLocationMetadata';
 import {
-    isPresenceView,
     presenceLocationTag,
+    presenceOf,
     presenceSection,
     presenceTravelingTag
 } from '@/domain/friends/presence';
-import { normalizeStateBucket } from '@/domain/users/userFacts';
 import { cn } from '@/lib/utils';
 import { openGroupDialog, openWorldDialog } from '@/services/dialogService';
 import { accessTypeLocaleKeyMap } from '@/shared/constants/accessType';
@@ -36,12 +35,8 @@ import { Spinner } from '@/ui/shadcn/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
 import {
-    clearStaleOfflineLocation,
     readFriendRef,
-    readFriendRefLocation,
-    readFriendRefTravelingLocation,
     readFriendStatusSource,
-    resolvePresenceLocation,
     type SidebarFriendRecord
 } from './friendsSidebarModel';
 import type { SidebarVirtualRow } from './friendsSidebarVirtualRowBuilder';
@@ -76,15 +71,10 @@ function friendLocationHint(
 function friendGroupHint(
     displaySource: SidebarFriendRecord | null | undefined
 ) {
-    const location = recordValue(displaySource?.$location);
-    const group = recordValue(location?.group);
     const sourceGroup = recordValue(displaySource?.group);
     return normalizeId(
         displaySource?.groupName ||
             displaySource?.$groupName ||
-            location?.groupName ||
-            group?.name ||
-            group?.displayName ||
             sourceGroup?.name ||
             sourceGroup?.displayName
     );
@@ -102,10 +92,7 @@ export function resolveFriendRowLocationState({
     locationTime?: FriendLocationTimeEntry | null;
 }) {
     const displaySource = readFriendRef(friend);
-    const statusSource = readFriendStatusSource(friend);
-    const presence = isPresenceView(statusSource?.$presence)
-        ? statusSource.$presence
-        : null;
+    const presence = presenceOf(readFriendStatusSource(friend));
     const localLocation =
         !isCurrentUser &&
         isGroupByInstance &&
@@ -116,38 +103,30 @@ export function resolveFriendRowLocationState({
         ? 'online'
         : presence
           ? presenceSection(presence)
-          : normalizeStateBucket(statusSource?.state);
-    const apiFriendLocation = presence
-        ? presenceLocationTag(presence, { preferTraveling: false })
-        : isCurrentUser
-          ? resolvePresenceLocation(friend)
-          : readFriendRefLocation(friend);
+          : '';
+    const apiFriendLocation =
+        !presence || presence.kind === 'active'
+            ? ''
+            : presenceLocationTag(presence, { preferTraveling: false });
     const projectedFriendLocation = normalizeId(locationTime?.location);
     const useProjectedFriendLocation = Boolean(
         !isCurrentUser &&
         locationSentinel(apiFriendLocation) === 'private' &&
         parseLocation(projectedFriendLocation).isRealInstance
     );
-    const rawFriendLocation =
+    const friendLocation =
         localLocation ||
         (useProjectedFriendLocation
             ? projectedFriendLocation
             : apiFriendLocation);
-    const friendLocation = clearStaleOfflineLocation(
-        rawFriendLocation,
-        friendState
-    );
     const parsedFriendLocation = parseLocation(friendLocation);
     const isTraveling = locationSentinel(friendLocation) === 'traveling';
     const displayLocation = isTraveling ? 'traveling' : friendLocation;
-    const displayTraveling = isTraveling
-        ? (presence
-              ? presenceTravelingTag(presence)
-              : readFriendRefTravelingLocation(friend)) || undefined
-        : undefined;
-    const isPendingOffline = presence
-        ? presence.kind === 'pendingOffline'
-        : Boolean(statusSource?.pendingOffline);
+    const displayTraveling =
+        isTraveling && presence
+            ? presenceTravelingTag(presence) || undefined
+            : undefined;
+    const isPendingOffline = presence?.kind === 'pendingOffline';
     const isActiveOrOffline =
         friendState === 'active' || friendState === 'offline';
     const groupByInstanceTimerVisible = Boolean(

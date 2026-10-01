@@ -15,12 +15,8 @@ import type { EntityRecord } from '@/domain/entities/shared';
 import { presenceOf, presencePlace } from '@/domain/friends/presence';
 import { useNowMs } from '@/lib/useNowMs';
 import { cn } from '@/lib/utils';
-import {
-    locationSentinel,
-    resolveFriendPresenceLocation
-} from '@/shared/utils/location';
+import { resolveFriendPresenceLocation } from '@/shared/utils/location';
 import { userStatusLabel } from '@/shared/utils/userStatus';
-import { useRuntimeStore } from '@/state/runtimeStore';
 import { Button } from '@/ui/shadcn/button';
 
 import { groupIdForRow } from '../userDialogGroupRows';
@@ -57,9 +53,6 @@ export function EntityList({
     groupMarkers?: UserGroupCardMarkers;
 }) {
     const { t } = useTranslation();
-    const currentUserSnapshot = useRuntimeStore(
-        (state) => state.auth.currentUserSnapshot
-    );
     const nowMs = useNowMs({ active: kind === 'user' });
 
     if (loading) {
@@ -118,12 +111,9 @@ export function EntityList({
                     kind === 'avatar' ? PersonStandingIcon : UserIcon;
                 const userId = kind === 'user' ? userIdForRow(row) : '';
                 const rowPresence = kind === 'user' ? presenceOf(row) : null;
-                const isTraveling =
-                    kind === 'user' &&
-                    (rowPresence
-                        ? presencePlace(rowPresence)?.location.isTraveling ===
-                          true
-                        : locationSentinel(row.location) === 'traveling');
+                const isTraveling = rowPresence
+                    ? presencePlace(rowPresence)?.location.isTraveling === true
+                    : false;
                 const timerLocation =
                     kind === 'user'
                         ? isTraveling
@@ -133,11 +123,9 @@ export function EntityList({
                         : '';
                 const dotClassName =
                     kind === 'user'
-                        ? resolveSidebarStatusDotClassName(
-                              row,
-                              currentUserSnapshot,
-                              { hideNonFriend: false }
-                          )
+                        ? resolveSidebarStatusDotClassName(row, {
+                              hideNonFriend: false
+                          })
                         : '';
                 const isPrivateWorld =
                     kind === 'world' && row?.releaseStatus === 'private';

@@ -8,41 +8,27 @@ import {
 } from '@/shared/utils/location';
 
 import {
-    isRecord,
     localized,
     normalizeFriendsLocationId,
     resolveWorldIdCandidate,
     sourceFromFriend
 } from './normalization';
-import {
-    resolveFriendGroupName,
-    resolveFriendWorldName,
-    resolvePresenceLocation
-} from './presence';
+import { resolveFriendGroupName, resolveFriendWorldName } from './presence';
 import type {
     FriendLocationFriend,
     FriendLocationTarget,
     TranslationFn
 } from './types';
 
-export function resolveLocationTarget(
-    friend: FriendLocationFriend | null | undefined
-): FriendLocationTarget {
-    const rawLocation = resolvePresenceLocation(friend);
+export function locationTarget(rawLocation: string): FriendLocationTarget {
     const parsed = parseLocation(rawLocation);
-    const parsedWorldId = resolveWorldIdCandidate(parsed.worldId);
-    const explicitWorldId = resolveWorldIdCandidate(
-        isRecord(friend) ? friend.worldId : ''
-    );
-    const worldId =
-        !rawLocation || parsed.isOffline || parsed.isPrivate
-            ? ''
-            : parsedWorldId || explicitWorldId;
-
     return {
         rawLocation,
         parsed,
-        worldId,
+        worldId:
+            !rawLocation || parsed.isOffline || parsed.isPrivate
+                ? ''
+                : resolveWorldIdCandidate(parsed.worldId),
         groupId: parsed.groupId || '',
         instanceId: parsed.instanceId || '',
         accessTypeName: parsed.accessTypeName || '',
@@ -50,6 +36,12 @@ export function resolveLocationTarget(
         isPrivate: parsed.isPrivate,
         isTraveling: parsed.isTraveling
     };
+}
+
+export function resolveLocationTarget(
+    friend: FriendLocationFriend | null | undefined
+): FriendLocationTarget {
+    return locationTarget(resolveFriendPresenceLocation(friend));
 }
 
 export function isFriendInPrivateLocation(
@@ -91,9 +83,18 @@ export function resolveLocationSummary(
         };
     }
 
-    const location = resolveFriendPresenceLocation(friend, {
-        preferTraveling: false
-    });
+    return summarizeLocation(
+        resolveFriendPresenceLocation(friend, { preferTraveling: false }),
+        friend,
+        t
+    );
+}
+
+export function summarizeLocation(
+    location: string,
+    friend: FriendLocationFriend | null | undefined,
+    t: TranslationFn | null = null
+) {
     const parsedLocation = parseLocation(location);
 
     if (!location || parsedLocation.isOffline) {

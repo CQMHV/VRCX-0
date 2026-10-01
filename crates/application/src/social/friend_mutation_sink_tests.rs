@@ -215,11 +215,17 @@ fn pending_accept_preserves_trusted_profile_state_on_start() -> Result<()> {
         .runtime()
         .friend_snapshot()
         .expect("started friend snapshot");
-    let friend = snapshot
-        .friends_by_id
-        .get("usr_target")
-        .expect("accepted pending friend");
-    assert_eq!(friend.state, "online");
+    assert!(
+        snapshot.friends_by_id.contains_key("usr_target"),
+        "accepted pending friend"
+    );
+    assert_eq!(
+        snapshot.presence_by_id["usr_target"]
+            .view
+            .section()
+            .as_str(),
+        "online"
+    );
     let events = runtime.take_events_for_test();
     let projection = events
         .iter()
@@ -229,7 +235,10 @@ fn pending_accept_preserves_trusted_profile_state_on_start() -> Result<()> {
         })
         .expect("pending accept projection");
     assert_eq!(projection.payload["generation"], started.generation);
-    assert_eq!(projection.payload["patches"][0]["patch"]["state"], "online");
+    assert_eq!(
+        projection.payload["patches"][0]["presence"]["view"]["kind"],
+        "online"
+    );
     assert_eq!(projection.payload["friendLogChanged"], true);
     Ok(())
 }
@@ -398,12 +407,17 @@ fn accept_locally_applies_via_synthetic_event_when_baseline_present() -> Result<
         .runtime()
         .friend_snapshot()
         .expect("baseline snapshot");
-    let friend = snapshot
-        .friends_by_id
-        .get("usr_target")
-        .expect("accepted friend");
-    assert_eq!(friend.state, "online");
-    assert_eq!(friend.state, "online");
+    assert!(
+        snapshot.friends_by_id.contains_key("usr_target"),
+        "accepted friend"
+    );
+    assert_eq!(
+        snapshot.presence_by_id["usr_target"]
+            .view
+            .section()
+            .as_str(),
+        "online"
+    );
     Ok(())
 }
 

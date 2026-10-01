@@ -20,10 +20,7 @@ use crate::realtime::friends::{baseline_presence_entry, RealtimeFriendsRuntime};
 use crate::realtime::invite_automation::runtime::InviteAutomationState;
 use crate::realtime::user_cache::UserCacheRuntime;
 use crate::realtime::user_query_cache::UserQueryCache;
-use crate::realtime::{
-    FriendProjection, FriendStateBucketAuthority, RealtimeSessionContext,
-    RealtimeTransportLifecycleEvent,
-};
+use crate::realtime::{FriendProjection, RealtimeSessionContext, RealtimeTransportLifecycleEvent};
 use crate::world_enrich::PendingEntryCorrection;
 use vrcx_0_core::OwnerId;
 
@@ -107,7 +104,6 @@ impl ScopedFriendLogMutation {
                             chrono::Utc::now().timestamp_millis(),
                         ),
                         patch: record,
-                        state_bucket_authority: FriendStateBucketAuthority::Explicit,
                     });
             }
         }

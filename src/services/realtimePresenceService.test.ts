@@ -112,8 +112,7 @@ describe('realtimePresenceService projection boundary', () => {
                     patch: {
                         id: 'usr_friend',
                         displayName: 'Friend'
-                    },
-                    stateBucketAuthority: 'explicit'
+                    }
                 }
             ],
             removals: [],
@@ -332,8 +331,7 @@ describe('realtimePresenceService projection boundary', () => {
                     {
                         userId: 'usr_friend',
                         patch: { id: 'usr_friend', displayName },
-                        presence: { rev: 1, view: { kind: 'offline' } },
-                        stateBucketAuthority: 'preserve'
+                        presence: { rev: 1, view: { kind: 'offline' } }
                     }
                 ],
                 removals: [],

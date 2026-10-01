@@ -2,10 +2,7 @@ import {
     buildSameInstanceFriendGroups,
     type SameInstanceFriendGroupOptions
 } from '@/domain/friends/sameInstanceFriends';
-import {
-    parseLocation,
-    resolveFriendPresenceLocation
-} from '@/shared/utils/location';
+import { parseLocation } from '@/shared/utils/location';
 
 import {
     isRecord,
@@ -27,9 +24,6 @@ export function resolveFriendWorldName(
     return resolveDisplayWorldName(
         source?.worldName,
         source?.$worldName,
-        source?.$location?.worldName,
-        source?.$location?.name,
-        source?.$location?.world?.name,
         source?.world?.name,
         source?.locationName
     );
@@ -42,9 +36,6 @@ export function resolveFriendGroupName(
     return normalizeDisplayText(
         source?.groupName ||
             source?.$groupName ||
-            source?.$location?.groupName ||
-            source?.$location?.group?.name ||
-            source?.$location?.group?.displayName ||
             source?.group?.name ||
             source?.group?.displayName
     );
@@ -70,12 +61,6 @@ export function uniqueFriendsById<TFriend extends FriendLocationFriend>(
         rows.push(friend);
     }
     return rows;
-}
-
-export function resolvePresenceLocation(
-    friend: FriendLocationFriend | null | undefined
-) {
-    return resolveFriendPresenceLocation(friend);
 }
 
 export function isShareableInstanceLocation(location: unknown) {

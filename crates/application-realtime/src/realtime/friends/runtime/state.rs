@@ -26,7 +26,7 @@ use super::event_patch::{
     apply_friend_event, apply_presence_evidence, apply_refetched_friend_profile_event,
     apply_trusted_friend_add_event, FriendEventKind,
 };
-use super::presence_projection::{project_presence, strip_record_presence};
+use super::presence_keys::strip_record_presence;
 use super::utils::EventTime;
 
 #[derive(Clone, Debug)]
@@ -228,7 +228,6 @@ impl RealtimeFriendsRuntime {
                 }
                 None => Phase::initial(&evidence.claim, now_ms, false),
             };
-            project_presence(&mut record, &presence);
             entries.insert(user_id, FriendEntry { record, presence });
         }
         if let Some(existing) = existing.as_ref() {
@@ -246,10 +245,11 @@ impl RealtimeFriendsRuntime {
                 entries
                     .iter()
                     .filter(|(user_id, entry)| {
-                        existing
-                            .entries
-                            .get(*user_id)
-                            .is_none_or(|previous| previous.record != entry.record)
+                        existing.entries.get(*user_id).is_none_or(|previous| {
+                            previous.record != entry.record
+                                || presence_view(&previous.presence)
+                                    != presence_view(&entry.presence)
+                        })
                     })
                     .map(|(user_id, _)| user_id.clone())
                     .chain(
@@ -405,15 +405,12 @@ impl RealtimeFriendsRuntime {
         Some(visit(&roster.endpoint, &mut records))
     }
 
-    pub fn roster_snapshot(
-        &self,
-        previous_order: &[String],
-    ) -> serde_json::Result<Option<RealtimeFriendRosterSnapshot>> {
+    pub fn roster_snapshot(&self) -> serde_json::Result<Option<RealtimeFriendRosterSnapshot>> {
         let state = self.lock_state();
         let Some(roster) = state.roster.as_ref() else {
             return Ok(None);
         };
-        let snapshot = current_friend_roster_snapshot(&state, roster, previous_order)?;
+        let snapshot = current_friend_roster_snapshot(&state, roster)?;
         Ok(Some(RealtimeFriendRosterSnapshot {
             current_user_id: roster.current_user_id.clone(),
             endpoint: roster.endpoint.clone(),
@@ -644,57 +641,17 @@ fn presence_entries(
 fn current_friend_roster_snapshot(
     state: &RealtimeFriendState,
     roster: &Roster,
-    previous_order: &[String],
 ) -> serde_json::Result<Value> {
-    let entries = &roster.entries;
-    let mut ordered_friend_ids = previous_order
-        .iter()
-        .filter(|friend_id| entries.contains_key(*friend_id))
-        .cloned()
-        .collect::<Vec<_>>();
-    let mut seen = ordered_friend_ids.iter().cloned().collect::<HashSet<_>>();
-    let mut added = entries
-        .keys()
-        .filter(|friend_id| seen.insert((*friend_id).clone()))
-        .cloned()
-        .collect::<Vec<_>>();
-    added.sort();
-    ordered_friend_ids.extend(added);
-
-    let bucket_ids = |bucket: &str| {
-        ordered_friend_ids
-            .iter()
-            .filter(|friend_id| {
-                entries.get(*friend_id).is_some_and(|entry| {
-                    super::event_patch::section_bucket(&entry.presence) == bucket
-                })
-            })
-            .cloned()
-            .collect::<Vec<_>>()
-    };
-    let online_ids = bucket_ids("online");
-    let active_ids = bucket_ids("active");
-    let offline_ids = bucket_ids("offline");
-    let ordered_friend_ids = online_ids
-        .iter()
-        .chain(&active_ids)
-        .chain(&offline_ids)
-        .cloned()
-        .collect::<Vec<_>>();
-    let friends_by_id = entries
+    let friends_by_id = roster
+        .entries
         .iter()
         .map(|(user_id, entry)| (user_id.clone(), &entry.record))
         .collect::<HashMap<_, _>>();
-
     Ok(json!({
         "currentUserId": roster.current_user_id,
         "friendsById": serde_json::to_value(friends_by_id)?,
         "presenceById": serde_json::to_value(presence_entries(state, roster))?,
         "generation": roster.generation,
-        "orderedFriendIds": ordered_friend_ids,
-        "onlineIds": online_ids,
-        "activeIds": active_ids,
-        "offlineIds": offline_ids,
         "detail": "",
     }))
 }

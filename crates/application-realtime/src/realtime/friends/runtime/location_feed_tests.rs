@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod tests {
+    use super::super::presence_test_support::{friend_view, is_pending_offline, location_tag};
     use super::super::*;
 
     #[test]
@@ -47,8 +48,9 @@ mod tests {
             panic!("friend-location should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "online");
-        assert_eq!(output.projection.patches[0].patch.location, "wrld_new:456");
+        let view = &output.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "online");
+        assert_eq!(location_tag(view), Some("wrld_new:456"));
         assert_eq!(output.persistence.feed_entries.len(), 1);
         let entry = output.persistence.feed_entries[0].to_json();
         assert_eq!(entry["type"], "Online");
@@ -215,10 +217,14 @@ mod tests {
             private.persistence.feed_entries[1].to_json()["type"],
             "Status"
         );
-        assert_eq!(private.projection.patches[0].patch.location, "private");
-        assert_eq!(
-            private.projection.patches[0].patch.extra["$location"]["isPrivate"],
-            true
+        let private_view = &private.projection.patches[0].presence.view;
+        assert_eq!(location_tag(private_view), Some("private"));
+        assert!(
+            private_view
+                .place()
+                .expect("online place")
+                .location
+                .is_private
         );
 
         let RealtimeFriendApplyResult::Output(restored) =
@@ -244,7 +250,13 @@ mod tests {
             "Status"
         );
         assert_eq!(
-            restored.projection.patches[0].patch.extra["$location"]["worldId"],
+            restored.projection.patches[0]
+                .presence
+                .view
+                .place()
+                .expect("online place")
+                .location
+                .world_id,
             "wrld_current"
         );
         assert!(!restored.projection.patches[0]
@@ -307,26 +319,18 @@ mod tests {
             panic!("friend-location should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "online");
-        assert_eq!(output.projection.patches[0].patch.location, "wrld_1:123");
-        assert_eq!(
-            output.projection.patches[0].patch.extra["pendingOffline"],
-            true
-        );
+        let view = &output.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "online");
+        assert_eq!(location_tag(view), Some("wrld_1:123"));
+        assert!(is_pending_offline(view));
         assert!(output.persistence.feed_entries.is_empty());
         assert!(output.wake.is_some());
         assert_eq!(output.profile_refetch_user_ids, vec!["usr_friend"]);
 
-        let friend = runtime
-            .snapshot()
-            .unwrap()
-            .friends_by_id
-            .get("usr_friend")
-            .cloned()
-            .unwrap();
-        assert_eq!(friend.state, "online");
-        assert_eq!(friend.location, "wrld_1:123");
-        assert_eq!(friend.extra["pendingOffline"], true);
+        let friend = friend_view(&runtime, "usr_friend");
+        assert_eq!(friend.section().as_str(), "online");
+        assert_eq!(location_tag(&friend), Some("wrld_1:123"));
+        assert!(is_pending_offline(&friend));
     }
 
     #[test]

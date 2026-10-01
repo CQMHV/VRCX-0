@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { travelingPresence } from '@/test/presenceFixtures';
+import {
+    offlinePresence,
+    onlinePresence,
+    travelingPresence
+} from '@/test/presenceFixtures';
 
 import {
     buildFavoriteGroupLabelsByFriendId,
@@ -93,19 +97,19 @@ describe('friends locations section helpers', () => {
             {
                 id: 'usr_offline',
                 displayName: 'Offline',
-                location: 'offline'
+                $presence: offlinePresence
             },
             {
                 id: 'usr_public',
                 displayName: 'Public',
-                location: 'wrld_public:123~group(grp_1)',
+                $presence: onlinePresence('wrld_public:123~group(grp_1)'),
                 worldName: 'Club Orion',
                 groupName: 'Orion Group'
             },
             {
                 id: 'usr_private',
                 displayName: 'Private',
-                location: 'private'
+                $presence: onlinePresence('private')
             },
             {
                 id: 'usr_traveling',

@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use serde_json::{json, Value};
-use vrcx_0_application_core::{FriendProjectionPatch, FriendStateBucketAuthority};
+use vrcx_0_application_core::FriendProjectionPatch;
 use vrcx_0_contracts::feed_live::FeedLiveEntry;
 use vrcx_0_contracts::realtime::FriendLogDelete;
 use vrcx_0_core::derived_keys;
@@ -22,7 +22,7 @@ use super::persistence::{
     add_profile_diff_feed_entries, display_name, friend_log_upsert, friend_relationship_feed_entry,
     meaningful_name, meaningful_record_name, trust_level_feed_entry, FriendRelationshipFeedKind,
 };
-use super::presence_projection::{project_presence, strip_presence_keys};
+use super::presence_keys::strip_presence_keys;
 use super::state::{FriendEntry, RealtimeFriendState};
 use super::utils::{first_owned, EventTime, JsonExt};
 
@@ -220,10 +220,9 @@ fn apply_change(
         now.timestamp_ms,
         &now.iso,
     );
-    let mut projected = record.clone();
-    project_presence(&mut projected, &step.next);
     if event_kind != FriendEventKind::Add
-        && projected == previous.record
+        && record == previous.record
+        && presence_view(&step.next) == presence_view(&previous.presence)
         && step.wake_at_ms.is_none()
         && !step.refetch
         && feeds.is_empty()
@@ -240,7 +239,14 @@ fn apply_change(
     record_profile_identity_change(output, &user_id, &patch, &previous.record, &step.next, now);
     push_feed(output, feeds);
     if event_kind == FriendEventKind::Update && source == EventSource::Websocket {
-        add_profile_diff_feed_entries(output, &user_id, &patch, Some(&previous.record), &now.iso);
+        add_profile_diff_feed_entries(
+            output,
+            &user_id,
+            &patch,
+            &previous.record,
+            previous.presence.is_online_section(),
+            &now.iso,
+        );
         if let Some(change) = friend_icon_change(&user_id, &patch, &previous.record, &now.iso) {
             output.icon_changes.push(change);
         }
@@ -254,7 +260,7 @@ fn apply_change(
         output,
         &user_id,
         FriendEntry {
-            record: projected,
+            record,
             presence: step.next,
         },
     );
@@ -378,9 +384,8 @@ fn commit(
     state: &mut RealtimeFriendState,
     output: &mut RealtimeFriendOutput,
     user_id: &str,
-    mut entry: FriendEntry,
+    entry: FriendEntry,
 ) {
-    project_presence(&mut entry.record, &entry.presence);
     if let Some(snapshot) = state
         .instance_dwell
         .observe_friend(user_id, &dwell_place(&entry.presence))
@@ -394,7 +399,6 @@ fn commit(
             rev: 0,
             view: presence_view(&entry.presence),
         },
-        state_bucket_authority: FriendStateBucketAuthority::Explicit,
     });
     let added = state
         .roster

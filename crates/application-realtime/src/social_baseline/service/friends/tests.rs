@@ -1,3 +1,5 @@
+use vrcx_0_core::presence::{Place, PresenceEntry, PresencePlace, PresenceView};
+
 use super::*;
 
 #[test]
@@ -154,14 +156,9 @@ fn fast_roster_snapshot_uses_current_user_ids_and_remote_profiles_without_friend
             .and_then(Value::as_str),
         Some("usr_missing")
     );
-    assert_eq!(
-        snapshot
-            .get("orderedFriendIds")
-            .and_then(Value::as_array)
-            .cloned()
-            .unwrap_or_default(),
-        vec![json!("usr_online"), json!("usr_missing")]
-    );
+    let mut friend_ids = friends_by_id.keys().cloned().collect::<Vec<_>>();
+    friend_ids.sort();
+    assert_eq!(friend_ids, vec!["usr_missing", "usr_online"]);
 }
 
 #[test]
@@ -250,14 +247,6 @@ fn placeholder_active_friend_is_kept_active() {
     assert_eq!(
         object_field(active, "state").and_then(Value::as_str),
         Some("active")
-    );
-    assert_eq!(
-        snapshot
-            .get("activeIds")
-            .and_then(Value::as_array)
-            .cloned()
-            .unwrap_or_default(),
-        vec![json!("usr_active")]
     );
 }
 
@@ -374,7 +363,7 @@ fn active_list_bucket_ignores_location() {
 }
 
 #[test]
-fn canonical_records_replace_raw_roster_snapshot_and_ordering() -> Result<()> {
+fn canonical_records_replace_raw_roster_snapshot_and_presence() -> Result<()> {
     let mut output = SocialFriendRosterBaselineOutput {
         user_id: "usr_self".into(),
         stale: false,
@@ -382,10 +371,7 @@ fn canonical_records_replace_raw_roster_snapshot_and_ordering() -> Result<()> {
         detail: String::new(),
         snapshot: Some(RawJson::from(json!({
             "friendsById": { "usr_stale": { "id": "usr_stale", "stateBucket": "online" } },
-            "orderedFriendIds": ["usr_stale"],
-            "onlineIds": ["usr_stale"],
-            "activeIds": [],
-            "offlineIds": []
+            "presenceById": { "usr_stale": { "rev": 0, "view": { "kind": "offline" } } }
         }))),
         friend_log_changed: false,
     };
@@ -395,7 +381,6 @@ fn canonical_records_replace_raw_roster_snapshot_and_ordering() -> Result<()> {
             FriendRecord {
                 id: "usr_online".into(),
                 display_name: "Online".into(),
-                state: "online".into(),
                 ..FriendRecord::default()
             },
         ),
@@ -404,8 +389,28 @@ fn canonical_records_replace_raw_roster_snapshot_and_ordering() -> Result<()> {
             FriendRecord {
                 id: "usr_offline".into(),
                 display_name: "Offline".into(),
-                state: "offline".into(),
                 ..FriendRecord::default()
+            },
+        ),
+    ]);
+
+    let presence_by_id = HashMap::from([
+        (
+            "usr_online".to_string(),
+            PresenceEntry {
+                rev: 0,
+                view: PresenceView::Online {
+                    place: PresencePlace::new(&Place::Unknown),
+                    platform: String::new(),
+                    online_since_ms: None,
+                },
+            },
+        ),
+        (
+            "usr_offline".to_string(),
+            PresenceEntry {
+                rev: 0,
+                view: PresenceView::Offline,
             },
         ),
     ]);
@@ -424,6 +429,7 @@ fn canonical_records_replace_raw_roster_snapshot_and_ordering() -> Result<()> {
                 generation: 7,
                 baseline_revision: 1,
                 friends_by_id,
+                presence_by_id,
                 ..crate::realtime::RealtimeFriendSnapshot::default()
             },
             true,
@@ -435,11 +441,14 @@ fn canonical_records_replace_raw_roster_snapshot_and_ordering() -> Result<()> {
     assert_eq!(output.count, 2);
     assert!(output.friend_log_changed);
     assert!(snapshot["friendsById"].get("usr_stale").is_none());
-    assert_eq!(snapshot["onlineIds"], json!(["usr_online"]));
-    assert_eq!(snapshot["offlineIds"], json!(["usr_offline"]));
+    assert!(snapshot["presenceById"].get("usr_stale").is_none());
     assert_eq!(
-        snapshot["orderedFriendIds"],
-        json!(["usr_online", "usr_offline"])
+        snapshot["presenceById"]["usr_online"]["view"]["kind"],
+        "online"
+    );
+    assert_eq!(
+        snapshot["presenceById"]["usr_offline"]["view"]["kind"],
+        "offline"
     );
     Ok(())
 }

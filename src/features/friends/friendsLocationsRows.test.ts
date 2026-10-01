@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { travelingPresence } from '@/test/presenceFixtures';
+import {
+    offlinePresence,
+    onlinePresence,
+    travelingPresence
+} from '@/test/presenceFixtures';
 
 import {
     buildSameInstanceGroups,
@@ -42,10 +46,8 @@ describe('friends locations row helpers', () => {
         );
         expect(
             resolveFriendGroupName({
-                $location: {
-                    group: {
-                        displayName: 'Group Display'
-                    }
+                group: {
+                    displayName: 'Group Display'
                 }
             })
         ).toBe('Group Display');
@@ -95,20 +97,17 @@ describe('friends locations row helpers', () => {
         const first = {
             id: 'usr_1',
             displayName: 'First',
-            state: 'online',
-            location: sharedLocation
+            $presence: onlinePresence(sharedLocation)
         };
         const second = {
             id: 'usr_2',
             displayName: 'Second',
-            state: 'online',
-            location: sharedLocation
+            $presence: onlinePresence(sharedLocation)
         };
         const solo = {
             id: 'usr_3',
             displayName: 'Solo',
-            state: 'online',
-            location: soloLocation
+            $presence: onlinePresence(soloLocation)
         };
 
         expect(buildSameInstanceGroups([first, solo, second])).toEqual([
@@ -125,14 +124,12 @@ describe('friends locations row helpers', () => {
         const friendWithCurrentUser = {
             id: 'usr_1',
             displayName: 'With current user',
-            state: 'online',
-            location: currentLocation
+            $presence: onlinePresence(currentLocation)
         };
         const soloElsewhere = {
             id: 'usr_2',
             displayName: 'Solo elsewhere',
-            state: 'online',
-            location: otherLocation
+            $presence: onlinePresence(otherLocation)
         };
 
         expect(
@@ -161,8 +158,7 @@ describe('friends locations row helpers', () => {
             displayName: 'Maple',
             username: 'maple_user',
             statusDescription: 'At the club',
-            worldId: 'wrld_1',
-            location: 'offline'
+            $presence: offlinePresence
         };
 
         expect(matchesFriendLocationSearch(friend, 'maple', favoriteIds)).toBe(
@@ -177,16 +173,18 @@ describe('friends locations row helpers', () => {
     });
 
     it('resolves offline/private/traveling summaries and world dialog targets', () => {
-        expect(resolveLocationSummary({ location: 'offline' })).toEqual({
+        expect(resolveLocationSummary({ $presence: offlinePresence })).toEqual({
             label: 'Offline',
             meta: ''
         });
-        expect(resolveLocationSummary({ location: 'private' })).toEqual({
+        expect(
+            resolveLocationSummary({ $presence: onlinePresence('private') })
+        ).toEqual({
             label: 'Private',
             meta: ''
         });
         const publicSummary = resolveLocationSummary({
-            location: 'wrld_123:Room~group(grp_1)',
+            $presence: onlinePresence('wrld_123:Room~group(grp_1)'),
             worldName: 'Club Orion',
             groupName: 'Orion Group'
         });
@@ -206,7 +204,7 @@ describe('friends locations row helpers', () => {
         });
 
         const travelingWithoutDestination = resolveLocationSummary({
-            location: 'traveling'
+            $presence: travelingPresence()
         });
         expect(travelingWithoutDestination).toEqual({
             label: 'Traveling',
@@ -227,14 +225,26 @@ describe('friends locations row helpers', () => {
     });
 
     it('separates private locations from visible or unknown locations', () => {
-        expect(isFriendInPrivateLocation({ location: 'private' })).toBe(true);
-        expect(isFriendInPrivateLocation({ state: 'online' })).toBe(false);
-        expect(isFriendInPrivateLocation({ location: 'wrld_123:456' })).toBe(
-            false
-        );
+        expect(
+            isFriendInPrivateLocation({ $presence: onlinePresence('private') })
+        ).toBe(true);
+        expect(
+            isFriendInPrivateLocation({ $presence: onlinePresence('') })
+        ).toBe(false);
+        expect(
+            isFriendInPrivateLocation({
+                $presence: onlinePresence('wrld_123:456')
+            })
+        ).toBe(false);
 
-        const visible = { id: 'usr_visible', location: 'wrld_123:456' };
-        const privateFriend = { id: 'usr_private', location: 'private' };
+        const visible = {
+            id: 'usr_visible',
+            $presence: onlinePresence('wrld_123:456')
+        };
+        const privateFriend = {
+            id: 'usr_private',
+            $presence: onlinePresence('private')
+        };
         expect(
             partitionFriendsByPrivateLocation([privateFriend, visible])
         ).toEqual({

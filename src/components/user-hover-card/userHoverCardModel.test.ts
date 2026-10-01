@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+    activePresence,
+    offlinePresence,
+    onlinePresence
+} from '@/test/presenceFixtures';
+
+import {
     buildUserHoverCardModel,
     normalizeInstanceCounts
 } from './userHoverCardModel';
@@ -14,9 +20,8 @@ describe('buildUserHoverCardModel', () => {
             seed: {
                 id: 'usr_1',
                 displayName: 'Alice',
-                state: 'online',
                 status: 'join me',
-                location: REAL_INSTANCE
+                $presence: onlinePresence(REAL_INSTANCE)
             },
             profile: null,
             nowMs: NOW
@@ -36,9 +41,8 @@ describe('buildUserHoverCardModel', () => {
         const model = buildUserHoverCardModel({
             seed: {
                 id: 'usr_2',
-                state: 'online',
                 status: 'active',
-                location: 'private'
+                $presence: onlinePresence('private')
             },
             profile: null,
             nowMs: NOW
@@ -51,9 +55,8 @@ describe('buildUserHoverCardModel', () => {
     it('uses the active variant when online with no resolvable instance', () => {
         const seed = {
             id: 'usr_3',
-            state: 'active',
             status: 'active',
-            location: ''
+            $presence: activePresence()
         };
         const model = buildUserHoverCardModel({
             seed,
@@ -72,8 +75,7 @@ describe('buildUserHoverCardModel', () => {
         const model = buildUserHoverCardModel({
             seed: {
                 id: 'usr_4',
-                state: 'offline',
-                location: 'offline',
+                $presence: offlinePresence,
                 last_login: 1_699_999_000_000
             },
             profile: { status: 'active', last_login: 1_699_999_000_000 },
@@ -106,9 +108,8 @@ describe('buildUserHoverCardModel', () => {
         const model = buildUserHoverCardModel({
             seed: {
                 id: 'usr_6',
-                state: 'online',
                 status: 'active',
-                location: REAL_INSTANCE,
+                $presence: onlinePresence(REAL_INSTANCE),
                 last_login: 1_700_000_000_000
             },
             profile: null,

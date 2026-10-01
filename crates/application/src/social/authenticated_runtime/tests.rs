@@ -244,7 +244,7 @@ fn combined_snapshot_reattaches_current_friend_and_favorites_baselines() {
             count: 1,
             detail: "Friends ready.".into(),
             snapshot: Some(RawJson::from(json!({
-                "orderedFriendIds": ["usr_friend"]
+                "friendsById": {"usr_friend": {"id": "usr_friend"}}
             }))),
             friend_log_changed: true,
         },
@@ -274,10 +274,8 @@ fn combined_snapshot_reattaches_current_friend_and_favorites_baselines() {
             snapshot: json!({
                 "currentUserId": "usr_self",
                 "friendsById": {"usr_friend": {"id": "usr_friend"}},
-                "orderedFriendIds": ["usr_friend"],
-                "onlineIds": [],
-                "activeIds": [],
-                "offlineIds": ["usr_friend"],
+                "presenceById": {"usr_friend": {"rev": 0, "view": {"kind": "offline"}}},
+                "generation": 1,
                 "detail": ""
             })
             .into(),

@@ -115,7 +115,6 @@ type FriendRowAppearance = {
     randomUserColours?: boolean;
     isDarkMode?: boolean;
     trustColor?: TrustColorMap;
-    currentUserSnapshot?: SidebarFriendRecord | null;
     isGameRunning?: boolean | null;
     recentActionVersion?: number;
     locationMetadata?: LocationMetadata | null;
@@ -167,7 +166,6 @@ export function FriendRow({
         randomUserColours = false,
         isDarkMode = false,
         trustColor = TRUST_COLOR_DEFAULTS,
-        currentUserSnapshot = null,
         recentActionVersion = 0,
         locationMetadata = null,
         showInstanceIdInLocation = false,
@@ -180,10 +178,7 @@ export function FriendRow({
             isDarkMode,
             trustColor
         });
-    const statusDotClassName = resolveSidebarStatusDotClassName(
-        friend,
-        currentUserSnapshot
-    );
+    const statusDotClassName = resolveSidebarStatusDotClassName(friend);
     const {
         isPendingOffline,
         friendLocation,

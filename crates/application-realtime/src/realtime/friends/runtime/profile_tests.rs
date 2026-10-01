@@ -1,5 +1,8 @@
 #[cfg(test)]
 mod tests {
+    use vrcx_0_core::presence::PresenceView;
+
+    use super::super::presence_test_support::{friend_view, is_pending_offline, location_tag};
     use super::super::*;
 
     fn runtime_with_online_status(status: &str) -> RealtimeFriendsRuntime {
@@ -168,15 +171,16 @@ mod tests {
             panic!("refetched friend profile should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "online");
         assert_eq!(
-            runtime
-                .snapshot()
-                .unwrap()
-                .friends_by_id
-                .get("usr_friend")
-                .unwrap()
-                .state,
+            output.projection.patches[0]
+                .presence
+                .view
+                .section()
+                .as_str(),
+            "online"
+        );
+        assert_eq!(
+            friend_view(&runtime, "usr_friend").section().as_str(),
             "online"
         );
         assert_eq!(output.persistence.feed_entries.len(), 1);
@@ -233,11 +237,9 @@ mod tests {
             panic!("refetched friend profile should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "online");
-        assert_eq!(
-            output.projection.patches[0].patch.extra["pendingOffline"],
-            true
-        );
+        let view = &output.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "online");
+        assert!(is_pending_offline(view));
         assert!(output.persistence.feed_entries.is_empty());
         assert!(output.wake.is_some());
         let fired = runtime
@@ -321,15 +323,14 @@ mod tests {
             panic!("refetched friend profile should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "offline");
+        assert_eq!(
+            output.projection.patches[0].presence.view,
+            PresenceView::Offline
+        );
         assert_eq!(output.persistence.feed_entries.len(), 1);
         let entry = output.persistence.feed_entries[0].to_json();
         assert_eq!(entry["type"], "Offline");
         assert_eq!(entry["location"], "wrld_old:123");
-        assert_eq!(
-            output.projection.patches[0].patch.extra["pendingOffline"],
-            false
-        );
         assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_none());
     }
 
@@ -402,7 +403,8 @@ mod tests {
             panic!("refetched friend profile should produce an output");
         };
 
-        assert_eq!(output.projection.patches[0].patch.state, "online");
+        let view = &output.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "online");
         let feed_types = output
             .persistence
             .feed_entries
@@ -410,10 +412,7 @@ mod tests {
             .map(|entry| entry.to_json()["type"].clone())
             .collect::<Vec<_>>();
         assert_eq!(feed_types, vec![json!("GPS")]);
-        assert_eq!(
-            output.projection.patches[0].patch.extra["pendingOffline"],
-            false
-        );
+        assert!(!is_pending_offline(view));
         assert!(runtime.wake("usr_friend", "2026-05-15T00:03:00Z").is_none());
     }
 
@@ -564,10 +563,9 @@ mod tests {
         );
 
         assert!(matches!(result, RealtimeFriendApplyResult::Ignored));
-        let snapshot = runtime.snapshot().unwrap();
-        let friend = &snapshot.friends_by_id["usr_friend"];
-        assert_eq!(friend.location, "wrld_new:123");
-        assert_eq!(friend.state, "online");
+        let friend = friend_view(&runtime, "usr_friend");
+        assert_eq!(location_tag(&friend), Some("wrld_new:123"));
+        assert_eq!(friend.section().as_str(), "online");
     }
 
     #[test]

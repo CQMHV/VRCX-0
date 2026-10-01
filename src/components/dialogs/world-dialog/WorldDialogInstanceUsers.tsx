@@ -12,7 +12,7 @@ import {
     type SidebarFriendRecord
 } from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
 import { UserDetailTile } from '@/components/UserDetailTile';
-import { presenceOf } from '@/domain/friends/presence';
+import { presenceOf, presencePlace } from '@/domain/friends/presence';
 import {
     createInstanceUserRow,
     firstText,
@@ -28,10 +28,7 @@ import userProfileRepository from '@/repositories/userProfileRepository';
 import { openUserDialog } from '@/services/dialogService';
 import { userImage } from '@/services/entityMediaService';
 import { hasGroupIdPrefix } from '@/shared/constants/vrchatIds';
-import {
-    locationSentinel,
-    resolveFriendPresenceLocation
-} from '@/shared/utils/location';
+import { resolveFriendPresenceLocation } from '@/shared/utils/location';
 import { isRecord } from '@/shared/utils/record';
 import { userStatusLabel } from '@/shared/utils/userStatus';
 import { useRuntimeStore } from '@/state/runtimeStore';
@@ -222,17 +219,12 @@ export function InstanceUserTiles({
                     id: user.id,
                     userId: user.userId,
                     displayName: user.displayName,
-                    $presence: presenceOf(user) ?? undefined,
-                    location:
-                        typeof user.location === 'string'
-                            ? user.location
-                            : undefined,
-                    state:
-                        typeof user.state === 'string' ? user.state : undefined,
-                    stateBucket:
-                        typeof user.stateBucket === 'string'
-                            ? user.stateBucket
-                            : undefined,
+                    $presence:
+                        presenceOf(user) ??
+                        (isCurrentUser
+                            ? presenceOf(currentUserSnapshot)
+                            : null) ??
+                        undefined,
                     status:
                         typeof user.status === 'string' ? user.status : null,
                     statusDescription:
@@ -250,8 +242,9 @@ export function InstanceUserTiles({
                 };
                 const dotClassName = resolveSidebarStatusDotClassName(
                     statusUser,
-                    currentUserSnapshot,
-                    { hideNonFriend: false }
+                    {
+                        hideNonFriend: false
+                    }
                 );
                 const displayName = firstText(
                     user.displayName,
@@ -262,12 +255,14 @@ export function InstanceUserTiles({
                     'User'
                 );
                 const subtitle = instanceUserSubtitle(user, t);
-                const isTraveling =
-                    locationSentinel(user.location) === 'traveling';
+                const isTraveling = statusUser.$presence
+                    ? presencePlace(statusUser.$presence)?.location
+                          .isTraveling === true
+                    : false;
                 const timerLocation = isTraveling
-                    ? resolveFriendPresenceLocation(user)
+                    ? resolveFriendPresenceLocation(statusUser)
                     : instanceLocation.trim() ||
-                      resolveFriendPresenceLocation(user);
+                      resolveFriendPresenceLocation(statusUser);
                 const isInstanceCreator = userId === creatorUserId;
                 let subline: ReactNode;
                 if (

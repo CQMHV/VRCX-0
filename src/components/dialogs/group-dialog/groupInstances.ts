@@ -13,8 +13,6 @@ import type { CurrentUserSnapshotState } from '@/state/runtimeStore';
 type InstanceUser = EntityRecord & {
     displayName?: string;
     id?: string;
-    location?: string;
-    travelingToLocation?: string;
     userId?: string;
 };
 
@@ -50,14 +48,7 @@ export function normalizeLocation(value: unknown) {
 
 export function userGroupLocation(user: InstanceUser | null | undefined) {
     const presence = presenceOf(user);
-    if (presence) {
-        return presenceLiveInstanceTag(presence);
-    }
-    const location = normalizeLocation(user?.location);
-    if (location === 'traveling') {
-        return normalizeLocation(user?.travelingToLocation);
-    }
-    return location;
+    return presence ? presenceLiveInstanceTag(presence) : '';
 }
 
 export function instanceLocation(instance: GroupInstanceRecord) {

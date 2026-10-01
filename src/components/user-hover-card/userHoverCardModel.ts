@@ -5,10 +5,10 @@ import {
 import {
     readFriendRef,
     readFriendStatusSource,
-    resolveSidebarStatusDotClassName,
     type SidebarFriendRecord
 } from '@/components/sidebar/friends-sidebar/friendsSidebarModel';
 import {
+    presenceDotClassName,
     presenceLocationTag,
     presenceOf,
     presenceSection,
@@ -16,9 +16,9 @@ import {
 } from '@/domain/friends/presence';
 import type {
     FriendProfileFields,
-    FriendRecordInput
+    FriendRecordInput,
+    FriendRosterBucket
 } from '@/domain/friends/types';
-import { normalizeStateBucket } from '@/domain/users/userFacts';
 import { userImage } from '@/services/entityMediaService';
 import { timestampMsFromValue } from '@/shared/utils/dateTime';
 import { userStatusFromValue } from '@/shared/utils/friendStatus';
@@ -44,7 +44,6 @@ type HoverCardRecord = FriendRecordInput &
         $userColour?: string;
         last_login?: number | string | null;
         note?: string | null;
-        stateBucket?: string;
     };
 
 type UserHoverCardModelInput = {
@@ -55,10 +54,6 @@ type UserHoverCardModelInput = {
 
 function recordOrEmpty(value: unknown): HoverCardRecord {
     return isRecord(value) ? value : {};
-}
-
-function locationTag(value: unknown) {
-    return isRecord(value) ? value.tag : undefined;
 }
 
 function sidebarSeed(value: unknown): SidebarFriendRecord | null {
@@ -82,15 +77,8 @@ function statusKeyFromStatus(status: unknown) {
     return '';
 }
 
-function statusKeyFromPresence(status: unknown, state: unknown) {
-    if (normalizeStateBucket(state) === 'active') {
-        return 'active';
-    }
-    const statusKey = statusKeyFromStatus(status);
-    if (statusKey) {
-        return statusKey;
-    }
-    return '';
+function statusKeyFromPresence(status: unknown, state: FriendRosterBucket) {
+    return state === 'active' ? 'active' : statusKeyFromStatus(status);
 }
 
 function resolveTrust(identity: HoverCardRecord) {
@@ -110,8 +98,12 @@ function resolveTrust(identity: HoverCardRecord) {
     return { trustSource, trustKey: resolveTrustColorKey(trustSource) };
 }
 
-function estimatedOnlineMs(state: unknown, lastLogin: unknown, nowMs: number) {
-    if (normalizeStateBucket(state) !== 'online') {
+function estimatedOnlineMs(
+    state: FriendRosterBucket | null,
+    lastLogin: unknown,
+    nowMs: number
+) {
+    if (state !== 'online') {
         return 0;
     }
     const lastLoginMs = timestampMsFromValue(lastLogin);
@@ -156,25 +148,15 @@ export function buildUserHoverCardModel({
     const identity = profile ? profileRecord : ref;
 
     const presence = presenceOf(statusSource) ?? presenceOf(profileRecord);
-    const state = presence
-        ? presenceSection(presence)
-        : normalizeStateBucket(statusSource?.state || profileRecord?.state);
-    const hasPresence = Boolean(statusSource) && Boolean(state);
+    const state = presence ? presenceSection(presence) : null;
+    const hasPresence = Boolean(statusSource) && state !== null;
+    const status = profileRecord?.status || statusSource?.status;
 
     const rawLocation = presence
         ? presenceLocationTag(presence, { preferTraveling: false })
-        : normalizeId(
-              statusSource?.location ||
-                  locationTag(statusSource?.$location) ||
-                  profileRecord?.location
-          );
+        : '';
     const isTraveling = locationSentinel(rawLocation) === 'traveling';
-    const travelingTo = presence
-        ? presenceTravelingTag(presence)
-        : normalizeId(
-              statusSource?.travelingToLocation ||
-                  statusSource?.$travelingToLocation
-          );
+    const travelingTo = presence ? presenceTravelingTag(presence) : '';
     const effectiveLocation = isTraveling ? travelingTo : rawLocation;
     const parsed = parseLocation(effectiveLocation);
     const locationStatus = normalizeLocationStatus(effectiveLocation);
@@ -196,15 +178,10 @@ export function buildUserHoverCardModel({
 
     const statusKey =
         hasPresence && state !== 'offline'
-            ? statusKeyFromPresence(
-                  profileRecord?.status || statusSource?.status,
-                  state
-              )
+            ? statusKeyFromPresence(status, state)
             : '';
     const statusDotClassName = hasPresence
-        ? resolveSidebarStatusDotClassName(seedRecord, null, {
-              hideNonFriend: false
-          })
+        ? presenceDotClassName(presence, status)
         : '';
     const { trustSource, trustKey } = resolveTrust(identity);
 

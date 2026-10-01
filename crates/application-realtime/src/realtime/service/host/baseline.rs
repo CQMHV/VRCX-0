@@ -13,8 +13,8 @@ use vrcx_0_core::presence::PresenceEntry;
 use crate::realtime::friends::{baseline_presence_entry, player_joining_feed_entry};
 use crate::realtime::{
     FriendBaselineCausalWatermark, FriendBaselineResult, FriendBaselineSyncOutcome,
-    FriendProjection, FriendStateBucketAuthority, FriendWake, RealtimeFriendOutput,
-    RealtimeFriendSnapshot, RealtimeSessionContext,
+    FriendProjection, FriendWake, RealtimeFriendOutput, RealtimeFriendSnapshot,
+    RealtimeSessionContext,
 };
 use crate::social_baseline::service::{
     reconcile_friend_roster_records, FriendRosterReconcileOutcome, FriendStatusVerdicts,
@@ -486,17 +486,19 @@ fn friend_snapshot_diff_projection(
         if unchanged {
             continue;
         }
-        let was_traveling = previous_record.is_some_and(|record| {
-            vrcx_0_core::location::parse_location(&record.location).is_traveling
-        });
-        let joining_entry = player_joining_feed_entry(&user_id, was_traveling, record, &created_at);
+        let joining_entry = player_joining_feed_entry(
+            &user_id,
+            &record.display_name,
+            previous_presence.map(|previous| &previous.view),
+            &presence.view,
+            &created_at,
+        );
         projection
             .patches
             .push(crate::realtime::FriendProjectionPatch {
                 user_id,
                 patch: record.clone(),
                 presence,
-                state_bucket_authority: FriendStateBucketAuthority::Explicit,
             });
         if let Some(entry) = joining_entry {
             projection.feed_entries.push(entry);

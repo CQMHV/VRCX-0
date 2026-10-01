@@ -21,11 +21,9 @@ import {
     type UserDialogPreviousInstance,
     type UserDialogStats
 } from '@/services/userDialogSessionCacheService';
+import { resolveFriendPresenceLocation } from '@/shared/utils/location';
 
-import {
-    isSameLocationTag,
-    resolvePresenceLocation
-} from './userDialogContentHelpers';
+import { isSameLocationTag } from './userDialogContentHelpers';
 import {
     mergePreviousDisplayNames,
     replacePreviousDisplayNameSource
@@ -133,7 +131,7 @@ export function useUserDialogSupplementalData({
         profile?.displayName || profile?.username
     );
     const profileId = profile?.id;
-    const profilePresenceLocation = resolvePresenceLocation(profile);
+    const profilePresenceLocation = resolveFriendPresenceLocation(profile);
     const profileDisplayNameRef = useRef('');
     profileDisplayNameRef.current = profileDisplayName;
     const representedGroupMatchesTarget =

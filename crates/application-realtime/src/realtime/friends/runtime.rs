@@ -6,11 +6,11 @@ use vrcx_0_core::friends::{FriendRecord, FriendRosterBaseline};
 use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 
 #[cfg(test)]
-use super::super::{FriendStateBucketAuthority, RealtimeFriendApplyResult, RealtimeFriendOutput};
+use super::super::{RealtimeFriendApplyResult, RealtimeFriendOutput};
 
 mod event_patch;
 mod persistence;
-mod presence_projection;
+mod presence_keys;
 mod state;
 mod utils;
 
@@ -28,6 +28,8 @@ mod location_feed_tests;
 mod location_offline_tests;
 #[cfg(test)]
 mod location_state_tests;
+#[cfg(test)]
+mod presence_test_support;
 #[cfg(test)]
 mod presence_tests;
 #[cfg(test)]

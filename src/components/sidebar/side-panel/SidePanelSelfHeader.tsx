@@ -23,6 +23,7 @@ import { SidePanelSelfAccountMenu } from '@/components/sidebar/side-panel/SidePa
 import { useFriendsSidebarDisplayPreferences } from '@/components/sidebar/useFriendsSidebarDisplayPreferences';
 import { useFriendsSidebarRuntimeSnapshot } from '@/components/sidebar/useFriendsSidebarRuntimeSnapshot';
 import { UserStatusAvatar } from '@/components/UserStatusAvatar';
+import { presenceLocationTag, presenceOf } from '@/domain/friends/presence';
 import { cn } from '@/lib/utils';
 import { useModalStore } from '@/state/modalStore';
 import {
@@ -116,8 +117,9 @@ export function SidePanelSelfHeader() {
             isDarkMode,
             trustColor
         });
+    const selfPresence = presenceOf(selfRow);
     const locationMetadata = useLocationMetadata({
-        locationInfo: displaySource?.location || '',
+        locationInfo: selfPresence ? presenceLocationTag(selfPresence) : '',
         currentLocation: gameState?.currentLocation || '',
         endpoint: currentEndpoint || ''
     });
@@ -201,8 +203,7 @@ export function SidePanelSelfHeader() {
                                     className="size-10"
                                     imageUrl={imageUrl}
                                     statusDotClassName={resolveSidebarStatusDotClassName(
-                                        selfRow,
-                                        currentUser
+                                        selfRow
                                     )}
                                 />
                             </button>

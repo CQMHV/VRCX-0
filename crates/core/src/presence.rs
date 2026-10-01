@@ -120,6 +120,30 @@ pub enum PresenceView {
 }
 
 impl PresenceView {
+    pub fn section(&self) -> StateBucket {
+        match self {
+            Self::Online { .. } | Self::PendingOffline { .. } => StateBucket::Online,
+            Self::Active { .. } => StateBucket::Active,
+            Self::Offline => StateBucket::Offline,
+        }
+    }
+
+    pub fn platform(&self) -> &str {
+        match self {
+            Self::Online { platform, .. }
+            | Self::PendingOffline { platform, .. }
+            | Self::Active { platform } => platform,
+            Self::Offline => "",
+        }
+    }
+
+    pub fn place(&self) -> Option<&PresencePlace> {
+        match self {
+            Self::Online { place, .. } | Self::PendingOffline { place, .. } => Some(place),
+            Self::Active { .. } | Self::Offline => None,
+        }
+    }
+
     pub fn from_profile(profile: &Map<String, Value>) -> Self {
         let text = |key: &str| profile.get(key).and_then(Value::as_str).unwrap_or("");
         let place = Place::from_location(text("location"), text("travelingToLocation"));

@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod tests {
+    use super::super::presence_test_support::{friend_view, is_pending_offline, location_tag};
     use super::super::*;
 
     #[test]
@@ -48,7 +49,10 @@ mod tests {
         assert_eq!(snapshot.generation, 7);
         assert_eq!(snapshot.baseline_revision, 3);
         assert_eq!(
-            snapshot.friends_by_id.get("usr_friend").unwrap().state,
+            snapshot.presence_by_id["usr_friend"]
+                .view
+                .section()
+                .as_str(),
             "active"
         );
 
@@ -102,7 +106,7 @@ mod tests {
     }
 
     #[test]
-    fn roster_snapshot_builds_current_json_with_stable_order() {
+    fn roster_snapshot_builds_current_json_with_presence_views() {
         let runtime = RealtimeFriendsRuntime::default();
         runtime.set_baseline(
             FriendRosterBaseline {
@@ -134,21 +138,20 @@ mod tests {
             3,
         );
 
-        let projection = runtime
-            .roster_snapshot(&["usr_removed".into(), "usr_existing".into()])
-            .unwrap()
-            .unwrap();
+        let projection = runtime.roster_snapshot().unwrap().unwrap();
 
         assert_eq!(projection.current_user_id, "usr_self");
         assert_eq!(projection.endpoint, "https://api.example.test");
         assert_eq!(projection.websocket, "wss://ws.example.test");
         assert_eq!(projection.friend_count, 2);
         assert_eq!(
-            projection.snapshot["orderedFriendIds"],
-            json!(["usr_new", "usr_existing"])
+            projection.snapshot["presenceById"]["usr_new"]["view"]["kind"],
+            "online"
         );
-        assert_eq!(projection.snapshot["onlineIds"], json!(["usr_new"]));
-        assert_eq!(projection.snapshot["activeIds"], json!(["usr_existing"]));
+        assert_eq!(
+            projection.snapshot["presenceById"]["usr_existing"]["view"]["kind"],
+            "active"
+        );
     }
 
     #[test]
@@ -211,13 +214,9 @@ mod tests {
                 1,
             );
 
-            let snapshot = runtime.snapshot().expect("baseline present");
-            let friend = snapshot
-                .friends_by_id
-                .get("usr_friend")
-                .expect("friend present");
             assert_eq!(
-                friend.state, "online",
+                friend_view(&runtime, "usr_friend").section().as_str(),
+                "online",
                 "{previous_state} -> online (placeholder: {placeholder})"
             );
         }
@@ -353,13 +352,9 @@ mod tests {
             1_800_000_000_000,
         );
 
-        let snapshot = runtime.snapshot().expect("baseline present");
-        let friend = snapshot
-            .friends_by_id
-            .get("usr_friend")
-            .expect("friend present");
-        assert_eq!(friend.state, "online");
-        assert_eq!(friend.extra.get("pendingOffline"), Some(&json!(false)));
+        let friend = friend_view(&runtime, "usr_friend");
+        assert_eq!(friend.section().as_str(), "online");
+        assert!(!is_pending_offline(&friend));
         assert!(effects.schedules.is_empty());
     }
 
@@ -482,11 +477,10 @@ mod tests {
             1_800_000_000_000,
         );
 
-        let snapshot = runtime.snapshot().unwrap();
-        let friend = snapshot.friends_by_id.get("usr_friend").unwrap();
-        assert_eq!(friend.state, "online");
-        assert_eq!(friend.location, "wrld_1:123");
-        assert_eq!(friend.extra.get("pendingOffline"), Some(&json!(true)));
+        let friend = friend_view(&runtime, "usr_friend");
+        assert_eq!(friend.section().as_str(), "online");
+        assert_eq!(location_tag(&friend), Some("wrld_1:123"));
+        assert!(is_pending_offline(&friend));
         assert!(effects.confirmed_feed_entries.is_empty());
         assert_eq!(effects.profile_refetch_user_ids, vec!["usr_friend"]);
         let fired = runtime
@@ -531,8 +525,10 @@ mod tests {
                 1_800_000_000_000,
             );
 
-            let snapshot = runtime.snapshot().unwrap();
-            assert_eq!(snapshot.friends_by_id["usr_friend"].state, "online");
+            assert_eq!(
+                friend_view(&runtime, "usr_friend").section().as_str(),
+                "online"
+            );
             assert_eq!(
                 effects.confirmed_feed_entries.len(),
                 1,
@@ -555,7 +551,7 @@ mod tests {
             runtime.set_baseline_with_effects(other_account, 2, 0, None, 1_800_000_000_000);
 
         assert_eq!(
-            runtime.snapshot().unwrap().friends_by_id["usr_friend"].state,
+            friend_view(&runtime, "usr_friend").section().as_str(),
             "online"
         );
         assert!(effects.confirmed_feed_entries.is_empty());
@@ -604,7 +600,7 @@ mod tests {
         assert_eq!(presence["view"]["place"]["location"]["tag"], "wrld_a:1");
         assert_eq!(presence["view"]["platform"], "android");
 
-        let snapshot = runtime.roster_snapshot(&[]).unwrap().unwrap().snapshot;
+        let snapshot = runtime.roster_snapshot().unwrap().unwrap().snapshot;
         let snapshot = serde_json::to_value(&snapshot).unwrap();
         assert_eq!(snapshot["presenceById"]["usr_friend"], presence);
         assert_eq!(snapshot["generation"], 1);

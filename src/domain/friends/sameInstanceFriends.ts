@@ -1,16 +1,15 @@
 import {
-    isPresenceView,
-    presenceLiveInstanceTag
+    presenceLiveInstanceTag,
+    presenceOf,
+    type PresenceView
 } from '@/domain/friends/presence';
 import type {
     FriendProfileFields,
-    FriendRecordInput,
-    FriendRosterBucket
+    FriendRecordInput
 } from '@/domain/friends/types';
 import { hasUserIdPrefix } from '@/shared/constants/vrchatIds';
 import { isRealInstance } from '@/shared/utils/instance';
 import {
-    getFriendsLocations,
     isLastLocationFriend,
     normalizeLocationValue,
     type FriendListMembership
@@ -20,7 +19,6 @@ import { isRecord } from '@/shared/utils/record';
 type FriendPresenceRecord = FriendRecordInput &
     Partial<FriendProfileFields> & {
         ref?: FriendPresenceRecord | null;
-        stateBucket?: FriendRosterBucket;
     };
 
 type SameInstanceLastLocation = {
@@ -67,13 +65,6 @@ function friendPresenceSource(friend: unknown): FriendPresenceRecord | null {
         ...direct,
         ref: null
     };
-}
-
-function normalizeFriendState(value: unknown): string {
-    const normalized = String(value ?? '')
-        .trim()
-        .toLowerCase();
-    return normalized.includes(':') ? normalized.split(':')[0] : normalized;
 }
 
 function text(value: unknown): string {
@@ -149,53 +140,36 @@ function resolveObservedPlayerUserIds(
     return Array.from(userIds);
 }
 
+function friendPresence(friend: unknown): PresenceView | null {
+    return presenceOf(friendPresenceSource(friend));
+}
+
 function isOnlineSameInstanceFriend(friend: unknown): boolean {
-    const source = friendPresenceSource(friend);
-    if (isPresenceView(source?.$presence)) {
-        return source.$presence.kind === 'online';
-    }
-    return normalizeFriendState(source?.state) === 'online';
+    return friendPresence(friend)?.kind === 'online';
 }
 
 function isExplicitlyOfflineFriend(friend: unknown): boolean {
-    const source = friendPresenceSource(friend);
-    if (isPresenceView(source?.$presence)) {
-        return (
-            source.$presence.kind === 'offline' ||
-            source.$presence.kind === 'pendingOffline'
-        );
-    }
-    return Boolean(
-        source?.pendingOffline ||
-        normalizeFriendState(source?.state) === 'offline'
-    );
+    const kind = friendPresence(friend)?.kind;
+    return kind === 'offline' || kind === 'pendingOffline';
 }
 
 function resolveSameInstanceFriendLocation(
     friend: unknown,
     lastLocation: SameInstanceLastLocation | null | undefined
 ): string {
-    const source = friendPresenceSource(friend);
-    if (!source) {
+    const presence = friendPresence(friend);
+    if (!presence) {
         return '';
     }
-    if (isPresenceView(source.$presence)) {
-        const liveLocation = presenceLiveInstanceTag(source.$presence);
-        if (liveLocation || source.$presence.kind !== 'online') {
-            return liveLocation;
-        }
-        const lastLocationValue = normalizeLocationValue(
-            lastLocation?.location
-        );
-        return isRealInstance(lastLocationValue) &&
-            isLastLocationFriend(lastLocation, source)
-            ? lastLocationValue
-            : '';
+    const liveLocation = presenceLiveInstanceTag(presence);
+    if (liveLocation || presence.kind !== 'online') {
+        return liveLocation;
     }
-    const location = normalizeLocationValue(
-        getFriendsLocations([source], lastLocation)
-    );
-    return isRealInstance(location) ? location : '';
+    const lastLocationValue = normalizeLocationValue(lastLocation?.location);
+    return isRealInstance(lastLocationValue) &&
+        isLastLocationFriend(lastLocation, friendPresenceSource(friend))
+        ? lastLocationValue
+        : '';
 }
 
 function buildSameInstanceFriendGroups<TFriend>(

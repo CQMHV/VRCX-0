@@ -22,6 +22,7 @@ vi.mock('@/repositories/userProfileRepository', () => ({
 }));
 
 import { clearUserDialogCaches } from '@/services/userDialogSessionCacheService';
+import { onlinePresence } from '@/test/presenceFixtures';
 
 import { useUserDialogSupplementalData } from './useUserDialogSupplementalData';
 
@@ -156,7 +157,7 @@ describe('useUserDialogSupplementalData', () => {
         const baseProfile: Record<string, unknown> = {
             id: 'usr_target',
             displayName: 'Initial Name',
-            location: 'wrld_other:2'
+            $presence: onlinePresence('wrld_other:2')
         };
         const { rerender, result } = renderHook(
             ({ profile }) => useUserDialogSupplementalData(input(profile)),
@@ -201,7 +202,7 @@ describe('useUserDialogSupplementalData', () => {
             profile: {
                 ...baseProfile,
                 displayName: 'Merged Name',
-                location: 'wrld_current:1'
+                $presence: onlinePresence('wrld_current:1')
             }
         });
 

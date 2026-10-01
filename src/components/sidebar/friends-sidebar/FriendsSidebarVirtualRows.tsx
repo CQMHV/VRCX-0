@@ -161,7 +161,6 @@ function FriendVirtualRow({
                 randomUserColours: appearance.randomUserColours,
                 isDarkMode: appearance.isDarkMode,
                 trustColor: appearance.trustColor,
-                currentUserSnapshot: runtime.currentUser,
                 isGameRunning: runtime.gameState.isGameRunning,
                 currentLocationStartedAt:
                     runtime.gameState.currentLocationStartedAt,

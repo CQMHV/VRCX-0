@@ -12,20 +12,12 @@ pub struct RealtimeUserProjection {
     pub users: Vec<RawJson>,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub enum FriendStateBucketAuthority {
-    Explicit,
-    Preserve,
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct FriendProjectionPatch {
     pub user_id: String,
     pub patch: FriendRecord,
     pub presence: PresenceEntry,
-    pub state_bucket_authority: FriendStateBucketAuthority,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, specta::Type)]

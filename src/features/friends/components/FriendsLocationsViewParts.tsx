@@ -25,9 +25,11 @@ import { Button } from '@/ui/shadcn/button';
 import type { getFriendsLocationsDensityConfig } from '../friendsLocationsDensity';
 import {
     normalizeFriendsLocationId as normalizeId,
+    locationTarget,
     resolveFriendGroupName,
     resolveLocationSummary,
-    resolveLocationTarget
+    resolveLocationTarget,
+    summarizeLocation
 } from '../friendsLocationsRows';
 import type { FriendsLocationsSection } from '../useFriendsLocationsPageDerivedState';
 import { FriendLocationCard } from './FriendLocationCard';
@@ -209,9 +211,12 @@ export function FriendsLocationCardItem({
     );
     const localLocation =
         locationTime?.source === 'gameLog' ? locationTime.location : '';
-    const locationSource = localLocation ? { location: localLocation } : friend;
-    const location = resolveLocationSummary(locationSource, t);
-    const target = resolveLocationTarget(locationSource);
+    const location = localLocation
+        ? summarizeLocation(localLocation, null, t)
+        : resolveLocationSummary(friend, t);
+    const target = localLocation
+        ? locationTarget(localLocation)
+        : resolveLocationTarget(friend);
     const rawLocation = target.rawLocation;
     const groupHint = localLocation ? '' : resolveFriendGroupName(friend);
     const presence = friend.$presence;

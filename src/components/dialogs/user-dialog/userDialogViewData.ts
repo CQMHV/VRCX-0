@@ -91,9 +91,7 @@ function validTimestampMs(value: unknown) {
 
 function isCurrentlyOnline(profile: DialogRecord) {
     const presence = presenceOf(profile);
-    return presence
-        ? presenceSection(presence) === 'online'
-        : normalizedText(profile?.state).toLowerCase() === 'online';
+    return presence ? presenceSection(presence) === 'online' : false;
 }
 
 function estimatedOnlineDuration(profile: DialogRecord, nowMs?: number) {

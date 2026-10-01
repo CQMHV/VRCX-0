@@ -253,7 +253,7 @@ impl DesktopRuntimeServices {
             return;
         };
         for patch in &projection.patches {
-            if !StateBucket::Online.matches(&patch.patch.state) {
+            if patch.presence.view.section() != StateBucket::Online {
                 continue;
             }
             let user_id = patch.user_id.as_str();

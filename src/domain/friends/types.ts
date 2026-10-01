@@ -1,19 +1,10 @@
-import type { ParsedLocation } from '@/shared/utils/location';
-
 import type { LoadStatus } from '../shared/types';
 import type { PresenceEntry, PresenceView } from './presence';
 
 export type FriendRosterBucket = 'online' | 'active' | 'offline';
 type FriendRosterLoadStatus = LoadStatus;
 
-export type FriendLocationProjection = Record<string, unknown> &
-    Partial<ParsedLocation> & {
-        location?: string;
-    };
-
 export const FRIEND_PROFILE_STRING_FIELDS = [
-    '$previousLocation',
-    '$travelingToTime',
     'ageVerificationStatus',
     'bannerColor',
     'bannerType',
@@ -31,20 +22,10 @@ export const FRIEND_PROFILE_BOOLEAN_FIELDS = [
     'allowAvatarCopying'
 ] as const;
 
-type FriendProfileStringField = Exclude<
-    (typeof FRIEND_PROFILE_STRING_FIELDS)[number],
-    '$travelingToTime'
->;
-
 export type FriendProfileFields = Partial<
-    Record<FriendProfileStringField, string | null>
+    Record<(typeof FRIEND_PROFILE_STRING_FIELDS)[number], string | null>
 > &
     Partial<Record<(typeof FRIEND_PROFILE_BOOLEAN_FIELDS)[number], boolean>> & {
-        $location?: FriendLocationProjection | null;
-        $location_at?: number | string | null;
-        $previousLocation_at?: number | string | null;
-        $travelingToLocation?: FriendLocationProjection | null;
-        $travelingToTime?: number | string | null;
         badges?: unknown[];
     };
 

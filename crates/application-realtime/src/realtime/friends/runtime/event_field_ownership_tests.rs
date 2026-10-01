@@ -1,5 +1,8 @@
 #[cfg(test)]
 mod tests {
+    use super::super::presence_test_support::{
+        friend_view, is_pending_offline, location_tag, traveling_to_tag,
+    };
     use super::super::*;
     use crate::realtime::FriendIconChange;
 
@@ -86,10 +89,14 @@ mod tests {
         };
 
         let patch = &output.projection.patches[0];
-        assert_eq!(patch.patch.state, "online");
-        assert_eq!(patch.patch.location, "wrld_home:42~region(jp)");
-        assert_eq!(patch.patch.world_id, "wrld_home");
-        assert_eq!(patch.patch.platform, "standalonewindows");
+        let view = &patch.presence.view;
+        assert_eq!(view.section().as_str(), "online");
+        assert_eq!(location_tag(view), Some("wrld_home:42~region(jp)"));
+        assert_eq!(
+            view.place().expect("online place").location.world_id,
+            "wrld_home"
+        );
+        assert_eq!(view.platform(), "standalonewindows");
         assert_eq!(patch.patch.status, "join me");
         assert_eq!(patch.patch.status_description, "come vibe");
         assert_eq!(patch.patch.display_name, "Friend");
@@ -100,9 +107,9 @@ mod tests {
             .iter()
             .any(|entry| entry.to_json()["type"] == "Online"));
 
-        let friend = snapshot_friend(&runtime);
-        assert_eq!(friend.state, "online");
-        assert_eq!(friend.location, "wrld_home:42~region(jp)");
+        let friend = friend_view(&runtime, "usr_friend");
+        assert_eq!(friend.section().as_str(), "online");
+        assert_eq!(location_tag(&friend), Some("wrld_home:42~region(jp)"));
     }
 
     #[test]
@@ -127,19 +134,19 @@ mod tests {
             panic!("friend-online should produce an output");
         };
 
-        let patch = &output.projection.patches[0];
-        assert_eq!(patch.patch.state, "online");
-        assert_eq!(patch.patch.location, "traveling");
-        assert_eq!(patch.patch.traveling_to_location, "wrld_dest:7~region(us)");
+        let view = &output.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "online");
+        assert_eq!(location_tag(view), Some("traveling"));
+        assert_eq!(traveling_to_tag(view), Some("wrld_dest:7~region(us)"));
         assert!(output
             .projection
             .feed_entries
             .iter()
             .any(|entry| entry.to_json()["type"] == "OnPlayerJoining"));
 
-        let friend = snapshot_friend(&runtime);
-        assert_eq!(friend.location, "traveling");
-        assert_eq!(friend.traveling_to_location, "wrld_dest:7~region(us)");
+        let friend = friend_view(&runtime, "usr_friend");
+        assert_eq!(location_tag(&friend), Some("traveling"));
+        assert_eq!(traveling_to_tag(&friend), Some("wrld_dest:7~region(us)"));
     }
 
     #[test]
@@ -169,12 +176,11 @@ mod tests {
         };
 
         let patch = &output.projection.patches[0];
-        assert_eq!(patch.patch.state, "online");
+        assert_eq!(patch.presence.view.section().as_str(), "online");
         assert_eq!(
-            patch.state_bucket_authority,
-            FriendStateBucketAuthority::Explicit
+            location_tag(&patch.presence.view),
+            Some("wrld_new:2~region(jp)")
         );
-        assert_eq!(patch.patch.location, "wrld_new:2~region(jp)");
         assert_eq!(patch.patch.status, "join me");
         assert_eq!(patch.patch.display_name, "New Name");
         assert!(output
@@ -183,9 +189,11 @@ mod tests {
             .iter()
             .any(|entry| entry.to_json()["type"] == "GPS"));
 
-        let friend = snapshot_friend(&runtime);
-        assert_eq!(friend.location, "wrld_new:2~region(jp)");
-        assert_eq!(friend.status, "join me");
+        assert_eq!(
+            location_tag(&friend_view(&runtime, "usr_friend")),
+            Some("wrld_new:2~region(jp)")
+        );
+        assert_eq!(snapshot_friend(&runtime).status, "join me");
     }
 
     #[test]
@@ -252,15 +260,18 @@ mod tests {
             panic!("friend-location should produce an output");
         };
 
-        let patch = &output.projection.patches[0];
-        assert_eq!(patch.patch.location, "traveling");
-        assert_eq!(patch.patch.traveling_to_location, "wrld_dest:7~region(us)");
-        assert_eq!(patch.patch.world_id, "wrld_dest");
-
-        let friend = snapshot_friend(&runtime);
-        assert_eq!(friend.location, "traveling");
-        assert_eq!(friend.traveling_to_location, "wrld_dest:7~region(us)");
-        assert_eq!(friend.world_id, "wrld_dest");
+        for view in [
+            output.projection.patches[0].presence.view.clone(),
+            friend_view(&runtime, "usr_friend"),
+        ] {
+            assert_eq!(location_tag(&view), Some("traveling"));
+            let destination = view
+                .place()
+                .and_then(|place| place.traveling_to.as_ref())
+                .expect("traveling destination");
+            assert_eq!(destination.tag, "wrld_dest:7~region(us)");
+            assert_eq!(destination.world_id, "wrld_dest");
+        }
     }
 
     #[test]
@@ -286,15 +297,17 @@ mod tests {
             panic!("friend-location should produce an output");
         };
 
-        let patch = &output.projection.patches[0].patch;
-        assert_eq!(patch.location, "wrld_new:2~region(jp)");
-        assert!(patch.traveling_to_location.is_empty());
-        assert_eq!(patch.world_id, "wrld_new");
-
-        let friend = snapshot_friend(&runtime);
-        assert_eq!(friend.location, "wrld_new:2~region(jp)");
-        assert!(friend.traveling_to_location.is_empty());
-        assert_eq!(friend.world_id, "wrld_new");
+        for view in [
+            output.projection.patches[0].presence.view.clone(),
+            friend_view(&runtime, "usr_friend"),
+        ] {
+            assert_eq!(location_tag(&view), Some("wrld_new:2~region(jp)"));
+            assert_eq!(traveling_to_tag(&view), None);
+            assert_eq!(
+                view.place().expect("online place").location.world_id,
+                "wrld_new"
+            );
+        }
     }
 
     #[test]
@@ -311,16 +324,19 @@ mod tests {
             panic!("friend-location should produce an output");
         };
 
-        let patch = &output.projection.patches[0];
-        assert_eq!(patch.patch.state, "online");
-        assert_eq!(patch.patch.location, "wrld_new:2~region(jp)");
+        let view = &output.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "online");
+        assert_eq!(location_tag(view), Some("wrld_new:2~region(jp)"));
         assert!(output
             .persistence
             .feed_entries
             .iter()
             .any(|entry| entry.to_json()["type"] == "GPS"));
 
-        assert_eq!(snapshot_friend(&runtime).location, "wrld_new:2~region(jp)");
+        assert_eq!(
+            location_tag(&friend_view(&runtime, "usr_friend")),
+            Some("wrld_new:2~region(jp)")
+        );
     }
 
     #[test]
@@ -344,15 +360,15 @@ mod tests {
         };
 
         let patch = &output.projection.patches[0];
-        assert_eq!(patch.patch.state, "active");
-        assert_eq!(patch.patch.location, "offline");
+        assert_eq!(patch.presence.view.section().as_str(), "active");
+        assert_eq!(location_tag(&patch.presence.view), None);
         assert_eq!(patch.patch.status, "busy");
         assert_eq!(patch.patch.display_name, "Friend");
 
-        let friend = snapshot_friend(&runtime);
-        assert_eq!(friend.state, "active");
-        assert_eq!(friend.location, "offline");
-        assert_eq!(friend.status, "busy");
+        let view = friend_view(&runtime, "usr_friend");
+        assert_eq!(view.section().as_str(), "active");
+        assert_eq!(location_tag(&view), None);
+        assert_eq!(snapshot_friend(&runtime).status, "busy");
     }
 
     #[test]
@@ -371,22 +387,25 @@ mod tests {
             panic!("friend-offline should produce an output");
         };
 
-        let patch = &output.projection.patches[0];
-        assert_eq!(patch.patch.state, "online");
-        assert_eq!(patch.patch.extra["pendingOffline"], true);
+        let view = &output.projection.patches[0].presence.view;
+        assert_eq!(view.section().as_str(), "online");
+        assert!(is_pending_offline(view));
         assert!(output.persistence.feed_entries.is_empty());
         assert!(
             output.wake.is_some(),
             "online->offline should schedule a pending-offline timer"
         );
 
-        let debounced = snapshot_friend(&runtime);
-        assert_eq!(debounced.state, "online");
-        assert_eq!(debounced.status, "join me");
-        assert_eq!(debounced.location, "wrld_1:123~region(jp)");
+        let debounced = friend_view(&runtime, "usr_friend");
+        assert_eq!(debounced.section().as_str(), "online");
+        assert_eq!(snapshot_friend(&runtime).status, "join me");
+        assert_eq!(location_tag(&debounced), Some("wrld_1:123~region(jp)"));
 
         let fired = runtime.wake("usr_friend", "2026-05-15T00:03:00Z").unwrap();
-        assert_eq!(fired.projection.patches[0].patch.state, "offline");
+        assert_eq!(
+            fired.projection.patches[0].presence.view.section().as_str(),
+            "offline"
+        );
         assert_eq!(snapshot_friend(&runtime).status, "join me");
     }
 
@@ -414,14 +433,17 @@ mod tests {
         };
 
         let patch = &output.projection.patches[0];
-        assert_eq!(patch.patch.state, "online");
-        assert_eq!(patch.patch.location, "wrld_1:123~region(jp)");
+        assert_eq!(patch.presence.view.section().as_str(), "online");
+        assert_eq!(
+            location_tag(&patch.presence.view),
+            Some("wrld_1:123~region(jp)")
+        );
         assert_eq!(patch.patch.status, "active");
         assert_eq!(patch.patch.status_description, "fresh");
 
-        let friend = snapshot_friend(&runtime);
-        assert_eq!(friend.state, "online");
-        assert_eq!(friend.location, "wrld_1:123~region(jp)");
+        let friend = friend_view(&runtime, "usr_friend");
+        assert_eq!(friend.section().as_str(), "online");
+        assert_eq!(location_tag(&friend), Some("wrld_1:123~region(jp)"));
     }
 
     #[test]
@@ -442,8 +464,14 @@ mod tests {
             panic!("friend-add should produce an output");
         };
 
-        let patch = &output.projection.patches[0];
-        assert_eq!(patch.patch.state, "offline");
+        assert_eq!(
+            output.projection.patches[0]
+                .presence
+                .view
+                .section()
+                .as_str(),
+            "offline"
+        );
         assert_eq!(output.persistence.friend_log_upserts.len(), 1);
         assert!(output
             .persistence
@@ -452,7 +480,10 @@ mod tests {
             .any(|entry| entry.to_json()["type"] == "Friend"
                 && entry.to_json()["displayName"] == "Added"));
 
-        assert_eq!(snapshot_friend(&runtime).state, "offline");
+        assert_eq!(
+            friend_view(&runtime, "usr_friend").section().as_str(),
+            "offline"
+        );
     }
 
     #[test]

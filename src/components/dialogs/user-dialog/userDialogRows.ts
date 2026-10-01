@@ -327,9 +327,7 @@ export function resolveStatusStateText(
     profile: UserDialogRow | null | undefined
 ) {
     const presence = presenceOf(profile);
-    const state = presence
-        ? presenceSection(presence)
-        : normalizedText(profile?.state);
+    const state = presence ? presenceSection(presence) : '';
     const status = normalizedText(profile?.status);
     if (state && status && state.toLowerCase() !== status.toLowerCase()) {
         return `${state} / ${status}`;

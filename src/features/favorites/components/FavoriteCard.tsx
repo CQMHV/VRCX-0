@@ -170,10 +170,7 @@ const FavoriteCard = memo(function FavoriteCard({
           }
         : null;
     const statusDotClassName = friendStatusSource
-        ? resolveSidebarStatusDotClassName(
-              friendStatusSource,
-              currentUserSnapshot
-          )
+        ? resolveSidebarStatusDotClassName(friendStatusSource)
         : '';
     const isSelectionActive = Boolean(selectionActive);
     const shiftPressedRef = useRef(false);

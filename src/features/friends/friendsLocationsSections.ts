@@ -10,10 +10,13 @@ import { isRecord } from '@/shared/utils/record';
 
 import {
     type FriendLocationFriend,
+    type FriendLocationTarget,
     type SameInstanceGroup,
+    locationTarget,
     normalizeFriendsLocationId as normalizeId,
     resolveLocationSummary,
-    resolveLocationTarget
+    resolveLocationTarget,
+    summarizeLocation
 } from './friendsLocationsRows';
 
 type TranslationFn = (key: string, options?: Record<string, unknown>) => string;
@@ -315,11 +318,10 @@ function resolveFavoriteGroupLabels(
 }
 
 function resolveInstanceSectionDescriptor(
-    friend: FriendLocationFriend,
+    target: FriendLocationTarget,
+    summary: ReturnType<typeof summarizeLocation>,
     t?: TranslationFn | null
 ): FriendsLocationSectionDescriptor {
-    const target = resolveLocationTarget(friend);
-    const summary = resolveLocationSummary(friend, t);
     const descriptor: FriendsLocationSectionDescriptor = {
         key: 'instance:unknown',
         title: '',
@@ -394,11 +396,8 @@ export function buildSameInstanceSections<
     return sameInstanceGroups
         .map(({ location, friends }) => {
             const descriptor = resolveInstanceSectionDescriptor(
-                {
-                    ...friends[0],
-                    location,
-                    travelingToLocation: ''
-                },
+                locationTarget(location),
+                summarizeLocation(location, friends[0], t),
                 t
             );
 
@@ -499,7 +498,11 @@ export function buildFriendSections<TFriend extends FriendLocationFriend>({
 
         upsertSection(
             sectionsByKey,
-            resolveInstanceSectionDescriptor(friend, t),
+            resolveInstanceSectionDescriptor(
+                resolveLocationTarget(friend),
+                resolveLocationSummary(friend, t),
+                t
+            ),
             friend
         );
     }

@@ -1,4 +1,3 @@
-import { normalizeStateBucket } from '@/domain/users/userFacts';
 import {
     getFriendsSortFunction,
     sortStatus,
@@ -6,10 +5,9 @@ import {
     type FriendSortMethod,
     type FriendSortContext
 } from '@/shared/utils/friend';
-import { isRecord } from '@/shared/utils/record';
 import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
 export { resolveCurrentInviteLocation } from '@/shared/utils/invite';
-import { presenceDotClassName } from '@/domain/friends/presence';
+import { presenceDotClassName, presenceOf } from '@/domain/friends/presence';
 import {
     buildSameInstanceFriendGroups,
     type SameInstanceLastLocation
@@ -18,24 +16,13 @@ import type {
     FriendProfileFields,
     FriendRecordInput
 } from '@/domain/friends/types';
-import {
-    SOLID_USER_STATUS_DOT_CLASS_NAMES,
-    USER_STATUS_INDICATOR_CLASS_NAMES,
-    userStatusFromValue
-} from '@/shared/utils/friendStatus';
-import {
-    locationSentinel,
-    normalizeLocationStatus,
-    resolveFriendPresenceLocation
-} from '@/shared/utils/location';
-import { normalizeString as normalizeId } from '@/shared/utils/string';
+import { userStatusFromValue } from '@/shared/utils/friendStatus';
 import { getTrustColor, type TrustColorMap } from '@/shared/utils/trustColors';
 import { computeTrustLevel } from '@/shared/utils/userTransforms';
 
 export type SidebarFriendRecord = FriendRecordInput &
     Partial<FriendProfileFields> & {
         $friendNumber?: number;
-        $location_at?: string | number | null;
         $online_for?: string | number;
         $userColour?: string;
         created_at?: string;
@@ -44,11 +31,8 @@ export type SidebarFriendRecord = FriendRecordInput &
         id?: string;
         last_activity?: string | number;
         last_login?: string | number;
-        location?: string;
         memberCount?: number;
         name?: string;
-        state?: string;
-        stateBucket?: string;
         tags?: string[];
         updated_at?: string;
         username?: string;
@@ -56,9 +40,7 @@ export type SidebarFriendRecord = FriendRecordInput &
         isFriend?: boolean;
         offlineFriends?: string[];
         onlineFriends?: string[];
-        pendingOffline?: boolean;
         ref?: SidebarFriendRecord | null;
-        travelingToLocation?: string | null;
     };
 
 export type SidebarPreferences = {
@@ -85,18 +67,10 @@ export type SameInstanceGroup = {
     isCurrentInstance: boolean;
 };
 
-function locationProjection(value: unknown): Record<string, unknown> | null {
-    return isRecord(value) ? value : null;
-}
-
 function isFriendSortMethod(
     value: FriendSortMethod | '' | undefined
 ): value is FriendSortMethod {
     return Boolean(value);
-}
-
-export function resolvePresenceLocation(profile: unknown) {
-    return resolveFriendPresenceLocation(profile);
 }
 
 export function readFriendRef(
@@ -142,38 +116,8 @@ export function readFriendStatusSource(
     return {
         ...ref,
         ...friend,
-        ref,
-        pendingOffline: Boolean(friend?.pendingOffline || ref?.pendingOffline)
+        ref
     };
-}
-
-export function readFriendRefLocation(
-    friend: SidebarFriendRecord | null | undefined
-) {
-    const source = readFriendStatusSource(friend);
-    return normalizeId(
-        source?.location || locationProjection(source?.$location)?.tag
-    );
-}
-
-export function readFriendRefTravelingLocation(
-    friend: SidebarFriendRecord | null | undefined
-) {
-    const source = readFriendStatusSource(friend);
-    return normalizeId(
-        source?.travelingToLocation || source?.$travelingToLocation
-    );
-}
-
-export function clearStaleOfflineLocation(location: string, state: unknown) {
-    const normalizedState = normalizeStateBucket(state);
-    if (
-        (normalizedState === 'online' || normalizedState === 'active') &&
-        locationSentinel(location) === 'offline'
-    ) {
-        return '';
-    }
-    return location;
 }
 
 export function resolveTrustNameColour(
@@ -197,20 +141,6 @@ export function resolveTrustNameColour(
         );
     }
     return getTrustColor(friend, trustColor);
-}
-
-function activeStatusDotClassName(status: unknown) {
-    const normalizedStatus = userStatusFromValue(status);
-    if (normalizedStatus === 'join me') {
-        return `${USER_STATUS_INDICATOR_CLASS_NAMES['join me']} border-[var(--status-joinme)] bg-background`;
-    }
-    if (normalizedStatus === 'ask me') {
-        return `${USER_STATUS_INDICATOR_CLASS_NAMES['ask me']} border-[var(--status-askme)] bg-background`;
-    }
-    if (normalizedStatus === 'busy') {
-        return `${USER_STATUS_INDICATOR_CLASS_NAMES.busy} border-[var(--status-busy)] bg-background`;
-    }
-    return `${USER_STATUS_INDICATOR_CLASS_NAMES.active} border-[var(--status-online)] bg-background`;
 }
 
 function activeStatusSortValue(friend: SidebarFriendRecord) {
@@ -238,92 +168,18 @@ function compareByActiveStatus(
 
 export function resolveSidebarStatusDotClassName(
     friend: SidebarFriendRecord | null | undefined,
-    currentUser: SidebarFriendRecord | null | undefined,
     { hideNonFriend = true }: SidebarStatusOptions = {}
 ) {
     const source = readFriendStatusSource(friend);
-    if (!source) {
-        return '';
-    }
     if (
-        hideNonFriend &&
-        source?.isFriend === false &&
-        friend?.isFriend === false
+        !source ||
+        (hideNonFriend &&
+            source.isFriend === false &&
+            friend?.isFriend === false)
     ) {
         return '';
     }
-    if (source.$presence) {
-        return presenceDotClassName(source.$presence, source.status);
-    }
-    return legacyFriendDotClassName(source, currentUser);
-}
-
-function legacyFriendDotClassName(
-    source: SidebarFriendRecord,
-    currentUser: SidebarFriendRecord | null | undefined
-) {
-    const userId = normalizeId(source?.id || source?.userId);
-    const status = userStatusFromValue(source?.status);
-    const location = normalizeLocationStatus(
-        source?.location || locationProjection(source?.$location)?.tag
-    );
-    const isOnlineByCurrentSnapshot = (
-        currentUser?.onlineFriends || []
-    ).includes(userId);
-    const isActiveByCurrentSnapshot = (
-        currentUser?.activeFriends || []
-    ).includes(userId);
-    const isOfflineByCurrentSnapshot = (
-        currentUser?.offlineFriends || []
-    ).includes(userId);
-    const snapshotState = isOnlineByCurrentSnapshot
-        ? 'online'
-        : isActiveByCurrentSnapshot
-          ? 'active'
-          : isOfflineByCurrentSnapshot
-            ? 'offline'
-            : '';
-    const state = normalizeStateBucket(source?.state || snapshotState);
-    const stateBucket = state;
-
-    if (source?.pendingOffline) {
-        return SOLID_USER_STATUS_DOT_CLASS_NAMES.offline;
-    }
-
-    if (state === 'offline' || stateBucket === 'offline') {
-        return SOLID_USER_STATUS_DOT_CLASS_NAMES.offline;
-    }
-
-    if (
-        status !== 'active' &&
-        location === 'private' &&
-        state === '' &&
-        userId &&
-        !isOnlineByCurrentSnapshot
-    ) {
-        return isActiveByCurrentSnapshot
-            ? activeStatusDotClassName(status)
-            : SOLID_USER_STATUS_DOT_CLASS_NAMES.offline;
-    }
-    if (state === 'active') {
-        return activeStatusDotClassName(status);
-    }
-    if (location === 'offline' && state !== 'online') {
-        return SOLID_USER_STATUS_DOT_CLASS_NAMES.offline;
-    }
-    if (status === 'active') {
-        return SOLID_USER_STATUS_DOT_CLASS_NAMES.active;
-    }
-    if (status === 'join me') {
-        return SOLID_USER_STATUS_DOT_CLASS_NAMES['join me'];
-    }
-    if (status === 'ask me') {
-        return SOLID_USER_STATUS_DOT_CLASS_NAMES['ask me'];
-    }
-    if (status === 'busy') {
-        return SOLID_USER_STATUS_DOT_CLASS_NAMES.busy;
-    }
-    return '';
+    return presenceDotClassName(presenceOf(source), source.status);
 }
 
 export function toLegacyFriendSortRow(
