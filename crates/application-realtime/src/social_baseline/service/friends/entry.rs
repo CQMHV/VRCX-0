@@ -172,16 +172,6 @@ pub(super) fn build_fast_roster_records(
     friends_by_id
 }
 
-pub(super) fn build_fast_roster_snapshot(
-    user_id: &str,
-    expected_ids: &[String],
-    state_by_id: &HashMap<String, String>,
-    fetched_friends_by_id: HashMap<String, RemoteFriendProfile>,
-) -> Value {
-    let friends_by_id = build_fast_roster_records(expected_ids, state_by_id, fetched_friends_by_id);
-    build_roster_snapshot(user_id, friends_by_id)
-}
-
 pub(super) fn build_roster_snapshot_from_records(
     user_id: &str,
     records_by_id: &HashMap<String, FriendRecord>,

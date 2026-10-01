@@ -103,7 +103,7 @@ fn insert_fetched_friend_collects_profile_and_prefers_online_source() {
 }
 
 #[test]
-fn fast_roster_snapshot_uses_current_user_ids_and_remote_profiles_without_friend_log() {
+fn fast_roster_records_use_current_user_ids_and_remote_profiles_without_friend_log() {
     let expected_ids = vec!["usr_online".to_string(), "usr_missing".to_string()];
     let state_by_id = HashMap::from([
         ("usr_online".to_string(), "online".to_string()),
@@ -124,17 +124,8 @@ fn fast_roster_snapshot_uses_current_user_ids_and_remote_profiles_without_friend
         .expect("valid profile"),
     )]);
 
-    let snapshot = build_fast_roster_snapshot(
-        "usr_self",
-        &expected_ids,
-        &state_by_id,
-        fetched_friends_by_id,
-    );
-
-    let friends_by_id = snapshot
-        .get("friendsById")
-        .and_then(Value::as_object)
-        .expect("friendsById object");
+    let friends_by_id =
+        build_fast_roster_records(&expected_ids, &state_by_id, fetched_friends_by_id);
     assert_eq!(
         friends_by_id
             .get("usr_online")
@@ -162,7 +153,7 @@ fn fast_roster_snapshot_uses_current_user_ids_and_remote_profiles_without_friend
 }
 
 #[test]
-fn fast_roster_snapshot_preserves_open_remote_profile_fields() {
+fn fast_roster_records_preserve_open_remote_profile_fields() {
     let expected_ids = vec!["usr_future".to_string()];
     let state_by_id = HashMap::from([("usr_future".to_string(), "online".to_string())]);
     let fetched_friends_by_id = HashMap::from([(
@@ -181,19 +172,15 @@ fn fast_roster_snapshot_preserves_open_remote_profile_fields() {
         .expect("valid profile"),
     )]);
 
-    let snapshot = build_fast_roster_snapshot(
-        "usr_self",
-        &expected_ids,
-        &state_by_id,
-        fetched_friends_by_id,
-    );
+    let friends_by_id =
+        build_fast_roster_records(&expected_ids, &state_by_id, fetched_friends_by_id);
 
     assert_eq!(
-        snapshot["friendsById"]["usr_future"]["futureProfile"],
+        friends_by_id["usr_future"]["futureProfile"],
         json!({ "nested": [1, { "unknown": true }] })
     );
     assert_eq!(
-        snapshot["friendsById"]["usr_future"]["$profileSource"],
+        friends_by_id["usr_future"]["$profileSource"],
         json!("remote")
     );
 }
@@ -204,17 +191,8 @@ fn placeholder_friend_uses_realtime_list_bucket() {
     let state_by_id = HashMap::from([("usr_stale".to_string(), "online".to_string())]);
     let fetched_friends_by_id = HashMap::new();
 
-    let snapshot = build_fast_roster_snapshot(
-        "usr_self",
-        &expected_ids,
-        &state_by_id,
-        fetched_friends_by_id,
-    );
-
-    let friends_by_id = snapshot
-        .get("friendsById")
-        .and_then(Value::as_object)
-        .expect("friendsById object");
+    let friends_by_id =
+        build_fast_roster_records(&expected_ids, &state_by_id, fetched_friends_by_id);
     let stale = friends_by_id.get("usr_stale").expect("usr_stale present");
     assert_eq!(
         object_field(stale, "state").and_then(Value::as_str),
@@ -232,17 +210,8 @@ fn placeholder_active_friend_is_kept_active() {
     let state_by_id = HashMap::from([("usr_active".to_string(), "active".to_string())]);
     let fetched_friends_by_id = HashMap::new();
 
-    let snapshot = build_fast_roster_snapshot(
-        "usr_self",
-        &expected_ids,
-        &state_by_id,
-        fetched_friends_by_id,
-    );
-
-    let friends_by_id = snapshot
-        .get("friendsById")
-        .and_then(Value::as_object)
-        .expect("friendsById object");
+    let friends_by_id =
+        build_fast_roster_records(&expected_ids, &state_by_id, fetched_friends_by_id);
     let active = friends_by_id.get("usr_active").expect("usr_active present");
     assert_eq!(
         object_field(active, "state").and_then(Value::as_str),
@@ -268,17 +237,8 @@ fn online_friend_in_private_world_stays_online() {
         .expect("valid profile"),
     )]);
 
-    let snapshot = build_fast_roster_snapshot(
-        "usr_self",
-        &expected_ids,
-        &state_by_id,
-        fetched_friends_by_id,
-    );
-
-    let friends_by_id = snapshot
-        .get("friendsById")
-        .and_then(Value::as_object)
-        .expect("friendsById object");
+    let friends_by_id =
+        build_fast_roster_records(&expected_ids, &state_by_id, fetched_friends_by_id);
     let priv_friend = friends_by_id.get("usr_priv").expect("usr_priv present");
     assert_eq!(
         object_field(priv_friend, "state").and_then(Value::as_str),
@@ -304,17 +264,8 @@ fn list_bucket_decides_state_not_location() {
         .expect("valid profile"),
     )]);
 
-    let snapshot = build_fast_roster_snapshot(
-        "usr_self",
-        &expected_ids,
-        &state_by_id,
-        fetched_friends_by_id,
-    );
-
-    let friends_by_id = snapshot
-        .get("friendsById")
-        .and_then(Value::as_object)
-        .expect("friendsById object");
+    let friends_by_id =
+        build_fast_roster_records(&expected_ids, &state_by_id, fetched_friends_by_id);
     let friend = friends_by_id
         .get("usr_inworld")
         .expect("usr_inworld present");
@@ -342,17 +293,8 @@ fn active_list_bucket_ignores_location() {
         .expect("valid profile"),
     )]);
 
-    let snapshot = build_fast_roster_snapshot(
-        "usr_self",
-        &expected_ids,
-        &state_by_id,
-        fetched_friends_by_id,
-    );
-
-    let friends_by_id = snapshot
-        .get("friendsById")
-        .and_then(Value::as_object)
-        .expect("friendsById object");
+    let friends_by_id =
+        build_fast_roster_records(&expected_ids, &state_by_id, fetched_friends_by_id);
     let friend = friends_by_id
         .get("usr_active_inworld")
         .expect("usr_active_inworld present");
@@ -434,7 +376,8 @@ fn canonical_records_replace_raw_roster_snapshot_and_presence() -> Result<()> {
             },
             true,
         ),
-    )?;
+    )?
+    .is_some();
 
     let snapshot = output.snapshot.unwrap().into_value();
     assert!(applied);
@@ -479,7 +422,7 @@ fn canonical_records_can_be_moved_out_after_raw_snapshot_rebuild() -> Result<()>
         },
     )]);
 
-    let returned = apply_friend_roster_baseline_sync_outcome_and_take_friends(
+    let returned = apply_friend_roster_baseline_sync_outcome(
         &mut output,
         FriendBaselineSyncOutcome::accepted(
             crate::realtime::FriendBaselineResult {
@@ -531,7 +474,8 @@ fn rejected_sync_outcome_clears_raw_roster_snapshot() -> Result<()> {
             accepted: false,
             ..crate::realtime::FriendBaselineResult::default()
         }),
-    )?;
+    )?
+    .is_some();
 
     assert!(!applied);
     assert!(output.stale);

@@ -22,7 +22,7 @@ use super::{
     SocialFriendRosterBaselineOutput,
 };
 #[cfg(test)]
-use entry::build_fast_roster_snapshot;
+use entry::build_fast_roster_records;
 #[cfg(test)]
 use profile::{insert_fetched_friend, RemoteFriendProfile};
 
@@ -31,14 +31,11 @@ use baseline::collect_suspicious_friend_ids;
 
 #[cfg(test)]
 pub(crate) use baseline::friend_log_relationship_candidates;
-pub use baseline::{
-    apply_friend_roster_baseline_sync_outcome, build_friend_roster_baseline,
-    build_friend_roster_baseline_deferred, FriendStatusVerdicts,
-};
+pub use baseline::FriendStatusVerdicts;
 pub(crate) use baseline::{
-    apply_friend_roster_baseline_sync_outcome_and_take_friends,
-    build_friend_roster_baseline_deferred_internal, reconcile_friend_roster_records,
-    verify_friend_log_relationship_changes, FriendRosterReconcileOutcome,
+    apply_friend_roster_baseline_sync_outcome, build_friend_roster_baseline,
+    reconcile_friend_roster_records, verify_friend_log_relationship_changes,
+    FriendRosterReconcileOutcome,
 };
 pub(super) use state_map::{
     build_friend_state_map, build_snapshot_friend_ids, FriendStateMap, SnapshotFriendIds,
