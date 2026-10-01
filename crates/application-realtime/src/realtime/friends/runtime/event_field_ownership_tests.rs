@@ -102,10 +102,10 @@ mod tests {
             "wrld_home"
         );
         assert_eq!(view.platform(), "standalonewindows");
-        assert_eq!(patch.patch.status, "join me");
-        assert_eq!(patch.patch.status_description, "come vibe");
-        assert_eq!(patch.patch.display_name, "Friend");
-        assert_eq!(patch.patch.extra["$trustLevel"], "Trusted User");
+        assert_eq!(patch.record.status, "join me");
+        assert_eq!(patch.record.status_description, "come vibe");
+        assert_eq!(patch.record.display_name, "Friend");
+        assert_eq!(patch.record.extra["$trustLevel"], "Trusted User");
         assert!(output
             .persistence
             .feed_entries
@@ -186,8 +186,8 @@ mod tests {
             location_tag(&patch.presence.view),
             Some("wrld_new:2~region(jp)")
         );
-        assert_eq!(patch.patch.status, "join me");
-        assert_eq!(patch.patch.display_name, "New Name");
+        assert_eq!(patch.record.status, "join me");
+        assert_eq!(patch.record.display_name, "New Name");
         assert!(output
             .persistence
             .feed_entries
@@ -224,10 +224,10 @@ mod tests {
 
         let patch = &output.projection.patches[0];
         assert_eq!(
-            patch.patch.icon_url,
+            patch.record.icon_url,
             "https://api.vrchat.cloud/api/1/image/file_new/2/256"
         );
-        assert!(!patch.patch.extra.contains_key("iconUrl"));
+        assert!(!patch.record.extra.contains_key("iconUrl"));
 
         let friend = snapshot_friend(&runtime);
         assert_eq!(
@@ -367,8 +367,8 @@ mod tests {
         let patch = &output.projection.patches[0];
         assert_eq!(patch.presence.view.section().as_str(), "active");
         assert_eq!(location_tag(&patch.presence.view), None);
-        assert_eq!(patch.patch.status, "busy");
-        assert_eq!(patch.patch.display_name, "Friend");
+        assert_eq!(patch.record.status, "busy");
+        assert_eq!(patch.record.display_name, "Friend");
 
         let view = friend_view(&runtime, "usr_friend");
         assert_eq!(view.section().as_str(), "active");
@@ -443,8 +443,8 @@ mod tests {
             location_tag(&patch.presence.view),
             Some("wrld_1:123~region(jp)")
         );
-        assert_eq!(patch.patch.status, "active");
-        assert_eq!(patch.patch.status_description, "fresh");
+        assert_eq!(patch.record.status, "active");
+        assert_eq!(patch.record.status_description, "fresh");
 
         let friend = friend_view(&runtime, "usr_friend");
         assert_eq!(friend.section().as_str(), "online");

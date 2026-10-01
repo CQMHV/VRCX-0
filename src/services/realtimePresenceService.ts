@@ -205,12 +205,12 @@ function handleRealtimeFriendProjection(
     }
 
     const patchEntries = payload.patches.map((patchEntry) => {
-        const patch = patchEntry.patch;
+        const record = patchEntry.record;
         return {
             userId: normalizeUserId(
-                patchEntry.userId || patch.id || patch.userId
+                patchEntry.userId || record.id || record.userId
             ),
-            patch,
+            patch: record,
             presence: patchEntry.presence,
             generation: payload.generation
         };

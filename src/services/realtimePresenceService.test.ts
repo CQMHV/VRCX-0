@@ -109,7 +109,7 @@ describe('realtimePresenceService projection boundary', () => {
                 {
                     userId: 'usr_friend',
                     presence: { rev: 1, view: onlinePresence('wrld_1:123') },
-                    patch: {
+                    record: {
                         id: 'usr_friend',
                         displayName: 'Friend'
                     }
@@ -330,7 +330,7 @@ describe('realtimePresenceService projection boundary', () => {
                 patches: [
                     {
                         userId: 'usr_friend',
-                        patch: { id: 'usr_friend', displayName },
+                        record: { id: 'usr_friend', displayName },
                         presence: { rev: 1, view: { kind: 'offline' } }
                     }
                 ],

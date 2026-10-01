@@ -158,7 +158,7 @@ fn sync_friend_snapshot_persists_feed_when_refresh_confirms_pending_offline() ->
         "offline"
     );
     assert_eq!(
-        projection.payload["patches"][0]["patch"]["displayName"],
+        projection.payload["patches"][0]["record"]["displayName"],
         "Friend Fresh Name"
     );
     assert!(projection.payload["feedEntries"]

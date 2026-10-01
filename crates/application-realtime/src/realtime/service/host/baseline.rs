@@ -486,7 +486,7 @@ fn friend_snapshot_diff_projection(
             .patches
             .push(crate::realtime::FriendProjectionPatch {
                 user_id,
-                patch: record.clone(),
+                record: record.clone(),
                 presence,
             });
         if let Some(entry) = joining_entry {

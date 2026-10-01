@@ -296,7 +296,7 @@ fn commit(
     }
     output.projection.patches.push(FriendProjectionPatch {
         user_id: user_id.to_string(),
-        patch: entry.record.clone(),
+        record: entry.record.clone(),
         presence: PresenceEntry {
             rev: 0,
             view: presence_view(&entry.presence),

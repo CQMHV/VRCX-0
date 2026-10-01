@@ -82,7 +82,7 @@ impl ScopedFriendLogMutation {
             }
             FriendLogMutation::Upsert { entry } => {
                 let user_id = entry.record.id.clone();
-                let (patch, presence) = baseline_friend_view(&entry);
+                let (record, presence) = baseline_friend_view(&entry);
                 queued.friends_by_id.insert(user_id.clone(), *entry);
                 queued
                     .projection
@@ -98,7 +98,7 @@ impl ScopedFriendLogMutation {
                     .push(crate::realtime::FriendProjectionPatch {
                         user_id,
                         presence,
-                        patch,
+                        record,
                     });
             }
         }

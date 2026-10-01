@@ -178,7 +178,7 @@ impl RealtimeHostRuntime {
             }
             if !projection.patches.is_empty() {
                 let changed = self.collect_friend_record_cache_changes(
-                    projection.patches.iter().map(|patch| &patch.patch),
+                    projection.patches.iter().map(|patch| &patch.record),
                     &UserFactMergeOptions {
                         endpoint,
                         source: "realtime".into(),

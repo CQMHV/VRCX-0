@@ -57,9 +57,9 @@ mod tests {
 
         assert!(output.persistence.feed_entries.is_empty());
         assert!(output.projection.feed_entries.is_empty());
-        assert_eq!(output.projection.patches[0].patch.status, "offline");
+        assert_eq!(output.projection.patches[0].record.status, "offline");
         assert_eq!(
-            output.projection.patches[0].patch.status_description,
+            output.projection.patches[0].record.status_description,
             "Fresh offline status"
         );
     }

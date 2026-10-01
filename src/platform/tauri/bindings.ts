@@ -4273,7 +4273,7 @@ export type FriendProjection = {
 };
 export type FriendProjectionPatch = {
     userId: string;
-    patch: FriendRecord;
+    record: FriendRecord;
     presence: PresenceEntry;
 };
 export type FriendRecord = Partial<{

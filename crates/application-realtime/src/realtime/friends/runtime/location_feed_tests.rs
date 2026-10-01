@@ -275,7 +275,7 @@ mod tests {
             "wrld_current"
         );
         assert!(!restored.projection.patches[0]
-            .patch
+            .record
             .extra
             .contains_key("$location_at"));
         let location_time = restored

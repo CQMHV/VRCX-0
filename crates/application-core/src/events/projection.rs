@@ -16,7 +16,7 @@ pub struct RealtimeUserProjection {
 #[serde(rename_all = "camelCase")]
 pub struct FriendProjectionPatch {
     pub user_id: String,
-    pub patch: FriendRecord,
+    pub record: FriendRecord,
     pub presence: PresenceEntry,
 }
 
