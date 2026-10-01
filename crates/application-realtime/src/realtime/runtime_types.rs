@@ -13,6 +13,7 @@ pub use vrcx_0_core::realtime::{
 use super::output::RealtimeFriendOutput;
 
 pub(crate) const PENDING_OFFLINE_DELAY: Duration = Duration::from_secs(170);
+pub(crate) const PENDING_OFFLINE_DELAY_MS: i64 = PENDING_OFFLINE_DELAY.as_millis() as i64;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RealtimeCachedUserProfile {
@@ -201,15 +202,4 @@ pub enum RealtimeFriendApplyResult {
     Output(Box<RealtimeFriendOutput>),
     MissingBaseline,
     Ignored,
-}
-
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub enum PendingOfflineTimerAction {
-    #[default]
-    None,
-    Schedule {
-        user_id: String,
-        token: u64,
-        delay: Duration,
-    },
 }

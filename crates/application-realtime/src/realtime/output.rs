@@ -7,7 +7,6 @@ use super::projection::{
     FriendProjection, RealtimeCurrentUserProjection, RealtimeInstanceClosedProjection,
     RealtimeNotificationProjection,
 };
-use super::runtime_types::PendingOfflineTimerAction;
 use vrcx_0_core::OwnerId;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -89,7 +88,7 @@ pub struct RealtimeCurrentUserOutput {
     pub owner_user_id: OwnerId,
     pub projection: RealtimeCurrentUserProjection,
     pub persistence: RealtimePersistenceBatch,
-    pub timer_action: PendingOfflineTimerAction,
+    pub wake: Option<Duration>,
 }
 
 #[derive(Clone, Debug, PartialEq)]

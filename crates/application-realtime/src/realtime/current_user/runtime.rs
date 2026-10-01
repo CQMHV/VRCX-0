@@ -6,8 +6,7 @@ use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 
 use crate::realtime::event_kind::RealtimeWsEventKind;
 use crate::realtime::{
-    PendingOfflineTimerAction, RealtimeCurrentUserAuthority, RealtimeCurrentUserOutput,
-    RealtimeCurrentUserProjection,
+    RealtimeCurrentUserAuthority, RealtimeCurrentUserOutput, RealtimeCurrentUserProjection,
 };
 
 use super::avatar::apply_avatar_wear_transition;
@@ -59,7 +58,6 @@ impl RealtimeCurrentUserRuntime {
         state.pending_offline = None;
         state.presence = None;
         if !preserves_remote_interval {
-            state.next_pending_token = 0;
             state.remote_game_log_interval = None;
         }
     }
@@ -258,18 +256,21 @@ impl RealtimeCurrentUserRuntime {
         )
     }
 
-    pub fn fire_pending_offline(
+    pub fn wake_pending_offline(
         &self,
         generation: u64,
-        token: u64,
         now: String,
         authority: RealtimeCurrentUserAuthority,
     ) -> Option<RealtimeCurrentUserOutput> {
         let mut state = self.lock_state();
+        let now = EventTime::from_received_at(&now);
         if state.generation != generation
             || state.current_user_id.is_empty()
             || authority.is_game_running()
-            || state.pending_offline.as_ref().map(|pending| pending.token) != Some(token)
+            || !state
+                .pending_offline
+                .as_ref()
+                .is_some_and(|pending| now.timestamp_ms >= pending.deadline_ms)
         {
             return None;
         }
@@ -277,7 +278,7 @@ impl RealtimeCurrentUserRuntime {
         apply_current_user_patch(
             &mut state,
             pending.patch,
-            &EventTime::from_received_at(&now),
+            &now,
             &authority,
             CurrentUserPatchOptions {
                 reconciles_remote_location: true,
@@ -347,7 +348,7 @@ impl RealtimeCurrentUserRuntime {
                 game_state_patch: None,
             },
             persistence,
-            timer_action: PendingOfflineTimerAction::None,
+            wake: None,
         })
     }
 

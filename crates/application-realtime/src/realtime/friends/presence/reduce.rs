@@ -1,11 +1,10 @@
 use vrcx_0_core::presence::{LeaveTarget, Place};
 
-use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY;
+use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY_MS;
 
 use super::evidence::{Claim, Evidence, Source};
 use super::model::{Flap, Hop, OnlineState, Phase, Stay};
 
-pub(crate) const PENDING_OFFLINE_DELAY_MS: i64 = PENDING_OFFLINE_DELAY.as_millis() as i64;
 pub(crate) const FLAP_WINDOW_MS: i64 = 180_000;
 pub(crate) const BASELINE_CONFLICT_WINDOW_MS: i64 = 300_000;
 

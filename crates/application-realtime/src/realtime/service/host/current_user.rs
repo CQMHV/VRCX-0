@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::time::Duration;
 
 use serde_json::Value;
 use tokio::sync::watch;
@@ -6,8 +7,8 @@ use vrcx_0_application_core::{Error, LocalGameContextSnapshot, Result};
 use vrcx_0_contracts::vrchat_api::VrchatScope as ApiScope;
 
 use crate::realtime::{
-    PendingOfflineTimerAction, RealtimeCurrentUserAuthority, RealtimeCurrentUserGameLogContext,
-    RealtimeCurrentUserOutput, RealtimeSessionContext,
+    RealtimeCurrentUserAuthority, RealtimeCurrentUserGameLogContext, RealtimeCurrentUserOutput,
+    RealtimeSessionContext,
 };
 
 use super::state::{ActiveRealtimeContext, CurrentUserRefreshStatus};
@@ -21,21 +22,13 @@ pub struct RealtimeCurrentUserRefreshExpectation {
 }
 
 impl RealtimeHostRuntime {
-    pub(super) fn schedule_current_user_pending_offline(
-        self: &Arc<Self>,
-        generation: u64,
-        timer_action: PendingOfflineTimerAction,
-    ) {
-        let PendingOfflineTimerAction::Schedule { token, delay, .. } = timer_action else {
-            return;
-        };
+    pub(super) fn schedule_current_user_wake(self: &Arc<Self>, generation: u64, delay: Duration) {
         let runtime = Arc::clone(self);
         self.deps.tasks.spawn(async move {
             tokio::time::sleep(delay).await;
             let now = chrono::Utc::now().to_rfc3339();
-            let Some(output) = runtime.current_user.fire_pending_offline(
+            let Some(output) = runtime.current_user.wake_pending_offline(
                 generation,
-                token,
                 now,
                 runtime.current_user_authority(),
             ) else {

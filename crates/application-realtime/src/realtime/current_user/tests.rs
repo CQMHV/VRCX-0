@@ -2,9 +2,7 @@ use serde_json::json;
 use vrcx_0_contracts::game_log::{GameLogLocationEntry, GameLogLocationTimeUpdate};
 use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 
-use crate::realtime::{
-    PendingOfflineTimerAction, RealtimeCurrentUserAuthority, RealtimeCurrentUserGameLogContext,
-};
+use crate::realtime::{RealtimeCurrentUserAuthority, RealtimeCurrentUserGameLogContext};
 
 use super::runtime::RealtimeCurrentUserRuntime;
 use super::state::{
@@ -436,7 +434,7 @@ fn stopped_local_game_projects_remote_location_as_online_and_starts_gamelog_inte
             group_name: "grp_remote".into(),
         }
     );
-    assert_eq!(output.timer_action, PendingOfflineTimerAction::None);
+    assert_eq!(output.wake, None);
 }
 
 #[test]
@@ -458,17 +456,7 @@ fn false_remote_offline_keeps_location_until_same_location_cancels_pending() {
             remote_authority(true),
         )
         .expect("remote offline pending output");
-    let PendingOfflineTimerAction::Schedule {
-        user_id,
-        token,
-        delay,
-    } = pending.timer_action
-    else {
-        panic!("remote offline should schedule pending timer");
-    };
-
-    assert_eq!(user_id, "usr_self");
-    assert_eq!(delay, std::time::Duration::from_secs(170));
+    assert_eq!(pending.wake, Some(std::time::Duration::from_secs(170)));
     assert_eq!(
         pending.projection.snapshot["location"],
         json!("wrld_remote:456")
@@ -487,16 +475,40 @@ fn false_remote_offline_keeps_location_until_same_location_cancels_pending() {
         )
         .expect("same remote location should cancel pending");
 
-    assert_eq!(resumed.timer_action, PendingOfflineTimerAction::None);
+    assert_eq!(resumed.wake, None);
     assert!(resumed.persistence.is_empty());
     assert!(runtime
-        .fire_pending_offline(
-            7,
-            token,
-            "2026-05-15T00:03:00Z".into(),
-            remote_authority(true),
-        )
+        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), remote_authority(true),)
         .is_none());
+}
+
+#[test]
+fn an_earlier_wake_does_not_confirm_a_newer_pending_offline() {
+    let runtime = RealtimeCurrentUserRuntime::new();
+    runtime.set_snapshot("usr_self".into(), 7, json!({ "id": "usr_self" }));
+    for (location, received_at) in [
+        ("wrld_remote:456", "2026-05-15T00:00:00Z"),
+        ("offline", "2026-05-15T00:00:10Z"),
+        ("wrld_remote:456", "2026-05-15T00:00:15Z"),
+        ("offline", "2026-05-15T00:00:20Z"),
+    ] {
+        runtime.apply_ws_message(
+            7,
+            &current_user_location_message(location, "", received_at),
+            remote_authority(true),
+        );
+    }
+
+    assert!(runtime
+        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), remote_authority(true))
+        .is_none());
+    let confirmed = runtime
+        .wake_pending_offline(7, "2026-05-15T00:03:10Z".into(), remote_authority(true))
+        .expect("the newer pending offline confirms at its own deadline");
+    assert_eq!(
+        confirmed.projection.snapshot["$presence"]["kind"],
+        json!("active")
+    );
 }
 
 #[test]
@@ -517,17 +529,10 @@ fn confirmed_remote_offline_ends_interval_and_same_location_can_start_again() {
             remote_authority(true),
         )
         .expect("remote offline pending output");
-    let PendingOfflineTimerAction::Schedule { token, .. } = pending.timer_action else {
-        panic!("remote offline should schedule pending timer");
-    };
+    assert!(pending.wake.is_some());
 
     let confirmed = runtime
-        .fire_pending_offline(
-            7,
-            token,
-            "2026-05-15T00:03:00Z".into(),
-            remote_authority(true),
-        )
+        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), remote_authority(true))
         .expect("pending remote offline should fire");
 
     assert_eq!(
@@ -595,9 +600,7 @@ fn local_game_start_invalidates_remote_offline_timer_and_keeps_local_authority()
             remote_authority(true),
         )
         .expect("remote offline pending output");
-    let PendingOfflineTimerAction::Schedule { token, .. } = pending.timer_action else {
-        panic!("remote offline should schedule pending timer");
-    };
+    assert!(pending.wake.is_some());
     let local_authority = local_authority("wrld_local:123", "Local World");
 
     let local = runtime
@@ -613,7 +616,7 @@ fn local_game_start_invalidates_remote_offline_timer_and_keeps_local_authority()
         json!("online")
     );
     assert!(runtime
-        .fire_pending_offline(7, token, "2026-05-15T00:03:00Z".into(), local_authority,)
+        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), local_authority,)
         .is_none());
 }
 
@@ -676,12 +679,7 @@ fn reconnect_preserves_remote_interval_and_invalidates_old_pending_timer() {
             remote_authority(true),
         )
         .expect("remote offline pending output");
-    let PendingOfflineTimerAction::Schedule {
-        token: old_token, ..
-    } = pending.timer_action
-    else {
-        panic!("remote offline should schedule pending timer");
-    };
+    assert!(pending.wake.is_some());
 
     runtime.set_snapshot(
         "usr_self".into(),
@@ -695,12 +693,7 @@ fn reconnect_preserves_remote_interval_and_invalidates_old_pending_timer() {
     );
 
     assert!(runtime
-        .fire_pending_offline(
-            7,
-            old_token,
-            "2026-05-15T00:03:00Z".into(),
-            remote_authority(true),
-        )
+        .wake_pending_offline(7, "2026-05-15T00:03:00Z".into(), remote_authority(true),)
         .is_none());
     let duplicate = runtime
         .apply_ws_message(
@@ -718,16 +711,9 @@ fn reconnect_preserves_remote_interval_and_invalidates_old_pending_timer() {
             remote_authority(true),
         )
         .expect("remote offline after reconnect");
-    let PendingOfflineTimerAction::Schedule { token, .. } = pending.timer_action else {
-        panic!("remote offline should schedule pending timer");
-    };
+    assert!(pending.wake.is_some());
     let confirmed = runtime
-        .fire_pending_offline(
-            8,
-            token,
-            "2026-05-15T00:03:20Z".into(),
-            remote_authority(true),
-        )
+        .wake_pending_offline(8, "2026-05-15T00:03:20Z".into(), remote_authority(true))
         .expect("remote offline should close original interval");
 
     assert_eq!(

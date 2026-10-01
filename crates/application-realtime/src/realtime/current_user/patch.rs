@@ -4,10 +4,9 @@ use vrcx_0_core::json::JsonExt;
 use vrcx_0_core::presence::is_offline_location_proof;
 use vrcx_0_core::text::first_owned;
 
-use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY;
+use crate::realtime::runtime_types::{PENDING_OFFLINE_DELAY, PENDING_OFFLINE_DELAY_MS};
 use crate::realtime::{
-    PendingOfflineTimerAction, RealtimeCurrentUserAuthority, RealtimeCurrentUserOutput,
-    RealtimeCurrentUserProjection,
+    RealtimeCurrentUserAuthority, RealtimeCurrentUserOutput, RealtimeCurrentUserProjection,
 };
 
 use super::avatar::apply_avatar_wear_transition;
@@ -89,20 +88,17 @@ pub(super) fn apply_user_location(
         if state.pending_offline.is_some() {
             return None;
         }
-        state.next_pending_token = state.next_pending_token.saturating_add(1);
-        let token = state.next_pending_token;
-        state.pending_offline = Some(PendingCurrentUserOffline { token, patch });
+        state.pending_offline = Some(PendingCurrentUserOffline {
+            deadline_ms: now.timestamp_ms + PENDING_OFFLINE_DELAY_MS,
+            patch,
+        });
         return apply_current_user_patch(
             state,
             Map::new(),
             now,
             authority,
             CurrentUserPatchOptions {
-                timer_action: PendingOfflineTimerAction::Schedule {
-                    user_id: state.current_user_id.clone(),
-                    token,
-                    delay: PENDING_OFFLINE_DELAY,
-                },
+                wake: Some(PENDING_OFFLINE_DELAY),
                 ..CurrentUserPatchOptions::default()
             },
         );
@@ -207,7 +203,7 @@ pub(super) fn apply_current_user_patch(
             game_state_patch: game_state_patch.map(Into::into),
         },
         persistence,
-        timer_action: options.timer_action,
+        wake: options.wake,
     })
 }
 

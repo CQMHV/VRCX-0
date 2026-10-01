@@ -5,10 +5,9 @@ use vrcx_0_core::presence::{LeaveTarget, Place, PresenceView};
 use super::evidence::{Claim, Evidence, FriendEventKind, Source};
 use super::feed::presence_feed;
 use super::model::{OnlineState, Phase, Stay};
-use super::reduce::{
-    reduce, wake, Step, BASELINE_CONFLICT_WINDOW_MS, FLAP_WINDOW_MS, PENDING_OFFLINE_DELAY_MS,
-};
+use super::reduce::{reduce, wake, Step, BASELINE_CONFLICT_WINDOW_MS, FLAP_WINDOW_MS};
 use super::view::presence_view;
+use crate::realtime::runtime_types::PENDING_OFFLINE_DELAY_MS;
 
 const T: i64 = 1_800_000_000_000;
 const PLATFORM: &str = "standalonewindows";

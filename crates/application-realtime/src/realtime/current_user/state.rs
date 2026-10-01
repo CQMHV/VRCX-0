@@ -3,7 +3,7 @@ use vrcx_0_core::derived_keys;
 use vrcx_0_core::json::JsonExt;
 use vrcx_0_core::presence::PresenceView;
 
-use crate::realtime::PendingOfflineTimerAction;
+use std::time::Duration;
 
 use super::utils::normalize_id;
 
@@ -15,14 +15,13 @@ pub(super) struct RealtimeCurrentUserState {
     pub(super) snapshot: RealtimeCurrentUserStateSnapshot,
     pub(super) remote_snapshot: RealtimeCurrentUserStateSnapshot,
     pub(super) pending_offline: Option<PendingCurrentUserOffline>,
-    pub(super) next_pending_token: u64,
     pub(super) remote_game_log_interval: Option<RemoteGameLogInterval>,
     pub(super) presence: Option<PresenceView>,
 }
 
 #[derive(Clone, Debug)]
 pub(super) struct PendingCurrentUserOffline {
-    pub(super) token: u64,
+    pub(super) deadline_ms: i64,
     pub(super) patch: Map<String, Value>,
 }
 
@@ -39,7 +38,7 @@ pub(super) struct CurrentUserPatchOptions {
     pub(super) reconciles_remote_location: bool,
     pub(super) records_remote_game_log: bool,
     pub(super) records_current_avatar_history: bool,
-    pub(super) timer_action: PendingOfflineTimerAction,
+    pub(super) wake: Option<Duration>,
 }
 
 #[derive(Clone, Debug, Default)]
