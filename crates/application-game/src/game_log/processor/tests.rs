@@ -1173,8 +1173,9 @@ fn game_log_presence_enables_current_instance_gps_surface_filtering() -> Result<
     assert_eq!(joined.len(), 1);
     assert!(joined[0].vr);
     assert!(joined[0].hmd);
-    overlay.ingest_friend_projection(&FriendProjection {
-        feed_entries: vec![vrcx_0_application_core::FeedLiveEntry::Gps {
+    overlay.ingest_friend_projection(
+        &FriendProjection::new(0, 0),
+        &[vrcx_0_application_core::FeedLiveEntry::Gps {
             created_at: chrono::Utc::now().to_rfc3339(),
             user_id: "usr_selected".into(),
             display_name: "Selected Friend".into(),
@@ -1187,8 +1188,7 @@ fn game_log_presence_enables_current_instance_gps_surface_filtering() -> Result<
             display_location: None,
             owner_user_id: String::new(),
         }],
-        ..FriendProjection::new(0, 0)
-    });
+    );
 
     let gps = sink.take_deliveries();
     assert_eq!(gps.len(), 1);
