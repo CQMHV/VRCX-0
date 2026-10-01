@@ -11,10 +11,7 @@ import type {
 export { isRecord };
 
 export function sourceFromFriend(friend: unknown): FriendLocationRecord {
-    if (!isRecord(friend)) {
-        return {};
-    }
-    return isRecord(friend.ref) ? friend.ref : friend;
+    return isRecord(friend) ? friend : {};
 }
 
 function interpolateFallback(

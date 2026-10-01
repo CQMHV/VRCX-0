@@ -51,12 +51,7 @@ function recordValue(value: unknown): Record<string, unknown> | null {
 function friendLocationHint(
     displaySource: SidebarFriendRecord | null | undefined
 ) {
-    return normalizeId(
-        displaySource?.worldName ||
-            displaySource?.$worldName ||
-            displaySource?.travelingToWorld ||
-            displaySource?.$travelingToWorld
-    );
+    return normalizeId(displaySource?.worldName);
 }
 
 function friendGroupHint(
@@ -65,7 +60,6 @@ function friendGroupHint(
     const sourceGroup = recordValue(displaySource?.group);
     return normalizeId(
         displaySource?.groupName ||
-            displaySource?.$groupName ||
             sourceGroup?.name ||
             sourceGroup?.displayName
     );

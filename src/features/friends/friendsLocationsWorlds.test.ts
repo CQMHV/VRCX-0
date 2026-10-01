@@ -108,9 +108,9 @@ describe('buildFriendWorldGroups', () => {
         const groups = buildFriendWorldGroups(
             [
                 friend('a', travelingPresence('wrld_dest:3'), {
-                    $worldName: ''
+                    worldName: ''
                 }),
-                friend('b', 'wrld_dest:3', { $worldName: 'Destination' })
+                friend('b', 'wrld_dest:3', { worldName: 'Destination' })
             ],
             '',
             () => null

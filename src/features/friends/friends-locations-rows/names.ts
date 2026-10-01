@@ -11,7 +11,6 @@ export function resolveFriendWorldName(
     const source = sourceFromFriend(friend);
     return resolveDisplayWorldName(
         source?.worldName,
-        source?.$worldName,
         source?.world?.name,
         source?.locationName
     );
@@ -22,9 +21,6 @@ export function resolveFriendGroupName(
 ) {
     const source = sourceFromFriend(friend);
     return normalizeDisplayText(
-        source?.groupName ||
-            source?.$groupName ||
-            source?.group?.name ||
-            source?.group?.displayName
+        source?.groupName || source?.group?.name || source?.group?.displayName
     );
 }

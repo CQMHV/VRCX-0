@@ -12,7 +12,6 @@ export type TranslationFn = (
 
 export type FriendLocationRecord = FriendRecordInput &
     Partial<FriendProfileFields> & {
-        $groupName?: string | null;
         $location?: FriendLocationRecord | null;
         group?: FriendLocationRecord | null;
         groupName?: string | null;
@@ -23,7 +22,6 @@ export type FriendLocationRecord = FriendRecordInput &
         isTraveling?: boolean | null;
         locationName?: string | null;
         name?: string | null;
-        ref?: FriendLocationRecord | null;
         shortCode?: string | null;
         tag?: string | null;
         world?: FriendLocationRecord | null;
