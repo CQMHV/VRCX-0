@@ -240,15 +240,15 @@ pub(in crate::social) fn apply_unfriend_locally(
                 "Realtime friend persistence failed.",
             )
         }
-        SyntheticFriendEventOutcome::MissingBaseline | SyntheticFriendEventOutcome::Ignored => {
-            fallback_unfriend(
-                deps,
-                owner_user_id,
-                endpoint,
-                target_user_id,
-                target_display_name,
-            )
-        }
+        SyntheticFriendEventOutcome::MissingBaseline
+        | SyntheticFriendEventOutcome::TransportInactive
+        | SyntheticFriendEventOutcome::Ignored => fallback_unfriend(
+            deps,
+            owner_user_id,
+            endpoint,
+            target_user_id,
+            target_display_name,
+        ),
     }
 }
 
@@ -304,16 +304,16 @@ pub(in crate::social) fn apply_friend_request_accept_locally(
                 "Realtime friend persistence failed.",
             )
         }
-        SyntheticFriendEventOutcome::MissingBaseline | SyntheticFriendEventOutcome::Ignored => {
-            fallback_accept(
-                deps,
-                owner_user_id,
-                endpoint,
-                target_user_id,
-                target_display_name,
-                &profile,
-            )
-        }
+        SyntheticFriendEventOutcome::MissingBaseline
+        | SyntheticFriendEventOutcome::TransportInactive
+        | SyntheticFriendEventOutcome::Ignored => fallback_accept(
+            deps,
+            owner_user_id,
+            endpoint,
+            target_user_id,
+            target_display_name,
+            &profile,
+        ),
     }
 }
 

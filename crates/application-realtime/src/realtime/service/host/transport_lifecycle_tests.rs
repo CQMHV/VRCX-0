@@ -214,6 +214,32 @@ fn transport_start_announces_friends_already_traveling_to_the_current_instance()
 }
 
 #[test]
+fn synthetic_delete_while_reconnecting_updates_the_kept_roster_and_defers_persistence() -> Result<()>
+{
+    let (_dir, runtime, session) = runtime_with_active_session("synthetic-delete-reconnecting")?;
+    let transport = active_transport(&runtime);
+    seed_online_friend(&runtime, &session, transport.generation)?;
+    runtime.runtime().finish_realtime_transport(
+        transport,
+        RealtimeTransportTermination::UnexpectedExit {
+            reason: "websocket stream ended".into(),
+            connected_secs: Some(60),
+        },
+    );
+
+    let outcome = runtime.runtime().apply_synthetic_friend_delete(
+        &OwnerId::new(session.user_id.clone()),
+        &session.endpoint,
+        "usr_friend",
+        "2026-07-20T00:00:00Z".into(),
+    );
+
+    assert_eq!(outcome, SyntheticFriendEventOutcome::TransportInactive);
+    assert!(!runtime.runtime().friends.is_current_friend("usr_friend"));
+    Ok(())
+}
+
+#[test]
 fn local_mode_leave_publishes_while_the_transport_is_disconnected() -> Result<()> {
     let (_dir, runtime, session) = runtime_with_active_session("local-mode-disconnected")?;
     let transport = active_transport(&runtime);
