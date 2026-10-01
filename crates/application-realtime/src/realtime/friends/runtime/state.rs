@@ -24,7 +24,7 @@ use crate::realtime::{
 };
 
 use super::apply::{apply_friend_event, apply_wake};
-use super::event_time::EventTime;
+use crate::realtime::event_time::EventTime;
 
 #[derive(Clone, Debug)]
 pub(super) struct FriendEntry {

@@ -19,7 +19,9 @@ use super::state::{
     CurrentUserPatchOptions, PendingCurrentUserOffline, RealtimeCurrentUserState,
     RealtimeCurrentUserStateSnapshot, CURRENT_USER_REMOTE_PRESENCE_FIELDS,
 };
-use super::utils::{has_remote_current_user_presence, normalize_id, EventTime};
+use super::utils::has_remote_current_user_presence;
+use crate::realtime::event_time::EventTime;
+use vrcx_0_core::friends::normalize_user_id;
 use vrcx_0_core::OwnerId;
 
 pub(super) fn apply_user_update(
@@ -50,7 +52,7 @@ pub(super) fn apply_user_location(
     now: &EventTime,
     game: &LocalGameContextSnapshot,
 ) -> Option<RealtimeCurrentUserOutput> {
-    let event_user_id = normalize_id(&content.text_field("userId"));
+    let event_user_id = normalize_user_id(&content.text_field("userId"));
     if event_user_id != state.current_user_id {
         return None;
     }

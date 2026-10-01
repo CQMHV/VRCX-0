@@ -19,7 +19,9 @@ use super::state::{
     CurrentUserPatchOptions, RealtimeCurrentUserState, RealtimeCurrentUserStateSnapshot,
     CURRENT_USER_REFRESH_LOCAL_AUTHORITY_FIELDS,
 };
-use super::utils::{has_remote_current_user_presence, map_from_json, normalize_id, EventTime};
+use super::utils::{has_remote_current_user_presence, map_from_json};
+use crate::realtime::event_time::EventTime;
+use vrcx_0_core::friends::normalize_user_id;
 use vrcx_0_core::OwnerId;
 
 #[derive(Debug, Default)]
@@ -39,7 +41,7 @@ impl RealtimeCurrentUserRuntime {
         snapshot: serde_json::Value,
     ) {
         let mut state = self.lock_state();
-        let current_user_id = normalize_id(&current_user_id);
+        let current_user_id = normalize_user_id(&current_user_id);
         let preserves_remote_interval = state.current_user_id == current_user_id;
         state.current_user_id = current_user_id;
         state.generation = generation;
@@ -166,7 +168,7 @@ impl RealtimeCurrentUserRuntime {
         }
         let event_user_id = snapshot
             .get("id")
-            .map(|value| normalize_id(&text_of(Some(value))))
+            .map(|value| normalize_user_id(&text_of(Some(value))))
             .unwrap_or_default();
         if event_user_id != state.current_user_id {
             return None;

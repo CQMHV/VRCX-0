@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use super::super::event_time::EventTime;
     use super::super::*;
+    use crate::realtime::event_time::EventTime;
     use crate::realtime::FriendWake;
     use chrono::{TimeZone, Utc};
     use std::collections::{BTreeMap, HashMap};

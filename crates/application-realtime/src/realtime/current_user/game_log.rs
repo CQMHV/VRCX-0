@@ -11,7 +11,7 @@ use super::location::location_game_log_entry;
 use super::state::{
     RealtimeCurrentUserState, RealtimeCurrentUserStateSnapshot, RemoteGameLogInterval,
 };
-use super::utils::EventTime;
+use crate::realtime::event_time::EventTime;
 use vrcx_0_core::location::is_real_instance;
 
 pub(super) fn reconcile_remote_game_log_interval(

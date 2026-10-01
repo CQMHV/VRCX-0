@@ -300,7 +300,7 @@ pub struct RealtimeHostRuntime {
 }
 
 impl RealtimeHostRuntime {
-    pub fn local_game_context_snapshot(&self) -> LocalGameContextSnapshot {
+    pub fn local_game_context(&self) -> LocalGameContextSnapshot {
         self.deps.local_game_context.snapshot()
     }
 }

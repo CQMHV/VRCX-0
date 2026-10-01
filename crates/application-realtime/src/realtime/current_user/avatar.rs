@@ -6,7 +6,8 @@ use vrcx_0_core::derived_keys;
 use vrcx_0_application_core::LocalGameContextSnapshot;
 
 use super::state::RealtimeCurrentUserStateSnapshot;
-use super::utils::{first_positive, EventTime};
+use super::utils::first_positive;
+use crate::realtime::event_time::EventTime;
 
 pub(super) fn apply_avatar_wear_transition(
     mut next: RealtimeCurrentUserStateSnapshot,

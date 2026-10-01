@@ -223,7 +223,7 @@ impl RealtimeHostRuntime {
         &self,
         session: &RealtimeSessionContext,
     ) -> InviteLocationFacts {
-        let local_game_context = self.deps.local_game_context.snapshot();
+        let local_game_context = self.local_game_context();
         let closed_locations = self
             .state
             .lock()

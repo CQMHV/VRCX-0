@@ -15,13 +15,13 @@ use crate::realtime::friends::presence::{
 };
 use crate::realtime::{FriendIconChange, FriendWake, RealtimeFriendOutput};
 
-use super::event_time::EventTime;
 use super::presence_split::strip_presence_keys;
 use super::social_feed::{
     add_profile_diff_feed_entries, display_name, friend_log_upsert, friend_relationship_feed_entry,
     meaningful_name, meaningful_record_name, trust_level_feed_entry, FriendRelationshipFeedKind,
 };
 use super::state::{FriendEntry, RealtimeFriendState};
+use crate::realtime::event_time::EventTime;
 use vrcx_0_core::json::JsonExt;
 use vrcx_0_core::text::first_owned;
 

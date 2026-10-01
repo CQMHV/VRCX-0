@@ -212,7 +212,7 @@ impl RealtimeHostRuntime {
         if !projection.feed_entries.iter().any(is_player_joining_entry) {
             return;
         }
-        let local_game_context = self.deps.local_game_context.snapshot();
+        let local_game_context = self.local_game_context();
         let (is_game_running, current_location, player_user_ids) = match &local_game_context {
             LocalGameContextSnapshot::Unavailable => (false, "", &[][..]),
             LocalGameContextSnapshot::Available {

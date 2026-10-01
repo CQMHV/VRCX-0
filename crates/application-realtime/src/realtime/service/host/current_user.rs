@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use serde_json::Value;
 use tokio::sync::watch;
-use vrcx_0_application_core::{Error, LocalGameContextSnapshot, Result};
+use vrcx_0_application_core::{Error, Result};
 use vrcx_0_contracts::vrchat_api::VrchatScope as ApiScope;
 
 use crate::realtime::{RealtimeCurrentUserOutput, RealtimeSessionContext, WakeDeadline};
@@ -261,10 +261,6 @@ impl RealtimeHostRuntime {
     ) -> bool {
         active.generation == expectation.generation
             && active.session_generation == expectation.session_generation
-    }
-
-    pub(super) fn local_game_context(&self) -> LocalGameContextSnapshot {
-        self.deps.local_game_context.snapshot()
     }
 
     pub fn refresh_current_user_local_presence(&self) {

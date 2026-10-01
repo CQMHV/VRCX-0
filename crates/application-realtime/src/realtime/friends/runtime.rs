@@ -11,7 +11,6 @@ use vrcx_0_core::realtime::RealtimeWsMessagePayload;
 use super::super::{RealtimeFriendApplyResult, RealtimeFriendOutput};
 
 mod apply;
-mod event_time;
 mod presence_split;
 mod social_feed;
 mod state;

@@ -3,8 +3,8 @@ use vrcx_0_core::derived_keys;
 use vrcx_0_core::json::JsonExt;
 use vrcx_0_core::presence::PresenceView;
 
-use super::utils::normalize_id;
 use crate::realtime::WakeDeadline;
+use vrcx_0_core::friends::normalize_user_id;
 
 #[derive(Clone, Debug, Default)]
 pub(super) struct RealtimeCurrentUserState {
@@ -94,7 +94,7 @@ impl RealtimeCurrentUserStateSnapshot {
     }
 
     fn refresh_typed_fields(&mut self) {
-        self.user_id = normalize_id(&self.raw.text_field("id"));
+        self.user_id = normalize_user_id(&self.raw.text_field("id"));
         self.display_name = self.raw.text_field("displayName");
         self.location = self.raw.text_field("location");
         self.traveling_to_location = self.raw.text_field("travelingToLocation");
@@ -103,7 +103,7 @@ impl RealtimeCurrentUserStateSnapshot {
         self.status = self.raw.text_field("status");
         self.status_description = self.raw.text_field("statusDescription");
         self.bio = self.raw.text_field("bio");
-        self.current_avatar = normalize_id(&self.raw.text_field("currentAvatar"));
+        self.current_avatar = normalize_user_id(&self.raw.text_field("currentAvatar"));
         self.current_avatar_image_url = self.raw.text_field("currentAvatarImageUrl");
         self.world_name = self.raw.text_field("worldName");
         self.previous_avatar_swap_time = self

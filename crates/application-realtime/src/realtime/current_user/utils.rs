@@ -1,14 +1,9 @@
-use chrono::{DateTime, Utc};
 use serde_json::{Map, Value};
 
 use super::state::RealtimeCurrentUserStateSnapshot;
 
 pub(super) fn map_from_json(value: Value) -> Map<String, Value> {
     value.as_object().cloned().unwrap_or_default()
-}
-
-pub(super) fn normalize_id(value: &str) -> String {
-    value.trim().to_string()
 }
 
 pub(super) fn first_positive(values: impl IntoIterator<Item = i64>) -> i64 {
@@ -22,29 +17,4 @@ pub(super) fn has_remote_current_user_presence(
     !location.is_empty()
         && !location.starts_with("local")
         && !matches!(location.as_str(), ":" | "offline" | "offline:offline")
-}
-
-pub(super) struct EventTime {
-    pub(super) iso: String,
-    pub(super) timestamp_ms: i64,
-}
-
-impl EventTime {
-    pub(super) fn now() -> Self {
-        let now = Utc::now();
-        Self {
-            iso: now.to_rfc3339(),
-            timestamp_ms: now.timestamp_millis(),
-        }
-    }
-
-    pub(super) fn from_received_at(received_at: &str) -> Self {
-        let timestamp_ms = DateTime::parse_from_rfc3339(received_at)
-            .map(|value| value.timestamp_millis())
-            .unwrap_or_else(|_| Utc::now().timestamp_millis());
-        Self {
-            iso: received_at.to_string(),
-            timestamp_ms,
-        }
-    }
 }
