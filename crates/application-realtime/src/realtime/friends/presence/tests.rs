@@ -477,7 +477,7 @@ fn traveling_announces_joining_and_arrival_writes_gps_from_the_origin() {
     let entries = feed(&traveling.next, &arrived, T + 5_000);
     assert_eq!(entries[0]["type"], "GPS");
     assert_eq!(entries[0]["previousLocation"], "wrld_a:1");
-    assert_eq!(entries[0]["time"], 65_000);
+    assert_eq!(entries[0]["time"], 60_000);
 }
 
 #[test]

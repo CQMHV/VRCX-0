@@ -116,11 +116,13 @@ impl<'a> FeedNames<'a> {
     }
 
     fn gps(&self, before: &OnlineState, after: &OnlineState, now_ms: i64) -> Option<FeedLiveEntry> {
-        let (previous, since_ms) = match (&before.place, &before.travel_from) {
-            (Place::Traveling { .. }, Some(stay)) => {
-                (Place::Instance(stay.tag.clone()), stay.since_ms)
-            }
-            (place, _) => (place.clone(), before.since_ms),
+        let (previous, since_ms, left_ms) = match (&before.place, &before.travel_from) {
+            (Place::Traveling { .. }, Some(stay)) => (
+                Place::Instance(stay.tag.clone()),
+                stay.since_ms,
+                before.since_ms,
+            ),
+            (place, _) => (place.clone(), before.since_ms, now_ms),
         };
         if !previous.is_gps_endpoint()
             || !after.place.is_gps_endpoint()
@@ -137,7 +139,7 @@ impl<'a> FeedNames<'a> {
             location,
             world_name,
             previous_location: previous.tag().to_string(),
-            time: duration(now_ms, since_ms).unwrap_or(0),
+            time: duration(left_ms, since_ms).unwrap_or(0),
             group_name,
             world_id: None,
             display_location: None,
