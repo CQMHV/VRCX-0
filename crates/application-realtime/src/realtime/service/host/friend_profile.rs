@@ -42,56 +42,73 @@ impl RealtimeHostRuntime {
             return Ok(false);
         }
         let requested_endpoint = endpoint.trim().to_string();
-        let owner = self.lock_friend_owner();
-        let active = {
-            let state = self
-                .state
-                .lock()
-                .map_err(|error| Error::Custom(format!("realtime state lock: {error}")))?;
-            let Some(active) = state.connection.active_context.clone() else {
-                return Ok(false);
-            };
-            if expectation.generation != active.generation
-                || active.session.endpoint != requested_endpoint
-                || !self.is_message_current_locked(
-                    &state,
-                    active.generation,
-                    active.session_generation,
-                    &active.session,
-                )
-            {
-                return Ok(false);
-            }
-            active
+        let Some(active) = self
+            .state
+            .lock()
+            .map_err(|error| Error::Custom(format!("realtime state lock: {error}")))?
+            .connection
+            .active_context
+            .clone()
+        else {
+            return Ok(false);
         };
-        if !self
-            .friends
-            .has_friend(active.generation, &normalized_user_id)
+        if expectation.generation != active.generation
+            || active.session.endpoint != requested_endpoint
+            || !self.apply_refetched_friend_profile(
+                &active,
+                &normalized_user_id,
+                expectation.rev,
+                profile,
+            )
         {
             return Ok(false);
         }
+        let runtime = Arc::clone(self);
+        self.deps.tasks.spawn(async move {
+            runtime
+                .user_query_cache
+                .invalidate_user(&requested_endpoint, &normalized_user_id)
+                .await;
+        });
+        Ok(true)
+    }
+
+    fn apply_refetched_friend_profile(
+        self: &Arc<Self>,
+        active: &ActiveRealtimeContext,
+        user_id: &str,
+        rev: u64,
+        profile: Value,
+    ) -> bool {
+        let owner = self.lock_friend_owner();
+        let current = match self.state.lock() {
+            Ok(state) => self.is_message_current_locked(
+                &state,
+                active.generation,
+                active.session_generation,
+                &active.session,
+            ),
+            Err(error) => {
+                tracing::warn!("realtime state lock failed: {error}");
+                false
+            }
+        };
+        if !current {
+            return false;
+        }
         match self.friends.apply_refetched_user_profile_if_rev(
             active.generation,
-            &normalized_user_id,
-            expectation.rev,
+            user_id,
+            rev,
             profile,
             &chrono::Utc::now().to_rfc3339(),
         ) {
             RealtimeFriendApplyResult::Output(output) => {
                 self.apply_friend_output_owned(&owner, *output);
-                let runtime = Arc::clone(self);
-                let endpoint = requested_endpoint.clone();
-                let user_id = normalized_user_id.clone();
-                self.deps.tasks.spawn(async move {
-                    runtime
-                        .user_query_cache
-                        .invalidate_user(&endpoint, &user_id)
-                        .await;
-                });
-                Ok(true)
+                true
             }
             RealtimeFriendApplyResult::MissingBaseline | RealtimeFriendApplyResult::Ignored => {
-                Ok(false)
+                false
             }
         }
     }
@@ -519,42 +536,7 @@ impl RealtimeHostRuntime {
             );
             return;
         }
-        let applied = {
-            let owner = self.lock_friend_owner();
-            {
-                let state = match self.state.lock() {
-                    Ok(state) => state,
-                    Err(error) => {
-                        tracing::warn!("realtime state lock failed: {error}");
-                        return;
-                    }
-                };
-                if !self.is_message_current_locked(
-                    &state,
-                    active.generation,
-                    active.session_generation,
-                    &active.session,
-                ) {
-                    return;
-                }
-            }
-            match self.friends.apply_refetched_user_profile_if_rev(
-                active.generation,
-                &user_id,
-                expected_rev,
-                profile,
-                &chrono::Utc::now().to_rfc3339(),
-            ) {
-                RealtimeFriendApplyResult::Output(output) => {
-                    self.apply_friend_output_owned(&owner, *output);
-                    true
-                }
-                RealtimeFriendApplyResult::MissingBaseline | RealtimeFriendApplyResult::Ignored => {
-                    false
-                }
-            }
-        };
-        if applied {
+        if self.apply_refetched_friend_profile(&active, &user_id, expected_rev, profile) {
             self.user_query_cache
                 .invalidate_user(&active.session.endpoint, &user_id)
                 .await;
