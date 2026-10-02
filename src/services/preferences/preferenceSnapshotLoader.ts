@@ -503,7 +503,7 @@ export async function loadPreferenceSnapshot() {
             hmdNotificationStartMode
         ),
         hmdNotificationTimeout: Number.isFinite(hmdNotificationTimeout)
-            ? Math.min(600000, Math.max(1000, hmdNotificationTimeout))
+            ? Math.min(30000, Math.max(1000, hmdNotificationTimeout))
             : 5000,
         hmdNotificationOpacity: Number.isFinite(hmdNotificationOpacity)
             ? Math.min(100, Math.max(0, hmdNotificationOpacity))

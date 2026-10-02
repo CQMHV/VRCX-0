@@ -550,7 +550,7 @@ export function normalizePreferenceSnapshot(snapshot: unknown = {}) {
             next.hmdNotificationTimeout,
             {
                 min: 1000,
-                max: 600000,
+                max: 30000,
                 fallback: 5000
             }
         ),

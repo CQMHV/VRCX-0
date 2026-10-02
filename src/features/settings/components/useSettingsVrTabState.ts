@@ -108,13 +108,13 @@ export function useSettingsVrTabState() {
         const milliseconds = secondsInputToMilliseconds(
             value,
             1000,
-            600000,
+            30000,
             5000
         );
         savePreferenceValue('hmdNotificationTimeout', milliseconds, () =>
             setIntConfigPreference('hmdNotificationTimeout', milliseconds, {
                 min: 1000,
-                max: 600000,
+                max: 30000,
                 fallback: 5000
             })
         );

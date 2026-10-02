@@ -193,7 +193,7 @@ describe('preferenceSnapshotLoader', () => {
             reducedMotionAndBlur: true,
             recentActionCooldownMinutes: 1440,
             hmdNotificationStartMode: 'steamvr',
-            hmdNotificationTimeout: 600000,
+            hmdNotificationTimeout: 30000,
             hmdNotificationOpacity: 0,
             hmdNotificationPosition: 'center',
             hmdNotificationStyle: 'standard',

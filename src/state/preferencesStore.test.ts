@@ -267,7 +267,7 @@ describe('preferencesStore normalizers', () => {
             wristOverlayHidePrivateWorlds: true,
             hmdNotificationsEnabled: true,
             hmdNotificationStartMode: 'steamvr',
-            hmdNotificationTimeout: 600000,
+            hmdNotificationTimeout: 30000,
             hmdNotificationOpacity: 0,
             hmdNotificationPosition: 'bottom',
             hmdNotificationStyle: 'compact',

@@ -85,7 +85,7 @@ pub(super) fn load_runtime_config(
         .flatten()
         .and_then(|value| value.trim().parse::<u64>().ok())
         .unwrap_or(5_000)
-        .clamp(1_000, 600_000);
+        .clamp(1_000, 30_000);
     let hmd_opacity_percent = config
         .get_raw(HMD_NOTIFICATION_OPACITY_CONFIG_KEY)
         .ok()

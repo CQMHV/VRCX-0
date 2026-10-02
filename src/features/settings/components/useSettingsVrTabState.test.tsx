@@ -107,7 +107,7 @@ describe('useSettingsVrTabState', () => {
         expect(vr.setIntConfigPreference).toHaveBeenLastCalledWith(
             'hmdNotificationTimeout',
             5000,
-            { min: 1000, max: 600000, fallback: 5000 }
+            { min: 1000, max: 30000, fallback: 5000 }
         );
 
         callback('onHmdNotificationOpacityChange')(-10);
