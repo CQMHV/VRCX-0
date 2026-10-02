@@ -2304,6 +2304,7 @@
                     "style": "배너 스타일",
                     "style_standard": "기본",
                     "style_compact": "컴팩트",
+                    "friend_icons": "친구 아이콘 표시",
                     "timeout": "표시 시간",
                     "opacity": "불투명도",
                     "filters": "헤드셋 알림 필터"
@@ -2657,7 +2658,7 @@
                         "ovrtoolkit_hud_notifications": "OVR Toolkit HUD 알림",
                         "ovrtoolkit_wrist_notifications": "OVR Toolkit 손목 알림",
                         "notification_filters": "VR 오버레이 알림 필터",
-                        "user_images": "사용자 아이콘 표시",
+                        "user_images": "친구 아이콘 표시",
                         "notification_opacity": "알림 불투명도",
                         "notification_timeout": "알림 표시 시간"
                     },
@@ -2675,7 +2676,8 @@
                         "when_to_display": "표시 조건",
                         "notification_filters": "데스크톱 알림 필터",
                         "desktop_notification_while_afk": "AFK 동안 알림 표시",
-                        "notification_sound": "알림음"
+                        "notification_sound": "알림음",
+                        "friend_icons": "친구 아이콘 표시"
                     },
                     "webhook": {
                         "header": "Webhook 알림",
