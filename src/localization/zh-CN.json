@@ -487,9 +487,9 @@
         "discord": {
             "title": {
                 "invite": "{name} 的邀请",
-                "request_invite": "{name} 的邀请请求",
+                "request_invite": "{name} 的加入请求",
                 "invite_response": "{name} 的邀请回应",
-                "request_invite_response": "{name} 的邀请请求回应",
+                "request_invite_response": "{name} 的加入请求回复",
                 "gps": "{name} 的当前位置",
                 "status": "{name} 更改了状态",
                 "avatar_change": "{name} 更改了模型",
@@ -985,7 +985,7 @@
         },
         "success": {
             "vrchat_launch_request_sent": "已在 VRChat 中打开",
-            "invite_request_sent": "已发送加入申请",
+            "invite_request_sent": "已发送加入请求",
             "boop_sent": "已发送戳一戳",
             "friend_and_favorite_snapshots_refreshed": "好友已刷新"
         },
@@ -1468,7 +1468,7 @@
                 "local_favorite_group_deleted": "本地收藏分组已删除",
                 "avatar_history_cleared": "已清空模型历史",
                 "vrchat_launch_request_sent": "已在 VRChat 中打开",
-                "invite_request_sent": "已发送邀请请求",
+                "invite_request_sent": "已发送加入请求",
                 "boop_sent": "已发送戳一戳",
                 "avatar_selected": "已选择模型",
                 "copied_selected_favorite_ids": "已复制所选收藏 ID",
@@ -2918,12 +2918,12 @@
                         "crop": "自动裁剪“拍立得”照片的白边"
                     },
                     "save_instance_stickers_to_file": {
-                        "header": "保存“表情贴纸”至图片",
-                        "description": "将房间内的“表情贴纸”保存到 VRChat 的图片文件夹中"
+                        "header": "保存房间内的贴纸至文件",
+                        "description": "将房间内放置的贴纸保存到 VRChat 的图片文件夹中"
                     },
                     "save_instance_emoji_to_file": {
-                        "header": "保存“表情贴纸”至文件",
-                        "description": "保存生成的“表情贴纸”到 VRChat 的图片文件夹中"
+                        "header": "保存房间内的表情符号至文件",
+                        "description": "将房间内生成的表情符号保存到 VRChat 的图片文件夹中"
                     },
                     "delete_all_screenshot_metadata": {
                         "button": "删除截图元数据",
@@ -3609,7 +3609,7 @@
                 "visit_count": "{count} 次",
                 "open_ranking": "详情",
                 "total": "共 {count} 个世界",
-                "show_home": "包含出生点"
+                "show_home": "包含家"
             },
             "people": {
                 "co_days": "{count} 天",
@@ -3844,7 +3844,7 @@
                 "booping": "是否允许戳一戳",
                 "avatar_cloning_allow": "允许",
                 "avatar_cloning_deny": "不允许",
-                "home_location": "出生点",
+                "home_location": "家",
                 "id": "玩家 ID",
                 "url": "VRChat 链接",
                 "username": "用户名",
@@ -3950,7 +3950,7 @@
                 "most_visited_worlds": {
                     "header": "最常游玩的世界",
                     "loading": "正在加载最常游玩的世界...",
-                    "exclude_home_world": "排除出生点世界",
+                    "exclude_home_world": "排除家",
                     "sort_by_time": "按时间",
                     "sort_by_count": "按访问次数",
                     "visit_count_label": "{count} 次访问"
@@ -4144,8 +4144,8 @@
                 "new_instance": "创建新房间",
                 "new_instance_and_self_invite": "创建新房间并邀请自己",
                 "new_instance_and_open_ingame": "创建新房间并在 VRChat 中打开",
-                "make_home": "设为出生点",
-                "reset_home": "重置出生点为默认",
+                "make_home": "设为家",
+                "reset_home": "重置家为默认",
                 "show_previous_instances": "显示加入过的房间",
                 "edit_details": "编辑详情",
                 "manage_world": "管理世界",
@@ -4255,7 +4255,7 @@
                 "open_in_game": "游戏内打开",
                 "update_world_name_description_capacity_and_preview": "更新此世界的名称、描述、人数上限和预览",
                 "change_world_image": "更换世界图片",
-                "reset_your_vrchat_home_location": "重置你的 VRChat 出生点",
+                "reset_your_vrchat_home_location": "重置你的 VRChat 家",
                 "edit_managed_content_author_and_feature_tags_for_this_world": "编辑此世界的内容标签、作者标签和功能标签",
                 "enable_avatar_scaling": "启用模型缩放",
                 "enable_focus_view": "启用聚焦视图",
@@ -4309,8 +4309,8 @@
             "toast": {
                 "failed_to_refresh_world": "刷新世界失败",
                 "failed_to_launch_vrchat_instance": "启动 VRChat 房间失败",
-                "home_world_reset": "已重置出生点",
-                "failed_to_update_home_world": "更新出生点世界失败",
+                "home_world_reset": "已重置家",
+                "failed_to_update_home_world": "更新家失败",
                 "memo_saved": "本地备注已保存",
                 "memo_cleared": "本地备注已清除",
                 "failed_to_save_memo": "保存本地备注失败",
@@ -4340,8 +4340,8 @@
                 "rename_world": "重命名世界",
                 "change_world_description": "修改世界描述",
                 "change_youtube_preview": "修改 YouTube 预览",
-                "reset_home_world": "重置出生点世界？",
-                "make_home_world": "设为出生点世界？",
+                "reset_home_world": "重置家？",
+                "make_home_world": "设为家？",
                 "publish_world": "发布世界？",
                 "unpublish_world": "取消发布世界？",
                 "delete_persistent_data": "删除持久化数据？",
@@ -4354,7 +4354,7 @@
                 "value_updated": "{value}已更新",
                 "failed_to_update_value": "更新{value}失败",
                 "value_copied": "已复制{value}",
-                "set_value_as_your_vrchat_home_world": "要将 {value} 设为你的出生点吗？"
+                "set_value_as_your_vrchat_home_world": "要将 {value} 设为你的家吗？"
             }
         },
         "avatar": {
@@ -4370,7 +4370,7 @@
                 "delete_cache_tooltip": "从缓存中删除模型",
                 "current_avatar": "当前模型",
                 "select": "使用此模型",
-                "select_fallback": "用作后备模型",
+                "select_fallback": "用作备用模型",
                 "block": "屏蔽模型",
                 "unblock": "取消屏蔽模型",
                 "make_public": "设为公开",
@@ -4970,7 +4970,7 @@
             "recommended_image_size": "推荐的图片尺寸",
             "gallery": "相册",
             "icons": "头像",
-            "emojis": "Emojis（表情）",
+            "emojis": "表情符号",
             "stickers": "贴纸",
             "prints": "拍立得",
             "inventory": "库存",
@@ -5018,7 +5018,7 @@
         },
         "inventory": {
             "header": "库存",
-            "emojis": "表情",
+            "emojis": "表情符号",
             "stickers": "贴纸",
             "items": "物品",
             "cosmetics": "装饰",
@@ -5042,7 +5042,7 @@
             "unequipped_success": "个人资料装饰已卸下",
             "failed_to_update_profile_decoration": "更新个人资料装饰失败",
             "custom": "自定义",
-            "exclusive": "专属",
+            "exclusive": "限定",
             "archived": "已归档",
             "all_items": "全部物品",
             "drones": "无人机",
@@ -5891,7 +5891,7 @@
             "error": "上传失败"
         },
         "world": {
-            "home_updated": "更新出生点信息成功",
+            "home_updated": "更新家信息成功",
             "id_copied": "世界 ID 已复制到剪贴板",
             "url_copied": "世界 URL 已复制到剪贴板"
         },
@@ -6219,7 +6219,7 @@
         },
         "region_code_badge": {
             "dynamic": {
-                "region_value": "地区：{value}"
+                "region_value": "服务器位置：{value}"
             }
         },
         "avatar_provider_settings": {

@@ -57,8 +57,8 @@
         "gallery_images_description": "VRChat에 업로드한 이미지가 여기에 표시됩니다.",
         "inventory_title": "아직 인벤토리 아이템이 없습니다",
         "inventory_description": "VRChat 인벤토리의 아이템과 선물이 여기에 표시됩니다.",
-        "prints_title": "아직 VRChat Print가 없습니다",
-        "prints_description": "VRChat에서 만든 Print가 여기에 표시됩니다.",
+        "prints_title": "아직 VRChat 프린트가 없습니다",
+        "prints_description": "VRChat에서 만든 프린트가 여기에 표시됩니다.",
         "world_screenshots_description": "이 월드에서 찍은 스크린샷이 여기에 표시됩니다.",
         "schedule_rules_title": "아직 시간 규칙이 없습니다",
         "schedule_rules_description": "시간 규칙을 추가해 상태나 상태 메시지를 자동으로 변경하세요.",
@@ -929,7 +929,7 @@
         "success": {
             "vrchat_launch_request_sent": "VRChat에서 열었습니다.",
             "invite_request_sent": "초대 요청이 전송되었습니다.",
-            "boop_sent": "부프를 보냈습니다",
+            "boop_sent": "콕찌르기를 보냈습니다",
             "friend_and_favorite_snapshots_refreshed": "친구 목록을 새로고침했습니다."
         },
         "error": {
@@ -1065,7 +1065,7 @@
             "success": {
                 "vrchat_launch_request_sent": "VRChat에서 열었습니다.",
                 "invite_request_sent": "초대 요청이 전송되었습니다.",
-                "boop_sent": "부프를 보냈습니다"
+                "boop_sent": "콕찌르기를 보냈습니다"
             },
             "loading": {
                 "loading_feed_rows": "피드 불러오는 중"
@@ -1080,7 +1080,7 @@
                 "failed_to_send_self_invite": "셀프 초대를 보내지 못했습니다.",
                 "failed_to_send_invite": "초대장을 보내지 못했습니다.",
                 "failed_to_request_invite": "초대를 요청하지 못했습니다.",
-                "failed_to_send_boop": "부프를 보내지 못했습니다."
+                "failed_to_send_boop": "콕찌르기를 보내지 못했습니다."
             },
             "modal": {
                 "send_invite": "초대장을 보내시겠습니까?",
@@ -1412,7 +1412,7 @@
                 "avatar_history_cleared": "아바타 기록이 삭제되었습니다.",
                 "vrchat_launch_request_sent": "VRChat에서 열었습니다.",
                 "invite_request_sent": "초대 요청이 전송되었습니다.",
-                "boop_sent": "부프를 보냈습니다",
+                "boop_sent": "콕찌르기를 보냈습니다",
                 "avatar_selected": "아바타가 선택됨",
                 "copied_selected_favorite_ids": "선택한 즐겨찾기 ID를 복사했습니다.",
                 "selected_favorites_removed": "선택한 즐겨찾기가 삭제되었습니다.",
@@ -1581,7 +1581,7 @@
                 "friendRequest": "친구 요청",
                 "ignoredFriendRequest": "무시된 친구 요청",
                 "message": "메시지",
-                "boop": "부프",
+                "boop": "콕찌르기",
                 "groupChange": "그룹 변경",
                 "group": {
                     "announcement": "그룹 공지",
@@ -1646,15 +1646,15 @@
             },
             "action": {
                 "mark_seen": "읽음 표시",
-                "send_boop": "부프 보내기",
-                "search_emoji": "이모티콘 검색",
+                "send_boop": "콕찌르기 보내기",
+                "search_emoji": "이모지 검색",
                 "send": "보내기"
             },
             "success": {
                 "friend_request_accepted": "친구 요청이 수락되었습니다.",
                 "notification_declined": "거절했습니다.",
                 "invite_response_sent": "답장을 보냈습니다.",
-                "boop_sent": "부프를 보냈습니다",
+                "boop_sent": "콕찌르기를 보냈습니다",
                 "notification_response_sent": "응답을 보냈습니다.",
                 "notification_log_entry_deleted": "알림을 기록에서 삭제했습니다."
             },
@@ -1665,7 +1665,7 @@
                 "cannot_send_invite_response_no_current_user_session_is_available": "이 초대에 응답하려면 로그인하세요."
             },
             "loading": {
-                "loading_emojis": "이모티콘 불러오는 중"
+                "loading_emojis": "이모지 불러오는 중"
             },
             "label": {
                 "notifications_in_view": "표시 중인 알림 {total}개"
@@ -1723,7 +1723,7 @@
                 "roster_bootstrap_did_not_complete": "친구를 불러오지 못했습니다.",
                 "vrchat_launch_request_sent": "VRChat에서 열었습니다.",
                 "invite_request_sent": "초대 요청이 전송되었습니다.",
-                "boop_sent": "부프를 보냈습니다"
+                "boop_sent": "콕찌르기를 보냈습니다"
             },
             "empty": {
                 "no_friends_are_available_for_mutual_friends_loading": "공통 친구를 불러올 친구가 없습니다.",
@@ -1936,7 +1936,7 @@
                 "gallery": "갤러리",
                 "gallery_description": "사진, 프로필 아이콘, 프린트",
                 "inventory": "인벤토리",
-                "inventory_description": "이모티콘, 스티커, 아이템, 코스메틱 관리"
+                "inventory_description": "이모지, 스티커, 아이템, 코스메틱 관리"
             },
             "shortcuts": {
                 "header": "폴더",
@@ -2041,7 +2041,7 @@
                 "minimum_friends": "최소 친구 수",
                 "minimum_players": "최소 플레이어 수",
                 "room_types": "인스턴스 유형",
-                "room_types_hint": "모든 인스턴스 유형에 적용하려면 비워 두세요. 상태를 조인 가능으로 바꾸는 규칙은 특정 인스턴스 유형을 선택하세요.",
+                "room_types_hint": "모든 인스턴스 유형에 적용하려면 비워 두세요. 상태를 참가 환영으로 바꾸는 규칙은 특정 인스턴스 유형을 선택하세요.",
                 "no_custom_room_rules": "구성된 맞춤 인스턴스 규칙이 없습니다.",
                 "preset_alone": "혼자 있을 때",
                 "preset_with_anyone": "다른 사람과 있을 때",
@@ -2593,8 +2593,8 @@
                     "avatar_frame_description": "프로필 아이콘 주위의 프레임을 표시합니다.",
                     "profile_effect": "프로필 효과 표시",
                     "profile_effect_description": "사용자 프로필 전체에 적용된 효과를 표시합니다.",
-                    "nameplate_effect": "네임플레이트 효과 표시",
-                    "nameplate_effect_description": "표시 이름 뒤에 적용된 네임플레이트 효과를 표시합니다.",
+                    "nameplate_effect": "이름표 효과 표시",
+                    "nameplate_effect_description": "표시 이름 뒤에 적용된 이름표 효과를 표시합니다.",
                     "additional_information": "기타 정보",
                     "vrchat_notes": "VRChat 메모",
                     "vrchat_notes_description": "VRChat에 저장된 메모를 표시합니다.",
@@ -2610,11 +2610,11 @@
                     "trust_colors": "신뢰 등급 색상",
                     "trust_colors_description": "신뢰 등급 이름에 사용되는 색상을 사용자 정의합니다.",
                     "trust_levels": {
-                        "visitor": "방문자",
-                        "new_user": "신규 사용자",
-                        "user": "사용자",
-                        "known_user": "알려진 사용자",
-                        "trusted_user": "신뢰할 수 있는 사용자",
+                        "visitor": "Visitor",
+                        "new_user": "New User",
+                        "user": "User",
+                        "known_user": "Known User",
+                        "trusted_user": "Trusted User",
                         "vrchat_team": "VRChat 팀",
                         "nuisance": "귀찮은 사용자"
                     }
@@ -2865,8 +2865,8 @@
                         "description": "배치된 스티커를 VRChat Pictures 폴더에 저장합니다."
                     },
                     "save_instance_emoji_to_file": {
-                        "header": "인스턴스 이모티콘을 파일에 저장",
-                        "description": "생성된 이모티콘을 VRChat Pictures 폴더에 저장합니다."
+                        "header": "인스턴스 이모지를 파일에 저장",
+                        "description": "생성된 이모지를 VRChat Pictures 폴더에 저장합니다."
                     },
                     "delete_all_screenshot_metadata": {
                         "button": "스크린샷 메타데이터 제거",
@@ -3141,7 +3141,7 @@
                 "favorite": "즐겨찾기",
                 "muted": "음소거됨",
                 "avatar_interaction_disabled": "아바타 상호작용 꺼짐",
-                "chatbox_muted": "채팅 상자 음소거됨",
+                "chatbox_muted": "채팅창 음소거됨",
                 "timeout": "시간 초과",
                 "age_verified": "연령 확인됨",
                 "all": "전체",
@@ -3228,7 +3228,7 @@
                 "failed_to_send_self_invite": "셀프 초대를 보내지 못했습니다.",
                 "failed_to_send_invite": "초대장을 보내지 못했습니다.",
                 "failed_to_request_invite": "초대를 요청하지 못했습니다.",
-                "failed_to_send_boop": "부프를 보내지 못했습니다.",
+                "failed_to_send_boop": "콕찌르기를 보내지 못했습니다.",
                 "failed_to_select_avatar": "아바타를 선택하지 못했습니다.",
                 "failed_to_create_local_favorite_group": "로컬 즐겨찾기 그룹을 생성하지 못했습니다.",
                 "failed_to_copy_selected_favorites": "선택한 즐겨찾기를 복사하지 못했습니다.",
@@ -3295,7 +3295,7 @@
                 "failed_to_send_self_invite": "셀프 초대를 보내지 못했습니다.",
                 "failed_to_send_invite": "초대장을 보내지 못했습니다.",
                 "failed_to_request_invite": "초대를 요청하지 못했습니다.",
-                "failed_to_send_boop": "부프를 보내지 못했습니다."
+                "failed_to_send_boop": "콕찌르기를 보내지 못했습니다."
             },
             "modal": {
                 "unfriend_user": "친구를 삭제할까요?",
@@ -3668,8 +3668,8 @@
                 "active": "활성",
                 "offline": "오프라인",
                 "online": "온라인",
-                "join_me": "조인 가능",
-                "ask_me": "조인 문의",
+                "join_me": "참가 환영",
+                "ask_me": "참가 요청 필요",
                 "busy": "방해 금지"
             },
             "pronouns": "대명사",
@@ -3689,7 +3689,7 @@
                 "invite_to_group": "그룹에 초대",
                 "group_actions": "그룹...",
                 "group_moderation": "그룹 관리",
-                "send_boop": "부프 보내기",
+                "send_boop": "콕찌르기 보내기",
                 "accept_friend_request": "친구 요청 수락",
                 "decline_friend_request": "친구 요청 거절",
                 "cancel_friend_request": "친구 요청 취소",
@@ -3709,8 +3709,8 @@
                 "moderation_actions": "관리...",
                 "moderation_enable_avatar_interaction": "아바타 상호작용 허용",
                 "moderation_disable_avatar_interaction": "아바타 상호작용 거부",
-                "moderation_enable_chatbox": "채팅 상자 음소거 해제",
-                "moderation_disable_chatbox": "채팅 상자 음소거",
+                "moderation_enable_chatbox": "채팅창 음소거 해제",
+                "moderation_disable_chatbox": "채팅창 음소거",
                 "edit_status": "소셜 상태 수정",
                 "edit_profile_details": "프로필 세부정보 수정",
                 "edit_profile_media": "배너 및 아이콘 수정",
@@ -3960,7 +3960,7 @@
                 "shared_connections_setting_updated": "공유 연결 설정이 업데이트되었습니다.",
                 "discord_connections_setting_updated": "Discord 연결 설정이 업데이트되었습니다.",
                 "report_sent": "신고가 전송되었습니다.",
-                "boop_sent": "부프를 보냈습니다",
+                "boop_sent": "콕찌르기를 보냈습니다",
                 "profile_details_updated": "프로필 세부정보가 업데이트되었습니다.",
                 "group_invite_sent": "그룹 초대가 전송되었습니다.",
                 "left_group": "그룹에서 탈퇴했습니다",
@@ -4021,7 +4021,7 @@
                 "invite_request_message_sent": "초대 요청 메시지가 전송되었습니다.",
                 "invite_request_sent": "초대 요청이 전송되었습니다.",
                 "failed_to_request_invite": "초대를 요청하지 못했습니다.",
-                "failed_to_send_boop": "부프를 보내지 못했습니다.",
+                "failed_to_send_boop": "콕찌르기를 보내지 못했습니다.",
                 "already_viewing_user": "이미 이 사용자를 보고 있습니다.",
                 "failed_to_open_discord_profile": "Discord 프로필을 열지 못했습니다.",
                 "translation_failed": "번역 실패",
@@ -4936,11 +4936,11 @@
             "edit_current_profile_media": "현재 배너 및 아이콘 수정",
             "profile_icons_managed_link": "프로필 아이콘은 갤러리에서 관리됩니다.",
             "emoji_animation_styles": "애니메이션 스타일",
-            "emoji_animation_type": "애니메이션 이모티콘",
+            "emoji_animation_type": "애니메이션 이모지",
             "emoji_animation_fps": "FPS:",
             "emoji_animation_frame_count": "프레임 수:",
             "emoji_loop_pingpong": "핑퐁 루프",
-            "flipbook_info": "애니메이션 이모티콘으로 사용할 1024x1024 PNG 스프라이트 시트를 선택하세요. 사용 가능한 프레임 그리드 크기: 4, 16 또는 64(최대 FPS 64, 최대 프레임 64)",
+            "flipbook_info": "애니메이션 이모지로 사용할 1024x1024 PNG 스프라이트 시트를 선택하세요. 사용 가능한 프레임 그리드 크기: 4, 16 또는 64(최대 FPS 64, 최대 프레임 64)",
             "note": "참고",
             "crop_print_border": "재업로드 시 기존 테두리 자르기",
             "upload_options": "업로드 옵션",
@@ -4948,9 +4948,9 @@
             "item": "아이템",
             "sticker": "스티커",
             "drone_skin": "드론 스킨",
-            "emoji": "이모티콘",
+            "emoji": "이모지",
             "redeem": "사용",
-            "create_animated_emoji": "애니메이션 이모티콘 생성기",
+            "create_animated_emoji": "애니메이션 이모지 생성기",
             "grid_settings": "그리드 설정",
             "grid_density": "그리드 밀도",
             "density_options": {
@@ -4962,7 +4962,7 @@
         },
         "inventory": {
             "header": "인벤토리",
-            "emojis": "이모티콘",
+            "emojis": "이모지",
             "stickers": "스티커",
             "items": "아이템",
             "cosmetics": "코스메틱",
@@ -4978,7 +4978,7 @@
             "failed_to_update_profile_background": "프로필 배경을 업데이트하지 못했습니다",
             "icon_frame": "아이콘 프레임",
             "profile_effect": "프로필 효과",
-            "nameplate_effect": "네임플레이트 테마",
+            "nameplate_effect": "이름표 테마",
             "equipped": "장착 중",
             "equip": "장착",
             "unequip": "장착 해제",
@@ -4986,7 +4986,7 @@
             "unequipped_success": "프로필 장식의 장착을 해제했습니다",
             "failed_to_update_profile_decoration": "프로필 장식을 업데이트하지 못했습니다",
             "custom": "맞춤",
-            "exclusive": "한정",
+            "exclusive": "독점",
             "archived": "보관됨",
             "all_items": "모든 아이템",
             "drones": "드론",
@@ -5247,7 +5247,7 @@
                 "inviteResponse": "초대 응답",
                 "requestInviteResponse": "초대 요청 응답",
                 "friendRequest": "친구 요청",
-                "boop": "부프",
+                "boop": "콕찌르기",
                 "group_queueReady": "인스턴스 대기열 준비 완료",
                 "instance_closed": "인스턴스 종료",
                 "OnPlayerJoining": "플레이어 입장 중",
@@ -5426,14 +5426,14 @@
             "following_count_short": "{count}개 팔로우 중"
         },
         "boop_dialog": {
-            "header": "부프",
-            "emoji_manager": "이모티콘 관리자",
-            "select_default_emoji": "기본 이모티콘 선택",
-            "default_emojis": "기본 이모티콘",
+            "header": "콕찌르기",
+            "emoji_manager": "이모지 관리자",
+            "select_default_emoji": "기본 이모지 선택",
+            "default_emojis": "기본 이모지",
             "send": "보내기",
             "recent": "최근 사용",
             "inventory_emojis": "인벤토리",
-            "no_inventory_emojis": "인벤토리에 아직 부프용 이모티콘이 없습니다",
+            "no_inventory_emojis": "인벤토리에 아직 콕찌르기용 이모지가 없습니다",
             "failed_to_load_emojis": "이모지를 불러오지 못했습니다."
         },
         "vrcx_updater": {
@@ -6231,7 +6231,7 @@
                 "failed_to_send_self_invite": "셀프 초대를 보내지 못했습니다.",
                 "failed_to_send_invite": "초대장을 보내지 못했습니다.",
                 "failed_to_request_invite": "초대를 요청하지 못했습니다.",
-                "failed_to_send_boop": "부프를 보내지 못했습니다.",
+                "failed_to_send_boop": "콕찌르기를 보내지 못했습니다.",
                 "failed_to_update_social_status": "소셜 상태를 업데이트하지 못했습니다.",
                 "failed_to_update_status_description": "상태 설명을 업데이트하지 못했습니다.",
                 "failed_to_update_status": "상태를 업데이트하지 못했습니다."

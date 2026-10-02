@@ -900,7 +900,7 @@
         "visited_minutes_ago_other": "{count} 分鐘前來過",
         "visited_hours_ago_other": "{count} 小時前來過",
         "visited_at": "上次進入：{time}",
-        "online": "在線",
+        "online": "線上",
         "active": "活躍",
         "offline": "離線",
         "pending_offline": "可能離線",
@@ -986,7 +986,7 @@
         "success": {
             "vrchat_launch_request_sent": "已在 VRChat 中開啟",
             "invite_request_sent": "已傳送加入申請",
-            "boop_sent": "已傳送戳一下",
+            "boop_sent": "已傳送戳戳",
             "friend_and_favorite_snapshots_refreshed": "已重新整理好友"
         },
         "error": {
@@ -1122,7 +1122,7 @@
             "success": {
                 "vrchat_launch_request_sent": "已在 VRChat 中開啟",
                 "invite_request_sent": "已傳送加入申請",
-                "boop_sent": "已傳送戳一下"
+                "boop_sent": "已傳送戳戳"
             },
             "loading": {
                 "loading_feed_rows": "正在載入動態"
@@ -1137,7 +1137,7 @@
                 "failed_to_send_self_invite": "傳送自我邀請失敗",
                 "failed_to_send_invite": "傳送邀請失敗",
                 "failed_to_request_invite": "申請加入失敗",
-                "failed_to_send_boop": "傳送戳一下失敗"
+                "failed_to_send_boop": "傳送戳戳失敗"
             },
             "modal": {
                 "send_invite": "傳送邀請？",
@@ -1155,7 +1155,7 @@
             }
         },
         "friends_locations": {
-            "online": "上線",
+            "online": "線上",
             "view_people": "好友檢視",
             "view_worlds": "世界檢視",
             "world_instances_one": "{count} 個房間",
@@ -1371,7 +1371,7 @@
             "world": {
                 "header": "世界",
                 "category": "依類別搜尋",
-                "community_lab": "包含社區實驗室"
+                "community_lab": "包含社群實驗室"
             },
             "avatar": {
                 "header": "角色",
@@ -1469,7 +1469,7 @@
                 "avatar_history_cleared": "角色歷史已清空",
                 "vrchat_launch_request_sent": "已在 VRChat 中開啟",
                 "invite_request_sent": "已傳送加入申請",
-                "boop_sent": "已傳送戳一下",
+                "boop_sent": "已傳送戳戳",
                 "avatar_selected": "角色已切換",
                 "copied_selected_favorite_ids": "已複製所選收藏 ID",
                 "selected_favorites_removed": "已移除所選收藏",
@@ -1599,8 +1599,8 @@
                 "unmute": "解除靜音",
                 "interactOn": "角色互動開啟",
                 "interactOff": "角色互動關閉",
-                "muteChat": "隱藏聊天框",
-                "unmuteChat": "顯示聊天框"
+                "muteChat": "隱藏對話框",
+                "unmuteChat": "顯示對話框"
             },
             "loading": {
                 "loading_the_moderation_snapshot": "正在載入管理紀錄"
@@ -1638,7 +1638,7 @@
                 "friendRequest": "好友請求",
                 "ignoredFriendRequest": "忽略好友請求",
                 "message": "訊息",
-                "boop": "戳",
+                "boop": "戳戳",
                 "groupChange": "群組變更",
                 "group": {
                     "announcement": "公告",
@@ -1703,7 +1703,7 @@
             },
             "action": {
                 "mark_seen": "標記已讀",
-                "send_boop": "傳送戳一下",
+                "send_boop": "傳送戳戳",
                 "search_emoji": "搜尋表情符號",
                 "send": "傳送"
             },
@@ -1711,7 +1711,7 @@
                 "friend_request_accepted": "好友請求已接受",
                 "notification_declined": "通知已拒絕",
                 "invite_response_sent": "已發送回覆",
-                "boop_sent": "已傳送戳一下",
+                "boop_sent": "已傳送戳戳",
                 "notification_response_sent": "完成",
                 "notification_log_entry_deleted": "通知已從歷史紀錄中移除"
             },
@@ -1780,7 +1780,7 @@
                 "roster_bootstrap_did_not_complete": "無法載入你的好友",
                 "vrchat_launch_request_sent": "已在 VRChat 中開啟",
                 "invite_request_sent": "已傳送加入申請",
-                "boop_sent": "已傳送戳一下"
+                "boop_sent": "已傳送戳戳"
             },
             "empty": {
                 "no_friends_are_available_for_mutual_friends_loading": "沒有可用於載入共同好友的好友",
@@ -3285,7 +3285,7 @@
                 "failed_to_send_self_invite": "傳送自我邀請失敗",
                 "failed_to_send_invite": "傳送邀請失敗",
                 "failed_to_request_invite": "申請加入失敗",
-                "failed_to_send_boop": "傳送戳一下失敗",
+                "failed_to_send_boop": "傳送戳戳失敗",
                 "failed_to_select_avatar": "切換角色失敗",
                 "failed_to_create_local_favorite_group": "建立本機收藏群組失敗",
                 "failed_to_copy_selected_favorites": "複製所選收藏失敗",
@@ -3352,7 +3352,7 @@
                 "failed_to_send_self_invite": "傳送自我邀請失敗",
                 "failed_to_send_invite": "傳送邀請失敗",
                 "failed_to_request_invite": "申請加入失敗",
-                "failed_to_send_boop": "傳送戳一下失敗"
+                "failed_to_send_boop": "傳送戳戳失敗"
             },
             "modal": {
                 "unfriend_user": "解除好友關係？",
@@ -3724,7 +3724,7 @@
             "status": {
                 "active": "活躍",
                 "offline": "離線",
-                "online": "上線",
+                "online": "線上",
                 "join_me": "加入我",
                 "ask_me": "詢問我",
                 "busy": "請勿打擾"
@@ -3746,7 +3746,7 @@
                 "invite_to_group": "邀請加入群組",
                 "group_actions": "群組...",
                 "group_moderation": "群組管理",
-                "send_boop": "戳一下",
+                "send_boop": "戳戳",
                 "accept_friend_request": "接受好友邀請",
                 "decline_friend_request": "回絕好友邀請",
                 "cancel_friend_request": "取消好友邀請",
@@ -3766,8 +3766,8 @@
                 "moderation_actions": "用戶管理...",
                 "moderation_enable_avatar_interaction": "開啟角色互動",
                 "moderation_disable_avatar_interaction": "關閉角色互動",
-                "moderation_enable_chatbox": "顯示聊天框",
-                "moderation_disable_chatbox": "隱藏聊天框",
+                "moderation_enable_chatbox": "顯示對話框",
+                "moderation_disable_chatbox": "隱藏對話框",
                 "edit_status": "編輯社交狀態",
                 "edit_profile_details": "編輯個人資料",
                 "edit_profile_media": "編輯橫幅和頭像",
@@ -3844,7 +3844,7 @@
                 "booping": "戳一戳功能",
                 "avatar_cloning_allow": "允許",
                 "avatar_cloning_deny": "已拒絕",
-                "home_location": "預設世界",
+                "home_location": "起始世界",
                 "id": "用戶 ID",
                 "url": "VRChat 連結",
                 "username": "用戶名稱",
@@ -3950,7 +3950,7 @@
                 "most_visited_worlds": {
                     "header": "最常造訪的世界",
                     "loading": "正在載入最常造訪的世界…",
-                    "exclude_home_world": "不包含預設世界",
+                    "exclude_home_world": "不包含起始世界",
                     "sort_by_time": "按時間",
                     "sort_by_count": "按造訪次數",
                     "visit_count_label": "{count} 次造訪"
@@ -4013,11 +4013,11 @@
                 "status_preset_saved": "狀態範本已儲存",
                 "status_updated": "狀態已更新",
                 "avatar_cloning_setting_updated": "角色複製設定已更新",
-                "booping_setting_updated": "戳一下設定已更新",
+                "booping_setting_updated": "戳戳設定已更新",
                 "shared_connections_setting_updated": "共享連線設定已更新",
                 "discord_connections_setting_updated": "Discord 連線設定已更新",
                 "report_sent": "檢舉已傳送",
-                "boop_sent": "戳一下已傳送",
+                "boop_sent": "戳戳已傳送",
                 "profile_details_updated": "個人資料詳細資訊已更新",
                 "group_invite_sent": "群組邀請已傳送",
                 "left_group": "已退出群組",
@@ -4058,7 +4058,7 @@
                 "failed_to_update_social_status": "更新社交狀態失敗",
                 "failed_to_update_profile_details": "更新個人資料詳細資訊失敗",
                 "failed_to_update_avatar_cloning_setting": "更新角色複製設定失敗",
-                "failed_to_update_booping_setting": "更新戳一下設定失敗",
+                "failed_to_update_booping_setting": "更新戳戳設定失敗",
                 "failed_to_update_shared_connections_setting": "更新共享連線設定失敗",
                 "failed_to_update_discord_connections_setting": "更新 Discord 連線設定失敗",
                 "failed_to_update_badge": "更新徽章失敗",
@@ -4078,7 +4078,7 @@
                 "invite_request_message_sent": "加入申請訊息已傳送",
                 "invite_request_sent": "加入申請已傳送",
                 "failed_to_request_invite": "申請加入失敗",
-                "failed_to_send_boop": "傳送戳一下失敗",
+                "failed_to_send_boop": "傳送戳戳失敗",
                 "already_viewing_user": "已在查看此用戶",
                 "failed_to_open_discord_profile": "開啟 Discord 資料失敗",
                 "translation_failed": "翻譯失敗",
@@ -4127,7 +4127,7 @@
                 "avatar_scaling_disabled": "角色縮放關閉",
                 "focus_view_disabled": "焦點檢視已停用",
                 "future_proofing": "可未來更新",
-                "labs": "社區實驗室",
+                "labs": "社群實驗室",
                 "cache": "快取",
                 "restrictions_count_one": "{count} 項功能限制",
                 "restrictions_count_other": "{count} 項功能限制",
@@ -4144,8 +4144,8 @@
                 "new_instance": "新房間",
                 "new_instance_and_self_invite": "開啟新房間並自我邀請",
                 "new_instance_and_open_ingame": "開啟新房間並於遊戲中開啟",
-                "make_home": "設為預設世界",
-                "reset_home": "重設預設世界",
+                "make_home": "設為起始世界",
+                "reset_home": "重設起始世界",
                 "show_previous_instances": "顯示過去的房間",
                 "edit_details": "編輯詳細資訊",
                 "manage_world": "管理世界",
@@ -4957,14 +4957,14 @@
             "include": "取消略過"
         },
         "gallery_icons": {
-            "header": "管理照片、圖示、表情符號與貼圖",
+            "header": "管理照片、圖示、表情符號與貼紙",
             "recommended_image_size": "建議圖片尺寸",
-            "gallery": "照片",
+            "gallery": "相簿",
             "icons": "圖示",
             "emojis": "表情符號",
-            "stickers": "貼圖",
-            "prints": "相片列印",
-            "inventory": "物品欄",
+            "stickers": "貼紙",
+            "prints": "拍立得",
+            "inventory": "庫存",
             "refresh": "重新整理",
             "upload": "上傳",
             "clear": "清除",
@@ -5033,7 +5033,7 @@
             "unequipped_success": "個人資料裝飾已卸下",
             "failed_to_update_profile_decoration": "更新個人資料裝飾失敗",
             "custom": "自訂",
-            "exclusive": "專屬",
+            "exclusive": "獨家",
             "archived": "已封存",
             "all_items": "全部物品",
             "drones": "無人機",
@@ -5294,7 +5294,7 @@
                 "inviteResponse": "邀請回覆",
                 "requestInviteResponse": "請求邀請回覆",
                 "friendRequest": "好友請求",
-                "boop": "噗",
+                "boop": "戳戳",
                 "group_queueReady": "房間排隊就緒",
                 "instance_closed": "房間已關閉",
                 "OnPlayerJoining": "用戶正在加入",
@@ -5473,14 +5473,14 @@
             "following_count_short": "已追蹤 {count} 個"
         },
         "boop_dialog": {
-            "header": "戳一下",
+            "header": "戳戳",
             "emoji_manager": "管理表情符號",
             "select_default_emoji": "選擇預設表情符號",
             "default_emojis": "預設表情符號",
             "send": "傳送",
             "recent": "最近使用",
             "inventory_emojis": "庫存",
-            "no_inventory_emojis": "庫存裡還沒有可用的戳一下表情符號",
+            "no_inventory_emojis": "庫存裡還沒有可用的戳戳表情符號",
             "failed_to_load_emojis": "載入表情符號失敗"
         },
         "vrcx_updater": {
@@ -5882,7 +5882,7 @@
             "error": "上傳失敗"
         },
         "world": {
-            "home_updated": "預設世界已更新",
+            "home_updated": "起始世界已更新",
             "id_copied": "世界 ID 已複製到剪貼簿",
             "url_copied": "世界網址已複製到剪貼簿"
         },
@@ -6278,7 +6278,7 @@
                 "failed_to_send_self_invite": "傳送自我邀請失敗",
                 "failed_to_send_invite": "傳送邀請失敗",
                 "failed_to_request_invite": "申請加入失敗",
-                "failed_to_send_boop": "傳送戳一下失敗",
+                "failed_to_send_boop": "傳送戳戳失敗",
                 "failed_to_update_social_status": "更新社交狀態失敗",
                 "failed_to_update_status_description": "更新狀態訊息失敗",
                 "failed_to_update_status": "更新狀態失敗"
