@@ -238,6 +238,59 @@ fn backend_load_seeds_tts_filters_from_vr_when_desktop_is_off(
 }
 
 #[test]
+fn renaming_a_local_friend_group_rewrites_its_key_in_every_saved_surface(
+) -> std::result::Result<(), Box<dyn std::error::Error>> {
+    let (_dir, config) = test_config("overlay-activity-local-group-rename")?;
+    let selected = |keys: Value| json!({ "scope": "selectedFavorites", "favoriteGroupKeys": keys });
+    config.set_string(
+        "overlayActivityFilters",
+        &serde_json::to_string(&json!({
+            "version": 1,
+            "wrist": { "types": { "Online": selected(json!(["group_0", "local:Close"])) } }
+        }))?,
+    )?;
+    config.set_string(
+        "desktopNotificationActivityFilters",
+        &serde_json::to_string(&json!({
+            "version": 1,
+            "types": { "Online": selected(json!(["local:Close"])) }
+        }))?,
+    )?;
+    config.set_string(
+        "ttsNotificationActivityFilters",
+        &serde_json::to_string(&json!({
+            "version": 1,
+            "types": { "Online": selected(json!(["local:Closer"])) }
+        }))?,
+    )?;
+
+    rename_local_favorite_group_in_activity_filters(&config, "Close", "Inner")?;
+
+    let keys =
+        |key: &str, path: &[&str]| -> std::result::Result<Value, Box<dyn std::error::Error>> {
+            let mut value = config.get_json(key, json!({}))?;
+            for segment in path {
+                value = value[*segment].take();
+            }
+            Ok(value["Online"]["favoriteGroupKeys"].take())
+        };
+    assert_eq!(
+        keys("overlayActivityFilters", &["wrist", "types"])?,
+        json!(["group_0", "local:Inner"])
+    );
+    assert_eq!(
+        keys("desktopNotificationActivityFilters", &["types"])?,
+        json!(["local:Inner"])
+    );
+    assert_eq!(
+        keys("ttsNotificationActivityFilters", &["types"])?,
+        json!(["local:Closer"])
+    );
+    assert!(config.get_raw("vrNotificationActivityFilters")?.is_none());
+    Ok(())
+}
+
+#[test]
 fn backend_save_normalizes_only_the_requested_surface(
 ) -> std::result::Result<(), Box<dyn std::error::Error>> {
     let (_dir, config) = test_config("overlay-activity-save-surface")?;

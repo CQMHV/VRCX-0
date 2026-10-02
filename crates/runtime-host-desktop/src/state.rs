@@ -1031,11 +1031,26 @@ impl DesktopRuntimeHostState {
         group_name: String,
         new_group_name: String,
     ) -> Result<vrcx_0_application::favorites::LocalFavoriteGroupWrite> {
-        Ok(self
+        let write = self
             .runtime
             .desktop_assembly()
             .favorite_mutations()
-            .rename_local_group(kind, group_name, new_group_name)?)
+            .rename_local_group(kind, group_name.clone(), new_group_name.clone())?;
+        let store = crate::game_state_store::PersistenceGameStateStore::new(Arc::clone(
+            self.runtime.database(),
+        ));
+        vrcx_0_application_game::presence_automation_local_group_renamed(
+            &store,
+            kind,
+            &group_name,
+            &new_group_name,
+        )?;
+        if kind == vrcx_0_application_core::FavoriteEntityKind::Friend {
+            self.desktop
+                .services
+                .rename_local_favorite_group_in_activity_filters(&group_name, &new_group_name)?;
+        }
+        Ok(write)
     }
 
     pub fn favorite_local_group_delete(

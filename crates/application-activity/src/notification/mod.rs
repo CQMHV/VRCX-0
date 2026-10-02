@@ -18,7 +18,8 @@ mod webhook_sink;
 
 pub use activity_filters::save_notification_activity_filters;
 pub use activity_filters::{
-    apply_location_notification_rules, load_overlay_activity_filters, ActivityFilterProfile,
+    apply_location_notification_rules, load_overlay_activity_filters,
+    rename_local_favorite_group_in_activity_filters, ActivityFilterProfile,
     NotificationActivityFilterProfiles, NotificationActivityFilterSurface,
     NotificationActivityFiltersSetInput,
 };

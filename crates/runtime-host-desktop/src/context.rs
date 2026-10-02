@@ -3,8 +3,8 @@ use std::sync::{Arc, Mutex};
 use vrcx_0_application::auth::AuthCredentialStore;
 use vrcx_0_application_activity::notification::{
     apply_location_notification_rules, extract_file_version, fallback_file_version,
-    load_overlay_activity_filters, CachedNotificationUserImageResolver, NotificationConfig,
-    NotificationResolver,
+    load_overlay_activity_filters, rename_local_favorite_group_in_activity_filters,
+    CachedNotificationUserImageResolver, NotificationConfig, NotificationResolver,
 };
 use vrcx_0_application_activity::{ActivityRouter, ActivitySink, ActivitySinkRegistry};
 use vrcx_0_application_core::{
@@ -151,6 +151,20 @@ impl DesktopRuntimeServices {
             game_log_snapshot: RuntimeSnapshotStore::default(),
             now_playing: Arc::new(Mutex::new(Arc::new(NowPlayingSnapshot::default()))),
         })
+    }
+
+    pub fn rename_local_favorite_group_in_activity_filters(
+        &self,
+        group_name: &str,
+        new_group_name: &str,
+    ) -> vrcx_0_application_core::Result<()> {
+        rename_local_favorite_group_in_activity_filters(
+            self.notification_config.as_ref(),
+            group_name,
+            new_group_name,
+        )?;
+        self.reload_overlay_activity_filters();
+        Ok(())
     }
 
     pub fn reload_overlay_activity_filters(&self) {
