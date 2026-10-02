@@ -1648,8 +1648,10 @@
                     "transfer": "グループ譲渡",
                     "queueReady": "キューの準備が完了",
                     "event": {
-                        "created": "グループイベントの作成"
-                    }
+                        "created": "グループイベントの作成",
+                        "starting": "グループイベントの開始"
+                    },
+                    "post": "グループの投稿"
                 },
                 "localNotifs": "VRChat 運営から",
                 "event": {
@@ -1662,7 +1664,8 @@
                     "report": {
                         "closed": "モデレーションの通報が完了"
                     },
-                    "contentrestriction": "コンテンツ制限のモデレーション"
+                    "contentrestriction": "コンテンツ制限のモデレーション",
+                    "notice": "モデレーションのお知らせ"
                 },
                 "instance": {
                     "closed": "閉じたインスタンス"
@@ -1678,6 +1681,21 @@
                         "gift": "ギフトの受け取り"
                     },
                     "alert": "エコノミーの通知"
+                },
+                "avatarreview": {
+                    "success": "アバター審査の承認",
+                    "failure": "アバター審査の却下"
+                },
+                "inviteInstanceContentGated": "招待（コンテンツゲーティング）",
+                "promo": {
+                    "redeem": "プロモコードの引き換え"
+                },
+                "text": {
+                    "adventure": "テキストアドベンチャー"
+                },
+                "votetokick": "投票キック",
+                "twitchdrop": {
+                    "fulfilled": "Twitch ドロップの受け取り"
                 }
             },
             "description": {
@@ -2301,7 +2319,9 @@
             },
             "social": {
                 "interaction": {
-                    "header": "インタラクション"
+                    "header": "インタラクション",
+                    "auto_decline_friend_requests": "会ったことのない人のフレンドリクエストを自動で断る",
+                    "auto_decline_friend_requests_description": "VRCX-0 のゲームログに相手と同じインスタンスにいた記録がない場合、フレンドリクエストを自動で断ります。VRCX-0 を使う前やゲームログをオフにしていた間の出会いは記録されないため、会ったことのある人でも断ってしまうことがあります。"
                 },
                 "favorites": {
                     "header": "お気に入り"
@@ -2320,7 +2340,9 @@
                     "remove": "非表示を解除",
                     "unknown_friend": "不明なフレンド",
                     "hide_notifications": "通知でも非表示にする",
-                    "hide_notifications_description": "デスクトップ通知、TTS、VR オーバーレイ、Webhook、アプリ内通知でも、このフレンドの現在地の変化を知らせません。"
+                    "hide_notifications_description": "デスクトップ通知、TTS、VR オーバーレイ、Webhook、アプリ内通知でも、このフレンドの現在地の変化を知らせません。",
+                    "hide_private_location_changes": "プライベートワールドへの移動は通知しない",
+                    "hide_private_location_changes_description": "フレンドがプライベートワールドへ移動しても、デスクトップ通知、TTS、VR 通知、Webhook を送りません。手首のオーバーレイのフィードは「プライベートワールドを表示しない」設定に従います。"
                 }
             },
             "vr": {
@@ -2335,6 +2357,11 @@
                     "position_top": "上",
                     "position_left": "左",
                     "position_right": "右",
+                    "position_top_left": "左上",
+                    "position_top_right": "右上",
+                    "position_center": "中央",
+                    "position_bottom_left": "左下",
+                    "position_bottom_right": "右下",
                     "timeout": "表示時間",
                     "opacity": "不透明度",
                     "filters": "ヘッドセット通知フィルター"
@@ -2663,15 +2690,28 @@
                     "layout_table": "通知タブ",
                     "post_update_changelog_prompt": "更新後に更新内容の通知を表示",
                     "post_update_changelog_prompt_description": "アップデート後に更新内容を表示します。",
+                    "test_notification": {
+                        "header": "テスト通知",
+                        "description": "すべての通知チャンネルにサンプルのイベントを送ります。通知フィルターは適用されませんが、各チャンネルのオン/オフ、表示タイミング、通知の一時停止はそのまま有効です。",
+                        "send": "テスト通知を送る",
+                        "button": "送信",
+                        "message": "これはテスト通知です。"
+                    },
                     "do_not_disturb": {
                         "header": "通知を一時停止",
                         "description": "デスクトップ通知、TTS、XSOverlay、OVR Toolkit、VRCX-0 のヘッドセット通知を一時停止します。Webhook、手首オーバーレイのフィード、通知履歴は引き続き動作します。",
                         "end_on_game_start": "VRChatの起動時に一時停止を解除",
-                        "end_on_game_start_description": "VRChatが停止中から起動中に変わったときだけ解除します。プレイ中にもう一度一時停止することもできます。"
+                        "end_on_game_start_description": "VRChatが停止中から起動中に変わったときだけ解除します。プレイ中にもう一度一時停止することもできます。",
+                        "busy_status": "ステータスが「取り込み中」の間も一時停止",
+                        "busy_status_description": "VRChat のステータスが「取り込み中」の間は、通知の一時停止と同じように通知を止めます。"
                     },
                     "vr_notifications": {
                         "header": "VR オーバーレイ通知",
+                        "when_to_display": "VR オーバーレイでの通知の表示",
+                        "when_to_display_description": "ヘッドセット通知、XSOverlay、OVR Toolkit に適用されます。",
+                        "when_to_display_description_linux": "ヘッドセット通知と WayVR に適用されます。",
                         "xsoverlay_notifications": "XSOverlay で通知する",
+                        "wayvr_notifications": "WayVR で通知する",
                         "ovrtoolkit_hud_notifications": "OVR Toolkit HUD 上での通知",
                         "ovrtoolkit_wrist_notifications": "OVR Toolkit 手首上での通知",
                         "notification_filters": "VR オーバーレイ通知フィルター",
@@ -5269,6 +5309,7 @@
                 "OnPlayerJoining": "プレイヤー参加中",
                 "OnPlayerJoined": "プレイヤー参加",
                 "OnPlayerLeft": "プレイヤー退出",
+                "LobbyAvatarChange": "インスタンス内のアバター変更",
                 "AvatarChange": "アバター変更",
                 "Online": "オンライン",
                 "Offline": "オフライン",
@@ -5281,16 +5322,14 @@
                 "Bio": "自己紹介変更",
                 "groupChange": "グループ変更",
                 "group_announcement": "グループのお知らせ",
+                "group_event_created": "グループイベントの作成",
+                "group_event_starting": "グループイベントの開始",
                 "group_informative": "グループ参加承認",
                 "group_invite": "グループ招待",
                 "group_joinRequest": "グループ参加リクエスト",
                 "group_transfer": "グループ譲渡リクエスト",
                 "Event": "その他のイベント",
                 "External": "外部アプリ",
-                "Blocked": "ブロック",
-                "Unblocked": "ブロック解除",
-                "Muted": "ミュート",
-                "Unmuted": "ミュート解除",
                 "BlockedOnPlayerJoined": "ブロック中プレイヤー参加",
                 "BlockedOnPlayerLeft": "ブロック中プレイヤー退出",
                 "MutedOnPlayerJoined": "ミュート中プレイヤー参加",
@@ -5557,19 +5596,11 @@
         "tools": {
             "label": {
                 "prompt_value": "プロンプト値",
-                "notifications": "通知",
-                "unread": "未読",
-                "runtime_events_and_system_messages_land_here": "アプリのイベントやシステムメッセージがここに表示されます",
-                "notifications_are_surfaced_from_the_top_level_status_bar": "通知は上部のステータスバーから確認できます",
                 "follow_event": "イベントをフォロー",
                 "unfollow_event": "イベントのフォローを解除"
             },
             "action": {
-                "mark_all_read": "すべて既読にする",
                 "copy_event_link": "イベントリンクをコピー"
-            },
-            "empty": {
-                "no_notifications_yet": "通知はまだありません"
             },
             "error": {
                 "failed_to_download_ics_file_invalid_icalendar_content": ".ics ファイルをダウンロードできませんでした。iCalendar の内容が無効です"
@@ -5947,6 +5978,8 @@
         "display_name": "の表示名が {displayName} に変更されました",
         "bio": "が自己紹介を更新しました",
         "group_announcement_title": "グループのお知らせ",
+        "group_event_created_title": "グループイベントの作成",
+        "group_event_starting_title": "グループイベントの開始",
         "group_informative_title": "グループのインフォメーション",
         "group_invite_title": "グループへの招待",
         "group_join_request_title": "グループ参加リクエスト",
@@ -5959,18 +5992,11 @@
         "event_title": "イベント",
         "external_title": "外部アプリ",
         "video_play_title": "動画再生",
-        "portal_spawn_name": "が {location} へのポータルを設置しました",
-        "portal_spawn": "ポータルが設置されました",
         "avatar_change": "がアバターを {avatar} に変更しました",
-        "chat_message": "「{message}」",
         "blocked_player_joined": "ブロックしたユーザーが参加しました",
         "blocked_player_left": "ブロックしたユーザーが退出しました",
         "muted_player_joined": "ミュートしたユーザーが参加しました",
-        "muted_player_left": "ミュートしたユーザーが退出しました",
-        "blocked": "にブロックされました",
-        "unblocked": "によるブロックが解除されました",
-        "muted": "にミュートされました",
-        "unmuted": "によるミュートが解除されました"
+        "muted_player_left": "ミュートしたユーザーが退出しました"
     },
     "location": {
         "offline": "オフライン",
@@ -6401,11 +6427,6 @@
             "dynamic": {
                 "value_import_complete": "{value} のインポートが完了しました",
                 "value_item_s_imported": "{value} 件の項目をインポートしました"
-            }
-        },
-        "shared_feed_notification_service": {
-            "dynamic": {
-                "feed_value": "フィード: {value}"
             }
         },
         "tool_action_service": {

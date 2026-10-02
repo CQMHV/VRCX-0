@@ -649,6 +649,31 @@ fn rejects_trust_feed_without_matching_friend_log_upsert() {
 }
 
 #[test]
+fn rejects_display_name_feed_without_matching_friend_log_upsert() {
+    let dir = TestDir::new("realtime-unpaired-display-name-feed");
+    let db = DatabaseService::new(&dir.path.join("VRCX-0.sqlite3")).unwrap();
+
+    let error = write_realtime_batch(
+        &db,
+        &OwnerId::new("usr_self"),
+        &RealtimePersistenceBatch {
+            feed_entries: vec![FeedLiveEntry::DisplayName {
+                created_at: "2026-05-15T00:00:00Z".into(),
+                user_id: "usr_friend".into(),
+                display_name: "New Name".into(),
+                previous_display_name: "Old Name".into(),
+                friend_number: 7,
+                owner_user_id: String::new(),
+            }],
+            ..RealtimePersistenceBatch::default()
+        },
+    )
+    .unwrap_err();
+
+    assert!(matches!(error, crate::Error::InvalidData(_)));
+}
+
+#[test]
 fn rolls_back_friend_log_rows_when_later_feed_entry_fails() -> Result<(), crate::Error> {
     let dir = TestDir::new("realtime-rollback-feed");
     let db = DatabaseService::new(&dir.path.join("VRCX-0.sqlite3"))?;

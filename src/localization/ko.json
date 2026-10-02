@@ -1591,8 +1591,10 @@
                     "transfer": "그룹 양도",
                     "queueReady": "대기열 준비",
                     "event": {
-                        "created": "그룹 이벤트 생성"
-                    }
+                        "created": "그룹 이벤트 생성",
+                        "starting": "그룹 이벤트 시작"
+                    },
+                    "post": "그룹 게시물"
                 },
                 "localNotifs": "시스템",
                 "event": {
@@ -1605,7 +1607,8 @@
                     "report": {
                         "closed": "신고 처리 완료"
                     },
-                    "contentrestriction": "콘텐츠 제한 조치"
+                    "contentrestriction": "콘텐츠 제한 조치",
+                    "notice": "관리 알림"
                 },
                 "instance": {
                     "closed": "인스턴스 종료"
@@ -1621,6 +1624,21 @@
                         "gift": "선물 받음"
                     },
                     "alert": "경제 경고"
+                },
+                "avatarreview": {
+                    "success": "아바타 심사 승인",
+                    "failure": "아바타 심사 거절"
+                },
+                "inviteInstanceContentGated": "초대 (콘텐츠 게이팅)",
+                "promo": {
+                    "redeem": "프로모션 코드 사용"
+                },
+                "text": {
+                    "adventure": "텍스트 어드벤처"
+                },
+                "votetokick": "투표 추방",
+                "twitchdrop": {
+                    "fulfilled": "Twitch 드롭 지급"
                 }
             },
             "description": {
@@ -2244,7 +2262,9 @@
             },
             "social": {
                 "interaction": {
-                    "header": "상호작용"
+                    "header": "상호작용",
+                    "auto_decline_friend_requests": "만난 적 없는 사람의 친구 요청 자동 거절",
+                    "auto_decline_friend_requests_description": "VRCX-0 게임 로그에 상대와 같은 인스턴스에 있었던 기록이 없으면 친구 요청을 자동으로 거절합니다. VRCX-0을 쓰기 전이나 게임 로그를 꺼 둔 동안의 만남은 기록되지 않으므로, 만난 적이 있는 사람도 거절될 수 있습니다."
                 },
                 "favorites": {
                     "header": "즐겨찾기"
@@ -2263,7 +2283,9 @@
                     "remove": "숨김 해제",
                     "unknown_friend": "알 수 없는 친구",
                     "hide_notifications": "알림에서도 숨기기",
-                    "hide_notifications_description": "데스크톱 알림, TTS, VR 오버레이, Webhook 및 앱 내 알림에서도 이 친구의 위치 변경을 알리지 않습니다."
+                    "hide_notifications_description": "데스크톱 알림, TTS, VR 오버레이, Webhook 및 앱 내 알림에서도 이 친구의 위치 변경을 알리지 않습니다.",
+                    "hide_private_location_changes": "비공개 월드로 이동하면 알리지 않기",
+                    "hide_private_location_changes_description": "친구가 비공개 월드로 이동해도 데스크톱 알림, TTS, VR 알림, Webhook을 보내지 않습니다. 손목 오버레이 피드는 자체 '비공개 월드 숨기기' 설정을 따릅니다."
                 }
             },
             "vr": {
@@ -2278,6 +2300,11 @@
                     "position_top": "위",
                     "position_left": "왼쪽",
                     "position_right": "오른쪽",
+                    "position_top_left": "왼쪽 위",
+                    "position_top_right": "오른쪽 위",
+                    "position_center": "가운데",
+                    "position_bottom_left": "왼쪽 아래",
+                    "position_bottom_right": "오른쪽 아래",
                     "timeout": "표시 시간",
                     "opacity": "불투명도",
                     "filters": "헤드셋 알림 필터"
@@ -2606,15 +2633,28 @@
                     "layout_table": "알림 페이지",
                     "post_update_changelog_prompt": "업데이트 후 변경 사항 표시",
                     "post_update_changelog_prompt_description": "업데이트 설치 후 새로운 기능을 보여줍니다.",
+                    "test_notification": {
+                        "header": "테스트 알림",
+                        "description": "모든 알림 채널로 샘플 이벤트를 보냅니다. 알림 필터는 건너뛰지만 각 채널의 켜기/끄기, 표시 조건, 방해 금지는 그대로 적용됩니다.",
+                        "send": "테스트 알림 보내기",
+                        "button": "보내기",
+                        "message": "테스트 알림입니다."
+                    },
                     "do_not_disturb": {
                         "header": "방해 금지",
                         "description": "데스크톱 알림, TTS, XSOverlay, OVR Toolkit 및 VRCX-0 HMD 팝업을 일시 중지합니다. Webhook, 손목 오버레이 피드 및 알림 기록은 계속 작동합니다.",
                         "end_on_game_start": "VRChat 시작 시 방해 금지 끄기",
-                        "end_on_game_start_description": "VRChat이 중지 상태에서 실행 상태로 바뀔 때만 적용됩니다. 플레이 중 다시 방해 금지를 켤 수 있습니다."
+                        "end_on_game_start_description": "VRChat이 중지 상태에서 실행 상태로 바뀔 때만 적용됩니다. 플레이 중 다시 방해 금지를 켤 수 있습니다.",
+                        "busy_status": "상태가 '방해 금지'일 때 방해 금지 켜기",
+                        "busy_status_description": "VRChat 상태가 '방해 금지'인 동안 방해 금지 모드처럼 알림을 일시 중지합니다."
                     },
                     "vr_notifications": {
                         "header": "VR 오버레이 알림",
+                        "when_to_display": "표시 조건",
+                        "when_to_display_description": "헤드셋 알림, XSOverlay, OVR Toolkit에 적용됩니다.",
+                        "when_to_display_description_linux": "헤드셋 알림과 WayVR에 적용됩니다.",
                         "xsoverlay_notifications": "XSOverlay 알림 사용",
+                        "wayvr_notifications": "WayVR 알림 사용",
                         "ovrtoolkit_hud_notifications": "OVR Toolkit HUD 알림",
                         "ovrtoolkit_wrist_notifications": "OVR Toolkit 손목 알림",
                         "notification_filters": "VR 오버레이 알림 필터",
@@ -5213,6 +5253,7 @@
                 "OnPlayerJoining": "플레이어 입장 중",
                 "OnPlayerJoined": "플레이어 입장",
                 "OnPlayerLeft": "플레이어 퇴장",
+                "LobbyAvatarChange": "인스턴스 내 아바타 변경",
                 "AvatarChange": "아바타 변경",
                 "Online": "온라인",
                 "Offline": "오프라인",
@@ -5225,16 +5266,14 @@
                 "Bio": "자기소개 변경",
                 "groupChange": "그룹 변경",
                 "group_announcement": "그룹 공지",
+                "group_event_created": "그룹 이벤트 생성",
+                "group_event_starting": "그룹 이벤트 시작 예정",
                 "group_informative": "그룹 가입 승인",
                 "group_invite": "그룹 초대",
                 "group_joinRequest": "그룹 가입 요청",
                 "group_transfer": "그룹 양도 요청",
                 "Event": "기타 이벤트",
                 "External": "외부 앱",
-                "Blocked": "차단됨",
-                "Unblocked": "차단 해제됨",
-                "Muted": "음소거됨",
-                "Unmuted": "음소거 해제됨",
                 "BlockedOnPlayerJoined": "차단한 플레이어 입장",
                 "BlockedOnPlayerLeft": "차단한 플레이어 퇴장",
                 "MutedOnPlayerJoined": "음소거한 플레이어 입장",
@@ -5501,19 +5540,11 @@
         "tools": {
             "label": {
                 "prompt_value": "프롬프트 값",
-                "notifications": "알림",
-                "unread": "읽지 않은",
-                "runtime_events_and_system_messages_land_here": "앱 이벤트 및 시스템 메시지가 여기에 표시됩니다.",
-                "notifications_are_surfaced_from_the_top_level_status_bar": "알림은 상태 표시줄에 표시됩니다.",
                 "follow_event": "이벤트 팔로우",
                 "unfollow_event": "이벤트 팔로우 취소"
             },
             "action": {
-                "mark_all_read": "모두 읽은 것으로 표시",
                 "copy_event_link": "이벤트 링크 복사"
-            },
-            "empty": {
-                "no_notifications_yet": "아직 알림이 없습니다"
             },
             "error": {
                 "failed_to_download_ics_file_invalid_icalendar_content": ".ics 파일을 다운로드하지 못했습니다. iCalendar 콘텐츠가 잘못되었습니다."
@@ -5891,6 +5922,8 @@
         "display_name": "이름을 {displayName}(으)로 변경했습니다.",
         "bio": "자기소개를 업데이트했습니다",
         "group_announcement_title": "그룹 공지",
+        "group_event_created_title": "그룹 이벤트 생성",
+        "group_event_starting_title": "그룹 이벤트 시작 예정",
         "group_informative_title": "그룹 정보",
         "group_invite_title": "그룹 초대",
         "group_join_request_title": "그룹 가입 요청",
@@ -5903,18 +5936,11 @@
         "event_title": "이벤트",
         "external_title": "외부 앱",
         "video_play_title": "비디오 재생",
-        "portal_spawn_name": "{location}(으)로 가는 포털을 생성했습니다.",
-        "portal_spawn": "사용자가 포털을 생성했습니다.",
         "avatar_change": "{avatar} 아바타로 변경했습니다",
-        "chat_message": "메시지: {message}",
         "blocked_player_joined": "차단한 사용자가 입장했습니다",
         "blocked_player_left": "차단한 사용자가 퇴장했습니다.",
         "muted_player_joined": "음소거한 사용자가 입장했습니다",
-        "muted_player_left": "음소거한 사용자가 퇴장했습니다.",
-        "blocked": "나를 차단했습니다",
-        "unblocked": "나에 대한 차단을 해제했습니다",
-        "muted": "나를 음소거했습니다",
-        "unmuted": "나에 대한 음소거를 해제했습니다"
+        "muted_player_left": "음소거한 사용자가 퇴장했습니다."
     },
     "location": {
         "offline": "오프라인",
@@ -6345,11 +6371,6 @@
             "dynamic": {
                 "value_import_complete": "{value} 가져오기 완료",
                 "value_item_s_imported": "{value} 항목을 가져왔습니다."
-            }
-        },
-        "shared_feed_notification_service": {
-            "dynamic": {
-                "feed_value": "피드: {value}"
             }
         },
         "tool_action_service": {

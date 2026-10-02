@@ -1,5 +1,5 @@
+use crate::VrOverlayRuntimeServices;
 use vrcx_0_host_desktop::vr_overlay::OverlayActivationButton;
-use vrcx_0_persistence::config::ConfigRepository;
 
 use super::eligibility::WristOverlayStartMode;
 use super::localization::OverlayLocale;
@@ -28,7 +28,10 @@ const APP_LANGUAGE_CONFIG_KEY: &str = "appLanguage";
 const DATE_TIME_HOUR12_CONFIG_KEY: &str = "dtHour12";
 const SHOW_INSTANCE_ID_IN_LOCATION_CONFIG_KEY: &str = "VRCX_showInstanceIdInLocation";
 
-pub(super) fn load_runtime_config(config: &ConfigRepository) -> VrOverlayRuntimeConfig {
+pub(super) fn load_runtime_config(
+    services: &dyn VrOverlayRuntimeServices,
+) -> VrOverlayRuntimeConfig {
+    let config = services.config();
     let start_mode = config
         .get_string(VR_OVERLAY_START_MODE_CONFIG_KEY, "vrchatVrMode")
         .map(|value| WristOverlayStartMode::from_config(&value))
@@ -80,7 +83,7 @@ pub(super) fn load_runtime_config(config: &ConfigRepository) -> VrOverlayRuntime
         .flatten()
         .and_then(|value| value.trim().parse::<u64>().ok())
         .unwrap_or(5_000)
-        .clamp(1_000, 30_000);
+        .clamp(1_000, 600_000);
     let hmd_opacity_percent = config
         .get_raw(HMD_NOTIFICATION_OPACITY_CONFIG_KEY)
         .ok()
@@ -114,6 +117,7 @@ pub(super) fn load_runtime_config(config: &ConfigRepository) -> VrOverlayRuntime
             timeout_ms: hmd_timeout_ms,
             opacity_percent: hmd_opacity_percent,
             position: hmd_position,
+            images: services.notification_images_enabled(),
         },
         render: WristOverlayRenderOptions {
             size,

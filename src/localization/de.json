@@ -1650,8 +1650,10 @@
                     "transfer": "Gruppenübertragung",
                     "queueReady": "Warteschlange bereit",
                     "event": {
-                        "created": "Gruppenereignis erstellt"
-                    }
+                        "created": "Gruppenereignis erstellt",
+                        "starting": "Gruppenereignis beginnt"
+                    },
+                    "post": "Gruppenbeitrag"
                 },
                 "localNotifs": "System",
                 "event": {
@@ -1664,7 +1666,8 @@
                     "report": {
                         "closed": "Moderationsmeldung geschlossen"
                     },
-                    "contentrestriction": "Moderations-Inhaltseinschränkung"
+                    "contentrestriction": "Moderations-Inhaltseinschränkung",
+                    "notice": "Moderationshinweis"
                 },
                 "instance": {
                     "closed": "Instanz geschlossen"
@@ -1680,6 +1683,21 @@
                         "gift": "Geschenk erhalten"
                     },
                     "alert": "Wirtschafts-Hinweis"
+                },
+                "avatarreview": {
+                    "success": "Avatar-Prüfung bestanden",
+                    "failure": "Avatar-Prüfung abgelehnt"
+                },
+                "inviteInstanceContentGated": "Einladung (inhaltsbeschränkt)",
+                "promo": {
+                    "redeem": "Promo-Code eingelöst"
+                },
+                "text": {
+                    "adventure": "Textabenteuer"
+                },
+                "votetokick": "Kick-Abstimmung",
+                "twitchdrop": {
+                    "fulfilled": "Twitch-Drop erhalten"
                 }
             },
             "description": {
@@ -2303,7 +2321,9 @@
             },
             "social": {
                 "interaction": {
-                    "header": "Interaktion"
+                    "header": "Interaktion",
+                    "auto_decline_friend_requests": "Freundschaftsanfragen von Unbekannten automatisch ablehnen",
+                    "auto_decline_friend_requests_description": "Lehnt eine Freundschaftsanfrage ab, wenn das Spielprotokoll von VRCX-0 keinen gemeinsamen Instanzaufenthalt mit dem Absender enthält. Begegnungen vor der Nutzung von VRCX-0 oder bei ausgeschaltetem Spielprotokoll sind nicht erfasst, daher kann auch jemand abgelehnt werden, den du schon getroffen hast."
                 },
                 "favorites": {
                     "header": "Favoriten"
@@ -2322,7 +2342,9 @@
                     "remove": "Ausgeblendeten Freund entfernen",
                     "unknown_friend": "Unbekannter Freund",
                     "hide_notifications": "Auch in Benachrichtigungen ausblenden",
-                    "hide_notifications_description": "Ihre Ortswechsel erscheinen auch nicht in Desktop-Benachrichtigungen, TTS, VR-Overlays, Webhooks oder App-Benachrichtigungen."
+                    "hide_notifications_description": "Ihre Ortswechsel erscheinen auch nicht in Desktop-Benachrichtigungen, TTS, VR-Overlays, Webhooks oder App-Benachrichtigungen.",
+                    "hide_private_location_changes": "Wechsel in private Welten nicht melden",
+                    "hide_private_location_changes_description": "Wenn ein Freund in eine private Welt wechselt, werden keine Desktop-Benachrichtigung, kein TTS, keine VR-Benachrichtigung und kein Webhook gesendet. Der Feed des Handgelenk-Overlays folgt seiner eigenen Einstellung „Private Welten ausblenden“."
                 }
             },
             "vr": {
@@ -2337,6 +2359,11 @@
                     "position_top": "Oben",
                     "position_left": "Links",
                     "position_right": "Rechts",
+                    "position_top_left": "Oben links",
+                    "position_top_right": "Oben rechts",
+                    "position_center": "Mitte",
+                    "position_bottom_left": "Unten links",
+                    "position_bottom_right": "Unten rechts",
                     "timeout": "Timeout",
                     "opacity": "Deckkraft",
                     "filters": "HMD-Benachrichtigungsfilter"
@@ -2665,15 +2692,28 @@
                     "layout_table": "Benachrichtigungsseite",
                     "post_update_changelog_prompt": "Update-Hinweise nach Aktualisierung anzeigen",
                     "post_update_changelog_prompt_description": "Zeigt die Neuerungen nach einer Aktualisierung an.",
+                    "test_notification": {
+                        "header": "Testbenachrichtigung",
+                        "description": "Sendet ein Beispielereignis über alle Benachrichtigungskanäle. Benachrichtigungsfilter werden übersprungen; Schalter, Anzeigebedingung und „Nicht stören“ der einzelnen Kanäle gelten weiterhin.",
+                        "send": "Testbenachrichtigung senden",
+                        "button": "Senden",
+                        "message": "Dies ist eine Testbenachrichtigung."
+                    },
                     "do_not_disturb": {
                         "header": "Nicht stören",
                         "description": "Pausiert vorübergehend Desktop-Benachrichtigungen, TTS, XSOverlay, OVR Toolkit und HMD-Einblendungen von VRCX-0. Webhooks, Handgelenk-Aktivitäten und der Benachrichtigungsverlauf laufen weiter.",
                         "end_on_game_start": "Beim Start von VRChat ausschalten",
-                        "end_on_game_start_description": "Gilt nur, wenn VRChat vom beendeten in den laufenden Zustand wechselt. Während des Spielens kann „Nicht stören“ erneut aktiviert werden."
+                        "end_on_game_start_description": "Gilt nur, wenn VRChat vom beendeten in den laufenden Zustand wechselt. Während des Spielens kann „Nicht stören“ erneut aktiviert werden.",
+                        "busy_status": "Bei Status „Nicht stören“ aktivieren",
+                        "busy_status_description": "Solange dein VRChat-Status „Nicht stören“ ist, werden Benachrichtigungen wie im Nicht-stören-Modus pausiert."
                     },
                     "vr_notifications": {
                         "header": "VR-Overlay-Benachrichtigungen",
+                        "when_to_display": "VR-Overlay-Benachrichtigungen anzeigen",
+                        "when_to_display_description": "Gilt für HMD-Benachrichtigungen, XSOverlay und OVR Toolkit.",
+                        "when_to_display_description_linux": "Gilt für HMD-Benachrichtigungen und WayVR.",
                         "xsoverlay_notifications": "XSOverlay-Benachrichtigungen",
+                        "wayvr_notifications": "WayVR-Benachrichtigungen",
                         "ovrtoolkit_hud_notifications": "OVR-Toolkit-HUD-Benachrichtigungen",
                         "ovrtoolkit_wrist_notifications": "OVR-Toolkit-Handgelenk-Benachrichtigungen",
                         "notification_filters": "VR-Overlay-Benachrichtigungsfilter",
@@ -5227,6 +5267,7 @@
                 "OnPlayerJoining": "Spieler tritt bei",
                 "OnPlayerJoined": "Spieler beigetreten",
                 "OnPlayerLeft": "Spieler hat verlassen",
+                "LobbyAvatarChange": "Avatar-Wechsel in der Instanz",
                 "AvatarChange": "Avatar-Wechsel",
                 "Online": "Online",
                 "Offline": "Offline",
@@ -5239,16 +5280,14 @@
                 "Bio": "Bio geändert",
                 "groupChange": "Gruppenänderung",
                 "group_announcement": "Gruppenankündigung",
+                "group_event_created": "Gruppenereignis erstellt",
+                "group_event_starting": "Gruppenereignis beginnt",
                 "group_informative": "Gruppenbeitritt genehmigt",
                 "group_invite": "Gruppeneinladung",
                 "group_joinRequest": "Gruppenbeitrittsanfrage",
                 "group_transfer": "Gruppenübertragungsanfrage",
                 "Event": "Sonstiges Ereignis",
                 "External": "Externe App",
-                "Blocked": "Blockiert",
-                "Unblocked": "Entblockt",
-                "Muted": "Stummgeschaltet",
-                "Unmuted": "Stummschaltung aufgehoben",
                 "BlockedOnPlayerJoined": "Blockierter Spieler beigetreten",
                 "BlockedOnPlayerLeft": "Blockierter Spieler hat verlassen",
                 "MutedOnPlayerJoined": "Stummgeschalteter Spieler beigetreten",
@@ -5515,19 +5554,11 @@
         "tools": {
             "label": {
                 "prompt_value": "Prompt-Wert",
-                "notifications": "Benachrichtigungen",
-                "unread": "ungelesen",
-                "runtime_events_and_system_messages_land_here": "Laufzeitereignisse und Systemmeldungen landen hier",
-                "notifications_are_surfaced_from_the_top_level_status_bar": "Benachrichtigungen werden über die oberste Statusleiste angezeigt",
                 "follow_event": "Folgen-Ereignis",
                 "unfollow_event": "Entfolgen-Ereignis"
             },
             "action": {
-                "mark_all_read": "Alle als gelesen markieren",
                 "copy_event_link": "Ereignislink kopieren"
-            },
-            "empty": {
-                "no_notifications_yet": "Noch keine Benachrichtigungen"
             },
             "error": {
                 "failed_to_download_ics_file_invalid_icalendar_content": "Download der .ics-Datei fehlgeschlagen, ungültiger iCalendar-Inhalt"
@@ -5907,24 +5938,19 @@
         "trust_level": "Vertrauensstufe ist jetzt {trustLevel}",
         "display_name": "hat den Namen zu {displayName} geändert",
         "group_announcement_title": "Gruppenankündigung",
+        "group_event_created_title": "Gruppenereignis erstellt",
+        "group_event_starting_title": "Gruppenereignis beginnt",
         "group_informative_title": "Gruppeninfo",
         "group_invite_title": "Gruppeneinladung",
         "group_join_request_title": "Gruppenbeitrittsanfrage",
         "group_transfer_request_title": "Gruppenübertragungsanfrage",
         "group_queue_ready_title": "Instanz-Warteschlange bereit",
         "instance_closed_title": "Instanz geschlossen",
-        "portal_spawn_name": "hat ein Portal zu {location} erzeugt",
-        "portal_spawn": "Nutzer hat ein Portal erzeugt",
         "avatar_change": "hat zu Avatar {avatar} gewechselt",
-        "chat_message": "sagte: {message}",
         "blocked_player_joined": "Blockierter Nutzer ist beigetreten",
         "blocked_player_left": "Blockierter Nutzer hat verlassen",
         "muted_player_joined": "Stummgeschalteter Nutzer ist beigetreten",
-        "muted_player_left": "Stummgeschalteter Nutzer hat verlassen",
-        "blocked": "hat dich blockiert",
-        "unblocked": "hat dich entblockt",
-        "muted": "hat dich stummgeschaltet",
-        "unmuted": "hat deine Stummschaltung aufgehoben"
+        "muted_player_left": "Stummgeschalteter Nutzer hat verlassen"
     },
     "location": {
         "offline": "Offline",
@@ -6355,11 +6381,6 @@
             "dynamic": {
                 "value_import_complete": "{value}-Import abgeschlossen",
                 "value_item_s_imported": "{value} Element(e) importiert"
-            }
-        },
-        "shared_feed_notification_service": {
-            "dynamic": {
-                "feed_value": "Feed: {value}"
             }
         },
         "tool_action_service": {

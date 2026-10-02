@@ -1648,8 +1648,10 @@
                     "transfer": "转让",
                     "queueReady": "队列准备就绪",
                     "event": {
-                        "created": "群组活动"
-                    }
+                        "created": "群组活动",
+                        "starting": "群组活动即将开始"
+                    },
+                    "post": "群组帖子"
                 },
                 "localNotifs": "系统",
                 "event": {
@@ -1662,7 +1664,8 @@
                     "report": {
                         "closed": "举报完成"
                     },
-                    "contentrestriction": "内容限制"
+                    "contentrestriction": "内容限制",
+                    "notice": "管理通知"
                 },
                 "instance": {
                     "closed": "房间关闭"
@@ -1678,6 +1681,21 @@
                         "gift": "礼物已接收"
                     },
                     "alert": "创作者经济警告"
+                },
+                "avatarreview": {
+                    "success": "虚拟形象审核通过",
+                    "failure": "虚拟形象审核未通过"
+                },
+                "inviteInstanceContentGated": "邀请（内容过滤）",
+                "promo": {
+                    "redeem": "兑换码已兑换"
+                },
+                "text": {
+                    "adventure": "文字冒险"
+                },
+                "votetokick": "投票踢出",
+                "twitchdrop": {
+                    "fulfilled": "Twitch Drop 已发放"
                 }
             },
             "description": {
@@ -2301,7 +2319,9 @@
             },
             "social": {
                 "interaction": {
-                    "header": "交互"
+                    "header": "交互",
+                    "auto_decline_friend_requests": "自动拒绝从未遇见过的人的好友请求",
+                    "auto_decline_friend_requests_description": "当 VRCX-0 的游戏日志里没有你和对方同处一个房间的记录时，自动拒绝其好友请求。使用 VRCX-0 之前或关闭游戏日志期间的相遇不会被记录，因此见过的人也可能被误拒。"
                 },
                 "favorites": {
                     "header": "收藏"
@@ -2320,7 +2340,9 @@
                     "remove": "取消隐藏好友",
                     "unknown_friend": "未知好友",
                     "hide_notifications": "通知中也隐藏",
-                    "hide_notifications_description": "这些好友的位置变动也不会出现在桌面通知、TTS、VR 叠加界面、Webhook 和应用内通知中。"
+                    "hide_notifications_description": "这些好友的位置变动也不会出现在桌面通知、TTS、VR 叠加界面、Webhook 和应用内通知中。",
+                    "hide_private_location_changes": "好友进入私人世界时不通知",
+                    "hide_private_location_changes_description": "好友进入私人世界时，不发送桌面通知、TTS、VR 通知和 Webhook。手腕叠加界面的动态由它自己的「隐藏私人世界」设置控制。"
                 }
             },
             "vr": {
@@ -2335,6 +2357,11 @@
                     "position_top": "上方",
                     "position_left": "左侧",
                     "position_right": "右侧",
+                    "position_top_left": "左上",
+                    "position_top_right": "右上",
+                    "position_center": "中间",
+                    "position_bottom_left": "左下",
+                    "position_bottom_right": "右下",
                     "timeout": "显示时长",
                     "opacity": "不透明度",
                     "filters": "头显通知过滤"
@@ -2663,15 +2690,28 @@
                     "layout_table": "通知标签页",
                     "post_update_changelog_prompt": "显示更新后的更新内容提示",
                     "post_update_changelog_prompt_description": "升级后首次启动新版本时，在右下角查看更新内容。",
+                    "test_notification": {
+                        "header": "测试通知",
+                        "description": "向所有通知渠道发送一条示例事件。不经过通知筛选，但各渠道自身的开关、显示时机和勿扰模式仍然生效。",
+                        "send": "发送测试通知",
+                        "button": "发送",
+                        "message": "这是一条测试通知。"
+                    },
                     "do_not_disturb": {
                         "header": "勿扰模式",
                         "description": "临时暂停桌面通知、TTS、XSOverlay、OVR Toolkit 和 VRCX-0 头显弹窗。Webhook、手腕叠加界面动态和通知历史仍会继续。",
                         "end_on_game_start": "启动 VRChat 时关闭勿扰模式",
-                        "end_on_game_start_description": "仅在 VRChat 从未运行变为运行时触发。进入游戏后仍可再次开启勿扰模式。"
+                        "end_on_game_start_description": "仅在 VRChat 从未运行变为运行时触发。进入游戏后仍可再次开启勿扰模式。",
+                        "busy_status": "VRChat 状态为「请勿打扰」时开启勿扰模式",
+                        "busy_status_description": "你的 VRChat 状态为「请勿打扰」时，通知会像勿扰模式一样暂停。"
                     },
                     "vr_notifications": {
                         "header": "VR 叠加界面通知",
+                        "when_to_display": "何时显示",
+                        "when_to_display_description": "对头显通知、XSOverlay 和 OVR Toolkit 生效。",
+                        "when_to_display_description_linux": "对头显通知和 WayVR 生效。",
                         "xsoverlay_notifications": "XSOverlay 通知",
+                        "wayvr_notifications": "WayVR 通知",
                         "ovrtoolkit_hud_notifications": "OVR Toolkit HUD 通知",
                         "ovrtoolkit_wrist_notifications": "OVR Toolkit 手腕通知",
                         "notification_filters": "VR 叠加通知过滤器",
@@ -5269,6 +5309,7 @@
                 "OnPlayerJoining": "玩家正在加入",
                 "OnPlayerJoined": "玩家已加入",
                 "OnPlayerLeft": "玩家已离开",
+                "LobbyAvatarChange": "房间内模型变动",
                 "AvatarChange": "模型变动",
                 "Online": "上线",
                 "Offline": "离线",
@@ -5281,16 +5322,14 @@
                 "Bio": "简介变化",
                 "groupChange": "群组变化",
                 "group_announcement": "群组公告",
+                "group_event_created": "群组活动已创建",
+                "group_event_starting": "群组活动即将开始",
                 "group_informative": "加入申请已通过",
                 "group_invite": "群组邀请",
                 "group_joinRequest": "群组加入请求",
                 "group_transfer": "群组转让请求",
                 "Event": "其他事件",
                 "External": "外部事件",
-                "Blocked": "屏蔽",
-                "Unblocked": "取消屏蔽",
-                "Muted": "静音",
-                "Unmuted": "取消静音",
                 "BlockedOnPlayerJoined": "已屏蔽玩家加入",
                 "BlockedOnPlayerLeft": "已屏蔽玩家离开",
                 "MutedOnPlayerJoined": "已静音玩家加入",
@@ -5557,19 +5596,11 @@
         "tools": {
             "label": {
                 "prompt_value": "提示值",
-                "notifications": "通知",
-                "unread": "未读",
-                "runtime_events_and_system_messages_land_here": "应用事件和系统消息会显示在这里",
-                "notifications_are_surfaced_from_the_top_level_status_bar": "通知会显示在顶部状态栏中",
                 "follow_event": "关注活动",
                 "unfollow_event": "取消关注活动"
             },
             "action": {
-                "mark_all_read": "全部标为已读",
                 "copy_event_link": "复制活动链接"
-            },
-            "empty": {
-                "no_notifications_yet": "还没有通知"
             },
             "error": {
                 "failed_to_download_ics_file_invalid_icalendar_content": "下载 .ics 文件失败，iCalendar 内容无效"
@@ -5947,6 +5978,8 @@
         "display_name": "已改名为 {displayName}",
         "bio": "更新简介",
         "group_announcement_title": "群组公告",
+        "group_event_created_title": "群组活动已创建",
+        "group_event_starting_title": "群组活动即将开始",
         "group_informative_title": "群组信息",
         "group_invite_title": "群组邀请",
         "group_join_request_title": "群组加入请求",
@@ -5959,18 +5992,11 @@
         "event_title": "事件",
         "external_title": "外部应用",
         "video_play_title": "视频播放",
-        "portal_spawn_name": "生成了一个通往 {location} 的传送门",
-        "portal_spawn": "用户生成了一个传送门",
         "avatar_change": "更换模型为 {avatar}",
-        "chat_message": "说：{message}",
         "blocked_player_joined": "被你屏蔽的用户加入了房间",
         "blocked_player_left": "被你屏蔽的用户离开了房间",
         "muted_player_joined": "被你静音的用户加入了房间",
-        "muted_player_left": "被你静音的用户离开了房间",
-        "blocked": "屏蔽了你",
-        "unblocked": "取消了对你的屏蔽",
-        "muted": "屏蔽了你的语音",
-        "unmuted": "取消了对你的语音屏蔽"
+        "muted_player_left": "被你静音的用户离开了房间"
     },
     "location": {
         "offline": "离线",
@@ -6401,11 +6427,6 @@
             "dynamic": {
                 "value_import_complete": "{value} 导入完成",
                 "value_item_s_imported": "已导入 {value} 项"
-            }
-        },
-        "shared_feed_notification_service": {
-            "dynamic": {
-                "feed_value": "动态：{value}"
             }
         },
         "tool_action_service": {

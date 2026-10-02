@@ -651,12 +651,7 @@ fn placement_pose(placement: &OverlayPlacement) -> xr::Posef {
         OverlayPlacement::TrackedDeviceRelative { device_hint }
             if device_hint.starts_with("hmd") =>
         {
-            let (x, y) = match device_hint.as_str() {
-                "hmd:top" => (0.0, 0.38),
-                "hmd:left" => (-0.52, -0.12),
-                "hmd:right" => (0.52, -0.12),
-                _ => (0.0, -0.38),
-            };
+            let (x, y) = super::super::hmd_placement::hmd_notification_offset(device_hint);
             matrix3x4_to_posef([
                 [1.0, 0.0, 0.0, x],
                 [0.0, 1.0, 0.0, y],

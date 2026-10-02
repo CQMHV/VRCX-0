@@ -111,12 +111,7 @@ pub(super) fn surface_transform(placement: &OverlayPlacement) -> Matrix3x4 {
 }
 
 pub(super) fn hmd_transform(device_hint: &str) -> Matrix3x4 {
-    let (x, y) = match device_hint {
-        "hmd:top" => (0.0, 0.38),
-        "hmd:left" => (-0.52, -0.12),
-        "hmd:right" => (0.52, -0.12),
-        _ => (0.0, -0.38),
-    };
+    let (x, y) = super::hmd_placement::hmd_notification_offset(device_hint);
     Matrix3x4([
         [1.0, 0.0, 0.0, x],
         [0.0, 1.0, 0.0, y],

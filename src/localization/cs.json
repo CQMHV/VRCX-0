@@ -1660,8 +1660,10 @@
                     "transfer": "Převod skupiny",
                     "queueReady": "Fronta připravena",
                     "event": {
-                        "created": "Vytvořena událost skupiny"
-                    }
+                        "created": "Vytvořena událost skupiny",
+                        "starting": "Událost skupiny začíná"
+                    },
+                    "post": "Příspěvek skupiny"
                 },
                 "localNotifs": "Systém",
                 "event": {
@@ -1674,7 +1676,8 @@
                     "report": {
                         "closed": "Nahlášení moderace uzavřeno"
                     },
-                    "contentrestriction": "Omezení obsahu moderace"
+                    "contentrestriction": "Omezení obsahu moderace",
+                    "notice": "Oznámení moderace"
                 },
                 "instance": {
                     "closed": "Instance uzavřena"
@@ -1690,6 +1693,21 @@
                         "gift": "Přijatý dárek"
                     },
                     "alert": "Ekonomické upozornění"
+                },
+                "avatarreview": {
+                    "success": "Kontrola avatara schválena",
+                    "failure": "Kontrola avatara zamítnuta"
+                },
+                "inviteInstanceContentGated": "Pozvánka (omezený obsah)",
+                "promo": {
+                    "redeem": "Promo kód uplatněn"
+                },
+                "text": {
+                    "adventure": "Textové dobrodružství"
+                },
+                "votetokick": "Hlasování o vyhození",
+                "twitchdrop": {
+                    "fulfilled": "Twitch Drop přijat"
                 }
             },
             "description": {
@@ -2313,7 +2331,9 @@
             },
             "social": {
                 "interaction": {
-                    "header": "Interakce"
+                    "header": "Interakce",
+                    "auto_decline_friend_requests": "Automaticky odmítat žádosti o přátelství od lidí, které jste nepotkali",
+                    "auto_decline_friend_requests_description": "Odmítne žádost o přátelství, pokud záznam hry ve VRCX-0 neobsahuje žádný společný pobyt s odesílatelem ve stejné instanci. Setkání z doby před používáním VRCX-0 nebo s vypnutým záznamem hry se nezaznamenávají, takže může být odmítnut i někdo, koho jste už potkali."
                 },
                 "favorites": {
                     "header": "Oblíbené"
@@ -2332,7 +2352,9 @@
                     "remove": "Odebrat skrytého přítele",
                     "unknown_friend": "Neznámý přítel",
                     "hide_notifications": "Skrýt i v oznámeních",
-                    "hide_notifications_description": "Jejich změny polohy se nezobrazí ani v oznámeních na ploše, TTS, VR overlayích, webhoocích ani v oznámeních v aplikaci."
+                    "hide_notifications_description": "Jejich změny polohy se nezobrazí ani v oznámeních na ploše, TTS, VR overlayích, webhoocích ani v oznámeních v aplikaci.",
+                    "hide_private_location_changes": "Neoznamovat přesuny do soukromých světů",
+                    "hide_private_location_changes_description": "Když se přítel přesune do soukromého světa, neodešle se oznámení na ploše, TTS, VR oznámení ani webhook. Kanál zápěstního overlaye se řídí vlastním nastavením skrytí soukromých světů."
                 }
             },
             "vr": {
@@ -2347,6 +2369,11 @@
                     "position_top": "Nahoře",
                     "position_left": "Vlevo",
                     "position_right": "Vpravo",
+                    "position_top_left": "Vlevo nahoře",
+                    "position_top_right": "Vpravo nahoře",
+                    "position_center": "Uprostřed",
+                    "position_bottom_left": "Vlevo dole",
+                    "position_bottom_right": "Vpravo dole",
                     "timeout": "Doba zobrazení",
                     "opacity": "Neprůhlednost",
                     "filters": "Filtry oznámení v headsetu"
@@ -2675,15 +2702,28 @@
                     "layout_table": "Stránka oznámení",
                     "post_update_changelog_prompt": "Zobrazit poznámky k aktualizaci po aktualizaci",
                     "post_update_changelog_prompt_description": "Zobrazí novinky po instalaci aktualizace.",
+                    "test_notification": {
+                        "header": "Testovací oznámení",
+                        "description": "Odešle ukázkovou událost do všech kanálů oznámení. Filtry oznámení se přeskočí, ale přepínač, podmínka zobrazení a režim Nerušit každého kanálu stále platí.",
+                        "send": "Odeslat testovací oznámení",
+                        "button": "Odeslat",
+                        "message": "Toto je testovací oznámení."
+                    },
                     "do_not_disturb": {
                         "header": "Nerušit",
                         "description": "Dočasně pozastaví oznámení na ploše, TTS, XSOverlay, OVR Toolkit a vyskakovací oznámení VRCX-0 v headsetu. Webhooky, aktivita na zápěstí a historie oznámení pokračují.",
                         "end_on_game_start": "Vypnout při spuštění VRChat",
-                        "end_on_game_start_description": "Platí pouze při přechodu VRChat z vypnutého do spuštěného stavu. Během hraní lze režim Nerušit znovu zapnout."
+                        "end_on_game_start_description": "Platí pouze při přechodu VRChat z vypnutého do spuštěného stavu. Během hraní lze režim Nerušit znovu zapnout.",
+                        "busy_status": "Zapnout při stavu Busy",
+                        "busy_status_description": "Dokud je tvůj stav ve VRChatu Busy, oznámení se pozastaví stejně jako v režimu Nerušit."
                     },
                     "vr_notifications": {
                         "header": "Oznámení v překryvné vrstvě VR",
+                        "when_to_display": "Zobrazovat oznámení VR overlaye",
+                        "when_to_display_description": "Platí pro oznámení v headsetu, XSOverlay a OVR Toolkit.",
+                        "when_to_display_description_linux": "Platí pro oznámení v headsetu a WayVR.",
                         "xsoverlay_notifications": "Oznámení XSOverlay",
+                        "wayvr_notifications": "Oznámení WayVR",
                         "ovrtoolkit_hud_notifications": "Oznámení OVR Toolkit HUD",
                         "ovrtoolkit_wrist_notifications": "Oznámení OVR Toolkit na zápěstí",
                         "notification_filters": "Filtry oznámení v překryvné vrstvě VR",
@@ -5243,6 +5283,7 @@
                 "OnPlayerJoining": "Hráč se připojuje",
                 "OnPlayerJoined": "Hráč se připojil",
                 "OnPlayerLeft": "Hráč odešel",
+                "LobbyAvatarChange": "Změna avatara v instanci",
                 "AvatarChange": "Změna avatara",
                 "Online": "Online",
                 "Offline": "Offline",
@@ -5255,16 +5296,14 @@
                 "Bio": "Změna bia",
                 "groupChange": "Změna skupiny",
                 "group_announcement": "Oznámení skupiny",
+                "group_event_created": "Vytvořena událost skupiny",
+                "group_event_starting": "Událost skupiny brzy začne",
                 "group_informative": "Schválení vstupu do skupiny",
                 "group_invite": "Pozvánka do skupiny",
                 "group_joinRequest": "Žádost o vstup do skupiny",
                 "group_transfer": "Žádost o převod skupiny",
                 "Event": "Ostatní událost",
                 "External": "Externí aplikace",
-                "Blocked": "Zablokováno",
-                "Unblocked": "Odblokováno",
-                "Muted": "Ztlumeno",
-                "Unmuted": "Zrušeno ztlumení",
                 "BlockedOnPlayerJoined": "Zablokovaný hráč se připojil",
                 "BlockedOnPlayerLeft": "Zablokovaný hráč odešel",
                 "MutedOnPlayerJoined": "Ztlumený hráč se připojil",
@@ -5531,19 +5570,11 @@
         "tools": {
             "label": {
                 "prompt_value": "Hodnota promptu",
-                "notifications": "Oznámení",
-                "unread": "nepřečteno",
-                "runtime_events_and_system_messages_land_here": "Sem přicházejí systémové zprávy a události za běhu",
-                "notifications_are_surfaced_from_the_top_level_status_bar": "Oznámení se zobrazují v horním stavovém řádku",
                 "follow_event": "Sledovat událost",
                 "unfollow_event": "Přestat sledovat událost"
             },
             "action": {
-                "mark_all_read": "Označit vše jako přečtené",
                 "copy_event_link": "Kopírovat odkaz na událost"
-            },
-            "empty": {
-                "no_notifications_yet": "Zatím žádná oznámení"
             },
             "error": {
                 "failed_to_download_ics_file_invalid_icalendar_content": "Nepodařilo se stáhnout soubor .ics, neplatný obsah iCalendar"
@@ -5923,24 +5954,19 @@
         "trust_level": "Úroveň důvěry je nyní {trustLevel}",
         "display_name": "změnil(a) své jméno na {displayName}",
         "group_announcement_title": "Oznámení skupiny",
+        "group_event_created_title": "Vytvořena událost skupiny",
+        "group_event_starting_title": "Událost skupiny brzy začne",
         "group_informative_title": "Informace o skupině",
         "group_invite_title": "Pozvánka do skupiny",
         "group_join_request_title": "Žádost o vstup do skupiny",
         "group_transfer_request_title": "Žádost o převod skupiny",
         "group_queue_ready_title": "Fronta do instance je připravena",
         "instance_closed_title": "Instance uzavřena",
-        "portal_spawn_name": "vytvořil(a) portál do {location}",
-        "portal_spawn": "Uživatel vytvořil portál",
         "avatar_change": "změnil(a) avatar na {avatar}",
-        "chat_message": "napsal(a): {message}",
         "blocked_player_joined": "Zablokovaný uživatel se připojil",
         "blocked_player_left": "Zablokovaný uživatel odešel",
         "muted_player_joined": "Ztlumený uživatel se připojil",
-        "muted_player_left": "Ztlumený uživatel odešel",
-        "blocked": "vás zablokoval(a)",
-        "unblocked": "vás odblokoval(a)",
-        "muted": "vás ztlumil(a)",
-        "unmuted": "vás odztlumil(a)"
+        "muted_player_left": "Ztlumený uživatel odešel"
     },
     "location": {
         "offline": "Offline",
@@ -6371,11 +6397,6 @@
             "dynamic": {
                 "value_import_complete": "Import {value} dokončen",
                 "value_item_s_imported": "Naimportováno položek: {value}"
-            }
-        },
-        "shared_feed_notification_service": {
-            "dynamic": {
-                "feed_value": "Zdroj: {value}"
             }
         },
         "tool_action_service": {

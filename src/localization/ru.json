@@ -1658,8 +1658,10 @@
                     "transfer": "Передача",
                     "queueReady": "Очередь готова",
                     "event": {
-                        "created": "Создано групповое мероприятие"
-                    }
+                        "created": "Создано групповое мероприятие",
+                        "starting": "Групповое мероприятие начинается"
+                    },
+                    "post": "Публикация группы"
                 },
                 "localNotifs": "Система",
                 "event": {
@@ -1672,7 +1674,8 @@
                     "report": {
                         "closed": "Запрос модерации закрыт"
                     },
-                    "contentrestriction": "Ограничение содержания умеренных веществ"
+                    "contentrestriction": "Ограничение содержания умеренных веществ",
+                    "notice": "Уведомление модерации"
                 },
                 "instance": {
                     "closed": "Инстанс закрыт"
@@ -1688,6 +1691,21 @@
                         "gift": "Получен подарок"
                     },
                     "alert": "Оповещение об экономике"
+                },
+                "avatarreview": {
+                    "success": "Аватар прошёл проверку",
+                    "failure": "Аватар не прошёл проверку"
+                },
+                "inviteInstanceContentGated": "Приглашение (ограниченный контент)",
+                "promo": {
+                    "redeem": "Промокод активирован"
+                },
+                "text": {
+                    "adventure": "Текстовое приключение"
+                },
+                "votetokick": "Голосование за исключение",
+                "twitchdrop": {
+                    "fulfilled": "Twitch Drop получен"
                 }
             },
             "description": {
@@ -2311,7 +2329,9 @@
             },
             "social": {
                 "interaction": {
-                    "header": "Взаимодействие"
+                    "header": "Взаимодействие",
+                    "auto_decline_friend_requests": "Автоматически отклонять заявки в друзья от незнакомых",
+                    "auto_decline_friend_requests_description": "Отклоняет заявку в друзья, если в журнале игры VRCX-0 нет записей о том, что вы были в одном инстансе с отправителем. Встречи до использования VRCX-0 или при выключенном журнале игры не записываются, поэтому может быть отклонён и тот, с кем вы уже встречались."
                 },
                 "favorites": {
                     "header": "Избранное"
@@ -2330,7 +2350,9 @@
                     "remove": "Удалить скрытого друга",
                     "unknown_friend": "Неизвестный друг",
                     "hide_notifications": "Скрывать и в уведомлениях",
-                    "hide_notifications_description": "Смена их местоположения также не будет появляться в уведомлениях рабочего стола, TTS, VR-оверлеях, вебхуках и уведомлениях в приложении."
+                    "hide_notifications_description": "Смена их местоположения также не будет появляться в уведомлениях рабочего стола, TTS, VR-оверлеях, вебхуках и уведомлениях в приложении.",
+                    "hide_private_location_changes": "Не уведомлять о переходах в приватные миры",
+                    "hide_private_location_changes_description": "Когда друг переходит в приватный мир, уведомления на рабочем столе, TTS, VR-уведомления и вебхуки не отправляются. Лента наручного оверлея следует своей настройке скрытия приватных миров."
                 }
             },
             "vr": {
@@ -2345,6 +2367,11 @@
                     "position_top": "Сверху",
                     "position_left": "Слева",
                     "position_right": "Справа",
+                    "position_top_left": "Сверху слева",
+                    "position_top_right": "Сверху справа",
+                    "position_center": "По центру",
+                    "position_bottom_left": "Снизу слева",
+                    "position_bottom_right": "Снизу справа",
                     "timeout": "Длительность показа",
                     "opacity": "Непрозрачность",
                     "filters": "Фильтры уведомлений в шлеме"
@@ -2673,15 +2700,28 @@
                     "layout_table": "Уведомления Стр.",
                     "post_update_changelog_prompt": "Показывать список изменений после обновления",
                     "post_update_changelog_prompt_description": "Показывает нововведения после установки обновления.",
+                    "test_notification": {
+                        "header": "Тестовое уведомление",
+                        "description": "Отправляет пример события во все каналы уведомлений. Фильтры уведомлений не применяются, но переключатель, условие показа и режим «Не беспокоить» каждого канала продолжают действовать.",
+                        "send": "Отправить тестовое уведомление",
+                        "button": "Отправить",
+                        "message": "Это тестовое уведомление."
+                    },
                     "do_not_disturb": {
                         "header": "Не беспокоить",
                         "description": "Временно приостанавливает уведомления рабочего стола, TTS, XSOverlay, OVR Toolkit и всплывающие уведомления VRCX-0 в шлеме. Вебхуки, лента на запястье и история уведомлений продолжают работать.",
                         "end_on_game_start": "Отключать при запуске VRChat",
-                        "end_on_game_start_description": "Срабатывает только при переходе VRChat из остановленного состояния в запущенное. Режим можно снова включить во время игры."
+                        "end_on_game_start_description": "Срабатывает только при переходе VRChat из остановленного состояния в запущенное. Режим можно снова включить во время игры.",
+                        "busy_status": "Включать при статусе «Занят»",
+                        "busy_status_description": "Пока ваш статус в VRChat — «Занят», уведомления приостанавливаются, как в режиме «Не беспокоить»."
                     },
                     "vr_notifications": {
                         "header": "VR Уведомления о накладных расходах",
+                        "when_to_display": "Показывать уведомления VR-оверлея",
+                        "when_to_display_description": "Действует для уведомлений в шлеме, XSOverlay и OVR Toolkit.",
+                        "when_to_display_description_linux": "Действует для уведомлений в шлеме и WayVR.",
                         "xsoverlay_notifications": "XSOverlay Уведомления",
+                        "wayvr_notifications": "Уведомления WayVR",
                         "ovrtoolkit_hud_notifications": "OVR Toolkit HUD Уведомления",
                         "ovrtoolkit_wrist_notifications": "OVR Toolkit Уведомления о рейсте",
                         "notification_filters": "VR Фильтры уведомления о накладных устройствах",
@@ -5237,6 +5277,7 @@
                 "OnPlayerJoining": "Присоединиться к игроку",
                 "OnPlayerJoined": "Игрок присоединился",
                 "OnPlayerLeft": "Игрок слева",
+                "LobbyAvatarChange": "Смена аватара в инстансе",
                 "AvatarChange": "Аватарная перемена",
                 "Online": "Онлайн",
                 "Offline": "Офлайн",
@@ -5249,16 +5290,14 @@
                 "Bio": "Изменение био",
                 "groupChange": "Изменение группы",
                 "group_announcement": "Групповое объявление",
+                "group_event_created": "Создано групповое мероприятие",
+                "group_event_starting": "Скоро начнётся групповое мероприятие",
                 "group_informative": "Группа Присоединиться",
                 "group_invite": "Приглашение группы",
                 "group_joinRequest": "Запрос на вступление в группу",
                 "group_transfer": "Запрос на передачу группы",
                 "Event": "Мероприятие",
                 "External": "Внешние приложения",
-                "Blocked": "Заблокировано",
-                "Unblocked": "Незаблокировано",
-                "Muted": "Выключено",
-                "Unmuted": "Невзвешенные",
                 "BlockedOnPlayerJoined": "Заблокированный игрок присоединился",
                 "BlockedOnPlayerLeft": "Заблокированный игрок вышел",
                 "MutedOnPlayerJoined": "Заглушённый игрок присоединился",
@@ -5525,19 +5564,11 @@
         "tools": {
             "label": {
                 "prompt_value": "Оперативная стоимость",
-                "notifications": "Уведомления",
-                "unread": "непрочитанный",
-                "runtime_events_and_system_messages_land_here": "Здесь появляются текущие события и системные сообщения.",
-                "notifications_are_surfaced_from_the_top_level_status_bar": "Уведомления отображаются в строке состояния сверху",
                 "follow_event": "Последующая деятельность",
                 "unfollow_event": "Неследующие события"
             },
             "action": {
-                "mark_all_read": "Отметить всё как прочитанное",
                 "copy_event_link": "Скопировать ссылку на события"
-            },
-            "empty": {
-                "no_notifications_yet": "Уведомлений пока нет."
             },
             "error": {
                 "failed_to_download_ics_file_invalid_icalendar_content": "Не удалось загрузить файл .ics, неправильное содержание iCalendar"
@@ -5917,24 +5948,19 @@
         "trust_level": "Уровень доверия теперь: {trustLevel}",
         "display_name": "сменил(а) имя на {displayName}",
         "group_announcement_title": "Групповое объявление",
+        "group_event_created_title": "Создано групповое мероприятие",
+        "group_event_starting_title": "Скоро начнётся групповое мероприятие",
         "group_informative_title": "Информационная группа",
         "group_invite_title": "Приглашение группы",
         "group_join_request_title": "Запрос на вступление в группу",
         "group_transfer_request_title": "Запрос на передачу группы",
         "group_queue_ready_title": "Случай кьюэ готов",
         "instance_closed_title": "Дело закрыто",
-        "portal_spawn_name": "создал(а) портал в {location}",
-        "portal_spawn": "Пользователь создал портал",
         "avatar_change": "сменил(а) аватар на {avatar}",
-        "chat_message": "сказал: {message}",
         "blocked_player_joined": "Заблокированный пользователь присоединился",
         "blocked_player_left": "Заблокированный пользователь ушел",
         "muted_player_joined": "Заглушённый пользователь присоединился",
-        "muted_player_left": "Заглушённый пользователь вышел",
-        "blocked": "это заблокировало тебя",
-        "unblocked": "разблокировал тебя",
-        "muted": "омрачил тебя.",
-        "unmuted": "Отменил(а) ваше заглушение"
+        "muted_player_left": "Заглушённый пользователь вышел"
     },
     "location": {
         "offline": "Офлайн",
@@ -6365,11 +6391,6 @@
             "dynamic": {
                 "value_import_complete": "{value} импорт завершен",
                 "value_item_s_imported": "Импортировано элементов: {value}"
-            }
-        },
-        "shared_feed_notification_service": {
-            "dynamic": {
-                "feed_value": "Лента: {value}"
             }
         },
         "tool_action_service": {

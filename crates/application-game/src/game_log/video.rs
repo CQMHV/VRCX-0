@@ -1,10 +1,10 @@
-use crate::overlay_activity::video_activity_candidate;
+use crate::activity_events::video_activity_event;
 use std::sync::{Arc, Mutex};
 
 use chrono::Utc;
 use serde_json::Value;
 use url::Url;
-use vrcx_0_application_activity::OverlayActivityCandidate;
+use vrcx_0_contracts::activity::ActivityEvent;
 use vrcx_0_contracts::game_log::{GameLogVideoPlayEntry, GameLogWriteBatch};
 
 use crate::game_log::runtime_state::parse_event_time_ms;
@@ -49,7 +49,7 @@ struct YouTubeMetadata {
 }
 
 pub(crate) struct VideoPlayed {
-    pub(crate) activity: OverlayActivityCandidate,
+    pub(crate) activity: ActivityEvent,
     pub(crate) now_playing: NowPlayingPayload,
 }
 
@@ -197,7 +197,7 @@ pub(crate) async fn handle_video_play(
     backend_status.publish_game_log_persisted(affected_count);
     event_bus.emit_runtime_game_log_event(RuntimeGameLogEventPayload { raw: raw_row });
 
-    let activity = video_activity_candidate(&input);
+    let activity = video_activity_event(&input);
     let now_playing = NowPlayingPayload {
         url: Some(input.video_url.clone()),
         name: Some(input.video_name.clone()),

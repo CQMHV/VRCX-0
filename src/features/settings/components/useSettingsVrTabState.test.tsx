@@ -47,6 +47,19 @@ describe('useSettingsVrTabState', () => {
         captured.vr = undefined;
     });
 
+    it('saves when external VR overlay notifications are shown', () => {
+        const vr = createVrSectionState();
+        captured.vr = vr;
+        renderVrTabState();
+
+        callback('onOverlayToastChange')('Game Closed');
+        expect(vr.saveStringPreference).toHaveBeenLastCalledWith(
+            'overlayToast',
+            'overlayToast',
+            'Game Closed'
+        );
+    });
+
     it('persists notification number inputs with their config bounds', () => {
         const vr = createVrSectionState();
         captured.vr = vr;
@@ -94,7 +107,7 @@ describe('useSettingsVrTabState', () => {
         expect(vr.setIntConfigPreference).toHaveBeenLastCalledWith(
             'hmdNotificationTimeout',
             5000,
-            { min: 1000, max: 30000, fallback: 5000 }
+            { min: 1000, max: 600000, fallback: 5000 }
         );
 
         callback('onHmdNotificationOpacityChange')(-10);

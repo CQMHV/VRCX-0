@@ -36,6 +36,7 @@ export function useSettingsVrTabState() {
     const vr = useSettingsPageSection('vr');
     const prefs = usePreferencesStore(
         useShallow((state) => ({
+            overlayToast: state.overlayToast,
             xsNotifications: state.xsNotifications,
             ovrtHudNotifications: state.ovrtHudNotifications,
             ovrtWristNotifications: state.ovrtWristNotifications,
@@ -60,6 +61,9 @@ export function useSettingsVrTabState() {
     );
     const isSteamVRRunning = useRuntimeStore(
         (state) => state.gameState.isSteamVRRunning
+    );
+    const hostPlatform = useRuntimeStore(
+        (state) => state.hostCapabilities.platform
     );
     const overlayTestMode = useVrOverlayTestStore((state) => state.testMode);
     const overlayTestPending = useVrOverlayTestStore((state) => state.pending);
@@ -103,13 +107,13 @@ export function useSettingsVrTabState() {
         const milliseconds = secondsInputToMilliseconds(
             value,
             1000,
-            30000,
+            600000,
             5000
         );
         savePreferenceValue('hmdNotificationTimeout', milliseconds, () =>
             setIntConfigPreference('hmdNotificationTimeout', milliseconds, {
                 min: 1000,
-                max: 30000,
+                max: 600000,
                 fallback: 5000
             })
         );
@@ -128,12 +132,16 @@ export function useSettingsVrTabState() {
 
     return {
         prefs,
+        hostPlatform,
         overlayTestMode,
         overlayTestModeDisabled:
             overlayTestPending ||
             (!overlayTestMode && isSteamVRRunning !== true),
         onOverlayTestModeChange: (enabled: boolean) => {
             void setOverlayTestMode(enabled);
+        },
+        onOverlayToastChange: (value: string) => {
+            saveStringPreference('overlayToast', 'overlayToast', value);
         },
         onXsNotificationsChange: (enabled: boolean) => {
             saveBoolPreference('xsNotifications', 'xsNotifications', enabled);

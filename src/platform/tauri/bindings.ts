@@ -550,23 +550,22 @@ const generatedCommands = {
         });
     },
     async appOverlayActivityDefinitionsGet(): Promise<
-        OverlayActivityTypeDefinition[]
+        ActivityTypeDefinition[]
     > {
         return await TAURI_INVOKE('app__overlay_activity_definitions_get');
     },
-    async appOverlayActivityFiltersSet(
-        filters: OverlayActivityPreferenceFilters
-    ): Promise<null> {
-        return await TAURI_INVOKE('app__overlay_activity_filters_set', {
-            filters
-        });
+    async appNotificationActivityFiltersGet(): Promise<NotificationActivityFilterProfiles> {
+        return await TAURI_INVOKE('app__notification_activity_filters_get');
     },
     async appNotificationActivityFiltersSet(
         input: NotificationActivityFiltersSetInput
-    ): Promise<null> {
+    ): Promise<ActivityFilterProfile> {
         return await TAURI_INVOKE('app__notification_activity_filters_set', {
             input
         });
+    },
+    async appNotificationTestSend(message: string): Promise<void> {
+        await TAURI_INVOKE('app__notification_test_send', { message });
     },
     async appPresenceAutomationRulesGet(
         kind: PresenceAutomationRuleKind
@@ -2745,7 +2744,58 @@ export const commands: TypedCommands<typeof generatedCommands> =
 /** user-defined types **/
 
 export type ActiveTurn = { turnId: string; status: TurnStatus };
+export type ActivityCategory =
+    | 'actionRequired'
+    | 'currentInstance'
+    | 'favoriteMovement'
+    | 'profileChange'
+    | 'groupSocial'
+    | 'systemSafety'
+    | 'media';
 export type ActivityCompanionOrder = 'minutes' | 'days';
+export type ActivityFilterProfile = {
+    version: number;
+    types: Partial<{ [key in string]: ActivityRule }>;
+};
+export type ActivityKind =
+    | 'invite'
+    | 'requestInvite'
+    | 'inviteResponse'
+    | 'requestInviteResponse'
+    | 'friendRequest'
+    | 'boop'
+    | 'group.queueReady'
+    | 'instance.closed'
+    | 'OnPlayerJoining'
+    | 'OnPlayerJoined'
+    | 'OnPlayerLeft'
+    | 'LobbyAvatarChange'
+    | 'Online'
+    | 'Offline'
+    | 'GPS'
+    | 'Status'
+    | 'Friend'
+    | 'Unfriend'
+    | 'DisplayName'
+    | 'TrustLevel'
+    | 'AvatarChange'
+    | 'Bio'
+    | 'groupChange'
+    | 'group.instanceOpened'
+    | 'group.announcement'
+    | 'group.event.created'
+    | 'group.event.starting'
+    | 'group.informative'
+    | 'group.invite'
+    | 'group.joinRequest'
+    | 'group.transfer'
+    | 'Event'
+    | 'External'
+    | 'BlockedOnPlayerJoined'
+    | 'BlockedOnPlayerLeft'
+    | 'MutedOnPlayerJoined'
+    | 'MutedOnPlayerLeft'
+    | 'VideoPlay';
 export type ActivityOverlapViewBuildInput = {
     ownerUserId: OwnerId;
     currentUserId: string;
@@ -2852,8 +2902,27 @@ export type ActivityPageWorlds = {
     newWorldMinutes: number;
     returningWorldMinutes: number;
 };
+export type ActivityRule = {
+    scope: ActivityScope;
+    favoriteGroupKeys: string | string[];
+};
+export type ActivityScope =
+    | 'off'
+    | 'on'
+    | 'friends'
+    | 'selectedFavorites'
+    | 'allFavorites'
+    | 'everyoneInInstance';
 export type ActivitySeriesBucket = 'day' | 'week';
 export type ActivitySeriesPoint = { startDate: string; minutes: number };
+export type ActivityTypeDefinition = {
+    key: ActivityKind;
+    category: ActivityCategory;
+    allowedScopes: ActivityScope[];
+    defaultScope: ActivityScope;
+    hmdDefaultScope: ActivityScope;
+    aliases: string[];
+};
 export type ActivityViewBuildInput = {
     ownerUserId: OwnerId;
     targetUserId: string;
@@ -4093,6 +4162,15 @@ export type FeedLiveEntry =
           ownerUserId: string;
       }
     | {
+          type: 'DisplayName';
+          created_at: string;
+          userId: string;
+          displayName: string;
+          previousDisplayName: string;
+          friendNumber: number;
+          ownerUserId: string;
+      }
+    | {
           type: 'Friend';
           created_at: string;
           userId: string;
@@ -4596,8 +4674,7 @@ export type GameLogSideEffectEvent =
     | { kind: 'nowPlaying'; payload: NowPlayingPayload }
     | { kind: 'nowPlayingReset'; payload: EmptyEventPayload }
     | { kind: 'screenshotProcessed'; payload: ScreenshotProcessedPayload }
-    | { kind: 'gameNoVR'; payload: GameNoVrPayload }
-    | { kind: 'notification'; payload: RuntimeNotificationPayload };
+    | { kind: 'gameNoVR'; payload: GameNoVrPayload };
 export type GameLogUserStatsOutput = {
     timeSpent: number;
     lastSeen: string;
@@ -5362,7 +5439,16 @@ export type NotificationActionStatus =
     | 'remoteOkLocalFailed'
     | 'alreadyResolved'
     | 'remoteFailed';
+export type NotificationActivityFilterProfiles = {
+    wrist: ActivityFilterProfile;
+    vr: ActivityFilterProfile;
+    hmd: ActivityFilterProfile;
+    desktop: ActivityFilterProfile;
+    webhook: ActivityFilterProfile;
+    tts: ActivityFilterProfile;
+};
 export type NotificationActivityFilterSurface =
+    | 'wrist'
     | 'vr'
     | 'hmd'
     | 'desktop'
@@ -5370,7 +5456,7 @@ export type NotificationActivityFilterSurface =
     | 'tts';
 export type NotificationActivityFiltersSetInput = {
     surface: NotificationActivityFilterSurface;
-    filters: OverlayActivityFilterProfile;
+    filters: ActivityFilterProfile;
 };
 export type NotificationBoopDismissInput = {
     ownerUserId: OwnerId;
@@ -5534,45 +5620,6 @@ export type NowPlayingSnapshot = {
     videoName?: string | null;
     videoId?: string | null;
     updatedAt: string | null;
-};
-export type OverlayActivityCategory =
-    | 'actionRequired'
-    | 'currentInstance'
-    | 'favoriteMovement'
-    | 'profileChange'
-    | 'groupSocial'
-    | 'systemSafety'
-    | 'media';
-export type OverlayActivityFilterProfile = {
-    version: number;
-    types: Partial<{ [key in string]: OverlayActivityRule }>;
-};
-export type OverlayActivityPreferenceFilters = {
-    version: number;
-    wrist: OverlayActivityPreferenceSurface;
-    hmd: OverlayActivityPreferenceSurface;
-};
-export type OverlayActivityPreferenceSurface = {
-    types: Partial<{ [key in string]: OverlayActivityRule }>;
-};
-export type OverlayActivityRule = {
-    scope: OverlayActivityScope;
-    favoriteGroupKeys: string | string[];
-};
-export type OverlayActivityScope =
-    | 'off'
-    | 'on'
-    | 'friends'
-    | 'selectedFavorites'
-    | 'allFavorites'
-    | 'everyoneInInstance';
-export type OverlayActivityTypeDefinition = {
-    key: string;
-    category: OverlayActivityCategory;
-    allowedScopes: OverlayActivityScope[];
-    defaultScope: OverlayActivityScope;
-    hmdDefaultScope: OverlayActivityScope;
-    aliases: string[];
 };
 export type OwnerId = string;
 export type ParsedLocation = {
@@ -5986,7 +6033,7 @@ export type RuntimeJobRecordInput = {
     status: RuntimeOperationStatus;
     detail?: string;
 };
-export type RuntimeNotificationLevel = 'info' | 'warning' | 'error';
+export type RuntimeNotificationLevel = 'warning' | 'error';
 export type RuntimeNotificationPayload = {
     level: RuntimeNotificationLevel;
     title: string;

@@ -1,5 +1,4 @@
 use std::sync::Arc;
-use vrcx_0_application_activity::OverlayActivityRuntime;
 
 use vrcx_0_application_core::{
     sleep_until_due_or_stopped, BackendRuntimeStatusPublisher, RuntimeAuthIdentity,
@@ -30,7 +29,7 @@ pub(super) struct GameLogSideEffectDeps {
     backend_status: BackendRuntimeStatusPublisher,
     side_effect_sink: GameLogSideEffectSink,
     tasks: TaskSupervisor,
-    overlay_activity: OverlayActivityRuntime,
+    activity: Arc<dyn vrcx_0_application_core::ActivityIngress>,
     auth_scope: RuntimeAuthScope,
     auth_scope_snapshot: RuntimeAuthScopeSnapshot,
     media_queue: InstanceMediaQueue,
@@ -55,7 +54,7 @@ impl GameLogSideEffectDeps {
             backend_status: deps.backend_status.clone(),
             side_effect_sink: deps.side_effect_sink.clone(),
             tasks: deps.tasks.clone(),
-            overlay_activity: deps.overlay_activity.clone(),
+            activity: Arc::clone(&deps.activity),
             auth_scope: deps.auth_scope.clone(),
             auth_scope_snapshot,
             media_queue,
@@ -107,7 +106,7 @@ pub(super) fn dispatch_side_effect(
                                     .snapshot()
                                     .generation_matches(&deps.auth_scope_snapshot)
                             {
-                                deps.overlay_activity.ingest_candidate(played.activity);
+                                deps.activity.ingest_activity(vec![played.activity]);
                             }
                             if deps
                                 .now_playing
@@ -198,7 +197,6 @@ pub(super) fn dispatch_side_effect(
             runtime_lifecycle::handle_vrc_quit(
                 deps.store.as_ref(),
                 deps.host_actions.as_ref(),
-                &deps.side_effect_sink,
                 &created_at,
                 is_game_running,
             );

@@ -12,7 +12,7 @@ use vrcx_0_application::social::{
     MutualGraphFriendRefreshInput, MutualGraphFriendRefreshOutput, MutualGraphRequestDeps,
     UserMutualFriendsListInput, UserMutualFriendsListOutput,
 };
-use vrcx_0_application_activity::OverlayActivityRuntime;
+use vrcx_0_application_activity::ActivityRouter;
 use vrcx_0_application_core::vrchat_api::VrchatApiResponse;
 use vrcx_0_application_core::{
     AvatarCache, FavoriteEntityKind, FileCache, Result, RuntimeAuthScope, TaskSupervisor,
@@ -124,7 +124,7 @@ impl LocalDataRuntime {
         world_cache: Arc<WorldCache>,
         file_cache: FileCache,
         realtime: Arc<RealtimeHostRuntime>,
-        overlay_activity: OverlayActivityRuntime,
+        activity_router: ActivityRouter,
         favorite_mutations: FavoriteMutationCoordinator,
         mutual_graph_fetch: MutualGraphFetchRuntime,
     ) -> Self {
@@ -138,7 +138,7 @@ impl LocalDataRuntime {
             Arc::new(
                 vrcx_0_outbound_adapters::LocalSavedGroupFavoritesAdapter::new(
                     Arc::clone(&db),
-                    overlay_activity,
+                    activity_router,
                 ),
             ),
             auth_scope.clone(),

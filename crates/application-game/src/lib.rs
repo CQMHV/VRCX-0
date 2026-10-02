@@ -1,10 +1,10 @@
+mod activity_events;
 mod background_capabilities;
 mod game_client;
 mod game_event_bus;
 mod game_log;
 mod game_log_parser;
 mod game_log_watcher;
-mod overlay_activity;
 mod ports;
 mod process_monitor;
 mod registry_backup;
@@ -40,22 +40,23 @@ pub use game_event_bus::{
 };
 pub use game_log::{
     duration_ms, game_log_sessions_query, instance_history_query, parse_event_time_ms, player_key,
-    player_list_runtime_snapshot, world_id_from_location, GameLogHostActions, GameLogIngestEngine,
-    GameLogIngestOptions, GameLogIngestOutput, GameLogLocalGameContextSource, GameLogProcessEvent,
-    GameLogProjection, GameLogRuntime, GameLogRuntimeDeps, GameLogRuntimeState, GameLogSessionDto,
-    GameLogSessionEventDto, GameLogSessionMemberDto, GameLogSessionPlayerDurationRowDto,
-    GameLogSessionsQueryInput, GameLogSideEffect, InstanceHistoryEntryOutput,
-    InstanceHistoryQueryInput, NoopGameLogHostActions, PlayerListSnapshotContext,
-    PlayerListSnapshotOutput, PlayerListSnapshotPlayer, PlayerListSnapshotSource, PlayerState,
-    RuntimeSnapshot, RuntimeSnapshotStore, ScreenshotInput,
+    player_list_runtime_snapshot, world_id_from_location, GameLogAvatarChange, GameLogHostActions,
+    GameLogIngestEngine, GameLogIngestOptions, GameLogIngestOutput, GameLogLocalGameContextSource,
+    GameLogProcessEvent, GameLogProjection, GameLogRuntime, GameLogRuntimeDeps,
+    GameLogRuntimeState, GameLogSessionDto, GameLogSessionEventDto, GameLogSessionMemberDto,
+    GameLogSessionPlayerDurationRowDto, GameLogSessionsQueryInput, GameLogSideEffect,
+    InstanceHistoryEntryOutput, InstanceHistoryQueryInput, NoopGameLogHostActions,
+    PlayerListSnapshotContext, PlayerListSnapshotOutput, PlayerListSnapshotPlayer,
+    PlayerListSnapshotSource, PlayerState, RuntimeSnapshot, RuntimeSnapshotStore, ScreenshotInput,
 };
 pub use game_log_parser::GameLogEvent;
 pub use game_log_watcher::{
     GameLogEventOrigin, GameLogEventSink, GameLogScanCursor, LogLocationSnapshot,
     LogLocationSnapshotScanner, LogWatcher, NoopLogLocationSnapshotScanner,
 };
-pub use overlay_activity::OverlayActivityGameIngestExt;
-pub use ports::{BackgroundRemoteApi, GameStateStore, InstanceMediaPort, VideoMetadataPort};
+pub use ports::{
+    BackgroundRemoteApi, GameStateStore, InstanceMediaPort, PlayerModeration, VideoMetadataPort,
+};
 pub use process_monitor::{GameProcessMonitorActions, GameProcessStatus, ProcessMonitor};
 pub use registry_backup::{
     registry_backup_create, registry_backup_delete, registry_backup_foreground_followup,

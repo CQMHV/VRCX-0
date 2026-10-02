@@ -51,6 +51,12 @@ pub trait VideoMetadataPort: Send + Sync {
     async fn youtube_metadata(&self, video_id: &str, api_key: &str) -> Result<Option<Value>>;
 }
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct PlayerModeration {
+    pub blocked: bool,
+    pub muted: bool,
+}
+
 pub trait GameStateStore: Send + Sync {
     fn get_bool(&self, key: &str, default: bool) -> Result<bool>;
     fn get_string(&self, key: &str, default: &str) -> Result<String>;
@@ -110,6 +116,7 @@ pub trait GameStateStore: Send + Sync {
         owner: &OwnerId,
         user_ids: &[String],
     ) -> Result<Vec<String>>;
+    fn player_moderation(&self, owner: &OwnerId, user_id: &str) -> Result<PlayerModeration>;
 }
 
 #[cfg(test)]
@@ -127,6 +134,7 @@ struct TestGameState {
     locations: Vec<Owned<vrcx_0_contracts::game_log::GameLogLocationEntry>>,
     join_leave: Vec<Owned<vrcx_0_contracts::game_log::GameLogJoinLeaveEntry>>,
     video_plays: Vec<Owned<vrcx_0_contracts::game_log::GameLogVideoPlayEntry>>,
+    player_moderations: std::collections::HashMap<String, PlayerModeration>,
 }
 
 #[cfg(test)]
@@ -181,6 +189,14 @@ impl TestGameStateStore {
             .lock()
             .expect("test game state lock")
             .tables_exist
+    }
+
+    pub(crate) fn set_player_moderation(&self, user_id: &str, moderation: PlayerModeration) {
+        self.state
+            .lock()
+            .expect("test game state lock")
+            .player_moderations
+            .insert(user_id.to_string(), moderation);
     }
 
     pub(crate) fn set_fail_reads(&self, fail: bool) {
@@ -602,6 +618,17 @@ impl GameStateStore for TestGameStateStore {
         _user_ids: &[String],
     ) -> Result<Vec<String>> {
         Ok(Vec::new())
+    }
+
+    fn player_moderation(&self, _owner: &OwnerId, user_id: &str) -> Result<PlayerModeration> {
+        Ok(self
+            .state
+            .lock()
+            .expect("test game state lock")
+            .player_moderations
+            .get(user_id)
+            .copied()
+            .unwrap_or_default())
     }
 }
 
