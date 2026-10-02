@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+    INFO_CHART_BAR_WIDTH,
+    INFO_CHART_GRID,
+    buildAvatarLaneSegments,
     buildInfoChartOption,
     buildInfoTimelineRows,
+    infoChartFirstBarTop,
+    infoChartHeight,
     buildInfoChartTooltipParts
 } from './previousInstancesChart';
 
@@ -159,60 +164,190 @@ describe('previousInstancesChart', () => {
         ]);
     });
 
-    it('stacks worn avatars on one labelled lane above players, colored per avatar', () => {
+    it('colors each player row from the chart palette', () => {
         const chartPayload = buildInfoChartOption({
             hour12: false,
-            avatarLaneLabel: 'Avatars',
             rows: [
                 {
                     userId: 'usr_me',
                     displayName: 'Me',
                     joinMs: 0,
-                    leaveMs: 6000,
-                    durationMs: 6000,
+                    leaveMs: 4000,
+                    durationMs: 4000,
                     isSelf: true
                 },
                 {
-                    userId: 'avatar-lane',
-                    avatarId: 'avtr_b',
-                    displayName: 'Avatar B',
+                    userId: 'usr_peer',
+                    displayName: 'Peer',
                     joinMs: 2000,
                     leaveMs: 4000,
-                    durationMs: 2000
-                },
-                {
-                    userId: 'avatar-lane',
-                    avatarId: 'avtr_a',
-                    displayName: 'Avatar A',
-                    joinMs: 0,
-                    leaveMs: 2000,
-                    durationMs: 2000
-                },
-                {
-                    userId: 'avatar-lane',
-                    avatarId: 'avtr_a',
-                    displayName: 'Avatar A',
-                    joinMs: 4000,
-                    leaveMs: 6000,
                     durationMs: 2000
                 }
             ]
         });
 
-        if (chartPayload === null) {
-            throw new Error('expected chart payload to be present');
-        }
+        const barSeries = chartPayload?.option.series.filter(
+            (series) => series.name === 'Time'
+        );
+        expect(barSeries?.[0].colorBy).toBe('data');
+        expect(barSeries?.[0].data).toEqual([4000, 2000]);
+    });
 
-        expect(chartPayload.option.yAxis.data).toEqual(['Avatars', 'Me']);
-        const laneColors = chartPayload.option.series
-            .filter((series) => series.name === 'Time')
-            .map((series) => series.data[0])
-            .map((item) =>
-                typeof item === 'object' ? item.itemStyle.color : null
+    it('draws even a momentary stay as a visible mark with small corners', () => {
+        const chartPayload = buildInfoChartOption({
+            hour12: false,
+            rows: [
+                {
+                    userId: 'usr_me',
+                    displayName: 'Me',
+                    joinMs: 0,
+                    leaveMs: 3_600_000,
+                    durationMs: 3_600_000,
+                    isSelf: true
+                }
+            ]
+        });
+
+        const barSeries = chartPayload?.option.series.filter(
+            (series) => series.name === 'Time'
+        );
+        expect(barSeries?.[0].barMinHeight).toBe(INFO_CHART_BAR_WIDTH);
+        expect(barSeries?.[0].itemStyle.borderRadius).toBeLessThanOrEqual(
+            INFO_CHART_BAR_WIDTH / 4
+        );
+    });
+
+    it('frames the timeline with quiet solid gridlines and no axis lines', () => {
+        const option = buildInfoChartOption({
+            hour12: false,
+            rows: [
+                {
+                    userId: 'usr_me',
+                    displayName: 'Me',
+                    joinMs: 0,
+                    leaveMs: 4000,
+                    durationMs: 4000,
+                    isSelf: true
+                }
+            ]
+        })?.option;
+
+        expect(option?.xAxis.axisLine.show).toBe(false);
+        expect(option?.yAxis.axisLine.show).toBe(false);
+        expect(option?.xAxis.splitLine.lineStyle.type).toBe('solid');
+    });
+
+    it('shows seconds on the time axis for short visits only', () => {
+        const rowsSpanning = (durationMs: number) => [
+            {
+                userId: 'usr_me',
+                displayName: 'Me',
+                joinMs: Date.UTC(2026, 9, 1, 9, 40, 0),
+                leaveMs: Date.UTC(2026, 9, 1, 9, 40, 0) + durationMs,
+                durationMs,
+                isSelf: true
+            }
+        ];
+        const shortVisit = buildInfoChartOption({
+            hour12: false,
+            rows: rowsSpanning(55_000)
+        });
+        const longVisit = buildInfoChartOption({
+            hour12: false,
+            rows: rowsSpanning(2 * 60 * 60_000)
+        });
+
+        expect(shortVisit?.option.xAxis.axisLabel.formatter(30_000)).toMatch(
+            /\d{2}:\d{2}:\d{2}/
+        );
+        expect(longVisit?.option.xAxis.axisLabel.formatter(0)).not.toMatch(
+            /\d{2}:\d{2}:\d{2}/
+        );
+    });
+
+    it('leaves extra room above the players when asked', () => {
+        const option = buildInfoChartOption({
+            hour12: false,
+            topInset: 12,
+            rows: [
+                {
+                    userId: 'usr_me',
+                    displayName: 'Me',
+                    joinMs: 0,
+                    leaveMs: 4000,
+                    durationMs: 4000,
+                    isSelf: true
+                }
+            ]
+        })?.option;
+
+        expect(option?.grid.top).toBe(INFO_CHART_GRID.top + 12);
+    });
+
+    it('locates the first player bar from the same layout that sizes the chart', () => {
+        for (const rowCount of [1, 4, 11, 40]) {
+            const height = infoChartHeight(rowCount, 10);
+            const bandHeight =
+                (height - INFO_CHART_GRID.top - 10 - INFO_CHART_GRID.bottom) /
+                rowCount;
+            expect(infoChartFirstBarTop(rowCount, 10)).toBeCloseTo(
+                INFO_CHART_GRID.top +
+                    10 +
+                    bandHeight / 2 -
+                    INFO_CHART_BAR_WIDTH / 2
             );
-        expect(laneColors).toHaveLength(3);
-        expect(laneColors[0]).toBe(laneColors[2]);
-        expect(laneColors[0]).not.toBe(laneColors[1]);
+        }
+    });
+
+    it('exposes the time range the x axis spans', () => {
+        const chartPayload = buildInfoChartOption({
+            hour12: false,
+            rows: [
+                {
+                    userId: 'usr_me',
+                    displayName: 'Me',
+                    joinMs: 1000,
+                    leaveMs: 5000,
+                    durationMs: 4000,
+                    isSelf: true
+                },
+                {
+                    userId: 'usr_peer',
+                    displayName: 'Peer',
+                    joinMs: 2000,
+                    leaveMs: 6000,
+                    durationMs: 4000
+                }
+            ]
+        });
+
+        expect(chartPayload?.startMs).toBe(1000);
+        expect(chartPayload?.endMs).toBe(6000);
+    });
+
+    it('lays worn avatars across the axis range, stretching the ends and coloring per avatar', () => {
+        const lane = buildAvatarLaneSegments(
+            [
+                { avatarId: 'a', startedAtMs: 900, endedAtMs: 2000 },
+                { avatarId: 'b', startedAtMs: 2000, endedAtMs: 4000 },
+                { avatarId: 'a', startedAtMs: 4000, endedAtMs: 4900 }
+            ],
+            1000,
+            5000
+        );
+
+        expect(
+            lane.map(({ leftPercent, widthPercent }) => [
+                leftPercent,
+                widthPercent
+            ])
+        ).toEqual([
+            [0, 25],
+            [25, 50],
+            [75, 25]
+        ]);
+        expect(lane[0].color).toBe(lane[2].color);
+        expect(lane[0].color).not.toBe(lane[1].color);
     });
 
     it('builds tooltip content as pure text parts for the page adapter', () => {

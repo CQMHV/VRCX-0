@@ -23,6 +23,7 @@ import type { AvatarWearSegment } from '@/platform/tauri/bindings';
 import { useRuntimeStore } from '@/state/runtimeStore';
 
 import {
+    AvatarWearLane,
     InstanceAvatarWearSummary,
     useInstanceAvatarWearSegments
 } from './InstanceAvatarWearSummary';
@@ -183,5 +184,42 @@ describe('InstanceAvatarWearSummary', () => {
             9000
         );
         vi.restoreAllMocks();
+    });
+
+    it('places lane segments on the chart axis and stretches the last one to the end', () => {
+        render(
+            <AvatarWearLane
+                segments={[segment('a', 1000, 3000), segment('b', 3000, 4500)]}
+                startMs={1000}
+                endMs={5000}
+                label="Avatars"
+            />
+        );
+
+        const bars = screen.getAllByRole('button');
+        expect(bars.map((bar) => bar.getAttribute('aria-label'))).toEqual([
+            'Avatar a',
+            'Avatar b'
+        ]);
+        expect([bars[1].style.left, bars[1].style.width]).toEqual([
+            '50%',
+            '50%'
+        ]);
+        expect(screen.getByText('Avatars')).toBeTruthy();
+    });
+
+    it('marks every avatar change with its thumbnail', () => {
+        const { container } = render(
+            <AvatarWearLane
+                segments={[segment('a', 1000, 1100), segment('b', 1100, 5000)]}
+                startMs={1000}
+                endMs={5000}
+                label="Avatars"
+            />
+        );
+
+        expect(
+            container.querySelectorAll('[data-slot="avatar-wear-marker"]')
+        ).toHaveLength(2);
     });
 });

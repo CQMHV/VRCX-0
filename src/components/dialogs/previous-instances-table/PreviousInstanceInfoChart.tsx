@@ -19,10 +19,13 @@ import {
     EmptyTitle
 } from '@/ui/shadcn/empty';
 
+import { AvatarWearLane } from './InstanceAvatarWearSummary';
 import {
-    INFO_CHART_BAR_WIDTH,
+    INFO_CHART_PALETTES,
     buildInfoChartOption,
     buildInfoTimelineRows,
+    infoChartFirstBarTop,
+    infoChartHeight,
     buildInfoChartTooltipParts,
     type InfoChartRow
 } from './previousInstancesChart';
@@ -59,17 +62,9 @@ function createInfoChartTooltipElement(
     container.className = 'min-w-44';
 
     const title = document.createElement('div');
-    title.className = 'flex items-center gap-2';
     title.style.fontWeight = '600';
     title.style.marginBottom = '4px';
-    if (detailEntry.avatarId && detailEntry.imageUrl) {
-        const image = document.createElement('img');
-        image.src = detailEntry.imageUrl;
-        image.alt = '';
-        image.className = 'size-6 shrink-0 rounded-full object-cover';
-        title.appendChild(image);
-    }
-    title.appendChild(document.createTextNode(parts.title));
+    title.textContent = parts.title;
     container.appendChild(title);
 
     const timeRange = document.createElement('div');
@@ -82,6 +77,10 @@ function createInfoChartTooltipElement(
 
     return container;
 }
+
+const AVATAR_LANE_TOP_INSET = 14;
+const AVATAR_LANE_HEIGHT = 32;
+const AVATAR_LANE_GAP = 37;
 
 export function PreviousInstanceInfoChart({
     rows,
@@ -155,36 +154,24 @@ export function PreviousInstanceInfoChart({
             ),
         [currentUserId, favoriteIdSet, friendsById, knownUsersById, rows]
     );
-    const timelineRows = useMemo(() => {
-        const playerRows = buildInfoTimelineRows({
-            rows: chartRows,
-            visitWindow
-        });
-        if (!playerRows.length) {
-            return playerRows;
-        }
-        return [
-            ...avatarSegments.map((segment) => ({
-                userId: 'avatar-lane',
-                avatarId: segment.avatarId,
-                imageUrl: segment.thumbnailImageUrl || segment.imageUrl,
-                displayName: segment.name || segment.avatarId,
-                joinMs: segment.startedAtMs,
-                leaveMs: segment.endedAtMs,
-                durationMs: segment.endedAtMs - segment.startedAtMs
-            })),
-            ...playerRows
-        ];
-    }, [avatarSegments, chartRows, visitWindow]);
+    const timelineRows = useMemo(
+        () => buildInfoTimelineRows({ rows: chartRows, visitWindow }),
+        [chartRows, visitWindow]
+    );
+    const topInset = avatarSegments.length ? AVATAR_LANE_TOP_INSET : 0;
     const chartPayload = useMemo(
         () =>
             buildInfoChartOption({
+                topInset,
                 rows: timelineRows,
                 hour12,
-                avatarLaneLabel: t('table.previous_instances.avatars'),
+                palette:
+                    INFO_CHART_PALETTES[
+                        resolvedTheme === 'dark' ? 'dark' : 'light'
+                    ],
                 tooltipFormatter: createInfoChartTooltipElement
             }),
-        [hour12, t, timelineRows]
+        [hour12, resolvedTheme, timelineRows, topInset]
     );
 
     const setInfoChartElementRef = useCallback(
@@ -263,10 +250,7 @@ export function PreviousInstanceInfoChart({
 
             const chartRowCount =
                 chartPayload?.firstEntries.length || timelineRows.length;
-            const chartHeight = Math.max(
-                220,
-                chartRowCount * (INFO_CHART_BAR_WIDTH + 10) + 200
-            );
+            const chartHeight = infoChartHeight(chartRowCount, topInset);
             chartElement.style.height = `${chartHeight}px`;
             chart.resize({ height: chartHeight });
             chart.off('click');
@@ -286,7 +270,7 @@ export function PreviousInstanceInfoChart({
                     }
                     const entry =
                         chartPayload.firstEntries[params.dataIndex ?? -1];
-                    if (entry?.userId && !entry.avatarId) {
+                    if (entry?.userId) {
                         openUserDialog({
                             userId: entry.userId,
                             title: entry.displayName || undefined,
@@ -312,7 +296,8 @@ export function PreviousInstanceInfoChart({
         chartPayload,
         knownUsersById,
         resolvedTheme,
-        timelineRows.length
+        timelineRows.length,
+        topInset
     ]);
 
     if (!timelineRows.length) {
@@ -329,6 +314,34 @@ export function PreviousInstanceInfoChart({
     }
 
     return (
-        <div ref={setInfoChartElementRef} className="w-full bg-transparent" />
+        <div className="relative w-full">
+            {chartPayload ? (
+                <div
+                    className="absolute inset-x-0 z-10"
+                    style={{
+                        top: Math.max(
+                            0,
+                            infoChartFirstBarTop(
+                                chartPayload.firstEntries.length,
+                                topInset
+                            ) -
+                                AVATAR_LANE_GAP -
+                                AVATAR_LANE_HEIGHT
+                        )
+                    }}
+                >
+                    <AvatarWearLane
+                        segments={avatarSegments}
+                        startMs={chartPayload.startMs}
+                        endMs={chartPayload.endMs}
+                        label={t('table.previous_instances.avatars')}
+                    />
+                </div>
+            ) : null}
+            <div
+                ref={setInfoChartElementRef}
+                className="w-full bg-transparent"
+            />
+        </div>
     );
 }

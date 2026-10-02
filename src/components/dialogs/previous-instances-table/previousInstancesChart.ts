@@ -3,16 +3,48 @@ import { formatClock as formatAppClock, timeToText } from '@/lib/dateTime';
 import type { PreviousInstanceVisitWindow } from './previousInstancesRows';
 
 export const INFO_CHART_BAR_WIDTH = 12;
-const AVATAR_SEGMENT_COLORS = [
-    '#5470c6',
-    '#91cc75',
-    '#fac858',
-    '#ee6666',
-    '#73c0de',
-    '#3ba272',
-    '#fc8452',
-    '#9a60b4',
-    '#ea7ccc'
+export const INFO_CHART_GRID = { top: 50, left: 160, right: 90, bottom: 24 };
+const SECONDS_AXIS_MAX_SPAN_MS = 30 * 60 * 1000;
+
+export function infoChartHeight(rowCount: number, topInset: number) {
+    return Math.max(
+        220,
+        rowCount * (INFO_CHART_BAR_WIDTH + 10) + 200 + topInset
+    );
+}
+
+export function infoChartFirstBarTop(rowCount: number, topInset: number) {
+    const gridTop = INFO_CHART_GRID.top + topInset;
+    const bandHeight =
+        (infoChartHeight(rowCount, topInset) -
+            gridTop -
+            INFO_CHART_GRID.bottom) /
+        Math.max(1, rowCount);
+    return gridTop + bandHeight / 2 - INFO_CHART_BAR_WIDTH / 2;
+}
+
+export type InfoChartPalette = {
+    axisLabel: string;
+    splitLine: string;
+};
+
+export const INFO_CHART_PALETTES: Record<'dark' | 'light', InfoChartPalette> = {
+    dark: {
+        axisLabel: '#a1a1a1',
+        splitLine: 'rgba(255, 255, 255, 0.06)'
+    },
+    light: {
+        axisLabel: '#737373',
+        splitLine: 'rgba(0, 0, 0, 0.06)'
+    }
+};
+const AVATAR_LANE_COLORS = [
+    '#7c9cf5',
+    '#f0a868',
+    '#6cc4a4',
+    '#e88aa8',
+    '#a78bfa',
+    '#d4c25a'
 ];
 const VISIT_BOUNDARY_TOLERANCE_MS = 60 * 1000;
 
@@ -25,8 +57,6 @@ export interface InfoChartRow {
     isSelf?: boolean;
     isFavorite?: boolean;
     isFriend?: boolean;
-    avatarId?: string;
-    imageUrl?: string;
 }
 
 type InfoChartTooltipRow = Omit<InfoChartRow, 'userId'> & {
@@ -60,9 +90,6 @@ function markerForEntry(entry: InfoChartTooltipRow) {
 }
 
 function richMarkerForEntry(entry: InfoChartTooltipRow) {
-    if (entry?.avatarId) {
-        return '{avatar|◆}';
-    }
     if (entry?.isFavorite) {
         return '{favorite|\u2606}';
     }
@@ -160,12 +187,14 @@ export function buildInfoChartTooltipParts(
 export function buildInfoChartOption({
     rows,
     hour12,
-    avatarLaneLabel = '',
+    palette = INFO_CHART_PALETTES.dark,
+    topInset = 0,
     tooltipFormatter = null
 }: {
     rows: InfoChartRow[];
     hour12: boolean;
-    avatarLaneLabel?: string;
+    topInset?: number;
+    palette?: InfoChartPalette;
     tooltipFormatter?:
         | ((entry: InfoChartRow, hour12: boolean) => string | HTMLElement)
         | null;
@@ -187,10 +216,6 @@ export function buildInfoChartOption({
     const groupedByUser = new Map<string, GroupedEntry[]>();
     const firstEntries: InfoChartRow[] = [];
     const sortedRows = [...rows].sort((left, right) => {
-        const kindDiff = Number(!left.avatarId) - Number(!right.avatarId);
-        if (kindDiff) {
-            return kindDiff;
-        }
         const joinDiff = Math.abs(left.joinMs - right.joinMs);
         return joinDiff < 3000
             ? left.leaveMs - right.leaveMs
@@ -220,18 +245,6 @@ export function buildInfoChartOption({
             tail,
             entry
         });
-    }
-
-    const avatarColors = new Map<string, string>();
-    for (const entry of sortedRows) {
-        if (entry.avatarId && !avatarColors.has(entry.avatarId)) {
-            avatarColors.set(
-                entry.avatarId,
-                AVATAR_SEGMENT_COLORS[
-                    avatarColors.size % AVATAR_SEGMENT_COLORS.length
-                ]
-            );
-        }
     }
 
     const maxEntryCount = Math.max(
@@ -264,25 +277,16 @@ export function buildInfoChartOption({
             stack: 'Total',
             colorBy: 'data',
             barWidth: INFO_CHART_BAR_WIDTH,
+            barMinHeight: INFO_CHART_BAR_WIDTH,
             emphasis: {
                 focus: 'self'
             },
             itemStyle: {
-                borderRadius: 2,
-                shadowBlur: 2,
-                shadowOffsetX: 0.7,
-                shadowOffsetY: 0.5
+                borderRadius: 3
             },
             data: firstEntries.map((entry) => {
                 const element = groupedByUser.get(entry.userId)?.[entryIndex];
-                const avatarId = element?.entry.avatarId;
-                if (!element || !avatarId) {
-                    return element ? element.durationMs : 0;
-                }
-                return {
-                    value: element.durationMs,
-                    itemStyle: { color: avatarColors.get(avatarId) }
-                };
+                return element ? element.durationMs : 0;
             })
         });
     }
@@ -317,18 +321,16 @@ export function buildInfoChartOption({
                         .join('<br />');
                 }
             },
-            grid: {
-                top: 50,
-                left: 160,
-                right: 90,
-                bottom: 24
-            },
+            grid: { ...INFO_CHART_GRID, top: INFO_CHART_GRID.top + topInset },
             yAxis: {
                 type: 'category',
                 inverse: true,
                 triggerEvent: true,
+                axisLine: { show: false },
+                axisTick: { show: false },
                 axisLabel: {
                     interval: 0,
+                    color: palette.axisLabel,
                     rich: {
                         favorite: {
                             color: '#fbbf24',
@@ -337,11 +339,6 @@ export function buildInfoChartOption({
                         },
                         friend: {
                             color: '#fda4af',
-                            align: 'center',
-                            width: 14
-                        },
-                        avatar: {
-                            color: '#a5b4fc',
                             align: 'center',
                             width: 14
                         },
@@ -354,29 +351,71 @@ export function buildInfoChartOption({
                         return `${richMarkerForEntry(entry)} ${truncateLabel(value, 20)}`;
                     }
                 },
-                data: firstEntries.map((entry) =>
-                    entry.avatarId ? avatarLaneLabel : entry.displayName
-                )
+                data: firstEntries.map((entry) => entry.displayName)
             },
             xAxis: {
                 type: 'value',
                 min: 0,
                 max: endMs - startMs,
-                axisLine: { show: true },
+                axisLine: { show: false },
+                axisTick: { show: false },
                 axisLabel: {
+                    color: palette.axisLabel,
+                    hideOverlap: true,
                     formatter(value: number) {
-                        return formatClock(startMs + value, hour12, false);
+                        return formatClock(
+                            startMs + value,
+                            hour12,
+                            endMs - startMs <= SECONDS_AXIS_MAX_SPAN_MS
+                        );
                     }
                 },
                 splitLine: {
                     lineStyle: {
-                        type: 'dashed'
+                        type: 'solid',
+                        color: palette.splitLine
                     }
                 }
             },
             series,
             backgroundColor: 'transparent'
         },
-        firstEntries
+        firstEntries,
+        startMs,
+        endMs
     };
+}
+
+export function buildAvatarLaneSegments<
+    T extends { avatarId: string; startedAtMs: number; endedAtMs: number }
+>(segments: readonly T[], startMs: number, endMs: number) {
+    const spanMs = endMs - startMs;
+    if (spanMs <= 0) {
+        return [];
+    }
+    const colors = new Map<string, string>();
+    const inRange = segments.filter(
+        (segment) => segment.endedAtMs > startMs && segment.startedAtMs < endMs
+    );
+    return inRange.map((segment, index) => {
+        const fromMs =
+            index === 0 ? startMs : Math.max(segment.startedAtMs, startMs);
+        const toMs =
+            index === inRange.length - 1
+                ? endMs
+                : Math.min(segment.endedAtMs, endMs);
+        let color = colors.get(segment.avatarId);
+        if (!color) {
+            color = AVATAR_LANE_COLORS[colors.size % AVATAR_LANE_COLORS.length];
+            colors.set(segment.avatarId, color);
+        }
+        return {
+            segment,
+            fromMs,
+            toMs,
+            color,
+            leftPercent: ((fromMs - startMs) / spanMs) * 100,
+            widthPercent: ((toMs - fromMs) / spanMs) * 100
+        };
+    });
 }

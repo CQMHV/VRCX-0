@@ -20,6 +20,10 @@ import {
 } from '@/ui/shadcn/hover-card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
+import {
+    buildAvatarLaneSegments,
+    INFO_CHART_GRID
+} from './previousInstancesChart';
 import type { PreviousInstanceVisitWindow } from './previousInstancesRows';
 
 const STACKED_AVATAR_LIMIT = 3;
@@ -241,6 +245,112 @@ export function InstanceAvatarWearSummary({
                     ) : null}
                 </AvatarGroup>
             </dd>
+        </div>
+    );
+}
+
+export function AvatarWearLane({
+    segments,
+    startMs,
+    endMs,
+    label
+}: {
+    segments: readonly AvatarWearSegment[];
+    startMs: number;
+    endMs: number;
+    label: string;
+}) {
+    const lane = buildAvatarLaneSegments(segments, startMs, endMs);
+    if (!lane.length) {
+        return null;
+    }
+    return (
+        <div className="relative h-8">
+            <span
+                className="text-muted-foreground absolute bottom-[3px] translate-y-1/2 text-xs font-normal whitespace-nowrap"
+                style={{ right: `calc(100% - ${INFO_CHART_GRID.left - 8}px)` }}
+            >
+                {label}
+            </span>
+            <div
+                className="absolute inset-y-0"
+                style={{
+                    left: INFO_CHART_GRID.left,
+                    right: INFO_CHART_GRID.right
+                }}
+            >
+                {lane.map(
+                    (
+                        {
+                            segment,
+                            fromMs,
+                            toMs,
+                            color,
+                            leftPercent,
+                            widthPercent
+                        },
+                        index
+                    ) => (
+                        <Tooltip key={segment.startedAtMs}>
+                            <TooltipTrigger
+                                render={
+                                    <button
+                                        type="button"
+                                        aria-label={segmentName(segment)}
+                                        className="group/wear absolute inset-y-0 cursor-pointer outline-none"
+                                        style={{
+                                            left: `${leftPercent}%`,
+                                            width: `${widthPercent}%`
+                                        }}
+                                        onClick={() =>
+                                            openAvatarDialog({
+                                                avatarId: segment.avatarId
+                                            })
+                                        }
+                                    />
+                                }
+                            >
+                                <span
+                                    data-slot="avatar-wear-marker"
+                                    className="absolute top-0 left-0 flex -translate-x-1/2 flex-col items-center"
+                                >
+                                    <Avatar
+                                        size="sm"
+                                        className="ring-background size-4 ring-2"
+                                    >
+                                        <WearAvatarImage segment={segment} />
+                                    </Avatar>
+                                    <span
+                                        className="mt-0.5 h-2 w-px opacity-60"
+                                        style={{ backgroundColor: color }}
+                                    />
+                                </span>
+                                <span
+                                    className="absolute bottom-0 left-0 h-1.5 rounded-[3px] transition-[filter] duration-150 group-hover/wear:brightness-125 group-focus-visible/wear:brightness-125"
+                                    style={{
+                                        right: index < lane.length - 1 ? 2 : 0,
+                                        backgroundColor: color
+                                    }}
+                                />
+                            </TooltipTrigger>
+                            <TooltipContent className="flex items-center gap-2">
+                                <Avatar size="sm">
+                                    <WearAvatarImage segment={segment} />
+                                </Avatar>
+                                <div className="min-w-0">
+                                    <div className="truncate font-medium">
+                                        {segmentName(segment)}
+                                    </div>
+                                    <div className="tabular-nums opacity-80">
+                                        {formatClock(fromMs)} –{' '}
+                                        {formatClock(toMs)}
+                                    </div>
+                                </div>
+                            </TooltipContent>
+                        </Tooltip>
+                    )
+                )}
+            </div>
         </div>
     );
 }
