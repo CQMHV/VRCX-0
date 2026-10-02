@@ -52,6 +52,22 @@ impl GameStateStore for PersistenceGameStateStore {
         Ok(game_log::write_batch(self.db.as_ref(), owner, batch)?)
     }
 
+    fn fill_location_group_name(
+        &self,
+        owner: &OwnerId,
+        created_at: &str,
+        location: &str,
+        group_name: &str,
+    ) -> vrcx_0_application_core::Result<u64> {
+        Ok(game_log::fill_location_group_name(
+            self.db.as_ref(),
+            owner,
+            created_at,
+            location,
+            group_name,
+        )?)
+    }
+
     fn join_leave_for_location(
         &self,
         owner: &OwnerId,

@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use serde_json::Value;
 use vrcx_0_application_core::{
     sleep_until_due_or_stopped, BackendRuntimeStatusPublisher, RuntimeAuthIdentity,
     RuntimeAuthScope, RuntimeAuthScopeSnapshot, TaskStopToken,
@@ -210,6 +211,19 @@ pub(super) fn dispatch_side_effect(
                 tracing::warn!("GameLog NoVR side effect failed: {error}");
             }
         }
+        GameLogSideEffect::LocationGroupName {
+            created_at,
+            location,
+            group_id,
+        } => {
+            deps.tasks.clone().spawn(async move {
+                if let Err(error) =
+                    fill_location_group_name(&deps, &created_at, &location, &group_id).await
+                {
+                    tracing::warn!("GameLog group name side effect failed: {error}");
+                }
+            });
+        }
         GameLogSideEffect::UdonException { data } => {
             if deps
                 .store
@@ -220,6 +234,32 @@ pub(super) fn dispatch_side_effect(
             }
         }
     }
+}
+
+async fn fill_location_group_name(
+    deps: &GameLogSideEffectDeps,
+    created_at: &str,
+    location: &str,
+    group_id: &str,
+) -> crate::Result<()> {
+    let Some(group) = deps.instance_media.get_group(group_id).await? else {
+        return Ok(());
+    };
+    let group_name = group
+        .get("name")
+        .and_then(Value::as_str)
+        .map(str::trim)
+        .unwrap_or_default();
+    if group_name.is_empty() {
+        return Ok(());
+    }
+    deps.store.fill_location_group_name(
+        &OwnerId::new(deps.auth_identity.user_id.clone()),
+        created_at,
+        location,
+        group_name,
+    )?;
+    Ok(())
 }
 
 fn announce_now_playing(deps: &GameLogSideEffectDeps, payload: NowPlayingPayload) -> Option<i64> {

@@ -58,6 +58,11 @@ pub enum GameLogSideEffect {
     UdonException {
         data: String,
     },
+    LocationGroupName {
+        created_at: String,
+        location: String,
+        group_id: String,
+    },
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -161,6 +166,18 @@ impl GameLogIngestEngine {
                     world_name,
                 } => {
                     self.ingest_location(&mut output.batch, event, location, world_name);
+                    if let Some(group_id) = parse_location(location)
+                        .group_id
+                        .filter(|id| !id.is_empty())
+                    {
+                        output
+                            .side_effects
+                            .push(GameLogSideEffect::LocationGroupName {
+                                created_at: event.created_at.clone(),
+                                location: location.to_string(),
+                                group_id,
+                            });
+                    }
                     output.instance_roster_changed |= !location.is_empty();
                 }
                 GameLogEventKind::LocationDestination { .. } => {

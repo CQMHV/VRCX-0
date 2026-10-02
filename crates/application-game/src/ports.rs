@@ -35,6 +35,7 @@ pub trait BackgroundRemoteApi: Send + Sync {
 pub trait InstanceMediaPort: Send + Sync {
     async fn get_print(&self, print_id: &str) -> Result<Option<Value>>;
     async fn get_inventory_item(&self, user_id: &str, inventory_id: &str) -> Result<Option<Value>>;
+    async fn get_group(&self, group_id: &str) -> Result<Option<Value>>;
     async fn save_ugc_image(
         &self,
         url: &str,
@@ -65,6 +66,13 @@ pub trait GameStateStore: Send + Sync {
     fn set_string(&self, key: &str, value: &str) -> Result<()>;
     fn set_json(&self, key: &str, value: &Value) -> Result<()>;
     fn write_game_log(&self, owner: &OwnerId, batch: &GameLogWriteBatch) -> Result<u64>;
+    fn fill_location_group_name(
+        &self,
+        owner: &OwnerId,
+        created_at: &str,
+        location: &str,
+        group_name: &str,
+    ) -> Result<u64>;
     fn join_leave_for_location(
         &self,
         owner: &OwnerId,
@@ -303,6 +311,26 @@ impl GameStateStore for TestGameStateStore {
             .config
             .insert(key.to_string(), value.clone());
         Ok(())
+    }
+
+    fn fill_location_group_name(
+        &self,
+        owner: &OwnerId,
+        created_at: &str,
+        location: &str,
+        group_name: &str,
+    ) -> Result<u64> {
+        let mut state = self.state.lock().expect("test game state lock");
+        let Some(row) = state.locations.iter_mut().find(|row| {
+            owner_can_read(&row.owner, owner)
+                && row.value.created_at == created_at
+                && row.value.location == location
+                && row.value.group_name.is_empty()
+        }) else {
+            return Ok(0);
+        };
+        row.value.group_name = group_name.to_string();
+        Ok(1)
     }
 
     fn write_game_log(&self, owner: &OwnerId, batch: &GameLogWriteBatch) -> Result<u64> {
@@ -648,7 +676,9 @@ impl GameStateStore for TestGameStateStore {
 
 #[cfg(test)]
 #[derive(Default)]
-pub(crate) struct TestGameMediaPort;
+pub(crate) struct TestGameMediaPort {
+    pub(crate) groups: std::collections::HashMap<String, Value>,
+}
 
 #[cfg(test)]
 #[async_trait::async_trait]
@@ -662,6 +692,9 @@ impl InstanceMediaPort for TestGameMediaPort {
         _inventory_id: &str,
     ) -> Result<Option<Value>> {
         Ok(None)
+    }
+    async fn get_group(&self, group_id: &str) -> Result<Option<Value>> {
+        Ok(self.groups.get(group_id).cloned())
     }
     async fn save_ugc_image(
         &self,

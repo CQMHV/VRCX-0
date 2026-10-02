@@ -138,8 +138,8 @@ fn build_test_processor(store: Arc<TestGameStateStore>) -> Result<GameLogProcess
     let event_bus = RuntimeEventBus::new();
     let processor = GameLogProcessor::new(GameLogProcessorDeps {
         store,
-        instance_media: Arc::new(TestGameMediaPort),
-        video_metadata: Arc::new(TestGameMediaPort),
+        instance_media: Arc::new(TestGameMediaPort::default()),
+        video_metadata: Arc::new(TestGameMediaPort::default()),
         event_bus: event_bus.clone(),
         backend_status: vrcx_0_application_core::BackendRuntimeStatusPublisher::new(
             vrcx_0_application_core::BackendRuntime::new(
@@ -2283,5 +2283,43 @@ fn video_notifications_discard_metadata_completed_after_auth_scope_changes() -> 
         assert!(sink.take_deliveries().is_empty());
         assert!(overlay.snapshot().entries.is_empty());
     }
+    Ok(())
+}
+
+#[test]
+fn group_instance_locations_record_the_owning_group_name() -> Result<()> {
+    let (_dir, store, mut processor) = test_processor("runtime-gamelog-group-name")?;
+    let mut media = TestGameMediaPort::default();
+    media.groups.insert(
+        "grp_owner".into(),
+        serde_json::json!({ "id": "grp_owner", "name": " Owner Group " }),
+    );
+    processor.deps.instance_media = Arc::new(media);
+    processor
+        .deps
+        .auth_scope
+        .set_identity("usr_owner", "Owner", "");
+    processor.deps.tasks.set_executor(InlineVideoTaskExecutor);
+
+    processor.handle_jobs(vec![
+        GameLogWorkerJob::Event(event(
+            "2026-05-14T04:00:00.000Z",
+            GameLogEventKind::Location {
+                location: "wrld_group:1~group(grp_owner)~groupAccessType(public)".into(),
+                world_name: "Group World".into(),
+            },
+        )),
+        GameLogWorkerJob::Event(event(
+            "2026-05-14T05:00:00.000Z",
+            GameLogEventKind::Location {
+                location: "wrld_group:2~hidden(usr_owner)".into(),
+                world_name: "Group World".into(),
+            },
+        )),
+    ])?;
+
+    let locations = store.locations(&OwnerId::new("usr_owner"));
+    assert_eq!(locations[0].group_name, "Owner Group");
+    assert_eq!(locations[1].group_name, "");
     Ok(())
 }
