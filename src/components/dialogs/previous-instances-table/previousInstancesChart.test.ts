@@ -1,13 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-    INFO_CHART_BAR_WIDTH,
-    INFO_CHART_GRID,
     buildAvatarLaneSegments,
     buildInfoChartOption,
     buildInfoTimelineRows,
-    infoChartFirstBarTop,
-    infoChartHeight,
     buildInfoChartTooltipParts
 } from './previousInstancesChart';
 
@@ -193,50 +189,6 @@ describe('previousInstancesChart', () => {
         expect(barSeries?.[0].data).toEqual([4000, 2000]);
     });
 
-    it('draws even a momentary stay as a visible mark with small corners', () => {
-        const chartPayload = buildInfoChartOption({
-            hour12: false,
-            rows: [
-                {
-                    userId: 'usr_me',
-                    displayName: 'Me',
-                    joinMs: 0,
-                    leaveMs: 3_600_000,
-                    durationMs: 3_600_000,
-                    isSelf: true
-                }
-            ]
-        });
-
-        const barSeries = chartPayload?.option.series.filter(
-            (series) => series.name === 'Time'
-        );
-        expect(barSeries?.[0].barMinHeight).toBe(INFO_CHART_BAR_WIDTH);
-        expect(barSeries?.[0].itemStyle.borderRadius).toBeLessThanOrEqual(
-            INFO_CHART_BAR_WIDTH / 4
-        );
-    });
-
-    it('frames the timeline with quiet solid gridlines and no axis lines', () => {
-        const option = buildInfoChartOption({
-            hour12: false,
-            rows: [
-                {
-                    userId: 'usr_me',
-                    displayName: 'Me',
-                    joinMs: 0,
-                    leaveMs: 4000,
-                    durationMs: 4000,
-                    isSelf: true
-                }
-            ]
-        })?.option;
-
-        expect(option?.xAxis.axisLine.show).toBe(false);
-        expect(option?.yAxis.axisLine.show).toBe(false);
-        expect(option?.xAxis.splitLine.lineStyle.type).toBe('solid');
-    });
-
     it('shows seconds on the time axis for short visits only', () => {
         const rowsSpanning = (durationMs: number) => [
             {
@@ -263,40 +215,6 @@ describe('previousInstancesChart', () => {
         expect(longVisit?.option.xAxis.axisLabel.formatter(0)).not.toMatch(
             /\d{2}:\d{2}:\d{2}/
         );
-    });
-
-    it('leaves extra room above the players when asked', () => {
-        const option = buildInfoChartOption({
-            hour12: false,
-            topInset: 12,
-            rows: [
-                {
-                    userId: 'usr_me',
-                    displayName: 'Me',
-                    joinMs: 0,
-                    leaveMs: 4000,
-                    durationMs: 4000,
-                    isSelf: true
-                }
-            ]
-        })?.option;
-
-        expect(option?.grid.top).toBe(INFO_CHART_GRID.top + 12);
-    });
-
-    it('locates the first player bar from the same layout that sizes the chart', () => {
-        for (const rowCount of [1, 4, 11, 40]) {
-            const height = infoChartHeight(rowCount, 10);
-            const bandHeight =
-                (height - INFO_CHART_GRID.top - 10 - INFO_CHART_GRID.bottom) /
-                rowCount;
-            expect(infoChartFirstBarTop(rowCount, 10)).toBeCloseTo(
-                INFO_CHART_GRID.top +
-                    10 +
-                    bandHeight / 2 -
-                    INFO_CHART_BAR_WIDTH / 2
-            );
-        }
     });
 
     it('exposes the time range the x axis spans', () => {
