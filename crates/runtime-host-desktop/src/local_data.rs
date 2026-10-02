@@ -714,6 +714,29 @@ impl LocalDataRuntime {
         )
     }
 
+    pub fn game_log_import_inspect(
+        &self,
+        paths: Vec<String>,
+        game_running: bool,
+    ) -> Result<Vec<vrcx_0_application_game::GameLogImportFile>> {
+        crate::game_log_import::inspect_game_log_import(&self.current_owner(), &paths, game_running)
+    }
+
+    pub fn game_log_import(
+        &self,
+        paths: Vec<String>,
+        consent: vrcx_0_application_game::GameLogImportConsent,
+        game_running: bool,
+    ) -> Result<Vec<vrcx_0_application_game::GameLogImportFile>> {
+        crate::game_log_import::import_game_log(
+            &self.db,
+            &self.current_owner(),
+            &paths,
+            consent,
+            game_running,
+        )
+    }
+
     pub fn game_log_query(&self, query: GameLogQuery) -> Result<GameLogQueryOutput> {
         Ok(vrcx_0_persistence::game_log::game_log_query(
             self.db.as_ref(),

@@ -919,6 +919,15 @@ const generatedCommands = {
             entries
         });
     },
+    async appGameLogImportSelectFiles(): Promise<GameLogImportFile[]> {
+        return await TAURI_INVOKE('app__game_log_import_select_files');
+    },
+    async appGameLogImport(
+        paths: string[],
+        consent: GameLogImportConsent
+    ): Promise<GameLogImportFile[]> {
+        return await TAURI_INVOKE('app__game_log_import', { paths, consent });
+    },
     async appGameLogPersistenceSetDisabled(disabled: boolean): Promise<null> {
         return await TAURI_INVOKE('app__game_log_persistence_set_disabled', {
             disabled
@@ -4401,6 +4410,23 @@ export type GameLogEntryDeleteKind =
     | 'ImageLoad'
     | 'Event'
     | 'External';
+export type GameLogImportConsent = {
+    unverifiedAccount: boolean;
+    accountMismatch: boolean;
+};
+export type GameLogImportFile = {
+    path: string;
+    fileName: string;
+    status: GameLogImportFileStatus;
+    imported: boolean;
+    insertedCount: number;
+};
+export type GameLogImportFileStatus =
+    | 'ready'
+    | 'accountUnverified'
+    | 'accountMismatch'
+    | 'liveFile'
+    | 'unreadable';
 export type GameLogInstanceJoinOutput = {
     created_at: string;
     location: string;

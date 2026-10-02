@@ -184,6 +184,20 @@ impl TestGameStateStore {
         rows.into_iter().map(|(_, row)| row).collect()
     }
 
+    pub(crate) fn video_plays(
+        &self,
+        owner: &OwnerId,
+    ) -> Vec<vrcx_0_contracts::game_log::GameLogVideoPlayEntry> {
+        self.state
+            .lock()
+            .expect("test game state lock")
+            .video_plays
+            .iter()
+            .filter(|row| owner_can_read(&row.owner, owner))
+            .map(|row| row.value.clone())
+            .collect()
+    }
+
     pub(crate) fn tables_exist(&self) -> bool {
         self.state
             .lock()

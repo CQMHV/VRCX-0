@@ -3,6 +3,7 @@ mod background_capabilities;
 mod game_client;
 mod game_event_bus;
 mod game_log;
+mod game_log_import;
 mod game_log_parser;
 mod game_log_watcher;
 mod ports;
@@ -48,6 +49,10 @@ pub use game_log::{
     InstanceHistoryEntryOutput, InstanceHistoryQueryInput, NoopGameLogHostActions,
     PlayerListSnapshotContext, PlayerListSnapshotOutput, PlayerListSnapshotPlayer,
     PlayerListSnapshotSource, PlayerState, RuntimeSnapshot, RuntimeSnapshotStore, ScreenshotInput,
+};
+pub use game_log_import::{
+    import_game_log_file, inspect_game_log_import_file, GameLogImportConsent, GameLogImportFile,
+    GameLogImportFileStatus,
 };
 pub use game_log_parser::GameLogEvent;
 pub use game_log_watcher::{
