@@ -699,32 +699,45 @@ fn upsert_avatar_time_spent(
     entry: &AvatarTimeSpentUpsert,
 ) -> Result<u64, Error> {
     let avatar_id = normalize_user_id(&entry.avatar_id);
-    if avatar_id.is_empty() || entry.time_spent <= 0 {
+    if avatar_id.is_empty() || entry.ended_at_ms <= entry.started_at_ms {
         return Ok(0);
+    }
+    if entry.time_spent > 0 {
+        tx.execute_non_query(
+            &format!(
+                "INSERT INTO {user_prefix}_avatar_history (avatar_id, created_at, time)
+                 VALUES (@avatar_id, @created_at, @time_spent)
+                 ON CONFLICT(avatar_id) DO UPDATE SET time = time + @time_spent"
+            ),
+            &ParamsBuilder::new()
+                .set("avatar_id", avatar_id.clone())
+                .set("created_at", entry.created_at.clone())
+                .set("time_spent", entry.time_spent)
+                .build(),
+        )?;
+    }
+    let params = ParamsBuilder::new()
+        .set("avatar_id", avatar_id)
+        .set("started_at", activity_iso_from_ms(entry.started_at_ms))
+        .set("ended_at", activity_iso_from_ms(entry.ended_at_ms))
+        .set("time", entry.ended_at_ms - entry.started_at_ms)
+        .build();
+    let updated = tx.execute_non_query(
+        &format!(
+            "UPDATE {user_prefix}_avatar_wear_log SET ended_at = @ended_at, time = @time
+             WHERE avatar_id = @avatar_id AND started_at = @started_at"
+        ),
+        &params,
+    )?;
+    if updated > 0 {
+        return Ok(affected_count(updated));
     }
     tx.execute_non_query(
         &format!(
-            "INSERT INTO {user_prefix}_avatar_history (avatar_id, created_at, time)
-             VALUES (@avatar_id, @created_at, @time_spent)
-             ON CONFLICT(avatar_id) DO UPDATE SET time = time + @time_spent"
-        ),
-        &ParamsBuilder::new()
-            .set("avatar_id", avatar_id.clone())
-            .set("created_at", entry.created_at.clone())
-            .set("time_spent", entry.time_spent)
-            .build(),
-    )?;
-    tx.execute_non_query(
-        &format!(
             "INSERT INTO {user_prefix}_avatar_wear_log (avatar_id, started_at, ended_at, time)
-             VALUES (@avatar_id, @started_at, @ended_at, @time_spent)"
+             VALUES (@avatar_id, @started_at, @ended_at, @time)"
         ),
-        &ParamsBuilder::new()
-            .set("avatar_id", avatar_id)
-            .set("started_at", activity_iso_from_ms(entry.started_at_ms))
-            .set("ended_at", activity_iso_from_ms(entry.ended_at_ms))
-            .set("time_spent", entry.time_spent)
-            .build(),
+        &params,
     )
     .map(affected_count)
 }
