@@ -118,8 +118,8 @@ pub fn decide_notification_plan(
         && game.is_steamvr_running
         && should_play_for_condition(preferences.overlay_toast, game);
     let xs = vr && preferences.xs_notifications;
-    let ovrt_hud = vr && preferences.ovrt_hud_notifications;
-    let ovrt_wrist = vr && preferences.ovrt_wrist_notifications;
+    let ovrt_hud = cfg!(windows) && vr && preferences.ovrt_hud_notifications;
+    let ovrt_wrist = cfg!(windows) && vr && preferences.ovrt_wrist_notifications;
     let ovrt = ovrt_hud || ovrt_wrist;
     let tts = delivery.tts && should_play_for_condition(preferences.notification_tts, game);
 

@@ -4,7 +4,7 @@ mod dispatcher;
 mod do_not_disturb;
 mod indicator;
 mod overlay_transport;
-#[cfg(any(windows, target_os = "linux"))]
+#[cfg(windows)]
 mod ovrt;
 mod policy;
 mod preferences;

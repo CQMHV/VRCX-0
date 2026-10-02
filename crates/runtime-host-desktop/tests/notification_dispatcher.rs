@@ -54,9 +54,35 @@ fn vr_delivery_requires_steamvr_and_enabled_channels() {
         },
     );
     assert!(in_vr.xs);
-    assert!(in_vr.ovrt);
-    assert!(in_vr.ovrt_hud);
-    assert!(in_vr.ovrt_wrist);
+    assert_eq!(in_vr.ovrt, cfg!(windows));
+}
+
+#[test]
+fn ovr_toolkit_is_only_planned_on_windows() {
+    let plan = decide_notification_plan(
+        &delivery(false, true, false, false),
+        &NotificationDeliveryPreferences {
+            ovrt_hud_notifications: true,
+            ovrt_wrist_notifications: true,
+            ..NotificationDeliveryPreferences::default()
+        },
+        &NotificationDeliveryGameState {
+            is_game_running: true,
+            is_steamvr_running: true,
+            is_game_no_vr: false,
+            is_hmd_afk: false,
+        },
+    );
+
+    assert_eq!(
+        (
+            plan.ovrt,
+            plan.ovrt_hud,
+            plan.ovrt_wrist,
+            plan.needs_local_image()
+        ),
+        (cfg!(windows), cfg!(windows), cfg!(windows), cfg!(windows))
+    );
 }
 
 #[test]
@@ -78,7 +104,7 @@ fn each_local_channel_only_follows_its_own_router_flag() {
     let channels = |desktop, vr, tts| {
         let plan =
             decide_notification_plan(&delivery(desktop, vr, false, tts), &preferences, &game);
-        (plan.desktop, plan.xs && plan.ovrt, plan.tts)
+        (plan.desktop, plan.xs, plan.tts)
     };
 
     assert_eq!(channels(true, false, false), (true, false, false));
