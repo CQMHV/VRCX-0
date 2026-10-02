@@ -470,20 +470,6 @@ impl LocalDataRuntime {
         )?)
     }
 
-    pub fn avatar_time_spent_add(
-        &self,
-        user_id: String,
-        avatar_id: String,
-        time_spent: i64,
-    ) -> Result<()> {
-        Ok(vrcx_0_persistence::avatars::avatar_time_spent_add(
-            self.db.as_ref(),
-            user_id,
-            avatar_id,
-            time_spent,
-        )?)
-    }
-
     pub fn avatar_time_spent_get(
         &self,
         user_id: String,

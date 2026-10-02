@@ -200,21 +200,6 @@ pub fn app__avatar_tags_replace(
 
 #[tauri::command(async)]
 #[specta::specta]
-pub fn app__avatar_time_spent_add(
-    state: State<'_, AppState>,
-    user_id: String,
-    avatar_id: String,
-    time_spent: i64,
-) -> Result<(), AppError> {
-    state
-        .runtime_host()
-        .local_data()
-        .avatar_time_spent_add(user_id, avatar_id, time_spent)
-        .map_err(AppError::from)
-}
-
-#[tauri::command(async)]
-#[specta::specta]
 pub fn app__avatar_time_spent_get(
     state: State<'_, AppState>,
     user_id: String,

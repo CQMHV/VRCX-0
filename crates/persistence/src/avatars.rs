@@ -5,7 +5,7 @@ pub use vrcx_0_contracts::{
 };
 
 use crate::cache_entities::{upsert_cache_entities, upsert_cache_entity, CacheEntityInput};
-use crate::common::{normalize_text, now_iso, row_i64, row_string, ParamsBuilder};
+use crate::common::{normalize_text, row_i64, row_string, ParamsBuilder};
 use crate::database::schema::{ensure_global_store_tables, ensure_user_store_tables};
 use crate::database::DatabaseService;
 use crate::realtime::normalize_user_table_prefix;
@@ -132,29 +132,6 @@ pub fn avatar_cache_remove(db: &DatabaseService, avatar_id: String) -> Result<()
     db.execute_non_query(
         "DELETE FROM cache_avatar WHERE id = @avatar_id",
         &ParamsBuilder::new().set("avatar_id", avatar_id).build(),
-    )?;
-    Ok(())
-}
-
-pub fn avatar_time_spent_add(
-    db: &DatabaseService,
-    user_id: String,
-    avatar_id: String,
-    time_spent: i64,
-) -> Result<(), Error> {
-    let user_prefix = normalize_user_table_prefix(&user_id)?;
-    ensure_user_store_tables(db, &user_prefix)?;
-    let avatar_id = normalize_text(avatar_id);
-    if avatar_id.is_empty() {
-        return Ok(());
-    }
-    db.execute_non_query(
-        &format!("INSERT INTO {user_prefix}_avatar_history (avatar_id, created_at, time) VALUES (@avatar_id, @created_at, @time_spent) ON CONFLICT(avatar_id) DO UPDATE SET time = time + @time_spent"),
-        &ParamsBuilder::new()
-            .set("avatar_id", avatar_id)
-            .set("created_at", now_iso())
-            .set("time_spent", time_spent)
-            .build(),
     )?;
     Ok(())
 }

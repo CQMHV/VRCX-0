@@ -46,6 +46,24 @@ fn avatar_entry(id: &str) -> CacheEntityInput {
     }
 }
 
+fn insert_avatar_history(
+    db: &DatabaseService,
+    user_id: &str,
+    avatar_id: &str,
+    time_spent: i64,
+) -> Result<(), Error> {
+    let user_prefix = normalize_user_table_prefix(user_id)?;
+    ensure_user_store_tables(db, &user_prefix)?;
+    db.execute_non_query(
+        &format!("INSERT INTO {user_prefix}_avatar_history (avatar_id, created_at, time) VALUES (@avatar_id, '2026-01-01T00:00:00Z', @time_spent)"),
+        &ParamsBuilder::new()
+            .set("avatar_id", avatar_id)
+            .set("time_spent", time_spent)
+            .build(),
+    )?;
+    Ok(())
+}
+
 #[test]
 fn clearing_one_accounts_history_preserves_other_accounts_history_and_global_cache(
 ) -> Result<(), Error> {
@@ -54,8 +72,8 @@ fn clearing_one_accounts_history_preserves_other_accounts_history_and_global_cac
     let avatar_id = "avtr_shared";
 
     avatar_cache_upsert(&db, avatar_entry(avatar_id))?;
-    avatar_time_spent_add(&db, "usr_a".into(), avatar_id.into(), 0)?;
-    avatar_time_spent_add(&db, "usr_b".into(), avatar_id.into(), 42)?;
+    insert_avatar_history(&db, "usr_a", avatar_id, 0)?;
+    insert_avatar_history(&db, "usr_b", avatar_id, 42)?;
 
     assert_eq!(avatar_history_list(&db, "usr_a".into(), 100)?.len(), 1);
     assert_eq!(avatar_history_list(&db, "usr_b".into(), 100)?.len(), 1);

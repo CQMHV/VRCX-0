@@ -797,17 +797,6 @@ const generatedCommands = {
             limit
         });
     },
-    async appAvatarTimeSpentAdd(
-        userId: string,
-        avatarId: string,
-        timeSpent: number
-    ): Promise<null> {
-        return await TAURI_INVOKE('app__avatar_time_spent_add', {
-            userId,
-            avatarId,
-            timeSpent
-        });
-    },
     async appAvatarTimeSpentGet(
         userId: string,
         avatarId: string
