@@ -23,6 +23,8 @@ pub(crate) struct MainOverlayFrameInput {
     pub toasts: Vec<HmdToastView>,
     pub locale: OverlayLocale,
     pub show_instance_id_in_location: bool,
+    pub compact: bool,
+    pub stack_upward: bool,
 }
 
 pub(crate) fn build_main_surface_model(input: MainOverlayFrameInput) -> MainSurfaceModel {
@@ -32,6 +34,8 @@ pub(crate) fn build_main_surface_model(input: MainOverlayFrameInput) -> MainSurf
         size: OverlaySize::new(960, 528),
         dark_background: true,
         accent: Color::rgba(94, 234, 212, 255),
+        compact: input.compact,
+        stack_upward: input.stack_upward,
         toasts: input
             .toasts
             .into_iter()

@@ -38,19 +38,10 @@ export type WristOverlaySizePreference = 'compact' | 'normal' | 'large';
 export type OverlayStartModePreference = 'steamvr' | 'vrchatVrMode';
 export type WristOverlayStartModePreference = OverlayStartModePreference;
 export type WristOverlayButtonPreference = 'grip' | 'menu';
-const HMD_NOTIFICATION_POSITIONS = [
-    'topLeft',
-    'top',
-    'topRight',
-    'left',
-    'center',
-    'right',
-    'bottomLeft',
-    'bottom',
-    'bottomRight'
-] as const;
+const HMD_NOTIFICATION_POSITIONS = ['top', 'center', 'bottom'] as const;
 export type HmdNotificationPositionPreference =
     (typeof HMD_NOTIFICATION_POSITIONS)[number];
+export type HmdNotificationStylePreference = 'standard' | 'compact';
 export type TrustColorKey = keyof typeof TRUST_COLOR_DEFAULTS;
 export type DiscordPreferenceKey =
     | 'discordActive'
@@ -187,6 +178,12 @@ export function normalizeWristOverlayButton(
     value: unknown
 ): WristOverlayButtonPreference {
     return value === 'menu' ? 'menu' : 'grip';
+}
+
+export function normalizeHmdNotificationStyle(
+    value: unknown
+): HmdNotificationStylePreference {
+    return value === 'compact' ? 'compact' : 'standard';
 }
 
 export function normalizeHmdNotificationPosition(
@@ -349,6 +346,7 @@ export const DEFAULT_PREFERENCES = Object.freeze({
     hmdNotificationTimeout: 5000,
     hmdNotificationOpacity: 100,
     hmdNotificationPosition: 'bottom',
+    hmdNotificationStyle: 'standard',
     webhookEnabled: false,
     webhookAuthEventsEnabled: true,
     webhookUrl: '',
@@ -566,6 +564,9 @@ export function normalizePreferenceSnapshot(snapshot: unknown = {}) {
         ),
         hmdNotificationPosition: normalizeHmdNotificationPosition(
             next.hmdNotificationPosition
+        ),
+        hmdNotificationStyle: normalizeHmdNotificationStyle(
+            next.hmdNotificationStyle
         ),
         webhookEnabled: normalizeBool(next.webhookEnabled),
         webhookAuthEventsEnabled: normalizeBool(next.webhookAuthEventsEnabled),

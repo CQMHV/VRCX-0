@@ -226,6 +226,7 @@ describe('preferencesStore normalizers', () => {
             hmdNotificationTimeout: 999999,
             hmdNotificationOpacity: -1,
             hmdNotificationPosition: 'right',
+            hmdNotificationStyle: 'compact',
             tableLimits: {
                 maxTableSize: 5,
                 searchLimit: 999999
@@ -268,7 +269,8 @@ describe('preferencesStore normalizers', () => {
             hmdNotificationStartMode: 'steamvr',
             hmdNotificationTimeout: 600000,
             hmdNotificationOpacity: 0,
-            hmdNotificationPosition: 'right',
+            hmdNotificationPosition: 'bottom',
+            hmdNotificationStyle: 'compact',
             translationAPIType: 'openai',
             translationAPIEndpoint: DEFAULT_PREFERENCES.translationAPIEndpoint,
             translationAPIModel: DEFAULT_PREFERENCES.translationAPIModel,

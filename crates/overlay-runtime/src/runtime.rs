@@ -74,44 +74,53 @@ impl WristOverlayHand {
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum HmdNotificationPosition {
-    TopLeft,
     Top,
-    TopRight,
-    Left,
     Center,
-    Right,
-    BottomLeft,
     #[default]
     Bottom,
-    BottomRight,
 }
 
 impl HmdNotificationPosition {
     pub(crate) fn from_config(value: &str) -> Self {
         match value.trim() {
-            "topLeft" => Self::TopLeft,
             "top" => Self::Top,
-            "topRight" => Self::TopRight,
-            "left" => Self::Left,
             "center" => Self::Center,
-            "right" => Self::Right,
-            "bottomLeft" => Self::BottomLeft,
-            "bottomRight" => Self::BottomRight,
             _ => Self::Bottom,
         }
     }
 
-    fn as_device_hint(self) -> &'static str {
+    fn newest_card_angle_degrees(self) -> f32 {
         match self {
-            Self::TopLeft => "hmd:top-left",
-            Self::Top => "hmd:top",
-            Self::TopRight => "hmd:top-right",
-            Self::Left => "hmd:left",
-            Self::Center => "hmd:center",
-            Self::Right => "hmd:right",
-            Self::BottomLeft => "hmd:bottom-left",
-            Self::Bottom => "hmd:bottom",
-            Self::BottomRight => "hmd:bottom-right",
+            Self::Top => 10.0,
+            Self::Center => -6.0,
+            Self::Bottom => -14.0,
+        }
+    }
+
+    pub(crate) fn stacks_upward(self) -> bool {
+        self == Self::Top
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum HmdNotificationStyle {
+    #[default]
+    Standard,
+    Compact,
+}
+
+impl HmdNotificationStyle {
+    pub(crate) fn from_config(value: &str) -> Self {
+        match value.trim() {
+            "compact" => Self::Compact,
+            _ => Self::Standard,
+        }
+    }
+
+    fn single_card_height_px(self) -> f32 {
+        match self {
+            Self::Standard => 112.0,
+            Self::Compact => 60.0,
         }
     }
 }
@@ -123,6 +132,7 @@ pub(crate) struct HmdNotificationConfig {
     pub(crate) timeout_ms: u64,
     pub(crate) opacity_percent: u8,
     pub(crate) position: HmdNotificationPosition,
+    pub(crate) style: HmdNotificationStyle,
     pub(crate) images: bool,
 }
 
@@ -134,6 +144,7 @@ impl Default for HmdNotificationConfig {
             timeout_ms: 5_000,
             opacity_percent: 100,
             position: HmdNotificationPosition::Bottom,
+            style: HmdNotificationStyle::Standard,
             images: true,
         }
     }
@@ -1035,7 +1046,7 @@ fn overlay_surface_configs(
         configs.extend(wrist_surface_configs(config, force_visible));
     }
     if active_surfaces.hmd {
-        configs.push(hmd_surface_config(config.hmd.position));
+        configs.push(hmd_surface_config(config.hmd.position, config.hmd.style));
     }
     configs
 }
@@ -1093,13 +1104,34 @@ fn wrist_surface_config(
     }
 }
 
-fn hmd_surface_config(position: HmdNotificationPosition) -> OverlaySurfaceConfig {
+const HMD_SURFACE_SIZE: OverlaySize = OverlaySize::new(960, 528);
+const HMD_SURFACE_DISTANCE_METERS: f32 = 1.3;
+const HMD_SURFACE_WIDTH_METERS: f32 = 1.074;
+const HMD_STACK_INSET_PX: f32 = 20.0;
+
+fn hmd_surface_config(
+    position: HmdNotificationPosition,
+    style: HmdNotificationStyle,
+) -> OverlaySurfaceConfig {
+    let meters_per_px = HMD_SURFACE_WIDTH_METERS / HMD_SURFACE_SIZE.width as f32;
+    let newest_card_y =
+        HMD_SURFACE_DISTANCE_METERS * position.newest_card_angle_degrees().to_radians().tan();
+    let newest_card_inset = (HMD_SURFACE_SIZE.height as f32 / 2.0
+        - HMD_STACK_INSET_PX
+        - style.single_card_height_px() / 2.0)
+        * meters_per_px;
+    let offset_y_meters = if position.stacks_upward() {
+        newest_card_y + newest_card_inset
+    } else {
+        newest_card_y - newest_card_inset
+    };
     OverlaySurfaceConfig {
         surface_id: OverlaySurfaceId::new(MAIN_SURFACE_ID),
-        size: OverlaySize::new(960, 528),
-        physical_width_meters: 0.95,
-        placement: OverlayPlacement::TrackedDeviceRelative {
-            device_hint: position.as_device_hint().to_string(),
+        size: HMD_SURFACE_SIZE,
+        physical_width_meters: HMD_SURFACE_WIDTH_METERS,
+        placement: OverlayPlacement::HeadLocked {
+            offset_y_meters,
+            distance_meters: HMD_SURFACE_DISTANCE_METERS,
         },
         activation_button: OverlayActivationButton::Grip,
         force_visible: false,

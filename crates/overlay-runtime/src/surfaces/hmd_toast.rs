@@ -8,9 +8,10 @@ use vrcx_0_contracts::activity::ActivityKind;
 use vrcx_0_core::location::{is_meaningful_world_name, parse_location, world_id_from_location};
 use vrcx_0_vr_overlay::{AvatarBitmap, OverlaySurfaceId, RgbaFrame, MAIN_SURFACE_ID};
 
-use super::super::localization::OverlayLocale;
 use super::super::manager::VrOverlayManager;
-use super::super::runtime::{render_slint_hmd_frame, VrOverlayRuntime, VrOverlayRuntimeConfig};
+use super::super::runtime::{
+    render_slint_hmd_frame, HmdNotificationStyle, VrOverlayRuntime, VrOverlayRuntimeConfig,
+};
 use super::super::service::HostVrOverlayService;
 use super::super::test_preview::test_hmd_toast_views;
 use super::main::{build_main_surface_model, HmdToastView, MainOverlayFrameInput};
@@ -156,15 +157,13 @@ impl VrOverlayRuntime {
             self.release_hmd_renderer_on_current_thread();
             return;
         }
-        let frame =
-            match self.render_hmd_frame(toasts, config.locale, config.show_instance_id_in_location)
-            {
-                Ok(frame) => frame,
-                Err(error) => {
-                    tracing::warn!(error = %error, "failed to render HMD overlay frame");
-                    return;
-                }
-            };
+        let frame = match self.render_hmd_frame(toasts, config) {
+            Ok(frame) => frame,
+            Err(error) => {
+                tracing::warn!(error = %error, "failed to render HMD overlay frame");
+                return;
+            }
+        };
         if let Err(error) = manager.update_surface_frame(&surface_id, frame) {
             tracing::warn!(error = %error, "failed to update HMD overlay frame");
             return;
@@ -223,13 +222,14 @@ impl VrOverlayRuntime {
     fn render_hmd_frame(
         &self,
         toasts: Vec<HmdToastView>,
-        locale: OverlayLocale,
-        show_instance_id_in_location: bool,
+        config: VrOverlayRuntimeConfig,
     ) -> Result<RgbaFrame, String> {
         let model = build_main_surface_model(MainOverlayFrameInput {
             toasts,
-            locale,
-            show_instance_id_in_location,
+            locale: config.locale,
+            show_instance_id_in_location: config.show_instance_id_in_location,
+            compact: config.hmd.style == HmdNotificationStyle::Compact,
+            stack_upward: config.hmd.position.stacks_upward(),
         });
         render_slint_hmd_frame(&model)
     }

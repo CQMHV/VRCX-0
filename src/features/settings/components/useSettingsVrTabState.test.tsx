@@ -147,6 +147,7 @@ describe('useSettingsVrTabState', () => {
     it.each([
         ['onHmdNotificationStartModeChange', 'hmdNotificationStartMode'],
         ['onHmdNotificationPositionChange', 'hmdNotificationPosition'],
+        ['onHmdNotificationStyleChange', 'hmdNotificationStyle'],
         ['onWristOverlayStartModeChange', 'wristOverlayStartMode'],
         ['onWristOverlayButtonChange', 'wristOverlayButton'],
         ['onWristOverlayHandChange', 'wristOverlayHand'],

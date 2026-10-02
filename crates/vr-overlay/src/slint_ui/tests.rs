@@ -42,6 +42,34 @@ fn slint_wrist_renderer_reuses_cached_frame_for_equal_model() {
 }
 
 #[test]
+fn hmd_toasts_put_the_newest_card_on_the_inner_edge_of_the_stack() {
+    use slint::Model;
+
+    let mut model = sample_main_model();
+    model.toasts = ["oldest", "middle", "newest", "latest"]
+        .into_iter()
+        .map(|actor| ToastCard {
+            actor_name: actor.to_string(),
+            show_avatar: false,
+            avatar: None,
+            ..model.toasts[0].clone()
+        })
+        .collect();
+    let actors = |model: &MainSurfaceModel| {
+        ensure_platform().unwrap();
+        let items = hmd::hmd_toast_model(model, &mut platform::AvatarImageCache::new());
+        (0..items.row_count())
+            .filter_map(|row| items.row_data(row))
+            .map(|item| item.actor.to_string())
+            .collect::<Vec<_>>()
+    };
+
+    assert_eq!(actors(&model), ["latest", "newest", "middle"]);
+    model.stack_upward = true;
+    assert_eq!(actors(&model), ["middle", "newest", "latest"]);
+}
+
+#[test]
 fn slint_hmd_renderer_reuses_cached_frame_for_equal_model() {
     let mut renderer = SlintHmdRenderer::new();
     let model = sample_main_model();
@@ -490,6 +518,8 @@ fn sample_main_model() -> MainSurfaceModel {
         size: OverlaySize::new(960, 528),
         dark_background: true,
         accent: crate::Color::rgba(94, 234, 212, 255),
+        compact: false,
+        stack_upward: false,
         toasts: vec![ToastCard {
             actor_name: "Ada".to_string(),
             relation: FeedRelation::Favorite,

@@ -174,6 +174,7 @@ export const ConfigKeys = defineConfigKeys({
     hmdNotificationTimeout: { type: 'int', default: 5000 },
     hmdNotificationOpacity: { type: 'int', default: 100 },
     hmdNotificationPosition: { type: 'string', default: 'bottom' },
+    hmdNotificationStyle: { type: 'string', default: 'standard' },
     webhookEnabled: { type: 'bool', default: false },
     webhookAuthEventsEnabled: { type: 'bool', default: true },
     webhookUrl: { type: 'string', default: '' },

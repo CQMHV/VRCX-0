@@ -1,10 +1,5 @@
 mod actor;
 mod command;
-#[cfg(all(
-    any(feature = "steamvr-overlay", feature = "openxr-overlay"),
-    any(windows, target_os = "linux")
-))]
-mod hmd_placement;
 mod noop;
 #[cfg(all(feature = "steamvr-overlay", any(windows, target_os = "linux")))]
 mod openvr_backend;

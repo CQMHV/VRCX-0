@@ -21,6 +21,7 @@ import {
     normalizeFeedTimeDisplayMode,
     normalizeFeedHiddenUsers,
     normalizeHmdNotificationPosition,
+    normalizeHmdNotificationStyle,
     normalizeNotificationTtsNameMode,
     normalizeOverlayStartMode,
     normalizeTableLimits,
@@ -139,6 +140,7 @@ export async function loadPreferenceSnapshot() {
         hmdNotificationTimeout,
         hmdNotificationOpacity,
         hmdNotificationPosition,
+        hmdNotificationStyle,
         webhookEnabled,
         webhookAuthEventsEnabled,
         webhookUrl,
@@ -281,6 +283,7 @@ export async function loadPreferenceSnapshot() {
         configRepository.getInt('hmdNotificationTimeout', 5000),
         configRepository.getInt('hmdNotificationOpacity', 100),
         configRepository.getString('hmdNotificationPosition', 'bottom'),
+        configRepository.getString('hmdNotificationStyle', 'standard'),
         configRepository.getBool('webhookEnabled', false),
         configRepository.getBool('webhookAuthEventsEnabled', true),
         configRepository.getString('webhookUrl', ''),
@@ -508,6 +511,8 @@ export async function loadPreferenceSnapshot() {
         hmdNotificationPosition: normalizeHmdNotificationPosition(
             hmdNotificationPosition
         ),
+        hmdNotificationStyle:
+            normalizeHmdNotificationStyle(hmdNotificationStyle),
         webhookEnabled: Boolean(webhookEnabled),
         webhookAuthEventsEnabled: Boolean(webhookAuthEventsEnabled),
         webhookUrl: String(webhookUrl || ''),

@@ -14,12 +14,14 @@ use vrcx_0_persistence::config::ConfigRepository;
 use vrcx_0_persistence::DatabaseService;
 
 use super::{
-    hmd_surface_config, load_runtime_config, HmdNotificationPosition, StaticWristFrameProducer,
-    VrOverlayRuntime,
+    hmd_surface_config, load_runtime_config, HmdNotificationPosition, HmdNotificationStyle,
+    StaticWristFrameProducer, VrOverlayRuntime, HMD_STACK_INSET_PX, HMD_SURFACE_SIZE,
+    HMD_SURFACE_WIDTH_METERS,
 };
 use crate::config::{
     HMD_NOTIFICATIONS_ENABLED_CONFIG_KEY, HMD_NOTIFICATION_POSITION_CONFIG_KEY,
-    HMD_NOTIFICATION_START_MODE_CONFIG_KEY, VR_OVERLAY_HIDE_PRIVATE_WORLDS_CONFIG_KEY,
+    HMD_NOTIFICATION_START_MODE_CONFIG_KEY, HMD_NOTIFICATION_STYLE_CONFIG_KEY,
+    VR_OVERLAY_HIDE_PRIVATE_WORLDS_CONFIG_KEY,
 };
 use crate::VrOverlayRuntimeServices;
 use vrcx_0_host_desktop::vr_overlay::OverlayPlacement;
@@ -159,39 +161,69 @@ fn hmd_notifications_follow_the_notification_image_switch() {
 }
 
 #[test]
-fn hmd_notifications_can_sit_in_any_of_nine_positions() {
+fn hmd_notifications_sit_top_center_or_bottom_and_unknown_values_fall_back_to_bottom() {
     let (_dir, config, runtime) = test_runtime();
-    for (value, position, hint) in [
-        ("topLeft", HmdNotificationPosition::TopLeft, "hmd:top-left"),
-        ("top", HmdNotificationPosition::Top, "hmd:top"),
-        (
-            "topRight",
-            HmdNotificationPosition::TopRight,
-            "hmd:top-right",
-        ),
-        ("left", HmdNotificationPosition::Left, "hmd:left"),
-        ("center", HmdNotificationPosition::Center, "hmd:center"),
-        ("right", HmdNotificationPosition::Right, "hmd:right"),
-        (
-            "bottomLeft",
-            HmdNotificationPosition::BottomLeft,
-            "hmd:bottom-left",
-        ),
-        ("bottom", HmdNotificationPosition::Bottom, "hmd:bottom"),
-        (
-            "bottomRight",
-            HmdNotificationPosition::BottomRight,
-            "hmd:bottom-right",
-        ),
+    for (value, position) in [
+        ("top", HmdNotificationPosition::Top),
+        ("center", HmdNotificationPosition::Center),
+        ("bottom", HmdNotificationPosition::Bottom),
+        ("topLeft", HmdNotificationPosition::Bottom),
+        ("right", HmdNotificationPosition::Bottom),
     ] {
         config
             .set_string(HMD_NOTIFICATION_POSITION_CONFIG_KEY, value)
             .unwrap();
         runtime.reconcile_current();
         assert_eq!(runtime.current_runtime_config().hmd.position, position);
-        let OverlayPlacement::TrackedDeviceRelative { device_hint } =
-            hmd_surface_config(position).placement;
-        assert_eq!(device_hint, hint);
+    }
+
+    assert_eq!(
+        runtime.current_runtime_config().hmd.style,
+        HmdNotificationStyle::Standard
+    );
+    config
+        .set_string(HMD_NOTIFICATION_STYLE_CONFIG_KEY, "compact")
+        .unwrap();
+    runtime.reconcile_current();
+    assert_eq!(
+        runtime.current_runtime_config().hmd.style,
+        HmdNotificationStyle::Compact
+    );
+}
+
+#[test]
+fn the_newest_hmd_card_lands_on_the_same_angle_for_each_position() {
+    let meters_per_px = HMD_SURFACE_WIDTH_METERS / HMD_SURFACE_SIZE.width as f32;
+    for (position, angle) in [
+        (HmdNotificationPosition::Top, 10.0_f32),
+        (HmdNotificationPosition::Center, -6.0),
+        (HmdNotificationPosition::Bottom, -14.0),
+    ] {
+        for (style, card_height_px) in [
+            (HmdNotificationStyle::Standard, 112.0_f32),
+            (HmdNotificationStyle::Compact, 60.0),
+        ] {
+            let OverlayPlacement::HeadLocked {
+                offset_y_meters,
+                distance_meters,
+            } = hmd_surface_config(position, style).placement
+            else {
+                panic!("HMD notifications are head locked");
+            };
+            let inset =
+                (HMD_SURFACE_SIZE.height as f32 / 2.0 - HMD_STACK_INSET_PX - card_height_px / 2.0)
+                    * meters_per_px;
+            let newest_card_y = if position.stacks_upward() {
+                offset_y_meters - inset
+            } else {
+                offset_y_meters + inset
+            };
+            let newest_card_angle = (newest_card_y / distance_meters).atan().to_degrees();
+            assert!(
+                (newest_card_angle - angle).abs() < 0.01,
+                "{position:?} {style:?}: {newest_card_angle}"
+            );
+        }
     }
 }
 

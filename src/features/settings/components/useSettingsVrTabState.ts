@@ -48,6 +48,7 @@ export function useSettingsVrTabState() {
             hmdNotificationOpacity: state.hmdNotificationOpacity,
             hmdNotificationStartMode: state.hmdNotificationStartMode,
             hmdNotificationPosition: state.hmdNotificationPosition,
+            hmdNotificationStyle: state.hmdNotificationStyle,
             wristOverlayEnabled: state.wristOverlayEnabled,
             wristOverlayStartMode: state.wristOverlayStartMode,
             wristOverlayButton: state.wristOverlayButton,
@@ -196,6 +197,15 @@ export function useSettingsVrTabState() {
             saveStringPreference(
                 'hmdNotificationPosition',
                 'hmdNotificationPosition',
+                value
+            );
+        },
+        onHmdNotificationStyleChange: (
+            value: PreferencesSnapshot['hmdNotificationStyle']
+        ) => {
+            saveStringPreference(
+                'hmdNotificationStyle',
+                'hmdNotificationStyle',
                 value
             );
         },

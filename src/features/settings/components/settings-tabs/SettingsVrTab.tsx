@@ -32,6 +32,7 @@ type SettingsVrPrefs = Pick<
     PreferencesSnapshot,
     | 'hmdNotificationOpacity'
     | 'hmdNotificationPosition'
+    | 'hmdNotificationStyle'
     | 'hmdNotificationStartMode'
     | 'hmdNotificationTimeout'
     | 'hmdNotificationsEnabled'
@@ -54,6 +55,7 @@ type SettingsVrPrefs = Pick<
 >;
 
 type HmdNotificationPosition = SettingsVrPrefs['hmdNotificationPosition'];
+type HmdNotificationStyle = SettingsVrPrefs['hmdNotificationStyle'];
 type HmdNotificationStartMode = SettingsVrPrefs['hmdNotificationStartMode'];
 type WristOverlayButton = SettingsVrPrefs['wristOverlayButton'];
 type WristOverlayHand = SettingsVrPrefs['wristOverlayHand'];
@@ -69,6 +71,7 @@ type SettingsVrTabContentProps = {
     onImageNotificationsChange: (checked: boolean) => void;
     onHmdNotificationOpacityChange: (value: number) => void;
     onHmdNotificationPositionChange: (value: HmdNotificationPosition) => void;
+    onHmdNotificationStyleChange: (value: HmdNotificationStyle) => void;
     onHmdNotificationStartModeChange: (value: HmdNotificationStartMode) => void;
     onHmdNotificationTimeoutSecondsChange: (value: string) => void;
     onHmdNotificationsEnabledChange: (checked: boolean) => void;
@@ -101,15 +104,14 @@ const hmdStartModeOptions = [
 ] as const;
 
 const hmdPositionOptions = [
-    ['topLeft', 'view.settings.vr.hmd_notifications.position_top_left'],
     ['top', 'view.settings.vr.hmd_notifications.position_top'],
-    ['topRight', 'view.settings.vr.hmd_notifications.position_top_right'],
-    ['left', 'view.settings.vr.hmd_notifications.position_left'],
     ['center', 'view.settings.vr.hmd_notifications.position_center'],
-    ['right', 'view.settings.vr.hmd_notifications.position_right'],
-    ['bottomLeft', 'view.settings.vr.hmd_notifications.position_bottom_left'],
-    ['bottom', 'view.settings.vr.hmd_notifications.position_bottom'],
-    ['bottomRight', 'view.settings.vr.hmd_notifications.position_bottom_right']
+    ['bottom', 'view.settings.vr.hmd_notifications.position_bottom']
+] as const;
+
+const hmdStyleOptions = [
+    ['standard', 'view.settings.vr.hmd_notifications.style_standard'],
+    ['compact', 'view.settings.vr.hmd_notifications.style_compact']
 ] as const;
 
 const wristStartModeOptions = [
@@ -157,6 +159,7 @@ function SettingsVrTabContent({
     onHmdNotificationTimeoutSecondsChange,
     onHmdNotificationOpacityChange,
     onHmdNotificationPositionChange,
+    onHmdNotificationStyleChange,
     onHmdNotificationStartModeChange,
     onOpenHmdNotificationFiltersDialog,
     onWristOverlayEnabledChange,
@@ -463,6 +466,42 @@ function SettingsVrTabContent({
                         <SelectContent>
                             <SelectGroup>
                                 {hmdPositionOptions.map(([value, labelKey]) => (
+                                    <SelectItem key={value} value={value}>
+                                        {t(labelKey)}
+                                    </SelectItem>
+                                ))}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </Field>
+
+                <Field
+                    label={t('view.settings.vr.hmd_notifications.style')}
+                    controlId="settings-hmd-notification-style"
+                    disabled={!hmdNotificationsEnabled}
+                >
+                    <Select<HmdNotificationStyle>
+                        value={prefs.hmdNotificationStyle}
+                        items={hmdStyleOptions.map(([value, labelKey]) => ({
+                            value,
+                            label: t(labelKey)
+                        }))}
+                        disabled={!hmdNotificationsEnabled}
+                        onValueChange={(value) => {
+                            if (value) {
+                                onHmdNotificationStyleChange(value);
+                            }
+                        }}
+                    >
+                        <SelectTrigger
+                            id="settings-hmd-notification-style"
+                            className="w-56"
+                        >
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                {hmdStyleOptions.map(([value, labelKey]) => (
                                     <SelectItem key={value} value={value}>
                                         {t(labelKey)}
                                     </SelectItem>

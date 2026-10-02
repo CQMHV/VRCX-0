@@ -412,9 +412,10 @@ fn surface_fades(surface_id: &OverlaySurfaceId) -> bool {
 }
 
 fn surface_uses_wrist_policy(config: &OverlaySurfaceConfig) -> bool {
-    match &config.placement {
-        OverlayPlacement::TrackedDeviceRelative { device_hint } => !device_hint.starts_with("hmd"),
-    }
+    matches!(
+        config.placement,
+        OverlayPlacement::TrackedDeviceRelative { .. }
+    )
 }
 
 fn visible_frame_upload_interval(surface: &OpenVrSurface) -> Duration {
@@ -970,8 +971,6 @@ fn resolve_device(
             let role = match device_hint.as_str() {
                 "right-hand" => Some(TrackedControllerRole::RightHand),
                 "left-hand" => Some(TrackedControllerRole::LeftHand),
-                "hmd" | "head" => return Ok(tracked_device_index::HMD),
-                value if value.starts_with("hmd:") => return Ok(tracked_device_index::HMD),
                 _ => {
                     return Err(TrackedDeviceResolutionError::UnknownHint {
                         device_hint: device_hint.clone(),
@@ -981,6 +980,7 @@ fn resolve_device(
             resolve_controller_device(system, role.unwrap())
                 .ok_or_else(|| tracked_device_unavailable_error(system, device_hint))
         }
+        OverlayPlacement::HeadLocked { .. } => Ok(tracked_device_index::HMD),
     }
 }
 
