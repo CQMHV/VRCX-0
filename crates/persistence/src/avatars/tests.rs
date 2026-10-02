@@ -195,3 +195,118 @@ fn cache_upsert_many_overwrites_an_existing_snapshot() -> Result<(), Error> {
     );
     Ok(())
 }
+
+fn insert_wear_log(
+    db: &DatabaseService,
+    user_id: &str,
+    avatar_id: &str,
+    started_at: &str,
+    ended_at: &str,
+) -> Result<(), Error> {
+    let user_prefix = normalize_user_table_prefix(user_id)?;
+    ensure_user_store_tables(db, &user_prefix)?;
+    db.execute_non_query(
+        &format!("INSERT INTO {user_prefix}_avatar_wear_log (avatar_id, started_at, ended_at, time) VALUES (@avatar_id, @started_at, @ended_at, 0)"),
+        &ParamsBuilder::new()
+            .set("avatar_id", avatar_id)
+            .set("started_at", started_at)
+            .set("ended_at", ended_at)
+            .build(),
+    )?;
+    Ok(())
+}
+
+fn ms(iso: &str) -> i64 {
+    parse_activity_time_ms(iso).unwrap()
+}
+
+#[test]
+fn wear_segments_are_clipped_to_the_visit_and_merge_consecutive_repeats_in_order(
+) -> Result<(), Error> {
+    let dir = TestDir::new("wear-segments");
+    let db = DatabaseService::new(&dir.path.join("VRCX-0.sqlite3"))?;
+    avatar_cache_upsert(&db, avatar_entry("avtr_a"))?;
+
+    insert_wear_log(
+        &db,
+        "usr_a",
+        "avtr_before",
+        "2026-01-01T09:00:00.000Z",
+        "2026-01-01T09:50:00.000Z",
+    )?;
+    insert_wear_log(
+        &db,
+        "usr_a",
+        "avtr_a",
+        "2026-01-01T09:55:00.000Z",
+        "2026-01-01T10:10:00.000Z",
+    )?;
+    insert_wear_log(
+        &db,
+        "usr_a",
+        "avtr_b",
+        "2026-01-01T10:10:00.000Z",
+        "2026-01-01T10:20:00.000Z",
+    )?;
+    insert_wear_log(
+        &db,
+        "usr_a",
+        "avtr_b",
+        "2026-01-01T10:21:00.000Z",
+        "2026-01-01T10:30:00.000Z",
+    )?;
+    insert_wear_log(
+        &db,
+        "usr_a",
+        "avtr_a",
+        "2026-01-01T10:30:00.000Z",
+        "2026-01-01T11:30:00.000Z",
+    )?;
+    insert_wear_log(
+        &db,
+        "usr_b",
+        "avtr_other",
+        "2026-01-01T10:00:00.000Z",
+        "2026-01-01T11:00:00.000Z",
+    )?;
+
+    let segments = avatar_wear_segments(
+        &db,
+        "usr_a".into(),
+        ms("2026-01-01T10:00:00.000Z"),
+        ms("2026-01-01T11:00:00.000Z"),
+    )?;
+
+    let summary: Vec<(&str, i64, i64)> = segments
+        .iter()
+        .map(|segment| {
+            (
+                segment.avatar_id.as_str(),
+                segment.started_at_ms,
+                segment.ended_at_ms,
+            )
+        })
+        .collect();
+    assert_eq!(
+        summary,
+        vec![
+            (
+                "avtr_a",
+                ms("2026-01-01T10:00:00.000Z"),
+                ms("2026-01-01T10:10:00.000Z")
+            ),
+            (
+                "avtr_b",
+                ms("2026-01-01T10:10:00.000Z"),
+                ms("2026-01-01T10:30:00.000Z")
+            ),
+            (
+                "avtr_a",
+                ms("2026-01-01T10:30:00.000Z"),
+                ms("2026-01-01T11:00:00.000Z")
+            ),
+        ]
+    );
+    assert_eq!(segments[0].name, "Shared Avatar");
+    Ok(())
+}

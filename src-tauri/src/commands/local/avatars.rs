@@ -9,7 +9,7 @@ use crate::state::AppState;
 
 use vrcx_0_runtime_host_desktop::local_data::{
     AvatarCacheOutput, AvatarGetInput, AvatarTagInput, AvatarTagOutput, AvatarTagsPatchInput,
-    AvatarTimeSpentOutput, AvatarUsageRow,
+    AvatarTimeSpentOutput, AvatarUsageRow, AvatarWearSegment,
 };
 
 #[tauri::command]
@@ -77,6 +77,21 @@ pub fn app__avatar_usage_ranking(
         .runtime_host()
         .local_data()
         .avatar_usage_ranking(user_id, limit)
+        .map_err(AppError::from)
+}
+
+#[tauri::command(async)]
+#[specta::specta]
+pub fn app__avatar_wear_segments(
+    state: State<'_, AppState>,
+    user_id: String,
+    from_ms: i64,
+    to_ms: i64,
+) -> Result<Vec<AvatarWearSegment>, AppError> {
+    state
+        .runtime_host()
+        .local_data()
+        .avatar_wear_segments(user_id, from_ms, to_ms)
         .map_err(AppError::from)
 }
 

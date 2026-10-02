@@ -797,6 +797,17 @@ const generatedCommands = {
             limit
         });
     },
+    async appAvatarWearSegments(
+        userId: string,
+        fromMs: number,
+        toMs: number
+    ): Promise<AvatarWearSegment[]> {
+        return await TAURI_INVOKE('app__avatar_wear_segments', {
+            userId,
+            fromMs,
+            toMs
+        });
+    },
     async appAvatarTimeSpentGet(
         userId: string,
         avatarId: string
@@ -3285,6 +3296,14 @@ export type AvatarUsageRow = {
     thumbnailImageUrl: string;
     imageUrl: string;
     timeSpent: number;
+};
+export type AvatarWearSegment = {
+    avatarId: string;
+    name: string;
+    thumbnailImageUrl: string;
+    imageUrl: string;
+    startedAtMs: number;
+    endedAtMs: number;
 };
 export type BackendRuntimeAuthStatus =
     | 'unknown'

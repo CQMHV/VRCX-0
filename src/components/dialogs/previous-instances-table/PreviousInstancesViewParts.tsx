@@ -75,6 +75,10 @@ import { Spinner } from '@/ui/shadcn/spinner';
 import { Table, TableBody } from '@/ui/shadcn/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
+import {
+    InstanceAvatarWearSummary,
+    useInstanceAvatarWearSegments
+} from './InstanceAvatarWearSummary';
 import { PreviousInstanceInfoChart } from './PreviousInstanceInfoChart';
 import {
     createdTime,
@@ -655,6 +659,10 @@ export function PreviousInstanceDetailsPanel({
     );
     const instanceStartMs = createdTime(row);
     const visitWindow = previousInstanceVisitWindow(row);
+    const avatarSegments = useInstanceAvatarWearSegments(
+        rowLocation(row),
+        visitWindow
+    );
     const [detailsViewMode, setDetailsViewMode] = useState<
         'players' | 'timeline'
     >('players');
@@ -903,6 +911,10 @@ export function PreviousInstanceDetailsPanel({
                             )}
                         </dd>
                     </div>
+                    <InstanceAvatarWearSummary
+                        segments={avatarSegments}
+                        label={t('table.previous_instances.avatars')}
+                    />
                 </dl>
                 <div className="flex min-h-0 flex-1 flex-col gap-0">
                     <div className="flex shrink-0 items-center justify-between gap-3">
@@ -975,6 +987,7 @@ export function PreviousInstanceDetailsPanel({
                                         <PreviousInstanceInfoChart
                                             rows={infoData.details}
                                             visitWindow={visitWindow}
+                                            avatarSegments={avatarSegments}
                                         />
                                     </div>
                                 )}

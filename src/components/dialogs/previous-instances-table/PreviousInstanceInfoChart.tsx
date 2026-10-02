@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useKnownUserFacts } from '@/lib/useKnownUser';
+import type { AvatarWearSegment } from '@/platform/tauri/bindings';
 import { openUserDialog } from '@/services/dialogService';
 import { getResolvedThemeMode } from '@/services/themeService';
 import { useFavoriteStore } from '@/state/favoriteStore';
@@ -58,9 +59,17 @@ function createInfoChartTooltipElement(
     container.className = 'min-w-44';
 
     const title = document.createElement('div');
+    title.className = 'flex items-center gap-2';
     title.style.fontWeight = '600';
     title.style.marginBottom = '4px';
-    title.textContent = parts.title;
+    if (detailEntry.avatarId && detailEntry.imageUrl) {
+        const image = document.createElement('img');
+        image.src = detailEntry.imageUrl;
+        image.alt = '';
+        image.className = 'size-6 shrink-0 rounded-full object-cover';
+        title.appendChild(image);
+    }
+    title.appendChild(document.createTextNode(parts.title));
     container.appendChild(title);
 
     const timeRange = document.createElement('div');
@@ -76,10 +85,12 @@ function createInfoChartTooltipElement(
 
 export function PreviousInstanceInfoChart({
     rows,
-    visitWindow
+    visitWindow,
+    avatarSegments
 }: {
     rows: NonNullable<Parameters<typeof normalizeInfoChartRows>[0]>;
     visitWindow: PreviousInstanceVisitWindow | null;
+    avatarSegments: readonly AvatarWearSegment[];
 }) {
     const { t } = useTranslation();
 
@@ -144,18 +155,36 @@ export function PreviousInstanceInfoChart({
             ),
         [currentUserId, favoriteIdSet, friendsById, knownUsersById, rows]
     );
-    const timelineRows = useMemo(
-        () => buildInfoTimelineRows({ rows: chartRows, visitWindow }),
-        [chartRows, visitWindow]
-    );
+    const timelineRows = useMemo(() => {
+        const playerRows = buildInfoTimelineRows({
+            rows: chartRows,
+            visitWindow
+        });
+        if (!playerRows.length) {
+            return playerRows;
+        }
+        return [
+            ...avatarSegments.map((segment) => ({
+                userId: 'avatar-lane',
+                avatarId: segment.avatarId,
+                imageUrl: segment.thumbnailImageUrl || segment.imageUrl,
+                displayName: segment.name || segment.avatarId,
+                joinMs: segment.startedAtMs,
+                leaveMs: segment.endedAtMs,
+                durationMs: segment.endedAtMs - segment.startedAtMs
+            })),
+            ...playerRows
+        ];
+    }, [avatarSegments, chartRows, visitWindow]);
     const chartPayload = useMemo(
         () =>
             buildInfoChartOption({
                 rows: timelineRows,
                 hour12,
+                avatarLaneLabel: t('table.previous_instances.avatars'),
                 tooltipFormatter: createInfoChartTooltipElement
             }),
-        [hour12, timelineRows]
+        [hour12, t, timelineRows]
     );
 
     const setInfoChartElementRef = useCallback(
@@ -257,7 +286,7 @@ export function PreviousInstanceInfoChart({
                     }
                     const entry =
                         chartPayload.firstEntries[params.dataIndex ?? -1];
-                    if (entry?.userId) {
+                    if (entry?.userId && !entry.avatarId) {
                         openUserDialog({
                             userId: entry.userId,
                             title: entry.displayName || undefined,

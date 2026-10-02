@@ -159,6 +159,62 @@ describe('previousInstancesChart', () => {
         ]);
     });
 
+    it('stacks worn avatars on one labelled lane above players, colored per avatar', () => {
+        const chartPayload = buildInfoChartOption({
+            hour12: false,
+            avatarLaneLabel: 'Avatars',
+            rows: [
+                {
+                    userId: 'usr_me',
+                    displayName: 'Me',
+                    joinMs: 0,
+                    leaveMs: 6000,
+                    durationMs: 6000,
+                    isSelf: true
+                },
+                {
+                    userId: 'avatar-lane',
+                    avatarId: 'avtr_b',
+                    displayName: 'Avatar B',
+                    joinMs: 2000,
+                    leaveMs: 4000,
+                    durationMs: 2000
+                },
+                {
+                    userId: 'avatar-lane',
+                    avatarId: 'avtr_a',
+                    displayName: 'Avatar A',
+                    joinMs: 0,
+                    leaveMs: 2000,
+                    durationMs: 2000
+                },
+                {
+                    userId: 'avatar-lane',
+                    avatarId: 'avtr_a',
+                    displayName: 'Avatar A',
+                    joinMs: 4000,
+                    leaveMs: 6000,
+                    durationMs: 2000
+                }
+            ]
+        });
+
+        if (chartPayload === null) {
+            throw new Error('expected chart payload to be present');
+        }
+
+        expect(chartPayload.option.yAxis.data).toEqual(['Avatars', 'Me']);
+        const laneColors = chartPayload.option.series
+            .filter((series) => series.name === 'Time')
+            .map((series) => series.data[0])
+            .map((item) =>
+                typeof item === 'object' ? item.itemStyle.color : null
+            );
+        expect(laneColors).toHaveLength(3);
+        expect(laneColors[0]).toBe(laneColors[2]);
+        expect(laneColors[0]).not.toBe(laneColors[1]);
+    });
+
     it('builds tooltip content as pure text parts for the page adapter', () => {
         expect(
             buildInfoChartTooltipParts(

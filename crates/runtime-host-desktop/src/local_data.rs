@@ -40,7 +40,7 @@ pub use vrcx_0_persistence::activity::{
 };
 pub use vrcx_0_persistence::avatars::{
     AvatarCacheOutput, AvatarTagInput, AvatarTagOutput, AvatarTagsPatchInput,
-    AvatarTimeSpentOutput, AvatarUsageRow,
+    AvatarTimeSpentOutput, AvatarUsageRow, AvatarWearSegment,
 };
 pub use vrcx_0_persistence::browse_history::{
     BrowseHistoryEntityKind, BrowseHistoryPageOutput, BrowseHistoryQueryInput,
@@ -390,6 +390,20 @@ impl LocalDataRuntime {
             self.db.as_ref(),
             user_id,
             limit,
+        )?)
+    }
+
+    pub fn avatar_wear_segments(
+        &self,
+        user_id: String,
+        from_ms: i64,
+        to_ms: i64,
+    ) -> Result<Vec<AvatarWearSegment>> {
+        Ok(vrcx_0_persistence::avatars::avatar_wear_segments(
+            self.db.as_ref(),
+            user_id,
+            from_ms,
+            to_ms,
         )?)
     }
 

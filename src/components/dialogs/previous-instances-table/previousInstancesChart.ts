@@ -3,6 +3,17 @@ import { formatClock as formatAppClock, timeToText } from '@/lib/dateTime';
 import type { PreviousInstanceVisitWindow } from './previousInstancesRows';
 
 export const INFO_CHART_BAR_WIDTH = 12;
+const AVATAR_SEGMENT_COLORS = [
+    '#5470c6',
+    '#91cc75',
+    '#fac858',
+    '#ee6666',
+    '#73c0de',
+    '#3ba272',
+    '#fc8452',
+    '#9a60b4',
+    '#ea7ccc'
+];
 const VISIT_BOUNDARY_TOLERANCE_MS = 60 * 1000;
 
 export interface InfoChartRow {
@@ -14,6 +25,8 @@ export interface InfoChartRow {
     isSelf?: boolean;
     isFavorite?: boolean;
     isFriend?: boolean;
+    avatarId?: string;
+    imageUrl?: string;
 }
 
 type InfoChartTooltipRow = Omit<InfoChartRow, 'userId'> & {
@@ -47,6 +60,9 @@ function markerForEntry(entry: InfoChartTooltipRow) {
 }
 
 function richMarkerForEntry(entry: InfoChartTooltipRow) {
+    if (entry?.avatarId) {
+        return '{avatar|◆}';
+    }
     if (entry?.isFavorite) {
         return '{favorite|\u2606}';
     }
@@ -144,10 +160,12 @@ export function buildInfoChartTooltipParts(
 export function buildInfoChartOption({
     rows,
     hour12,
+    avatarLaneLabel = '',
     tooltipFormatter = null
 }: {
     rows: InfoChartRow[];
     hour12: boolean;
+    avatarLaneLabel?: string;
     tooltipFormatter?:
         | ((entry: InfoChartRow, hour12: boolean) => string | HTMLElement)
         | null;
@@ -169,6 +187,10 @@ export function buildInfoChartOption({
     const groupedByUser = new Map<string, GroupedEntry[]>();
     const firstEntries: InfoChartRow[] = [];
     const sortedRows = [...rows].sort((left, right) => {
+        const kindDiff = Number(!left.avatarId) - Number(!right.avatarId);
+        if (kindDiff) {
+            return kindDiff;
+        }
         const joinDiff = Math.abs(left.joinMs - right.joinMs);
         return joinDiff < 3000
             ? left.leaveMs - right.leaveMs
@@ -198,6 +220,18 @@ export function buildInfoChartOption({
             tail,
             entry
         });
+    }
+
+    const avatarColors = new Map<string, string>();
+    for (const entry of sortedRows) {
+        if (entry.avatarId && !avatarColors.has(entry.avatarId)) {
+            avatarColors.set(
+                entry.avatarId,
+                AVATAR_SEGMENT_COLORS[
+                    avatarColors.size % AVATAR_SEGMENT_COLORS.length
+                ]
+            );
+        }
     }
 
     const maxEntryCount = Math.max(
@@ -241,7 +275,14 @@ export function buildInfoChartOption({
             },
             data: firstEntries.map((entry) => {
                 const element = groupedByUser.get(entry.userId)?.[entryIndex];
-                return element ? element.durationMs : 0;
+                const avatarId = element?.entry.avatarId;
+                if (!element || !avatarId) {
+                    return element ? element.durationMs : 0;
+                }
+                return {
+                    value: element.durationMs,
+                    itemStyle: { color: avatarColors.get(avatarId) }
+                };
             })
         });
     }
@@ -299,6 +340,11 @@ export function buildInfoChartOption({
                             align: 'center',
                             width: 14
                         },
+                        avatar: {
+                            color: '#a5b4fc',
+                            align: 'center',
+                            width: 14
+                        },
                         empty: {
                             width: 14
                         }
@@ -308,7 +354,9 @@ export function buildInfoChartOption({
                         return `${richMarkerForEntry(entry)} ${truncateLabel(value, 20)}`;
                     }
                 },
-                data: firstEntries.map((entry) => entry.displayName)
+                data: firstEntries.map((entry) =>
+                    entry.avatarId ? avatarLaneLabel : entry.displayName
+                )
             },
             xAxis: {
                 type: 'value',

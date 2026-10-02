@@ -91,7 +91,7 @@ fn realtime_table_statements(user_prefix: &str) -> Vec<String> {
         format!("CREATE INDEX IF NOT EXISTS {user_prefix}_notifications_v2_seen_created_id_idx ON {user_prefix}_notifications_v2 (seen, created_at DESC, id DESC)"),
         format!("CREATE INDEX IF NOT EXISTS {user_prefix}_notifications_v2_type_created_id_idx ON {user_prefix}_notifications_v2 (type, created_at DESC, id DESC)"),
         format!("CREATE TABLE IF NOT EXISTS {user_prefix}_avatar_history (avatar_id TEXT PRIMARY KEY, created_at TEXT, time INTEGER)"),
-        // Write-only for now: per-session avatar wear log kept for future time-windowed usage stats; `_avatar_history.time` stays the cumulative total the UI reads.
+        // Recorded since 2026-08-26; earlier visits only have the cumulative `_avatar_history.time`.
         format!("CREATE TABLE IF NOT EXISTS {user_prefix}_avatar_wear_log (id INTEGER PRIMARY KEY AUTOINCREMENT, avatar_id TEXT NOT NULL, started_at TEXT NOT NULL, ended_at TEXT NOT NULL, time INTEGER NOT NULL)"),
         format!("CREATE INDEX IF NOT EXISTS {user_prefix}_avatar_wear_log_ended_idx ON {user_prefix}_avatar_wear_log (ended_at)"),
         format!("CREATE INDEX IF NOT EXISTS {user_prefix}_avatar_wear_log_started_idx ON {user_prefix}_avatar_wear_log (started_at)"),
