@@ -70,6 +70,36 @@ fn hmd_toasts_put_the_newest_card_on_the_inner_edge_of_the_stack() {
 }
 
 #[test]
+fn compact_hmd_newest_card_keeps_its_center_when_it_wraps_to_two_lines() {
+    let painted_rows = |frame: &RgbaFrame| {
+        let column = frame.size.width / 2;
+        let rows = (0..frame.size.height)
+            .filter(|y| frame.data[((y * frame.size.width + column) * 4 + 3) as usize] > 0)
+            .collect::<Vec<_>>();
+        (rows[0], rows[rows.len() - 1])
+    };
+
+    for stack_upward in [false, true] {
+        let mut renderer = SlintHmdRenderer::new();
+        let mut model = sample_main_model();
+        model.compact = true;
+        model.stack_upward = stack_upward;
+        model.toasts[0].show_avatar = false;
+        let (top, bottom) = painted_rows(&renderer.render(&model).unwrap());
+
+        model.toasts[0].action = "joined wrld_4cf5a0c2-7f7b-4e19-9a3a-6b2e5c8d9f01:12345~private(usr_c1644b5b-3ca4-45b4-97c6-a2a0de70d469)~region(jp)".to_string();
+        let (wrapped_top, wrapped_bottom) = painted_rows(&renderer.render(&model).unwrap());
+
+        assert!(wrapped_bottom - wrapped_top > bottom - top);
+        assert_eq!(
+            wrapped_top + wrapped_bottom,
+            top + bottom,
+            "stack_upward = {stack_upward}"
+        );
+    }
+}
+
+#[test]
 fn slint_hmd_renderer_reuses_cached_frame_for_equal_model() {
     let mut renderer = SlintHmdRenderer::new();
     let model = sample_main_model();

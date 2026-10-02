@@ -141,8 +141,21 @@ export component HmdToastPanel inherits Window {
     in property <bool> stack-upward: false;
     in property <[HmdToastItem]> toasts: [];
 
+    newest-card := HmdToastCard {
+        visible: false;
+        toast: root.toasts[root.stack-upward ? root.toasts.length - 1 : 0];
+        compact: root.compact;
+        min-card-width: 480px;
+        max-card-width: 860px;
+    }
+
+    property <length> anchored-padding: 20px + ((root.compact ? 60px : 112px) - newest-card.height) / 2;
+
     VerticalLayout {
-        padding: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: root.stack-upward ? 20px : root.anchored-padding;
+        padding-bottom: root.stack-upward ? root.anchored-padding : 20px;
         spacing: root.compact ? 8px : 12px;
         alignment: root.stack-upward ? end : start;
 
