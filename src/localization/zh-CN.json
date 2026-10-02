@@ -72,7 +72,7 @@
         "date_range": "时间范围",
         "date_range_start": "开始",
         "date_range_end": "结束",
-        "loading": "正在加载浏览记录…",
+        "loading": "正在加载浏览记录",
         "load_error": "无法加载浏览记录。",
         "empty_title": "暂无浏览记录",
         "empty_description": "打开过的用户、世界、模型和群组会显示在这里。",
@@ -133,10 +133,10 @@
         "entities_empty": "回答中提到的人和世界会显示在这里。",
         "untitled": "新对话",
         "close": "关闭",
-        "thinking": "正在生成回答…",
+        "thinking": "正在生成回答",
         "scroll_to_latest": "滚动到底部",
         "connection": {
-            "checking": "正在检查连接…",
+            "checking": "正在检查连接",
             "ok": "已连接",
             "error": "连接失败",
             "unconfigured": "未配置"
@@ -176,11 +176,11 @@
             "prompt": {
                 "title": "新建本地世界收藏夹",
                 "description": "为即将导入的 {count} 个世界输入本地收藏夹名称。",
-                "name_already_exists": "已存在名为「{name}」的本地收藏夹，请换一个名称。"
+                "name_already_exists": "已存在名为“{name}”的本地收藏夹，请换一个名称。"
             },
             "confirm": {
                 "title": "导入世界合集？",
-                "description": "「{title}」· 作者 {author} · 共 {count} 个世界",
+                "description": "“{title}”· 作者 {author} · 共 {count} 个世界",
                 "worlds_preview": "包含：{names}",
                 "confirm": "导入到 VRCX-0",
                 "cancel": "取消"
@@ -189,7 +189,7 @@
                 "import_partial_failed": "有 {count} 个世界导入失败，已跳过",
                 "preview_failed": "加载共享合集失败",
                 "empty": "此共享合集没有可导入的世界",
-                "import_success": "已将 {count} 个世界导入到「{title}」",
+                "import_success": "已将 {count} 个世界导入到“{title}”",
                 "import_failed": "导入共享合集失败"
             },
             "unknown_author": "未知作者"
@@ -221,11 +221,11 @@
             "foreignContent": "此文件夹中还有其他文件，VRCX-0 只会改动自己的文件。"
         },
         "phase": {
-            "preparing": "正在准备数据…",
-            "freezing": "正在准备数据…",
-            "copying": "正在复制数据…",
-            "verifying": "正在检查复制结果…",
-            "committing": "正在完成更换…"
+            "preparing": "正在准备数据",
+            "freezing": "正在准备数据",
+            "copying": "正在复制数据",
+            "verifying": "正在检查复制结果",
+            "committing": "正在完成更换"
         },
         "error": {
             "operationBusy": "另一个备份、恢复或数据迁移任务正在运行。",
@@ -274,7 +274,7 @@
         "start_existing": "使用已有数据",
         "start_fresh": "全新开始",
         "new_folder": "新文件夹",
-        "cancelling": "正在取消…",
+        "cancelling": "正在取消",
         "mode_description": {
             "adoptExisting": "使用此文件夹中的记录和设置，不复制当前数据。",
             "freshStart": "不复制当前数据，在新文件夹中重新开始。原有数据不会删除。"
@@ -526,7 +526,7 @@
         "menu": {
             "app": {
                 "about": "关于 VRCX-0",
-                "settings": "设置...",
+                "settings": "设置",
                 "checkUpdates": "检查更新",
                 "restart": "重启 VRCX-0",
                 "startBackgroundMode": "切换到后台模式",
@@ -548,7 +548,7 @@
             },
             "tools": {
                 "title": "工具",
-                "allTools": "所有工具..."
+                "allTools": "所有工具"
             },
             "edit": {
                 "title": "编辑",
@@ -605,13 +605,13 @@
         "qq_group": "QQ群",
         "changelog": "更新日志",
         "update": "更新",
-        "update_downloading": "下载中…",
+        "update_downloading": "下载中",
         "update_downloaded": "重启",
         "mark_all_read": "全部标为已读",
         "edit_dashboard": "编辑仪表板",
         "delete_dashboard": "删除仪表板",
         "custom_nav": {
-            "dialog_description": "拖动可排序，把条目拖进文件夹即可分组。隐藏的条目会进入「已隐藏」列表，随时可以放回来。仪表板的改动立即生效。",
+            "dialog_description": "拖动可排序，把条目拖进文件夹即可分组。隐藏的条目会进入“已隐藏”列表，随时可以放回来。仪表板的改动立即生效。",
             "visible_items": "菜单中",
             "hidden_empty": "没有隐藏的条目",
             "folder_item_count": "{count} 项",
@@ -719,7 +719,7 @@
         "help": "帮助",
         "preview_build_badge": "预览版",
         "devkit_build_badge": "开发版",
-        "settings": "设置...",
+        "settings": "设置",
         "check_updates": "检查更新",
         "restart": "重启 VRCX-0",
         "start_background_mode": "切换到后台模式",
@@ -763,7 +763,7 @@
     "shortcuts": {
         "tray": {
             "recording_failed": "无法开始快捷键录制，请关闭此对话框后重试。",
-            "checking": "正在检查快捷键…",
+            "checking": "正在检查快捷键",
             "background_hint": "隐藏时沿用后台模式和延迟设置。",
             "global": "全局",
             "title": "显示 / 隐藏 VRCX-0",
@@ -856,13 +856,13 @@
     },
     "side_panel": {
         "search_placeholder": "搜索",
-        "search_input_placeholder": "搜索或跳转到页面…",
+        "search_input_placeholder": "搜索或跳转到页面",
         "search_pages": "页面",
         "search_scope_pages": "跳转到页面",
         "search_pages_and_tools": "页面和工具",
         "search_scope_pages_and_tools": "跳转到页面或打开工具",
         "search_no_results": "未找到结果",
-        "search_categories": "搜点什么...",
+        "search_categories": "搜点什么",
         "search_recent": "最近打开",
         "search_scope_all": "名称、本地备注和线上备注",
         "search_scope_avatars": "看看有什么好玩的模型",
@@ -1008,7 +1008,7 @@
         "login": {
             "savedAccounts": "已保存的账号",
             "login": "登录",
-            "signingIn": "正在登录...",
+            "signingIn": "正在登录",
             "register": "注册",
             "forgotPassword": "忘记密码？",
             "useOtherAccount": "使用其他账号登录",
@@ -1032,7 +1032,7 @@
                 "title": "移除已保存账号",
                 "description": "将移除 {name}",
                 "confirm": "移除",
-                "removing": "正在移除..."
+                "removing": "正在移除"
             }
         },
         "feed": {
@@ -1041,7 +1041,7 @@
             "search_scope": {
                 "aria_label": "搜索动态，可按好友筛选",
                 "no_friends": "没有匹配的好友",
-                "search_all": "在全部动态中搜索「{query}」"
+                "search_all": "在全部动态中搜索“{query}”"
             },
             "favorites_only_tooltip": "仅显示被分组的好友",
             "search_placeholder": "搜索",
@@ -1174,8 +1174,8 @@
                 "compact": "紧凑",
                 "dense": "紧密"
             },
-            "show_same_instance_in_online": "在「在线」中也显示同一房间的好友",
-            "loading_more": "加载中...",
+            "show_same_instance_in_online": "在“在线”中也显示同一房间的好友",
+            "loading_more": "加载中",
             "busy": "忙碌",
             "local_group": "本地：{name}",
             "all_matching_friends": "所有匹配好友",
@@ -1526,7 +1526,7 @@
                     "worlds": "{count}/{total} 个世界可分享",
                     "truncated": "仅上传前 {cap} 个世界。",
                     "share_url": "分享链接",
-                    "manage_hint": "编辑、下架、删除都在「管理我的分享」后台完成。"
+                    "manage_hint": "编辑、下架、删除都在“管理我的分享”后台完成。"
                 },
                 "success": {
                     "title": "合集已分享",
@@ -1801,7 +1801,7 @@
                 "friend_locations_failed_to_load": "好友位置加载失败"
             },
             "description": {
-                "cancelling": "正在取消..."
+                "cancelling": "正在取消"
             },
             "dynamic": {
                 "open_value": "打开 {value}"
@@ -1829,7 +1829,7 @@
                     "stop": "停止",
                     "stop_fetching": "停止拉取",
                     "go_to_friend": "选择好友",
-                    "cancelling": "正在取消操作...",
+                    "cancelling": "正在取消操作",
                     "find_friend": "查找好友",
                     "open_profile": "查看资料",
                     "hide_from_graph": "从关系图中隐藏",
@@ -1886,7 +1886,7 @@
             },
             "loading": {
                 "loading_instance_activity": "正在加载房间活动",
-                "loading_graph": "正在加载关系图…",
+                "loading_graph": "正在加载关系图",
                 "loading_mutual_graph_snapshot": "正在加载共同好友关系图"
             },
             "empty": {
@@ -1911,7 +1911,7 @@
                 "mutual_friends_graph_refreshed": "共同好友关系图已刷新"
             },
             "description": {
-                "the_local_mutual_friends_snapshot_is_empty_use_start_fetch_to_build_the_graph_cache": "还没有共同好友数据，请点击「开始获取」加载。"
+                "the_local_mutual_friends_snapshot_is_empty_use_start_fetch_to_build_the_graph_cache": "还没有共同好友数据，请点击“开始获取”加载。"
             },
             "toast": {
                 "failed_to_fetch_mutual_friends_graph": "获取共同好友关系图失败",
@@ -2098,7 +2098,7 @@
                 "minimum_friends": "最少好友数",
                 "minimum_players": "最少玩家数",
                 "room_types": "房间类型",
-                "room_types_hint": "留空表示任意房间类型。如果规则会将状态设为「欢迎加入」，请指定具体的房间类型。",
+                "room_types_hint": "留空表示任意房间类型。如果规则会将状态设为“欢迎加入”，请指定具体的房间类型。",
                 "no_custom_room_rules": "尚未配置自定义房间规则。",
                 "preset_alone": "独处",
                 "preset_with_anyone": "和任意玩家在一起",
@@ -2161,7 +2161,7 @@
                 "deleting_screenshot": "正在删除截图",
                 "uploading_screenshot": "正在上传到在线相册",
                 "searching_screenshots": "正在搜索截图",
-                "resolving_file_list_and_metadata_summaries": "正在读取截图详情…",
+                "resolving_file_list_and_metadata_summaries": "正在读取截图详情",
                 "loading_screenshot": "正在加载截图",
                 "fetching_embedded_metadata_and_file_details": "正在获取嵌入元数据和文件详情"
             },
@@ -2298,9 +2298,9 @@
                 "title": "发送反馈",
                 "description": "默认匿名提交。Bug 反馈和功能建议都欢迎。",
                 "privacy_note": "不会附带任何账号信息。",
-                "placeholder": "描述一下发生了什么、你期望的结果，以及怎么复现……",
+                "placeholder": "描述一下发生了什么、你期望的结果，以及怎么复现",
                 "submit": "发送",
-                "submitting": "发送中…",
+                "submitting": "发送中",
                 "thanks": "感谢你的反馈！",
                 "cooldown": "{seconds} 秒后可再次发送",
                 "reply_note": "如需回复，请在反馈中留下邮箱。",
@@ -2342,7 +2342,7 @@
                     "hide_notifications": "通知中也隐藏",
                     "hide_notifications_description": "这些好友的位置变动也不会出现在桌面通知、TTS、VR 叠加界面、Webhook 和应用内通知中。",
                     "hide_private_location_changes": "好友进入私人世界时不通知",
-                    "hide_private_location_changes_description": "好友进入私人世界时，不发送桌面通知、TTS、VR 通知和 Webhook。手腕叠加界面的动态由它自己的「隐藏私人世界」设置控制。"
+                    "hide_private_location_changes_description": "好友进入私人世界时，不发送桌面通知、TTS、VR 通知和 Webhook。手腕叠加界面的动态由它自己的“隐藏私人世界”设置控制。"
                 }
             },
             "vr": {
@@ -2542,7 +2542,7 @@
                     "font_family_geist": "Geist（默认）",
                     "font_family_system_ui": "跟随系统字体",
                     "font_family_description": "选择预设字体，或使用此设备上已安装的字体。",
-                    "font_family_custom": "自定义字体…",
+                    "font_family_custom": "自定义字体",
                     "font_family_custom_dialog_title": "选择自定义字体",
                     "font_family_custom_dialog_description": "使用此设备上已安装的字体，或输入 CSS 字体栈。",
                     "font_family_custom_invalid": "无效的字体，请检查输入。注意：字体名称使用逗号分隔，例如 'My Font', Arial, sans-serif",
@@ -2556,8 +2556,8 @@
                     "font_family_custom_mode_label": "字体来源",
                     "font_family_custom_mode_installed": "已安装字体",
                     "font_family_custom_mode_css": "CSS 字体栈",
-                    "font_family_custom_search_placeholder": "搜索已安装字体…",
-                    "font_family_custom_search_optional_placeholder": "搜索可选的回退字体…",
+                    "font_family_custom_search_placeholder": "搜索已安装字体",
+                    "font_family_custom_search_optional_placeholder": "搜索可选的回退字体",
                     "font_family_custom_no_results": "没有找到匹配的字体。",
                     "font_family_custom_preview": "预览",
                     "font_family_custom_preview_sample": "The quick brown fox / 那只敏捷的棕色狐狸 / 逃げちゃダメだ / 다람쥐 헌 쳇바퀴에 타고파",
@@ -2699,8 +2699,8 @@
                         "description": "临时暂停桌面通知、TTS、XSOverlay、OVR Toolkit 和 VRCX-0 头显弹窗。Webhook、手腕叠加界面动态和通知历史仍会继续。",
                         "end_on_game_start": "启动 VRChat 时关闭勿扰模式",
                         "end_on_game_start_description": "仅在 VRChat 从未运行变为运行时触发。进入游戏后仍可再次开启勿扰模式。",
-                        "busy_status": "VRChat 状态为「请勿打扰」时开启勿扰模式",
-                        "busy_status_description": "你的 VRChat 状态为「请勿打扰」时，通知会像勿扰模式一样暂停。"
+                        "busy_status": "VRChat 状态为“请勿打扰”时开启勿扰模式",
+                        "busy_status_description": "你的 VRChat 状态为“请勿打扰”时，通知会像勿扰模式一样暂停。"
                     },
                     "vr_notifications": {
                         "header": "VR 叠加界面通知",
@@ -2846,7 +2846,7 @@
                     "storage": {
                         "header": "存储与清理",
                         "data_location": "数据位置",
-                        "change_folder": "更改文件夹…",
+                        "change_folder": "更改文件夹",
                         "more": "更多数据位置操作",
                         "restore_default": "恢复默认位置",
                         "cache_header": "自动清理 VRChat 缓存",
@@ -2867,18 +2867,18 @@
                         "online_users": "VRChat 在线用户",
                         "refresh_online_users": "刷新在线用户",
                         "vrchat_config": "VRChat 配置",
-                        "view_config": "查看…",
+                        "view_config": "查看",
                         "hide_config": "隐藏"
                     },
                     "import_recovery": {
                         "header": "导入与恢复",
                         "import_from_vrcx": "从 VRCX 导入",
                         "description": "使用默认 VRCX 数据文件夹中的数据替换当前 VRCX-0 配置和数据库。",
-                        "review": "检查导入内容…",
+                        "review": "检查导入内容",
                         "game_log": {
                             "label": "补录游戏日志",
                             "description": "用于补录未运行 VRCX-0 期间的游戏日志。记录将从 VRChat 本地日志文件中读取，已存在的记录会自动跳过。",
-                            "select": "选择日志文件…",
+                            "select": "选择日志文件",
                             "dialog_title": "补录游戏日志",
                             "integrity_notice": "请选择本机 VRChat 生成的原始日志文件。已修改、不完整或在其他时区下生成的日志会导致记录时间偏移，且无法识别重复记录。",
                             "backup_notice": "补录的记录将直接写入数据库，且无法一键撤销。建议先备份数据。",
@@ -2909,7 +2909,7 @@
                     },
                     "danger": {
                         "avatar_history": "模型历史记录",
-                        "delete": "删除…"
+                        "delete": "删除"
                     }
                 },
                 "advanced": {
@@ -3045,7 +3045,7 @@
                         "purge_confirm_description_3": "VRCX-0 将在操作完成后重启。",
                         "purge_confirm_alert": "强烈建议在继续之前备份你的数据库文件！",
                         "purge_confirm_button": "清理 & 重启",
-                        "purge_complete": "模型历史已清理，正在重启…",
+                        "purge_complete": "模型历史已清理，正在重启",
                         "purge_failed": "清理失败: {error}",
                         "purge_optimization_failed": "模型历史已清理，但数据库压缩失败：{error}",
                         "legacy_migration": "迁移 VRCX 数据",
@@ -3704,7 +3704,7 @@
             "global_enabled": "随 VRChat 启动应用",
             "add_app": "添加应用",
             "choose_target": "选择目标",
-            "loading": "加载中…",
+            "loading": "加载中",
             "enabled": "启用",
             "name": "名称",
             "scope": "适用范围",
@@ -3729,7 +3729,7 @@
             "run_status_failed": "启动失败",
             "run_status_stopped": "已停止",
             "run_status_completed": "已完成",
-            "run_error_elevation_required": "需要管理员权限（Windows 错误 {code}）。请打开「以管理员身份运行」。",
+            "run_error_elevation_required": "需要管理员权限（Windows 错误 {code}）。请打开“以管理员身份运行”。",
             "run_error_elevation_cancelled": "已取消管理员授权（Windows 错误 {code}）。",
             "run_error_failed": "应用启动失败。",
             "stop_locked_steam": "由 Steam 启动，VRCX-0 无法关闭。",
@@ -3767,7 +3767,7 @@
                 "invite": "发送邀请",
                 "request_invite": "申请加入",
                 "invite_to_group": "邀请加入群组",
-                "group_actions": "群组...",
+                "group_actions": "群组",
                 "group_moderation": "群组管理",
                 "send_boop": "发送戳一戳",
                 "accept_friend_request": "接受好友申请",
@@ -3786,7 +3786,7 @@
                 "reset_hidden_avatar": "取消隐藏模型",
                 "reset_shown_avatar": "撤销显示模型",
                 "reset_avatar_visibility": "重置模型可见性",
-                "moderation_actions": "玩家管理...",
+                "moderation_actions": "玩家管理",
                 "moderation_enable_avatar_interaction": "开启模型互动",
                 "moderation_disable_avatar_interaction": "关闭模型互动",
                 "moderation_enable_chatbox": "取消屏蔽聊天气泡",
@@ -3800,8 +3800,8 @@
             },
             "group_invite": {
                 "description": "选择要邀请 {value} 加入的群组。",
-                "select_group": "选择群组...",
-                "loading": "正在读取可发送邀请的群组...",
+                "select_group": "选择群组",
+                "loading": "正在读取可发送邀请的群组",
                 "no_groups": "你没有可以发送邀请的群组",
                 "load_failed": "无法加载群组",
                 "permissions_degraded": "部分群组权限无法确认，列表中可能包含你无法发送邀请的群组。"
@@ -3810,13 +3810,13 @@
                 "title": "群组管理",
                 "target": "目标用户",
                 "member": "成员",
-                "loading": "正在读取群组权限...",
+                "loading": "正在读取群组权限",
                 "kick_section": "从群组踢出",
                 "ban_section": "从群组封禁",
                 "groups_count": "{count} 个群组",
                 "no_kickable": "该用户不在你管理的任何群组中",
                 "no_bannable": "没有可管理封禁的群组",
-                "select_group": "选择群组...",
+                "select_group": "选择群组",
                 "select_group_hint": "选择要在哪个群组中封禁",
                 "ban_ready": "在所选群组中封禁该用户",
                 "detailed": "详细管理",
@@ -3972,13 +3972,13 @@
                 },
                 "most_visited_worlds": {
                     "header": "最常游玩的世界",
-                    "loading": "正在加载最常游玩的世界...",
+                    "loading": "正在加载最常游玩的世界",
                     "exclude_home_world": "排除家",
                     "sort_by_time": "按时间",
                     "sort_by_count": "按访问次数",
                     "visit_count_label": "{count} 次访问"
                 },
-                "preparing_data": "正在准备活动数据...",
+                "preparing_data": "正在准备活动数据",
                 "preparing_data_hint": "首次加载时可能需要一些时间。",
                 "failed_to_load": "加载活动失败"
             },
@@ -4005,7 +4005,7 @@
                 "loading_activity": "正在加载活动",
                 "loading_user_profile": "正在加载用户个人资料",
                 "loading_languages": "正在加载语言",
-                "loading": "加载中..."
+                "loading": "加载中"
             },
             "label": {
                 "please_choose_a_valid_social_status": "请选择有效的社交状态",
@@ -4443,7 +4443,7 @@
                 "download_size": "下载文件大小",
                 "uncompressed_size": "解压大小",
                 "texture_memory": "纹理显存占用",
-                "analysis_loading": "正在获取详细性能分析…",
+                "analysis_loading": "正在获取详细性能分析",
                 "ranks": {
                     "Excellent": "流畅",
                     "Good": "低负载",
@@ -4691,7 +4691,7 @@
             "loading": {
                 "loading_group_profile": "正在加载群组资料",
                 "fetching_the_current_vrchat_group_snapshot_for_this_dialog": "正在获取最新的群组信息",
-                "loading": "加载中..."
+                "loading": "加载中"
             },
             "error": {
                 "group_profile_unavailable": "群组资料不可用",
@@ -5391,7 +5391,7 @@
                 "details": "详情"
             },
             "loading": {
-                "loading_instance_details": "正在加载房间详情..."
+                "loading_instance_details": "正在加载房间详情"
             },
             "error": {
                 "failed_to_copy_instance_id": "复制房间 ID 失败",
@@ -5439,10 +5439,10 @@
             "select_all": "全选",
             "selected_users_count": "已选 {count} 人",
             "notes": "备注",
-            "note_placeholder": "为选中的成员添加备注...",
+            "note_placeholder": "为选中的成员添加备注",
             "selected_roles": "身份组",
             "roles_count": "已选 {count} 个身份组",
-            "choose_roles_placeholder": "选择身份组...",
+            "choose_roles_placeholder": "选择身份组",
             "add_roles": "添加身份组",
             "remove_roles": "移除身份组",
             "save_note": "保存备注",
@@ -5481,12 +5481,12 @@
         },
         "group_calendar": {
             "header": "活动日历",
-            "loading_events": "正在加载活动列表...",
+            "loading_events": "正在加载活动列表",
             "description": "展示所选日期的群组活动",
             "list_view": "列表视图",
             "calendar_view": "日历视图",
             "no_events": "目前没有任何活动",
-            "search_placeholder": "搜索群组或活动...",
+            "search_placeholder": "搜索群组或活动",
             "search_no_matching": "没有找到任何符合条件的活动",
             "search_no_this_month": "这个月没有活动举行",
             "event_card": {
@@ -5535,7 +5535,7 @@
             "support_description": "给项目点个 Star 就是最直接的支持。",
             "star_on_github": "给项目点 Star",
             "support_development": "支持开发",
-            "loading": "正在加载更新日志...",
+            "loading": "正在加载更新日志",
             "failed_to_load": "更新日志加载失败。",
             "latest_release": "最新版本",
             "empty": "这个版本没有可用的更新日志。",
@@ -5545,7 +5545,7 @@
         },
         "open_source": {
             "header": "第三方声明",
-            "loading": "正在加载生成的第三方声明...",
+            "loading": "正在加载生成的第三方声明",
             "unavailable": "此构建中没有可用的生成的第三方声明清单。请进行生产构建以重新生成。",
             "search_placeholder": "搜索软件包、版本或许可证",
             "notice_location_prefix": "应用目录中的完整声明文件位置：",
@@ -5745,7 +5745,7 @@
             "header": "直接打开",
             "description_failed": "打开内容失败，请检查链接或 ID 后重试。",
             "message": {
-                "opening": "正在打开..."
+                "opening": "正在打开"
             }
         },
         "rename_world": {
@@ -5805,7 +5805,7 @@
         }
     },
     "message": {
-        "auto_login_delay_countdown": "将在 {seconds} 秒后自动登录...",
+        "auto_login_delay_countdown": "将在 {seconds} 秒后自动登录",
         "auth": {
             "logout_greeting": "下次再见，{name}！",
             "account_removed": "已移除账号",
@@ -5821,7 +5821,7 @@
             "current_version": "当前版本",
             "latest_version": "最新版本",
             "released": "发布日期",
-            "checking_update_state": "正在检查更新…",
+            "checking_update_state": "正在检查更新",
             "no_downloadable_releases_found": "未找到可下载的版本。",
             "no_releases_found": "未找到版本。",
             "failed_to_load_update_releases": "加载更新版本失败。",
@@ -5877,7 +5877,7 @@
             "use_new_database": "改用新数据库",
             "fresh_start_confirm_title": "要改用新的数据库吗？",
             "fresh_start_confirm_description": "VRCX-0 会将当前数据库和升级失败文件保留在恢复文件夹中，然后使用新的空数据库重启。新数据库中不会保留设置、本地历史和已保存的账号数据。",
-            "fresh_start_restarting": "正在归档当前数据库并重启 VRCX-0...",
+            "fresh_start_restarting": "正在归档当前数据库并重启 VRCX-0",
             "fresh_start_failed": "无法创建新数据库。",
             "upgrade_keep_open": "请保持 VRCX-0 打开，直到更新完成。",
             "failure_reason": "原因",
@@ -5935,7 +5935,7 @@
             "downloading": "正在下载图片",
             "copied_to_clipboard": "图片已复制到剪贴板",
             "preview_title": "图片预览",
-            "loading": "正在加载图片...",
+            "loading": "正在加载图片",
             "load_failed": "加载图片失败",
             "copy": "复制图片",
             "download": "下载图片",
@@ -6409,7 +6409,7 @@
             },
             "group_moderation": {
                 "picker_description": "选择一个群组来管理成员、封禁、邀请与加入申请。",
-                "loading": "正在加载你有管理权限的群组...",
+                "loading": "正在加载你有管理权限的群组",
                 "empty_title": "没有可管理的群组",
                 "empty_description": "你目前在任何群组中都没有管理权限。",
                 "permissions_degraded": "部分群组权限无法验证，以下列表可能不完整。",
@@ -6443,8 +6443,8 @@
             },
             "action": {
                 "refresh_config_failed_after_upgrade": "VRCX-0 已成功升级数据库，但刷新本地配置失败，请重启程序。",
-                "requesting_legacy_migration": "正在准备迁移已有的 VRCX 数据……",
-                "skipping_legacy_migration": "正在跳过迁移并初始化数据库……"
+                "requesting_legacy_migration": "正在准备迁移已有的 VRCX 数据",
+                "skipping_legacy_migration": "正在跳过迁移并初始化数据库"
             }
         },
         "favorite_import_service": {

@@ -72,7 +72,7 @@
         "date_range": "Období",
         "date_range_start": "Začátek",
         "date_range_end": "Konec",
-        "loading": "Načítání historie…",
+        "loading": "Načítání historie",
         "load_error": "Historii se nepodařilo načíst.",
         "empty_title": "Historie je prázdná",
         "empty_description": "Otevření uživatelé, světy, avataři a skupiny se zobrazí zde.",
@@ -133,10 +133,10 @@
         "entities_empty": "Zde se zobrazí lidé a světy zmínění v odpovědích.",
         "untitled": "Nová konverzace",
         "close": "Zavřít",
-        "thinking": "Generuji odpověď…",
+        "thinking": "Generuji odpověď",
         "scroll_to_latest": "Posunout na konec",
         "connection": {
-            "checking": "Kontrola připojení…",
+            "checking": "Kontrola připojení",
             "ok": "Připojeno",
             "error": "Připojení selhalo",
             "unconfigured": "Nenastaveno"
@@ -221,11 +221,11 @@
             "foreignContent": "Tato složka obsahuje i další soubory. VRCX-0 změní pouze své vlastní soubory."
         },
         "phase": {
-            "preparing": "Příprava dat…",
-            "freezing": "Příprava dat…",
-            "copying": "Kopírování dat…",
-            "verifying": "Kontrola zkopírovaných dat…",
-            "committing": "Dokončování změny…"
+            "preparing": "Příprava dat",
+            "freezing": "Příprava dat",
+            "copying": "Kopírování dat",
+            "verifying": "Kontrola zkopírovaných dat",
+            "committing": "Dokončování změny"
         },
         "error": {
             "operationBusy": "Již probíhá jiné zálohování, obnovení nebo přesun.",
@@ -274,7 +274,7 @@
         "start_existing": "Použít stávající data",
         "start_fresh": "Použít novou složku",
         "new_folder": "Nová složka",
-        "cancelling": "Rušení…",
+        "cancelling": "Rušení",
         "mode_description": {
             "adoptExisting": "Použít záznamy a nastavení z této složky bez kopírování současných dat.",
             "freshStart": "Začít v nové složce od začátku bez kopírování současných dat. Ze staré složky se nic nesmaže."
@@ -526,7 +526,7 @@
         "menu": {
             "app": {
                 "about": "O aplikaci VRCX-0",
-                "settings": "Nastavení...",
+                "settings": "Nastavení",
                 "checkUpdates": "Zkontrolovat aktualizace",
                 "restart": "Restartovat VRCX-0",
                 "startBackgroundMode": "Přepnout do režimu na pozadí",
@@ -548,7 +548,7 @@
             },
             "tools": {
                 "title": "Nástroje",
-                "allTools": "Všechny nástroje..."
+                "allTools": "Všechny nástroje"
             },
             "edit": {
                 "title": "Úpravy",
@@ -605,7 +605,7 @@
         "qq_group": "QQ skupina",
         "changelog": "Seznam změn",
         "update": "Aktualizace",
-        "update_downloading": "Stahování…",
+        "update_downloading": "Stahování",
         "update_downloaded": "Restartovat",
         "mark_all_read": "Označit vše jako přečtené",
         "edit_dashboard": "Upravit nástěnku",
@@ -719,7 +719,7 @@
         "help": "Nápověda",
         "preview_build_badge": "Testovací sestavení",
         "devkit_build_badge": "Vývojářská sada",
-        "settings": "Nastavení...",
+        "settings": "Nastavení",
         "check_updates": "Zkontrolovat aktualizace",
         "restart": "Restartovat VRCX-0",
         "start_background_mode": "Přepnout do režimu na pozadí",
@@ -763,7 +763,7 @@
     "shortcuts": {
         "tray": {
             "recording_failed": "Záznam klávesové zkratky se nepodařilo spustit. Zavřete tento dialog a zkuste to znovu.",
-            "checking": "Kontrola zkratky…",
+            "checking": "Kontrola zkratky",
             "background_hint": "Při skrytí se použije nastavení režimu na pozadí a zpoždění.",
             "global": "Globální",
             "title": "Zobrazit / Skrýt VRCX-0",
@@ -856,13 +856,13 @@
     },
     "side_panel": {
         "search_placeholder": "Search",
-        "search_input_placeholder": "Hledat nebo přejít na stránku…",
+        "search_input_placeholder": "Hledat nebo přejít na stránku",
         "search_pages": "Stránky",
         "search_scope_pages": "Přejít na stránku",
         "search_pages_and_tools": "Stránky a nástroje",
         "search_scope_pages_and_tools": "Přejít na stránku nebo otevřít nástroj",
         "search_no_results": "Nenalezeny žádné výsledky",
-        "search_categories": "Hledat...",
+        "search_categories": "Hledat",
         "search_recent": "Naposledy otevřené",
         "search_scope_all": "Jméno, lokální poznámka a poznámka",
         "search_scope_avatars": "Vlastní a oblíbené",
@@ -1014,7 +1014,7 @@
         "login": {
             "savedAccounts": "Uložené účty",
             "login": "Přihlášení",
-            "signingIn": "Přihlašování...",
+            "signingIn": "Přihlašování",
             "register": "Registrace",
             "forgotPassword": "Zepomenuté heslo?",
             "useOtherAccount": "Použít jiný účet",
@@ -1038,7 +1038,7 @@
                 "title": "Odebrat uložený účet",
                 "description": "{name} bude odebrán",
                 "confirm": "Odebrat",
-                "removing": "Odebírání..."
+                "removing": "Odebírání"
             }
         },
         "feed": {
@@ -1183,7 +1183,7 @@
                 "dense": "Hustá"
             },
             "show_same_instance_in_online": "Zobrazit stejnou instanci v Online",
-            "loading_more": "Načítání dalších...",
+            "loading_more": "Načítání dalších",
             "busy": "Zaneprázdněn",
             "local_group": "Lokální: {name}",
             "all_matching_friends": "Všichni odpovídající přátelé",
@@ -1813,7 +1813,7 @@
                 "friend_locations_failed_to_load": "Lokace přátel se nepodařilo načíst"
             },
             "description": {
-                "cancelling": "Rušení..."
+                "cancelling": "Rušení"
             },
             "dynamic": {
                 "open_value": "Otevřít {value}"
@@ -1841,7 +1841,7 @@
                     "stop": "Zastavit",
                     "stop_fetching": "Zastavit načítání",
                     "go_to_friend": "Přejít na přítele",
-                    "cancelling": "Ruší se...",
+                    "cancelling": "Ruší se",
                     "find_friend": "Najít přítele",
                     "open_profile": "Otevřít profil",
                     "hide_from_graph": "Skrýt z grafu",
@@ -1898,7 +1898,7 @@
             },
             "loading": {
                 "loading_instance_activity": "Načítání aktivity instance",
-                "loading_graph": "Načítání grafu...",
+                "loading_graph": "Načítání grafu",
                 "loading_mutual_graph_snapshot": "Načítání společných přátel"
             },
             "empty": {
@@ -2310,9 +2310,9 @@
                 "title": "Odeslat zpětnou vazbu",
                 "description": "Ve výchozím nastavení anonymní. Hlášení chyb i návrhy jsou vítány.",
                 "privacy_note": "Nepřipojují se žádné údaje o účtu.",
-                "placeholder": "Popište, co se stalo, co jste očekávali a jak to reprodukovat…",
+                "placeholder": "Popište, co se stalo, co jste očekávali a jak to reprodukovat",
                 "submit": "Odeslat",
-                "submitting": "Odesílání…",
+                "submitting": "Odesílání",
                 "thanks": "Děkujeme za zpětnou vazbu!",
                 "cooldown": "Znovu odeslat můžete za {seconds} s",
                 "reply_note": "Chcete odpověď? Uveďte ve zprávě svou e-mailovou adresu.",
@@ -2554,7 +2554,7 @@
                     "font_family_geist": "Geist (výchozí)",
                     "font_family_system_ui": "Systémové písmo",
                     "font_family_description": "Vyberte předvolbu nebo použijte písma nainstalovaná v tomto zařízení.",
-                    "font_family_custom": "Vlastní písmo…",
+                    "font_family_custom": "Vlastní písmo",
                     "font_family_custom_dialog_title": "Vybrat vlastní písma",
                     "font_family_custom_dialog_description": "Použijte písma nainstalovaná v tomto zařízení nebo zadejte zásobník písem CSS.",
                     "font_family_custom_invalid": "Neplatná hodnota font-family. Použijte názvy písem oddělené čárkou, např. 'My Font', Arial, sans-serif",
@@ -2568,8 +2568,8 @@
                     "font_family_custom_mode_label": "Zdroj písma",
                     "font_family_custom_mode_installed": "Nainstalovaná písma",
                     "font_family_custom_mode_css": "Zásobník písem CSS",
-                    "font_family_custom_search_placeholder": "Hledat nainstalovaná písma…",
-                    "font_family_custom_search_optional_placeholder": "Hledat volitelné náhradní písmo…",
+                    "font_family_custom_search_placeholder": "Hledat nainstalovaná písma",
+                    "font_family_custom_search_optional_placeholder": "Hledat volitelné náhradní písmo",
                     "font_family_custom_no_results": "Nebyla nalezena žádná odpovídající písma.",
                     "font_family_custom_preview": "Náhled",
                     "font_family_custom_preview_sample": "The quick brown fox / 早晨好 / 逃げちゃダメだ / 다람쥐 헌 쳇바퀴에 타고파",
@@ -2858,7 +2858,7 @@
                     "storage": {
                         "header": "Úložiště a čištění",
                         "data_location": "Umístění dat",
-                        "change_folder": "Změnit složku…",
+                        "change_folder": "Změnit složku",
                         "more": "Další akce s umístěním dat",
                         "restore_default": "Obnovit výchozí umístění",
                         "cache_header": "Automaticky čistit mezipaměť VRChat",
@@ -2879,18 +2879,18 @@
                         "online_users": "Online uživatelé VRChatu",
                         "refresh_online_users": "Obnovit online uživatele",
                         "vrchat_config": "Konfigurace VRChatu",
-                        "view_config": "Zobrazit…",
+                        "view_config": "Zobrazit",
                         "hide_config": "Skrýt"
                     },
                     "import_recovery": {
                         "header": "Import a obnovení",
                         "import_from_vrcx": "Importovat z VRCX",
                         "description": "Nahradí aktuální konfiguraci a databázi VRCX-0 daty z pevné datové složky VRCX.",
-                        "review": "Zkontrolovat import…",
+                        "review": "Zkontrolovat import",
                         "game_log": {
                             "label": "Importovat herní záznam z logů VRChatu",
                             "description": "Obnoví historii herního záznamu z období, kdy VRCX-0 neběželo, z místních logů VRChatu. Existující záznamy se přeskočí.",
-                            "select": "Vybrat soubory logů…",
+                            "select": "Vybrat soubory logů",
                             "dialog_title": "Importovat herní záznam",
                             "integrity_notice": "Vyberte původní logy vytvořené VRChatem na tomto počítači. Upravené či neúplné logy nebo logy z jiného časového pásma budou mít posunuté časy a duplicitní záznamy nepůjde rozpoznat.",
                             "backup_notice": "Importované záznamy se zapisují přímo do databáze a nelze je vrátit jedním krokem. Doporučujeme nejprve vytvořit zálohu.",
@@ -2921,7 +2921,7 @@
                     },
                     "danger": {
                         "avatar_history": "Historie avatarů",
-                        "delete": "Odstranit…"
+                        "delete": "Odstranit"
                     }
                 },
                 "advanced": {
@@ -3720,7 +3720,7 @@
             "global_enabled": "Spouštět aplikace s VRChat",
             "add_app": "Přidat aplikaci",
             "choose_target": "Vybrat cíl",
-            "loading": "Načítání…",
+            "loading": "Načítání",
             "enabled": "Povoleno",
             "name": "Název",
             "scope": "Rozsah",
@@ -3783,7 +3783,7 @@
                 "invite": "Pozvat",
                 "request_invite": "Požádat o pozvánku",
                 "invite_to_group": "Pozvat do skupiny",
-                "group_actions": "Skupina...",
+                "group_actions": "Skupina",
                 "group_moderation": "Moderace skupiny",
                 "send_boop": "Poslat boop",
                 "accept_friend_request": "Přijmout žádost o přátelství",
@@ -3802,7 +3802,7 @@
                 "reset_hidden_avatar": "Obnovit skrytý avatar",
                 "reset_shown_avatar": "Obnovit zobrazený avatar",
                 "reset_avatar_visibility": "Obnovit viditelnost avataru",
-                "moderation_actions": "Moderace...",
+                "moderation_actions": "Moderace",
                 "moderation_enable_avatar_interaction": "Povolit interakci s avatarem",
                 "moderation_disable_avatar_interaction": "Zakázat interakci s avatarem",
                 "moderation_enable_chatbox": "Zrušit ztlumení chatboxu",
@@ -3815,9 +3815,9 @@
                 "edit_note_memo": "Upravit poznámku a lokální poznámku"
             },
             "group_invite": {
-                "select_group": "Vyberte skupinu...",
+                "select_group": "Vyberte skupinu",
                 "description": "Vyberte skupinu, do které chcete pozvat {value}.",
-                "loading": "Načítání skupin, do kterých můžete posílat pozvánky...",
+                "loading": "Načítání skupin, do kterých můžete posílat pozvánky",
                 "no_groups": "Nemáte žádnou skupinu, do které můžete posílat pozvánky",
                 "load_failed": "Skupiny se nepodařilo načíst",
                 "permissions_degraded": "Některá oprávnění skupin se nepodařilo ověřit. Seznam může obsahovat skupiny, do kterých nemůžete zvát."
@@ -3826,13 +3826,13 @@
                 "title": "Spravovat ve vašich skupinách",
                 "target": "Cílový uživatel",
                 "member": "Člen",
-                "loading": "Načítání oprávnění skupiny...",
+                "loading": "Načítání oprávnění skupiny",
                 "kick_section": "Vyhodit ze skupiny",
                 "ban_section": "Zabanovat ze skupiny",
                 "groups_count": "{count} skupin",
                 "no_kickable": "Není členem žádné skupiny, kterou spravujete",
                 "no_bannable": "Žádné skupiny, ve kterých můžete spravovat bany",
-                "select_group": "Vyberte skupinu...",
+                "select_group": "Vyberte skupinu",
                 "select_group_hint": "Vyberte skupinu, ze které chcete zabanovat",
                 "ban_ready": "Zabanovat tohoto uživatele z vybrané skupiny",
                 "detailed": "Podrobná správa",
@@ -3988,13 +3988,13 @@
                 },
                 "most_visited_worlds": {
                     "header": "Nejnavštěvovanější světy",
-                    "loading": "Načítání nejnavštěvovanějších světů...",
+                    "loading": "Načítání nejnavštěvovanějších světů",
                     "exclude_home_world": "Vyloučit domovský svět",
                     "sort_by_time": "Dle času",
                     "sort_by_count": "Dle návštěv",
                     "visit_count_label": "{count} návštěv"
                 },
-                "preparing_data": "Připravuji data aktivity...",
+                "preparing_data": "Připravuji data aktivity",
                 "preparing_data_hint": "Při prvním načtení to může chvíli trvat",
                 "failed_to_load": "Nepodařilo se načíst aktivitu"
             },
@@ -4018,10 +4018,10 @@
                 "unfriend_was_not_sent_because_the_active_account_changed": "Unfriend wasn't sent because the active account changed. Refresh and try again."
             },
             "loading": {
-                "loading_activity": "Načítání aktivity...",
+                "loading_activity": "Načítání aktivity",
                 "loading_user_profile": "Načítání profilu uživatele",
                 "loading_languages": "Načítání jazyků",
-                "loading": "Načítání..."
+                "loading": "Načítání"
             },
             "label": {
                 "please_choose_a_valid_social_status": "Zvolte prosím platný sociální stav",
@@ -4458,7 +4458,7 @@
             "performance": {
                 "header": "Výkon",
                 "rating": "Hodnocení",
-                "analysis_loading": "Načítá se podrobná analýza výkonu…",
+                "analysis_loading": "Načítá se podrobná analýza výkonu",
                 "analysis_pending": "Podrobná analýza výkonu ještě není připravena. Obnovte avatara a zkuste to znovu.",
                 "analysis_unavailable": "Pro tuto platformu není podrobná analýza výkonu k dispozici.",
                 "yes": "Ano",
@@ -4665,7 +4665,7 @@
             "loading": {
                 "loading_group_profile": "Načítání profilu skupiny",
                 "fetching_the_current_vrchat_group_snapshot_for_this_dialog": "Načítání podrobností skupiny",
-                "loading": "Načítání..."
+                "loading": "Načítání"
             },
             "error": {
                 "group_profile_unavailable": "Profil skupiny není dostupný",
@@ -5365,7 +5365,7 @@
                 "details": "Podrobnosti"
             },
             "loading": {
-                "loading_instance_details": "Načítání podrobností instance..."
+                "loading_instance_details": "Načítání podrobností instance"
             },
             "error": {
                 "failed_to_copy_instance_id": "ID instance se nepodařilo zkopírovat",
@@ -5413,10 +5413,10 @@
             "select_all": "Vybrat vše",
             "selected_users_count": "Vybráno: {count}",
             "notes": "Poznámky",
-            "note_placeholder": "Přidejte poznámku pro vybrané členy...",
+            "note_placeholder": "Přidejte poznámku pro vybrané členy",
             "selected_roles": "Role",
             "roles_count": "Vybráno rolí: {count}",
-            "choose_roles_placeholder": "Vyberte role...",
+            "choose_roles_placeholder": "Vyberte role",
             "add_roles": "Přidat role",
             "remove_roles": "Odebrat role",
             "save_note": "Uložit poznámku",
@@ -5455,12 +5455,12 @@
         },
         "group_calendar": {
             "header": "Kalendář skupiny",
-            "loading_events": "Načítání událostí...",
+            "loading_events": "Načítání událostí",
             "description": "Zobrazit skupinové události pro vybrané datum.",
             "list_view": "Zobrazení seznamu",
             "calendar_view": "Zobrazení kalendáře",
             "no_events": "Nebyly nalezeny žádné události",
-            "search_placeholder": "Hledat skupiny nebo události...",
+            "search_placeholder": "Hledat skupiny nebo události",
             "search_no_matching": "Nebyly nalezeny žádné odpovídající události",
             "search_no_this_month": "Tento měsíc nejsou žádné události",
             "event_card": {
@@ -5509,7 +5509,7 @@
             "support_description": "Nejjednodušší způsob, jak podpořit projekt, je hvězdička na GitHubu.",
             "star_on_github": "Dát hvězdičku na GitHubu",
             "support_development": "Podpořit vývoj",
-            "loading": "Načítání seznamu změn...",
+            "loading": "Načítání seznamu změn",
             "failed_to_load": "Nepodařilo se načíst seznam změn.",
             "latest_release": "Poslední verze",
             "empty": "Pro tuto verzi není k dispozici žádný seznam změn.",
@@ -5519,7 +5519,7 @@
         },
         "open_source": {
             "header": "Open Source Software Notice",
-            "loading": "Načítání vygenerovaných oznámení o třetích stranách...",
+            "loading": "Načítání vygenerovaných oznámení o třetích stranách",
             "unavailable": "V této sestavě není k dispozici žádný vygenerovaný manifest oznámení o třetích stranách. Spusťte produkční sestavení pro jeho vygenerování.",
             "search_placeholder": "Hledat balíčky, verze nebo licence",
             "notice_location_prefix": "Umístění souboru s úplnými oznámeními v adresáři aplikace:",
@@ -5719,7 +5719,7 @@
             "header": "Přímý přístup",
             "description_failed": "Přímý přístup se nezdařil. Zkontrolujte URL nebo ID a zkuste to znovu.",
             "message": {
-                "opening": "Otevírání..."
+                "opening": "Otevírání"
             }
         },
         "rename_world": {
@@ -5779,7 +5779,7 @@
         }
     },
     "message": {
-        "auto_login_delay_countdown": "Automatické přihlášení za {seconds} s...",
+        "auto_login_delay_countdown": "Automatické přihlášení za {seconds} s",
         "auth": {
             "logout_greeting": "Uvidíme se zase, {name}!",
             "account_removed": "Účet odebrán",
@@ -5820,7 +5820,7 @@
             "legacy_vrcx_force_migration": "Vynutit migraci",
             "migration_skip": "Přeskočit",
             "migration_restarting_title": "Migrace dat",
-            "migration_restarting": "VRCX-0 se restartuje, aby dokončil migraci...",
+            "migration_restarting": "VRCX-0 se restartuje, aby dokončil migraci",
             "upgrade_in_progress_title": "Probíhá aktualizace databáze",
             "maintenance_in_progress_title": "Probíhá údržba databáze",
             "maintenance_in_progress_description": "Uvolňuje se místo na disku. Přístup k databázi je pozastaven, dokud operace neskončí.",
@@ -5851,7 +5851,7 @@
             "use_new_database": "Použít novou databázi",
             "fresh_start_confirm_title": "Použít novou databázi?",
             "fresh_start_confirm_description": "VRCX-0 zachová současnou databázi a soubory neúspěšné aktualizace ve složce pro obnovení a poté se restartuje s novou prázdnou databází. Nastavení, místní historie a uložené údaje účtů se do nové databáze nepřenesou.",
-            "fresh_start_restarting": "Současná databáze se archivuje a VRCX-0 se restartuje...",
+            "fresh_start_restarting": "Současná databáze se archivuje a VRCX-0 se restartuje",
             "fresh_start_failed": "Novou databázi se nepodařilo vytvořit.",
             "upgrade_keep_open": "Nechte VRCX-0 otevřené, dokud se aktualizace nedokončí.",
             "failure_reason": "Důvod",
@@ -5909,7 +5909,7 @@
             "downloading": "Stahování obrázku",
             "copied_to_clipboard": "Obrázek zkopírován do schránky",
             "preview_title": "Náhled obrázku",
-            "loading": "Načítání obrázku...",
+            "loading": "Načítání obrázku",
             "load_failed": "Načtení obrázku se nezdařilo",
             "copy": "Kopírovat obrázek",
             "download": "Stáhnout obrázek",
@@ -6379,7 +6379,7 @@
             },
             "group_moderation": {
                 "picker_description": "Vyberte skupinu pro správu členů, zákazů, pozvánek a žádostí o vstup.",
-                "loading": "Načítání skupin, které moderujete…",
+                "loading": "Načítání skupin, které moderujete",
                 "empty_title": "Žádné skupiny ke správě",
                 "empty_description": "V žádné ze svých skupin zatím nemáte moderátorská oprávnění.",
                 "permissions_degraded": "Některá oprávnění skupin se nepodařilo ověřit. Seznam níže může být neúplný.",
@@ -6413,8 +6413,8 @@
             },
             "action": {
                 "refresh_config_failed_after_upgrade": "VRCX-0 databázi aktualizoval, ale nepodařilo se obnovit místní konfiguraci. Restartujte prosím aplikaci",
-                "requesting_legacy_migration": "Připravuje se migrace stávajících dat VRCX…",
-                "skipping_legacy_migration": "Migrace se přeskakuje, databáze se nastavuje…"
+                "requesting_legacy_migration": "Připravuje se migrace stávajících dat VRCX",
+                "skipping_legacy_migration": "Migrace se přeskakuje, databáze se nastavuje"
             }
         },
         "favorite_import_service": {
