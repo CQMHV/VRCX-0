@@ -228,17 +228,10 @@ html.vrcx-0-rgb
         0 0 10px -9px hsl(0 var(--vrcx-0-rgb-sat) var(--vrcx-0-rgb-lit) / 18%) !important;
 }
 
-html.vrcx-0-rgb
-    :is(
-        [data-slot='menubar-content'],
-        [data-slot='menubar-sub-content'],
-        [data-slot='dropdown-menu-content'],
-        [data-slot='dropdown-menu-sub-content'],
-        [data-slot='context-menu-content'],
-        [data-slot='context-menu-sub-content']
-    )::after {
+/* Keep the border outside the popup's scrolling content. */
+html.vrcx-0-rgb [data-slot='menu-positioner']::after {
     position: absolute !important;
-    z-index: 2 !important;
+    z-index: 51 !important;
     inset: 0 !important;
     pointer-events: none !important;
     content: '' !important;
@@ -261,20 +254,21 @@ html.vrcx-0-rgb
 }
 
 html.vrcx-0-rgb
-    :is(
-        [data-slot='menubar-content'],
-        [data-slot='menubar-sub-content']
+    [data-slot='menu-positioner']:has(
+        > :is([data-slot='menubar-content'], [data-slot='menubar-sub-content'])
     )::after {
     opacity: 0.85 !important;
     animation: vrcx-0-rgb-border-spin 14s linear infinite !important;
 }
 
 html.vrcx-0-rgb
-    :is(
-        [data-slot='dropdown-menu-content'],
-        [data-slot='dropdown-menu-sub-content'],
-        [data-slot='context-menu-content'],
-        [data-slot='context-menu-sub-content']
+    [data-slot='menu-positioner']:has(
+        > :is(
+            [data-slot='dropdown-menu-content'],
+            [data-slot='dropdown-menu-sub-content'],
+            [data-slot='context-menu-content'],
+            [data-slot='context-menu-sub-content']
+        )
     )::after {
     opacity: 0.62 !important;
 }
@@ -338,8 +332,7 @@ html.reduce-effects.vrcx-0-rgb
     :is(
         .vrcx-0-titlebar,
         [data-slot='sidebar-container'][data-vrcx-0-surface='sidebar'],
-        [data-slot='menubar-content'],
-        [data-slot='menubar-sub-content']
+        [data-slot='menu-positioner']
     )::after,
 html.reduce-effects.vrcx-0-rgb .vrcx-0-statusbar::before {
     animation: none !important;
@@ -358,8 +351,7 @@ html.reduce-effects.vrcx-0-rgb .vrcx-0-brand {
         :is(
             .vrcx-0-titlebar,
             [data-slot='sidebar-container'][data-vrcx-0-surface='sidebar'],
-            [data-slot='menubar-content'],
-            [data-slot='menubar-sub-content']
+            [data-slot='menu-positioner']
         )::after,
     html.vrcx-0-rgb .vrcx-0-statusbar::before {
         animation: none !important;
