@@ -117,10 +117,12 @@ pub fn save_notification_activity_filters(
 }
 
 pub fn load_overlay_activity_filters(config: &dyn NotificationConfig) -> ActivityFilters {
+    let mut alert_rules_saved = false;
     let mut filters = match config.get_raw(WRIST_FILTERS_CONFIG_KEY) {
         Ok(Some(raw)) => match serde_json::from_str::<Value>(&raw) {
             Ok(value) if ActivityFilters::has_persisted_rules(&value) => {
                 let legacy_hmd = value.get("hmd").is_some();
+                alert_rules_saved = value.get("desktop").is_some() || value.get("vr").is_some();
                 let filters = ActivityFilters::from_json(value);
                 if legacy_hmd
                     && config
@@ -151,6 +153,7 @@ pub fn load_overlay_activity_filters(config: &dyn NotificationConfig) -> Activit
         NotificationSurface::Desktop,
     ) {
         filters.desktop = desktop;
+        alert_rules_saved = true;
     }
     if let Some(vr) = load_types_key_surface(
         config,
@@ -158,6 +161,7 @@ pub fn load_overlay_activity_filters(config: &dyn NotificationConfig) -> Activit
         NotificationSurface::ExternalOverlay,
     ) {
         filters.vr = vr;
+        alert_rules_saved = true;
     }
     if let Some(hmd) =
         load_types_key_surface(config, HMD_FILTERS_CONFIG_KEY, NotificationSurface::Hmd)
@@ -176,7 +180,10 @@ pub fn load_overlay_activity_filters(config: &dyn NotificationConfig) -> Activit
     {
         filters.tts = tts;
     } else {
-        filters.tts = seed_tts_notification_activity_filters(config, &filters);
+        if alert_rules_saved {
+            filters.tts = tts_rules_from_alert_rules(&filters);
+        }
+        persist_surface(config, TTS_FILTERS_CONFIG_KEY, &filters.tts);
     }
     filters
 }
@@ -219,10 +226,7 @@ fn load_location_hidden_user_ids(config: &dyn NotificationConfig) -> HashSet<Str
         .collect()
 }
 
-fn seed_tts_notification_activity_filters(
-    config: &dyn NotificationConfig,
-    filters: &ActivityFilters,
-) -> ActivitySurfaceFilters {
+fn tts_rules_from_alert_rules(filters: &ActivityFilters) -> ActivitySurfaceFilters {
     let mut seeded = filters.desktop.clone();
     let activity_types = filters
         .desktop
@@ -244,7 +248,6 @@ fn seed_tts_notification_activity_filters(
             seeded.types.insert(activity_type.clone(), desktop_rule);
         }
     }
-    persist_surface(config, TTS_FILTERS_CONFIG_KEY, &seeded);
     seeded
 }
 

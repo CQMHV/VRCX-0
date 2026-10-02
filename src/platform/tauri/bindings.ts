@@ -2928,8 +2928,9 @@ export type ActivityTypeDefinition = {
     key: ActivityKind;
     category: ActivityCategory;
     allowedScopes: ActivityScope[];
-    defaultScope: ActivityScope;
-    hmdDefaultScope: ActivityScope;
+    wristDefaultScope: ActivityScope;
+    alertDefaultScope: ActivityScope;
+    ttsDefaultScope: ActivityScope;
     aliases: string[];
 };
 export type ActivityViewBuildInput = {

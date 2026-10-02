@@ -551,7 +551,7 @@ fn surface_matches(
     surface: NotificationSurface,
     definition: &KindDefinition,
 ) -> bool {
-    let fallback = default_rule(definition);
+    let fallback = default_rule(definition, surface);
     let rule = state
         .filters
         .surface(surface)

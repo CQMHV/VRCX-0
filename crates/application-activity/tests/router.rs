@@ -39,9 +39,59 @@ fn activity_type_definitions_are_exported_from_backend() {
             ActivityScope::SelectedFavorites,
         ]
     );
-    assert_eq!(group_instance_opened.default_scope, ActivityScope::Off);
+    let defaults = |kind: ActivityKind| {
+        let definition = definition(kind);
+        (
+            definition.wrist_default_scope,
+            definition.alert_default_scope,
+            definition.tts_default_scope,
+        )
+    };
+    use ActivityScope::{AllFavorites, EveryoneInInstance, Friends, Off, On};
+    assert_eq!(defaults(ActivityKind::GroupInstanceOpened), (Off, Off, Off));
+    assert_eq!(defaults(ActivityKind::Online), (Friends, AllFavorites, Off));
+    assert_eq!(defaults(ActivityKind::Gps), (Friends, Off, Off));
     assert_eq!(
-        definition(ActivityKind::VideoPlay).hmd_default_scope,
+        defaults(ActivityKind::OnPlayerJoined),
+        (EveryoneInInstance, AllFavorites, Off)
+    );
+    assert_eq!(
+        defaults(ActivityKind::OnPlayerJoining),
+        (Friends, Friends, AllFavorites)
+    );
+    assert_eq!(defaults(ActivityKind::GroupAnnouncement), (On, On, Off));
+    assert_eq!(
+        defaults(ActivityKind::BlockedOnPlayerJoined),
+        (Off, Off, Off)
+    );
+    assert_eq!(defaults(ActivityKind::VideoPlay), (On, Off, Off));
+}
+
+#[test]
+fn default_filters_give_alert_surfaces_one_profile_and_keep_webhook_off() {
+    let filters = ActivityFilters::default();
+    let scope = |surface, kind| filters.rule_for(surface, kind).scope;
+
+    for surface in [
+        NotificationSurface::Desktop,
+        NotificationSurface::ExternalOverlay,
+        NotificationSurface::Hmd,
+    ] {
+        assert_eq!(
+            scope(surface, ActivityKind::Online),
+            ActivityScope::AllFavorites
+        );
+    }
+    assert_eq!(
+        scope(NotificationSurface::Wrist, ActivityKind::Online),
+        ActivityScope::Friends
+    );
+    assert_eq!(
+        scope(NotificationSurface::Tts, ActivityKind::Online),
+        ActivityScope::Off
+    );
+    assert_eq!(
+        scope(NotificationSurface::Webhook, ActivityKind::Invite),
         ActivityScope::Off
     );
 }
@@ -53,6 +103,7 @@ fn hmd_delivery_is_live_only_and_independent_from_wrist_snapshot() {
         "wrist": { "types": { "Online": { "scope": "off" } } },
         "desktop": { "types": { "Online": { "scope": "off" } } },
         "vr": { "types": { "Online": { "scope": "off" } } },
+        "hmd": { "types": { "Online": { "scope": "friends" } } },
         "webhook": { "types": { "Online": { "scope": "off" } } },
         "tts": { "types": { "Online": { "scope": "off" } } }
     })));

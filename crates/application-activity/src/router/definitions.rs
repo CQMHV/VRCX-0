@@ -5,7 +5,7 @@ use vrcx_0_contracts::activity::ActivityKind;
 
 use super::types::{
     ActivityCategory, ActivityFavoriteGroupKeys, ActivityFilters, ActivityRule, ActivityScope,
-    ActivitySurfaceFilters, ActivityTypeDefinition,
+    ActivitySurfaceFilters, ActivityTypeDefinition, NotificationSurface,
 };
 
 #[derive(Clone, Copy)]
@@ -13,8 +13,9 @@ pub(super) struct KindDefinition {
     pub(super) kind: ActivityKind,
     pub(super) category: ActivityCategory,
     allowed_scopes: &'static [ActivityScope],
-    default_scope: ActivityScope,
-    hmd_default_scope: ActivityScope,
+    wrist_default_scope: ActivityScope,
+    alert_default_scope: ActivityScope,
+    tts_default_scope: ActivityScope,
     aliases: &'static [&'static str],
 }
 
@@ -49,72 +50,107 @@ pub(super) fn definition(kind: ActivityKind) -> KindDefinition {
     use ActivityCategory as C;
     use ActivityKind as K;
     use ActivityScope as S;
-    let (category, allowed_scopes, default_scope, hmd_default_scope) = match kind {
-        K::Invite | K::RequestInvite | K::InviteResponse | K::Boop => (
-            C::ActionRequired,
-            DIRECT_ACTOR_SCOPES,
-            S::Friends,
-            S::Friends,
-        ),
-        K::RequestInviteResponse => (C::ActionRequired, DIRECT_ACTOR_SCOPES, S::Friends, S::Off),
-        K::FriendRequest | K::GroupQueueReady | K::InstanceClosed => {
-            (C::ActionRequired, BOOLEAN_SCOPES, S::On, S::On)
-        }
-        K::OnPlayerJoining => (
-            C::CurrentInstance,
-            INSTANCE_ACTOR_SCOPES,
-            S::Friends,
-            S::Friends,
-        ),
-        K::OnPlayerJoined | K::OnPlayerLeft => (
-            C::CurrentInstance,
-            INSTANCE_ACTOR_SCOPES,
-            S::EveryoneInInstance,
-            S::Off,
-        ),
-        K::LobbyAvatarChange => (C::CurrentInstance, INSTANCE_ACTOR_SCOPES, S::Off, S::Off),
-        K::Online | K::Offline | K::Gps | K::Status => (
-            C::FavoriteMovement,
-            FRIEND_ACTOR_SCOPES,
-            S::Friends,
-            S::Friends,
-        ),
-        K::Friend => (C::ProfileChange, BOOLEAN_SCOPES, S::On, S::On),
-        K::Unfriend => (C::ProfileChange, BOOLEAN_SCOPES, S::On, S::Off),
-        K::DisplayName | K::TrustLevel => (
-            C::ProfileChange,
-            FRIEND_ACTOR_SCOPES,
-            S::Friends,
-            S::Friends,
-        ),
-        K::AvatarChange | K::Bio => (C::ProfileChange, FRIEND_ACTOR_SCOPES, S::Off, S::Off),
-        K::GroupChange
-        | K::GroupAnnouncement
-        | K::GroupEventCreated
-        | K::GroupEventStarting
-        | K::GroupInformative
-        | K::GroupJoinRequest
-        | K::GroupTransfer => (C::GroupSocial, BOOLEAN_SCOPES, S::On, S::Off),
-        K::GroupInvite => (C::GroupSocial, BOOLEAN_SCOPES, S::On, S::On),
-        K::GroupInstanceOpened => (C::GroupSocial, GROUP_FAVORITE_SCOPES, S::Off, S::Off),
-        K::Event | K::External => (C::SystemSafety, BOOLEAN_SCOPES, S::On, S::Off),
-        K::BlockedOnPlayerJoined => (
-            C::SystemSafety,
-            INSTANCE_ACTOR_SCOPES,
-            S::Off,
-            S::EveryoneInInstance,
-        ),
-        K::BlockedOnPlayerLeft | K::MutedOnPlayerJoined | K::MutedOnPlayerLeft => {
-            (C::SystemSafety, INSTANCE_ACTOR_SCOPES, S::Off, S::Off)
-        }
-        K::VideoPlay => (C::Media, BOOLEAN_SCOPES, S::On, S::Off),
-    };
+    let (category, allowed_scopes, wrist_default_scope, alert_default_scope, tts_default_scope) =
+        match kind {
+            K::Invite
+            | K::RequestInvite
+            | K::InviteResponse
+            | K::RequestInviteResponse
+            | K::Boop => (
+                C::ActionRequired,
+                DIRECT_ACTOR_SCOPES,
+                S::Friends,
+                S::Friends,
+                S::Friends,
+            ),
+            K::FriendRequest | K::GroupQueueReady | K::InstanceClosed => {
+                (C::ActionRequired, BOOLEAN_SCOPES, S::On, S::On, S::On)
+            }
+            K::OnPlayerJoining => (
+                C::CurrentInstance,
+                INSTANCE_ACTOR_SCOPES,
+                S::Friends,
+                S::Friends,
+                S::AllFavorites,
+            ),
+            K::OnPlayerJoined | K::OnPlayerLeft => (
+                C::CurrentInstance,
+                INSTANCE_ACTOR_SCOPES,
+                S::EveryoneInInstance,
+                S::AllFavorites,
+                S::Off,
+            ),
+            K::LobbyAvatarChange => (
+                C::CurrentInstance,
+                INSTANCE_ACTOR_SCOPES,
+                S::Off,
+                S::Off,
+                S::Off,
+            ),
+            K::Online | K::Offline => (
+                C::FavoriteMovement,
+                FRIEND_ACTOR_SCOPES,
+                S::Friends,
+                S::AllFavorites,
+                S::Off,
+            ),
+            K::Gps | K::Status => (
+                C::FavoriteMovement,
+                FRIEND_ACTOR_SCOPES,
+                S::Friends,
+                S::Off,
+                S::Off,
+            ),
+            K::Friend | K::Unfriend => (C::ProfileChange, BOOLEAN_SCOPES, S::On, S::On, S::Off),
+            K::DisplayName | K::TrustLevel => (
+                C::ProfileChange,
+                FRIEND_ACTOR_SCOPES,
+                S::Friends,
+                S::AllFavorites,
+                S::Off,
+            ),
+            K::AvatarChange | K::Bio => (
+                C::ProfileChange,
+                FRIEND_ACTOR_SCOPES,
+                S::Off,
+                S::Off,
+                S::Off,
+            ),
+            K::GroupChange
+            | K::GroupAnnouncement
+            | K::GroupEventCreated
+            | K::GroupEventStarting
+            | K::GroupInformative
+            | K::GroupInvite
+            | K::GroupTransfer => (C::GroupSocial, BOOLEAN_SCOPES, S::On, S::On, S::Off),
+            K::GroupJoinRequest => (C::GroupSocial, BOOLEAN_SCOPES, S::On, S::Off, S::Off),
+            K::GroupInstanceOpened => (
+                C::GroupSocial,
+                GROUP_FAVORITE_SCOPES,
+                S::Off,
+                S::Off,
+                S::Off,
+            ),
+            K::Event | K::External => (C::SystemSafety, BOOLEAN_SCOPES, S::On, S::On, S::Off),
+            K::BlockedOnPlayerJoined
+            | K::BlockedOnPlayerLeft
+            | K::MutedOnPlayerJoined
+            | K::MutedOnPlayerLeft => (
+                C::SystemSafety,
+                INSTANCE_ACTOR_SCOPES,
+                S::Off,
+                S::Off,
+                S::Off,
+            ),
+            K::VideoPlay => (C::Media, BOOLEAN_SCOPES, S::On, S::Off, S::Off),
+        };
     KindDefinition {
         kind,
         category,
         allowed_scopes,
-        default_scope,
-        hmd_default_scope,
+        wrist_default_scope,
+        alert_default_scope,
+        tts_default_scope,
         aliases: match kind {
             K::AvatarChange => &["Avatar"],
             _ => &[],
@@ -132,8 +168,9 @@ pub(super) fn activity_type_definitions() -> Vec<ActivityTypeDefinition> {
             key: definition.kind,
             category: definition.category,
             allowed_scopes: definition.allowed_scopes.to_vec(),
-            default_scope: definition.default_scope,
-            hmd_default_scope: definition.hmd_default_scope,
+            wrist_default_scope: definition.wrist_default_scope,
+            alert_default_scope: definition.alert_default_scope,
+            tts_default_scope: definition.tts_default_scope,
             aliases: definition
                 .aliases
                 .iter()
@@ -143,33 +180,35 @@ pub(super) fn activity_type_definitions() -> Vec<ActivityTypeDefinition> {
         .collect()
 }
 
-pub(super) fn default_activity_rules() -> BTreeMap<String, ActivityRule> {
-    rules_with_scope(|definition| definition.default_scope)
+fn default_scope(definition: &KindDefinition, surface: NotificationSurface) -> ActivityScope {
+    match surface {
+        NotificationSurface::Wrist => definition.wrist_default_scope,
+        NotificationSurface::Desktop
+        | NotificationSurface::ExternalOverlay
+        | NotificationSurface::Hmd => definition.alert_default_scope,
+        NotificationSurface::Tts => definition.tts_default_scope,
+        NotificationSurface::Webhook => ActivityScope::Off,
+    }
 }
 
-pub(super) fn hmd_activity_rules() -> BTreeMap<String, ActivityRule> {
-    rules_with_scope(|definition| definition.hmd_default_scope)
-}
-
-pub(super) fn disabled_activity_rules() -> BTreeMap<String, ActivityRule> {
-    rules_with_scope(|_| ActivityScope::Off)
-}
-
-fn rules_with_scope(
-    scope: impl Fn(&KindDefinition) -> ActivityScope,
+pub(super) fn default_activity_rules(
+    surface: NotificationSurface,
 ) -> BTreeMap<String, ActivityRule> {
     definitions()
         .map(|definition| {
             (
                 definition.kind.key().to_string(),
-                rule_with_scope(scope(&definition)),
+                default_rule(&definition, surface),
             )
         })
         .collect()
 }
 
-pub(super) fn default_rule(definition: &KindDefinition) -> ActivityRule {
-    rule_with_scope(definition.default_scope)
+pub(super) fn default_rule(
+    definition: &KindDefinition,
+    surface: NotificationSurface,
+) -> ActivityRule {
+    rule_with_scope(default_scope(definition, surface))
 }
 
 fn rule_with_scope(scope: ActivityScope) -> ActivityRule {
@@ -191,30 +230,18 @@ pub(super) fn has_persisted_filter_rules(value: &Value) -> bool {
 }
 
 pub(super) fn normalize_filters(value: Value) -> ActivityFilters {
+    let surface = |key: &str, surface: NotificationSurface| {
+        normalize_surface_with_default(value.get(key), &default_activity_rules(surface))
+    };
     ActivityFilters {
         version: 1,
-        wrist: normalize_surface(value.get("wrist")),
-        desktop: normalize_surface(value.get("desktop")),
-        vr: normalize_surface(value.get("vr")),
-        hmd: value
-            .get("hmd")
-            .map(|surface| normalize_surface_with_default(Some(surface), &hmd_activity_rules()))
-            .unwrap_or_else(ActivitySurfaceFilters::hmd_default_rules),
-        webhook: value
-            .get("webhook")
-            .map(|surface| {
-                normalize_surface_with_default(Some(surface), &disabled_activity_rules())
-            })
-            .unwrap_or_else(ActivitySurfaceFilters::disabled_rules),
-        tts: value
-            .get("tts")
-            .map(|surface| normalize_surface(Some(surface)))
-            .unwrap_or_else(ActivitySurfaceFilters::default_rules),
+        wrist: surface("wrist", NotificationSurface::Wrist),
+        desktop: surface("desktop", NotificationSurface::Desktop),
+        vr: surface("vr", NotificationSurface::ExternalOverlay),
+        hmd: surface("hmd", NotificationSurface::Hmd),
+        webhook: surface("webhook", NotificationSurface::Webhook),
+        tts: surface("tts", NotificationSurface::Tts),
     }
-}
-
-pub(super) fn normalize_surface(value: Option<&Value>) -> ActivitySurfaceFilters {
-    normalize_surface_with_default(value, &default_activity_rules())
 }
 
 pub(super) fn normalize_surface_with_default(
@@ -229,12 +256,11 @@ pub(super) fn normalize_surface_with_default(
         types: default_types.clone(),
     };
     for definition in definitions() {
-        let source = types.and_then(|types| get_type_candidate(types, &definition));
-        let fallback_rule = default_types
-            .get(definition.kind.key())
-            .cloned()
-            .unwrap_or_else(|| default_rule(&definition));
-        let rule = source
+        let Some(fallback_rule) = default_types.get(definition.kind.key()).cloned() else {
+            continue;
+        };
+        let rule = types
+            .and_then(|types| get_type_candidate(types, &definition))
             .map(|source| normalize_rule(source, &definition, &fallback_rule))
             .unwrap_or(fallback_rule);
         normalized

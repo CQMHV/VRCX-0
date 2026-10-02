@@ -6,9 +6,8 @@ use vrcx_0_contracts::activity::ActivityKind;
 use vrcx_0_i18n::{render_overlay_message, OverlayMessage};
 
 use super::definitions::{
-    default_activity_rules, default_rule, definition, disabled_activity_rules,
-    has_persisted_filter_rules, hmd_activity_rules, normalize_filters,
-    normalize_surface_with_default,
+    default_activity_rules, default_rule, definition, has_persisted_filter_rules,
+    normalize_filters, normalize_surface_with_default,
 };
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, specta::Type)]
@@ -42,8 +41,9 @@ pub struct ActivityTypeDefinition {
     pub key: ActivityKind,
     pub category: ActivityCategory,
     pub allowed_scopes: Vec<ActivityScope>,
-    pub default_scope: ActivityScope,
-    pub hmd_default_scope: ActivityScope,
+    pub wrist_default_scope: ActivityScope,
+    pub alert_default_scope: ActivityScope,
+    pub tts_default_scope: ActivityScope,
     pub aliases: Vec<String>,
 }
 
@@ -131,15 +131,15 @@ pub enum NotificationSurface {
 pub struct ActivityFilters {
     pub version: u32,
     pub wrist: ActivitySurfaceFilters,
-    #[serde(default = "ActivitySurfaceFilters::default_rules")]
+    #[serde(default = "ActivitySurfaceFilters::alert_defaults")]
     pub desktop: ActivitySurfaceFilters,
-    #[serde(default = "ActivitySurfaceFilters::default_rules")]
+    #[serde(default = "ActivitySurfaceFilters::alert_defaults")]
     pub vr: ActivitySurfaceFilters,
-    #[serde(default = "ActivitySurfaceFilters::hmd_default_rules")]
+    #[serde(default = "ActivitySurfaceFilters::alert_defaults")]
     pub hmd: ActivitySurfaceFilters,
-    #[serde(default = "ActivitySurfaceFilters::disabled_rules")]
+    #[serde(default = "ActivitySurfaceFilters::webhook_defaults")]
     pub webhook: ActivitySurfaceFilters,
-    #[serde(default = "ActivitySurfaceFilters::default_rules")]
+    #[serde(default = "ActivitySurfaceFilters::tts_defaults")]
     pub tts: ActivitySurfaceFilters,
 }
 
@@ -150,31 +150,26 @@ pub struct ActivitySurfaceFilters {
 }
 
 impl ActivitySurfaceFilters {
-    pub(super) fn default_rules() -> Self {
+    fn defaults(surface: NotificationSurface) -> Self {
         Self {
-            types: default_activity_rules(),
+            types: default_activity_rules(surface),
         }
     }
 
-    pub(super) fn disabled_rules() -> Self {
-        Self {
-            types: disabled_activity_rules(),
-        }
+    fn alert_defaults() -> Self {
+        Self::defaults(NotificationSurface::Desktop)
     }
 
-    pub(super) fn hmd_default_rules() -> Self {
-        Self {
-            types: hmd_activity_rules(),
-        }
+    fn webhook_defaults() -> Self {
+        Self::defaults(NotificationSurface::Webhook)
+    }
+
+    fn tts_defaults() -> Self {
+        Self::defaults(NotificationSurface::Tts)
     }
 
     pub fn from_saved_types_json(value: &Value, surface: NotificationSurface) -> Self {
-        let defaults = match surface {
-            NotificationSurface::Hmd => hmd_activity_rules(),
-            NotificationSurface::Webhook => disabled_activity_rules(),
-            _ => default_activity_rules(),
-        };
-        normalize_surface_with_default(Some(value), &defaults)
+        normalize_surface_with_default(Some(value), &default_activity_rules(surface))
     }
 }
 
@@ -182,12 +177,12 @@ impl Default for ActivityFilters {
     fn default() -> Self {
         Self {
             version: 1,
-            wrist: ActivitySurfaceFilters::default_rules(),
-            desktop: ActivitySurfaceFilters::default_rules(),
-            vr: ActivitySurfaceFilters::default_rules(),
-            hmd: ActivitySurfaceFilters::hmd_default_rules(),
-            webhook: ActivitySurfaceFilters::disabled_rules(),
-            tts: ActivitySurfaceFilters::default_rules(),
+            wrist: ActivitySurfaceFilters::defaults(NotificationSurface::Wrist),
+            desktop: ActivitySurfaceFilters::defaults(NotificationSurface::Desktop),
+            vr: ActivitySurfaceFilters::defaults(NotificationSurface::ExternalOverlay),
+            hmd: ActivitySurfaceFilters::defaults(NotificationSurface::Hmd),
+            webhook: ActivitySurfaceFilters::defaults(NotificationSurface::Webhook),
+            tts: ActivitySurfaceFilters::defaults(NotificationSurface::Tts),
         }
     }
 }
@@ -217,7 +212,7 @@ impl ActivityFilters {
             .types
             .get(kind.key())
             .cloned()
-            .unwrap_or_else(|| default_rule(&definition(kind)))
+            .unwrap_or_else(|| default_rule(&definition(kind), surface))
     }
 }
 

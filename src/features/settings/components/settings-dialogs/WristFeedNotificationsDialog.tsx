@@ -86,8 +86,13 @@ type NotificationProfileDialogProps = {
 type ActivityFilterDialogProps = NotificationProfileDialogProps & {
     titleKey: string;
     descriptionKey: string;
-    defaultScope?: DefaultScope;
+    defaultScope: DefaultScope;
 };
+
+const wristDefaultScope: DefaultScope = (definition) =>
+    definition.wristDefaultScope;
+const alertDefaultScope: DefaultScope = (definition) =>
+    definition.alertDefaultScope;
 
 export function WristFeedNotificationsDialog(
     props: NotificationProfileDialogProps
@@ -97,6 +102,7 @@ export function WristFeedNotificationsDialog(
             {...props}
             titleKey="dialog.wrist_feed_notifications.title"
             descriptionKey="dialog.wrist_feed_notifications.description"
+            defaultScope={wristDefaultScope}
         />
     );
 }
@@ -107,6 +113,7 @@ export function VrNotificationsDialog(props: NotificationProfileDialogProps) {
             {...props}
             titleKey="dialog.vr_notifications.title"
             descriptionKey="dialog.vr_notifications.description"
+            defaultScope={alertDefaultScope}
         />
     );
 }
@@ -119,6 +126,7 @@ export function DesktopNotificationsDialog(
             {...props}
             titleKey="dialog.desktop_notifications.title"
             descriptionKey="dialog.desktop_notifications.description"
+            defaultScope={alertDefaultScope}
         />
     );
 }
@@ -129,7 +137,7 @@ export function HmdNotificationsDialog(props: NotificationProfileDialogProps) {
             {...props}
             titleKey="dialog.hmd_notifications.title"
             descriptionKey="dialog.hmd_notifications.description"
-            defaultScope={(definition) => definition.hmdDefaultScope}
+            defaultScope={alertDefaultScope}
         />
     );
 }
@@ -153,6 +161,7 @@ export function TtsNotificationsDialog(props: NotificationProfileDialogProps) {
             {...props}
             titleKey="dialog.tts_notifications.title"
             descriptionKey="dialog.tts_notifications.description"
+            defaultScope={(definition) => definition.ttsDefaultScope}
         />
     );
 }
@@ -163,7 +172,7 @@ function ActivityFilterDialog({
     titleKey,
     descriptionKey,
     value,
-    defaultScope = (definition) => definition.defaultScope,
+    defaultScope,
     onSave
 }: ActivityFilterDialogProps) {
     const { t } = useTranslation();
@@ -438,7 +447,7 @@ function ActivityFilterDialog({
                                     (definition) => {
                                         const type = definition.key;
                                         const rule = draft.types[type] ?? {
-                                            scope: definition.defaultScope,
+                                            scope: defaultScope(definition),
                                             favoriteGroupKeys: 'all'
                                         };
                                         const usesFavoriteGroups =

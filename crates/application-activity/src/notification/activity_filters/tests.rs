@@ -135,7 +135,7 @@ fn types_missing_from_a_saved_surface_take_that_surface_defaults(
     for key in [
         "webhookActivityFilters",
         "hmdNotificationActivityFilters",
-        "desktopNotificationActivityFilters",
+        "ttsNotificationActivityFilters",
     ] {
         config.set_string(key, &only_invite)?;
     }
@@ -143,17 +143,34 @@ fn types_missing_from_a_saved_surface_take_that_surface_defaults(
     let scope = |surface, activity_type| filters.rule_for(surface, activity_type).scope;
 
     assert_eq!(
-        scope(NotificationSurface::Webhook, ActivityKind::Gps),
+        scope(NotificationSurface::Webhook, ActivityKind::Online),
         ActivityScope::Off
     );
     assert_eq!(
-        scope(NotificationSurface::Hmd, ActivityKind::Unfriend),
-        ActivityScope::Off
+        scope(NotificationSurface::Hmd, ActivityKind::Online),
+        ActivityScope::AllFavorites
     );
     assert_eq!(
-        scope(NotificationSurface::Desktop, ActivityKind::Unfriend),
-        ActivityScope::On
+        scope(NotificationSurface::Tts, ActivityKind::Online),
+        ActivityScope::Off
     );
+    Ok(())
+}
+
+#[test]
+fn backend_load_persists_tts_defaults_when_no_alert_rules_were_saved(
+) -> std::result::Result<(), Box<dyn std::error::Error>> {
+    let (_dir, config) = test_config("overlay-activity-tts-defaults")?;
+    let filters = load_overlay_activity_filters(&config);
+
+    assert_eq!(
+        filters
+            .rule_for(NotificationSurface::Tts, ActivityKind::Online)
+            .scope,
+        ActivityScope::Off
+    );
+    let saved = config.get_json("ttsNotificationActivityFilters", json!({}))?;
+    assert_eq!(saved["types"]["Online"]["scope"], "off");
     Ok(())
 }
 
