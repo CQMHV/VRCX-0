@@ -121,12 +121,12 @@ export function useSettingsVrTabState() {
     };
 
     const saveHmdNotificationOpacity = (value: number) => {
-        const opacity = roundedBoundedNumber(value, 0, 100, 100);
+        const opacity = roundedBoundedNumber(value, 0, 100, 90);
         savePreferenceValue('hmdNotificationOpacity', opacity, () =>
             setIntConfigPreference('hmdNotificationOpacity', opacity, {
                 min: 0,
                 max: 100,
-                fallback: 100
+                fallback: 90
             })
         );
     };

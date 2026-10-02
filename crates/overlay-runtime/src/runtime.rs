@@ -91,9 +91,9 @@ impl HmdNotificationPosition {
 
     fn newest_card_angle_degrees(self) -> f32 {
         match self {
-            Self::Top => 10.0,
+            Self::Top => 4.0,
             Self::Center => -6.0,
-            Self::Bottom => -14.0,
+            Self::Bottom => -18.0,
         }
     }
 
@@ -1105,8 +1105,8 @@ fn wrist_surface_config(
 }
 
 const HMD_SURFACE_SIZE: OverlaySize = OverlaySize::new(960, 528);
-const HMD_SURFACE_DISTANCE_METERS: f32 = 1.3;
-const HMD_SURFACE_WIDTH_METERS: f32 = 1.074;
+const HMD_SURFACE_DISTANCE_METERS: f32 = 1.2;
+const HMD_SURFACE_WIDTH_METERS: f32 = 0.991;
 const HMD_STACK_INSET_PX: f32 = 20.0;
 
 fn hmd_surface_config(

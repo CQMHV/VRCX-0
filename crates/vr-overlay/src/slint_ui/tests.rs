@@ -100,6 +100,28 @@ fn compact_hmd_newest_card_keeps_its_center_when_it_wraps_to_two_lines() {
 }
 
 #[test]
+fn short_hmd_cards_keep_the_minimum_width() {
+    let painted_width = |frame: &RgbaFrame, row: u32| {
+        let columns = (0..frame.size.width)
+            .filter(|x| frame.data[((row * frame.size.width + x) * 4 + 3) as usize] > 0)
+            .collect::<Vec<_>>();
+        columns[columns.len() - 1] - columns[0] + 1
+    };
+
+    for compact in [false, true] {
+        let mut renderer = SlintHmdRenderer::new();
+        let mut model = sample_main_model();
+        model.compact = compact;
+        model.toasts[0].show_avatar = false;
+        model.toasts[0].action = "online".to_string();
+
+        let frame = renderer.render(&model).unwrap();
+
+        assert_eq!(painted_width(&frame, 40), 640, "compact = {compact}");
+    }
+}
+
+#[test]
 fn slint_hmd_renderer_reuses_cached_frame_for_equal_model() {
     let mut renderer = SlintHmdRenderer::new();
     let model = sample_main_model();

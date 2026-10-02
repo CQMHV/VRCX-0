@@ -344,7 +344,7 @@ export const DEFAULT_PREFERENCES = Object.freeze({
     hmdNotificationsEnabled: false,
     hmdNotificationStartMode: 'vrchatVrMode',
     hmdNotificationTimeout: 5000,
-    hmdNotificationOpacity: 100,
+    hmdNotificationOpacity: 90,
     hmdNotificationPosition: 'bottom',
     hmdNotificationStyle: 'standard',
     webhookEnabled: false,
@@ -559,7 +559,7 @@ export function normalizePreferenceSnapshot(snapshot: unknown = {}) {
             {
                 min: 0,
                 max: 100,
-                fallback: 100
+                fallback: 90
             }
         ),
         hmdNotificationPosition: normalizeHmdNotificationPosition(

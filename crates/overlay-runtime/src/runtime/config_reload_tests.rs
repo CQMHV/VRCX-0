@@ -19,9 +19,9 @@ use super::{
     HMD_SURFACE_WIDTH_METERS,
 };
 use crate::config::{
-    HMD_NOTIFICATIONS_ENABLED_CONFIG_KEY, HMD_NOTIFICATION_POSITION_CONFIG_KEY,
-    HMD_NOTIFICATION_START_MODE_CONFIG_KEY, HMD_NOTIFICATION_STYLE_CONFIG_KEY,
-    VR_OVERLAY_HIDE_PRIVATE_WORLDS_CONFIG_KEY,
+    HMD_NOTIFICATIONS_ENABLED_CONFIG_KEY, HMD_NOTIFICATION_OPACITY_CONFIG_KEY,
+    HMD_NOTIFICATION_POSITION_CONFIG_KEY, HMD_NOTIFICATION_START_MODE_CONFIG_KEY,
+    HMD_NOTIFICATION_STYLE_CONFIG_KEY, VR_OVERLAY_HIDE_PRIVATE_WORLDS_CONFIG_KEY,
 };
 use crate::VrOverlayRuntimeServices;
 use vrcx_0_host_desktop::vr_overlay::OverlayPlacement;
@@ -195,9 +195,9 @@ fn hmd_notifications_sit_top_center_or_bottom_and_unknown_values_fall_back_to_bo
 fn the_newest_hmd_card_lands_on_the_same_angle_for_each_position() {
     let meters_per_px = HMD_SURFACE_WIDTH_METERS / HMD_SURFACE_SIZE.width as f32;
     for (position, angle) in [
-        (HmdNotificationPosition::Top, 10.0_f32),
+        (HmdNotificationPosition::Top, 4.0_f32),
         (HmdNotificationPosition::Center, -6.0),
-        (HmdNotificationPosition::Bottom, -14.0),
+        (HmdNotificationPosition::Bottom, -18.0),
     ] {
         for (style, card_height_px) in [
             (HmdNotificationStyle::Standard, 112.0_f32),
@@ -225,6 +225,41 @@ fn the_newest_hmd_card_lands_on_the_same_angle_for_each_position() {
             );
         }
     }
+}
+
+#[test]
+fn hmd_notifications_default_to_ninety_percent_opacity() {
+    let (_dir, config, runtime) = test_runtime();
+    runtime.reconcile_current();
+    assert_eq!(runtime.current_runtime_config().hmd.opacity_percent, 90);
+
+    config
+        .set_string(HMD_NOTIFICATION_OPACITY_CONFIG_KEY, "100")
+        .unwrap();
+    runtime.reconcile_current();
+    assert_eq!(runtime.current_runtime_config().hmd.opacity_percent, 100);
+}
+
+#[test]
+fn hmd_panel_keeps_the_original_angular_width() {
+    let OverlayPlacement::HeadLocked {
+        distance_meters, ..
+    } = hmd_surface_config(
+        HmdNotificationPosition::Bottom,
+        HmdNotificationStyle::Standard,
+    )
+    .placement
+    else {
+        panic!("HMD notifications are head locked");
+    };
+    let angular_width =
+        |width: f32, distance: f32| (width / 2.0 / distance).atan().to_degrees() * 2.0;
+
+    assert!(
+        (angular_width(HMD_SURFACE_WIDTH_METERS, distance_meters) - angular_width(0.95, 1.15))
+            .abs()
+            < 0.05
+    );
 }
 
 #[test]

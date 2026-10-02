@@ -265,6 +265,12 @@ describe('preferenceSnapshotLoader', () => {
         });
     });
 
+    it('shows HMD notifications at 90% opacity until the user changes it', async () => {
+        const snapshot = await loadPreferenceSnapshot();
+
+        expect(snapshot.hmdNotificationOpacity).toBe(90);
+    });
+
     it('loads an explicit Friend Log notification dot opt-out', async () => {
         mocks.getBool.mockImplementation((key: string, fallback = false) =>
             Promise.resolve(

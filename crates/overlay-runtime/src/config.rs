@@ -91,7 +91,7 @@ pub(super) fn load_runtime_config(
         .ok()
         .flatten()
         .and_then(|value| value.trim().parse::<u8>().ok())
-        .unwrap_or(100)
+        .unwrap_or(90)
         .min(100);
     let hmd_position = config
         .get_string(HMD_NOTIFICATION_POSITION_CONFIG_KEY, "bottom")

@@ -172,7 +172,7 @@ export const ConfigKeys = defineConfigKeys({
     hmdNotificationsEnabled: { type: 'bool', default: false },
     hmdNotificationStartMode: { type: 'string', default: 'vrchatVrMode' },
     hmdNotificationTimeout: { type: 'int', default: 5000 },
-    hmdNotificationOpacity: { type: 'int', default: 100 },
+    hmdNotificationOpacity: { type: 'int', default: 90 },
     hmdNotificationPosition: { type: 'string', default: 'bottom' },
     hmdNotificationStyle: { type: 'string', default: 'standard' },
     webhookEnabled: { type: 'bool', default: false },

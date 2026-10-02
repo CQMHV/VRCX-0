@@ -281,7 +281,7 @@ export async function loadPreferenceSnapshot() {
         configRepository.getBool('hmdNotificationsEnabled', false),
         configRepository.getString('hmdNotificationStartMode', 'vrchatVrMode'),
         configRepository.getInt('hmdNotificationTimeout', 5000),
-        configRepository.getInt('hmdNotificationOpacity', 100),
+        configRepository.getInt('hmdNotificationOpacity', 90),
         configRepository.getString('hmdNotificationPosition', 'bottom'),
         configRepository.getString('hmdNotificationStyle', 'standard'),
         configRepository.getBool('webhookEnabled', false),
@@ -507,7 +507,7 @@ export async function loadPreferenceSnapshot() {
             : 5000,
         hmdNotificationOpacity: Number.isFinite(hmdNotificationOpacity)
             ? Math.min(100, Math.max(0, hmdNotificationOpacity))
-            : 100,
+            : 90,
         hmdNotificationPosition: normalizeHmdNotificationPosition(
             hmdNotificationPosition
         ),
