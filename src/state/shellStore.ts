@@ -19,7 +19,7 @@ export type TableDensity = 'standard' | 'compact';
 export type NotificationLayout = 'notification-center' | 'table';
 type WindowDisplayMode = 'normal' | 'sidebar';
 
-const WINDOW_DISPLAY_MODE_STORAGE_KEY = 'vrcx-main-window-display-mode';
+const WINDOW_DISPLAY_MODE_STORAGE_KEY = 'VRCX_0_WindowDisplayMode';
 
 function loadWindowDisplayMode(): WindowDisplayMode {
     return localStorage.getItem(WINDOW_DISPLAY_MODE_STORAGE_KEY) === 'sidebar'
@@ -31,7 +31,7 @@ function saveWindowDisplayMode(windowDisplayMode: WindowDisplayMode): void {
     localStorage.setItem(WINDOW_DISPLAY_MODE_STORAGE_KEY, windowDisplayMode);
 }
 
-const WINDOW_ALWAYS_ON_TOP_STORAGE_KEY = 'vrcx-main-window-always-on-top';
+const WINDOW_ALWAYS_ON_TOP_STORAGE_KEY = 'VRCX_0_WindowAlwaysOnTop';
 
 function loadWindowAlwaysOnTop(): boolean {
     return localStorage.getItem(WINDOW_ALWAYS_ON_TOP_STORAGE_KEY) === 'true';
