@@ -1640,7 +1640,8 @@
                 "invite": "Приглашение",
                 "decline": "Отклонить",
                 "delete_log": "Удалить уведомление",
-                "decline_with_message": "Отклонить с сообщением"
+                "decline_with_message": "Отклонить с сообщением",
+                "ignore_locally": "Игнорировать локально"
             },
             "filters": {
                 "requestInvite": "Запрос на приглашение",
@@ -1725,7 +1726,8 @@
                 "invite_response_sent": "Ответ отправлен",
                 "boop_sent": "Буп отправлен",
                 "notification_response_sent": "Готово",
-                "notification_log_entry_deleted": "Уведомление удалено из истории"
+                "notification_log_entry_deleted": "Уведомление удалено из истории",
+                "notification_ignored_locally": "Проигнорировано локально"
             },
             "error": {
                 "cannot_invite_no_current_vrchat_location_is_available": "Невозможно пригласить: нет доступного текущего местоположения VRChat",
@@ -3414,6 +3416,7 @@
                 "failed_to_delete_notification": "Не удалось удалить уведомление",
                 "failed_to_accept_friend_request": "Не удалось принять заявку в друзья",
                 "failed_to_decline_notification": "Не удалось отклонить уведомление",
+                "failed_to_ignore_notification": "Не удалось проигнорировать уведомление",
                 "failed_to_send_invite": "Не удалось отправить приглашение",
                 "invite_response_photo_sent": "Ответ с фотографией отправлен",
                 "invite_response_sent": "Ответ отправлен",

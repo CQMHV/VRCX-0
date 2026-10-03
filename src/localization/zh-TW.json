@@ -1630,7 +1630,8 @@
                 "invite": "邀請",
                 "decline": "拒絕",
                 "delete_log": "刪除通知",
-                "decline_with_message": "拒絕並附上訊息"
+                "decline_with_message": "拒絕並附上訊息",
+                "ignore_locally": "僅在本機忽略"
             },
             "filters": {
                 "requestInvite": "請求邀請",
@@ -1715,7 +1716,8 @@
                 "invite_response_sent": "已發送回覆",
                 "boop_sent": "已傳送戳戳",
                 "notification_response_sent": "完成",
-                "notification_log_entry_deleted": "通知已從歷史紀錄中移除"
+                "notification_log_entry_deleted": "通知已從歷史紀錄中移除",
+                "notification_ignored_locally": "已在本機忽略"
             },
             "error": {
                 "cannot_invite_no_current_vrchat_location_is_available": "無法邀請：你目前不在任何房間中",
@@ -3404,6 +3406,7 @@
                 "failed_to_delete_notification": "刪除通知失敗",
                 "failed_to_accept_friend_request": "接受好友請求失敗",
                 "failed_to_decline_notification": "拒絕通知失敗",
+                "failed_to_ignore_notification": "忽略通知失敗",
                 "failed_to_send_invite": "傳送邀請失敗",
                 "invite_response_photo_sent": "已發送照片回覆",
                 "invite_response_sent": "已發送回覆",

@@ -1642,7 +1642,8 @@
                 "invite": "Pozvat",
                 "decline": "Odmítnout",
                 "delete_log": "Smazat upozornění",
-                "decline_with_message": "Odmítnout se zprávou"
+                "decline_with_message": "Odmítnout se zprávou",
+                "ignore_locally": "Ignorovat lokálně"
             },
             "filters": {
                 "requestInvite": "Žádost o pozvánku",
@@ -1727,7 +1728,8 @@
                 "invite_response_sent": "Odpověď odeslána",
                 "boop_sent": "Boop odeslán",
                 "notification_response_sent": "Hotovo",
-                "notification_log_entry_deleted": "Oznámení bylo odstraněno z historie"
+                "notification_log_entry_deleted": "Oznámení bylo odstraněno z historie",
+                "notification_ignored_locally": "Lokálně ignorováno"
             },
             "error": {
                 "cannot_invite_no_current_vrchat_location_is_available": "Nelze pozvat: aktuální lokace ve VRChat není k dispozici",
@@ -3420,6 +3422,7 @@
                 "failed_to_delete_notification": "Nepodařilo se odstranit upozornění",
                 "failed_to_accept_friend_request": "Nepodařilo se přijmout žádost o přátelství",
                 "failed_to_decline_notification": "Nepodařilo se odmítnout upozornění",
+                "failed_to_ignore_notification": "Oznámení se nepodařilo ignorovat",
                 "failed_to_send_invite": "Nepodařilo se odeslat pozvánku",
                 "invite_response_photo_sent": "Odpověď s fotografií odeslána",
                 "invite_response_sent": "Odpověď odeslána",

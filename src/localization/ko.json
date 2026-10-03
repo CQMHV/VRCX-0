@@ -1573,7 +1573,8 @@
                 "invite": "초대",
                 "decline": "거절",
                 "delete_log": "알림 삭제",
-                "decline_with_message": "메시지로 거절"
+                "decline_with_message": "메시지로 거절",
+                "ignore_locally": "로컬에서만 무시"
             },
             "filters": {
                 "requestInvite": "참가 요청",
@@ -1658,7 +1659,8 @@
                 "invite_response_sent": "답장을 보냈습니다.",
                 "boop_sent": "콕찌르기를 보냈습니다",
                 "notification_response_sent": "응답을 보냈습니다.",
-                "notification_log_entry_deleted": "알림을 기록에서 삭제했습니다."
+                "notification_log_entry_deleted": "알림을 기록에서 삭제했습니다.",
+                "notification_ignored_locally": "로컬에서 무시했습니다."
             },
             "error": {
                 "cannot_invite_no_current_vrchat_location_is_available": "초대할 수 없습니다. 지금 인스턴스에 있지 않습니다.",
@@ -3347,6 +3349,7 @@
                 "failed_to_delete_notification": "알림을 삭제하지 못했습니다.",
                 "failed_to_accept_friend_request": "친구 요청을 수락하지 못했습니다.",
                 "failed_to_decline_notification": "알림을 거절하지 못했습니다.",
+                "failed_to_ignore_notification": "알림을 무시하지 못했습니다.",
                 "failed_to_send_invite": "초대장을 보내지 못했습니다.",
                 "invite_response_photo_sent": "사진으로 답장했습니다.",
                 "invite_response_sent": "답장을 보냈습니다.",

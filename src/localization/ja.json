@@ -1630,7 +1630,8 @@
                 "invite": "招待する",
                 "decline": "断る",
                 "delete_log": "通知を削除",
-                "decline_with_message": "メッセージを添えて断る"
+                "decline_with_message": "メッセージを添えて断る",
+                "ignore_locally": "ローカルで無視"
             },
             "filters": {
                 "requestInvite": "招待リクエスト",
@@ -1715,7 +1716,8 @@
                 "invite_response_sent": "返信を送信しました",
                 "boop_sent": "つっつきを送信しました",
                 "notification_response_sent": "返信しました",
-                "notification_log_entry_deleted": "通知を履歴から削除しました"
+                "notification_log_entry_deleted": "通知を履歴から削除しました",
+                "notification_ignored_locally": "ローカルで無視しました"
             },
             "error": {
                 "cannot_invite_no_current_vrchat_location_is_available": "招待できません: 現在インスタンスにいません",
@@ -3404,6 +3406,7 @@
                 "failed_to_delete_notification": "通知の削除に失敗しました",
                 "failed_to_accept_friend_request": "フレンドリクエストの承認に失敗しました",
                 "failed_to_decline_notification": "通知を断れませんでした",
+                "failed_to_ignore_notification": "通知を無視できませんでした",
                 "failed_to_send_invite": "招待の送信に失敗しました",
                 "invite_response_photo_sent": "写真付きの返信を送信しました",
                 "invite_response_sent": "返信を送信しました",

@@ -1635,7 +1635,8 @@
                 "invite": "Invitar",
                 "decline": "Rechazar",
                 "delete_log": "Eliminar notificación",
-                "decline_with_message": "Rechazar con mensaje"
+                "decline_with_message": "Rechazar con mensaje",
+                "ignore_locally": "Ignorar localmente"
             },
             "filters": {
                 "requestInvite": "Solicitud para unirse",
@@ -1720,7 +1721,8 @@
                 "invite_response_sent": "Respuesta enviada",
                 "boop_sent": "Boop enviado",
                 "notification_response_sent": "Respuesta enviada",
-                "notification_log_entry_deleted": "Notificación eliminada del historial"
+                "notification_log_entry_deleted": "Notificación eliminada del historial",
+                "notification_ignored_locally": "Ignorada localmente"
             },
             "error": {
                 "cannot_invite_no_current_vrchat_location_is_available": "No se puede invitar: ahora mismo no estás en ninguna instancia",
@@ -3410,6 +3412,7 @@
                 "failed_to_delete_notification": "No se pudo eliminar la notificación",
                 "failed_to_accept_friend_request": "No se pudo aceptar la solicitud de amistad",
                 "failed_to_decline_notification": "No se pudo rechazar la notificación",
+                "failed_to_ignore_notification": "No se pudo ignorar la notificación",
                 "failed_to_send_invite": "No se pudo enviar la invitación",
                 "invite_response_photo_sent": "Respuesta con foto enviada",
                 "invite_response_sent": "Respuesta enviada",

@@ -1632,7 +1632,8 @@
                 "invite": "Convidar",
                 "decline": "Recusar",
                 "delete_log": "Excluir notificação",
-                "decline_with_message": "Recusar com mensagem"
+                "decline_with_message": "Recusar com mensagem",
+                "ignore_locally": "Ignorar localmente"
             },
             "filters": {
                 "requestInvite": "Solicitar Convite",
@@ -1717,7 +1718,8 @@
                 "invite_response_sent": "Resposta enviada",
                 "boop_sent": "Boop enviado",
                 "notification_response_sent": "Concluído",
-                "notification_log_entry_deleted": "Notificação removida do histórico"
+                "notification_log_entry_deleted": "Notificação removida do histórico",
+                "notification_ignored_locally": "Ignorada localmente"
             },
             "error": {
                 "cannot_invite_no_current_vrchat_location_is_available": "Não é possível convidar: nenhuma localização atual do VRChat está disponível",
@@ -3406,6 +3408,7 @@
                 "failed_to_delete_notification": "Falha ao excluir a notificação",
                 "failed_to_accept_friend_request": "Falha ao aceitar a solicitação de amizade",
                 "failed_to_decline_notification": "Falha ao recusar a notificação",
+                "failed_to_ignore_notification": "Falha ao ignorar a notificação",
                 "failed_to_send_invite": "Falha ao enviar o convite",
                 "invite_response_photo_sent": "Resposta com foto enviada",
                 "invite_response_sent": "Resposta enviada",

@@ -1635,7 +1635,8 @@
                 "invite": "Invite",
                 "decline": "Decline",
                 "delete_log": "Delete notification",
-                "decline_with_message": "Decline with message"
+                "decline_with_message": "Decline with message",
+                "ignore_locally": "Ignore locally"
             },
             "filters": {
                 "requestInvite": "Request Invite",
@@ -1720,7 +1721,8 @@
                 "invite_response_sent": "Reply sent",
                 "boop_sent": "Boop sent",
                 "notification_response_sent": "Response sent",
-                "notification_log_entry_deleted": "Notification removed from history"
+                "notification_log_entry_deleted": "Notification removed from history",
+                "notification_ignored_locally": "Ignored locally"
             },
             "error": {
                 "cannot_invite_no_current_vrchat_location_is_available": "Cannot invite: you're not in an instance right now",
@@ -3410,6 +3412,7 @@
                 "failed_to_delete_notification": "Failed to delete notification",
                 "failed_to_accept_friend_request": "Failed to accept friend request",
                 "failed_to_decline_notification": "Failed to decline notification",
+                "failed_to_ignore_notification": "Failed to ignore notification",
                 "failed_to_send_invite": "Failed to send invite",
                 "invite_response_photo_sent": "Photo reply sent",
                 "invite_response_sent": "Reply sent",
