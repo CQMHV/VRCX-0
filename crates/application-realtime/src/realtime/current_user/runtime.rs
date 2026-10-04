@@ -62,6 +62,7 @@ impl RealtimeCurrentUserRuntime {
         state.pending_offline = None;
         state.presence = None;
         state.avatar_wear_checkpoint_ms = 0;
+        state.observed_self_profile_fields.clear();
         if !preserves_remote_interval {
             state.remote_game_log_interval = None;
         }
@@ -77,6 +78,7 @@ impl RealtimeCurrentUserRuntime {
         state.remote_game_log_interval = None;
         state.presence = None;
         state.avatar_wear_checkpoint_ms = 0;
+        state.observed_self_profile_fields.clear();
     }
 
     pub fn checkpoint_avatar_wear(

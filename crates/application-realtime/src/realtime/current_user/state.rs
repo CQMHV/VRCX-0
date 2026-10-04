@@ -1,4 +1,5 @@
 use serde_json::{Map, Value};
+use vrcx_0_contracts::realtime::SelfProfileField;
 use vrcx_0_core::derived_keys;
 use vrcx_0_core::json::JsonExt;
 use vrcx_0_core::presence::PresenceView;
@@ -16,6 +17,7 @@ pub(super) struct RealtimeCurrentUserState {
     pub(super) remote_game_log_interval: Option<RemoteGameLogInterval>,
     pub(super) presence: Option<PresenceView>,
     pub(super) avatar_wear_checkpoint_ms: i64,
+    pub(super) observed_self_profile_fields: Vec<SelfProfileField>,
 }
 
 #[derive(Clone, Debug)]

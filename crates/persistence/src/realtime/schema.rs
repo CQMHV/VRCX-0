@@ -80,6 +80,7 @@ fn realtime_table_statements(user_prefix: &str) -> Vec<String> {
         format!("CREATE INDEX IF NOT EXISTS {user_prefix}_feed_online_offline_created_id_idx ON {user_prefix}_feed_online_offline (created_at DESC, id DESC)"),
         format!("CREATE TABLE IF NOT EXISTS {user_prefix}_self_profile_log (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at TEXT NOT NULL DEFAULT '', field TEXT NOT NULL DEFAULT '', value TEXT NOT NULL DEFAULT '', previous_value TEXT NOT NULL DEFAULT '')"),
         format!("CREATE INDEX IF NOT EXISTS {user_prefix}_self_profile_log_field_created_idx ON {user_prefix}_self_profile_log (field, created_at DESC, id DESC)"),
+        format!("CREATE TABLE IF NOT EXISTS {user_prefix}_self_profile_current (field TEXT PRIMARY KEY, value TEXT NOT NULL DEFAULT '')"),
         format!("CREATE TABLE IF NOT EXISTS {user_prefix}_friend_log_current (user_id TEXT PRIMARY KEY, display_name TEXT, trust_level TEXT, friend_number INTEGER)"),
         format!("CREATE TABLE IF NOT EXISTS {user_prefix}_friend_log_history (id INTEGER PRIMARY KEY, created_at TEXT, type TEXT, user_id TEXT, display_name TEXT, previous_display_name TEXT, trust_level TEXT, previous_trust_level TEXT, friend_number INTEGER)"),
         format!("CREATE INDEX IF NOT EXISTS {user_prefix}_friend_log_history_user_id_idx ON {user_prefix}_friend_log_history (user_id)"),
