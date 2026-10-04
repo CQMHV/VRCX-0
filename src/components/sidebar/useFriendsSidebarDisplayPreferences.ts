@@ -4,6 +4,9 @@ export function useFriendsSidebarDisplayPreferences() {
     const randomUserColours = usePreferencesStore(
         (state) => state.randomUserColours
     );
+    const randomUserColourStyle = usePreferencesStore(
+        (state) => state.randomUserColourStyle
+    );
     const trustColor = usePreferencesStore((state) => state.trustColor);
     const preferencesHydrated = usePreferencesStore(
         (state) => state.preferencesHydrated
@@ -26,6 +29,7 @@ export function useFriendsSidebarDisplayPreferences() {
     return {
         ageGatedInstancesVisible,
         randomUserColours,
+        randomUserColourStyle,
         showInstanceIdInLocation,
         showSidebarAvatarFrame,
         showSidebarNameplate,

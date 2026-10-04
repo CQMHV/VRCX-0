@@ -2615,6 +2615,13 @@
                     "header": "사용자 색상",
                     "random_colors_from_user_id": "사용자별 고정 색상 사용",
                     "random_colors_from_user_id_description": "ID를 기반으로 각 사용자에게 일관된 색상을 할당합니다.",
+                    "random_color_style": "색상 스타일",
+                    "random_color_styles": {
+                        "classic": "클래식",
+                        "pastel": "파스텔",
+                        "warm": "따뜻한 톤",
+                        "cool": "차가운 톤"
+                    },
                     "trust_colors": "신뢰 등급 색상",
                     "trust_colors_description": "신뢰 등급 이름에 사용되는 색상을 사용자 정의합니다.",
                     "trust_levels": {

@@ -91,6 +91,7 @@ export const ConfigKeys = defineConfigKeys({
     reducedMotionAndBlur: { type: 'bool', default: false },
     tablePageSize: { type: 'int', default: null },
     randomUserColours: { type: 'bool', default: false },
+    randomUserColourStyle: { type: 'string', default: 'classic' },
     backgroundImageEnabled: { type: 'bool', default: false },
     backgroundImageMode: { type: 'string', default: 'off' },
     backgroundImageProviderId: { type: 'string', default: 'nasa-epic' },

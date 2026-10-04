@@ -1,5 +1,8 @@
 import type { TrustColorKey } from '@/shared/utils/trustColors';
-import { normalizeFeedTimeDisplayMode } from '@/state/preferencesStore';
+import {
+    normalizeFeedTimeDisplayMode,
+    normalizeUserNameColourStyle
+} from '@/state/preferencesStore';
 import type { NotificationLayout, TableDensity } from '@/state/shellStore';
 
 import { notificationLayoutOptions } from '../settingsOptions';
@@ -265,6 +268,13 @@ export function buildInterfaceSection({
                 'randomUserColours',
                 'randomUserColours',
                 checked
+            );
+        },
+        onRandomUserColourStyleChange: (value: string) => {
+            saveStringPreference(
+                'randomUserColourStyle',
+                'randomUserColourStyle',
+                normalizeUserNameColourStyle(value)
             );
         },
         onResetTrustColors: () => {

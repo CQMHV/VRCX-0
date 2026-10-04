@@ -95,6 +95,7 @@ export function SidePanelSelfHeader() {
     const {
         ageGatedInstancesVisible,
         randomUserColours,
+        randomUserColourStyle,
         showInstanceIdInLocation,
         showSidebarAvatarFrame,
         showSidebarNameplate,
@@ -122,6 +123,7 @@ export function SidePanelSelfHeader() {
     const { displaySource, imageUrl, displayName, nameStyle } =
         resolveFriendRowDisplay(selfRow, {
             randomUserColours,
+            randomUserColourStyle,
             isDarkMode,
             trustColor
         });

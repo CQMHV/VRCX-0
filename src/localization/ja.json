@@ -2672,6 +2672,13 @@
                     "header": "ユーザーの色",
                     "random_colors_from_user_id": "ユーザーごとに固定の色を使う",
                     "random_colors_from_user_id_description": "ユーザーIDをもとに、ユーザーごとに常に同じ色を割り当てます。",
+                    "random_color_style": "配色",
+                    "random_color_styles": {
+                        "classic": "クラシック",
+                        "pastel": "パステル",
+                        "warm": "暖色系",
+                        "cool": "寒色系"
+                    },
                     "trust_colors": "トラストランクの色",
                     "trust_colors_description": "トラストランク名に使う色を調整します。",
                     "trust_levels": {

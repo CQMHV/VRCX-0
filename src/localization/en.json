@@ -2678,6 +2678,13 @@
                     "header": "User Colors",
                     "random_colors_from_user_id": "Use Consistent Colors per User",
                     "random_colors_from_user_id_description": "Assign a consistent color to each user based on their ID.",
+                    "random_color_style": "Color Style",
+                    "random_color_styles": {
+                        "classic": "Classic",
+                        "pastel": "Pastel",
+                        "warm": "Warm",
+                        "cool": "Cool"
+                    },
                     "trust_colors": "Trust Level Colors",
                     "trust_colors_description": "Customize the colors used for trust-level names.",
                     "trust_levels": {

@@ -2672,6 +2672,13 @@
                     "header": "好友名称显示颜色",
                     "random_colors_from_user_id": "从玩家 ID 随机挑选颜色",
                     "random_colors_from_user_id_description": "根据 ID 为每个玩家分配一个随机颜色。",
+                    "random_color_style": "配色风格",
+                    "random_color_styles": {
+                        "classic": "经典",
+                        "pastel": "柔和",
+                        "warm": "暖色",
+                        "cool": "冷色"
+                    },
                     "trust_colors": "信誉等级颜色",
                     "trust_colors_description": "调整按信誉等级显示的玩家名称颜色。",
                     "trust_levels": {

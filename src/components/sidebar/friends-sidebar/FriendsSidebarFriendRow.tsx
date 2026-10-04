@@ -17,6 +17,7 @@ import type { InstanceRosterTimestamp } from '@/domain/instances/instanceRoster'
 import type { UserStatus } from '@/platform/tauri/bindings';
 import { getNameColour, userImage } from '@/services/entityMediaService';
 import { TRUST_COLOR_DEFAULTS } from '@/shared/constants/trustColors';
+import type { UserNameColourStyle } from '@/shared/utils/entityMedia';
 import { type TrustColorMap } from '@/shared/utils/trustColors';
 import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
 import { useShellStore } from '@/state/shellStore';
@@ -60,10 +61,12 @@ export function resolveFriendRowDisplay(
     friend: SidebarFriendRecord | null | undefined,
     {
         randomUserColours = false,
+        randomUserColourStyle = 'classic',
         isDarkMode = false,
         trustColor = TRUST_COLOR_DEFAULTS
     }: {
         randomUserColours?: boolean;
+        randomUserColourStyle?: UserNameColourStyle;
         isDarkMode?: boolean;
         trustColor?: TrustColorMap;
     }
@@ -71,7 +74,13 @@ export function resolveFriendRowDisplay(
     const displaySource = friend;
     const nameStyle: CSSProperties =
         randomUserColours && friend?.id
-            ? { color: getNameColour(friend.id, isDarkMode) }
+            ? {
+                  color: getNameColour(
+                      friend.id,
+                      isDarkMode,
+                      randomUserColourStyle
+                  )
+              }
             : {
                   color:
                       displaySource?.$userColour ||
@@ -117,6 +126,7 @@ type FriendRowCommands = {
 
 type FriendRowAppearance = {
     randomUserColours?: boolean;
+    randomUserColourStyle?: UserNameColourStyle;
     isDarkMode?: boolean;
     trustColor?: TrustColorMap;
     recentActionVersion?: number;
@@ -169,6 +179,7 @@ export function FriendRow({
     } = rowCommands || {};
     const {
         randomUserColours = false,
+        randomUserColourStyle = 'classic',
         isDarkMode = false,
         trustColor = TRUST_COLOR_DEFAULTS,
         recentActionVersion = 0,
@@ -185,6 +196,7 @@ export function FriendRow({
     const { displaySource, imageUrl, displayName, nameStyle } =
         resolveFriendRowDisplay(friend, {
             randomUserColours,
+            randomUserColourStyle,
             isDarkMode,
             trustColor
         });

@@ -179,6 +179,7 @@ export function FriendsSidebar({
     const {
         ageGatedInstancesVisible,
         randomUserColours,
+        randomUserColourStyle,
         showInstanceIdInLocation,
         showSidebarAvatarFrame,
         showSidebarNameplate,
@@ -786,6 +787,7 @@ export function FriendsSidebar({
         ageGatedInstancesVisible,
         isDarkMode,
         randomUserColours,
+        randomUserColourStyle,
         recentActionVersion,
         showInstanceIdInLocation,
         showSidebarAvatarFrame,

@@ -2672,6 +2672,13 @@
                     "header": "用戶名稱顏色",
                     "random_colors_from_user_id": "從用戶 ID 隨機挑選顏色",
                     "random_colors_from_user_id_description": "根據用戶 ID 為每位用戶指派固定顏色。",
+                    "random_color_style": "配色風格",
+                    "random_color_styles": {
+                        "classic": "經典",
+                        "pastel": "柔和",
+                        "warm": "暖色",
+                        "cool": "冷色"
+                    },
                     "trust_colors": "信任等級顏色",
                     "trust_colors_description": "調整按信任等級顯示的用戶名稱顏色。",
                     "trust_levels": {

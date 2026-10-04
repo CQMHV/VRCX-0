@@ -2682,6 +2682,13 @@
                     "header": "Пользовательские цвета",
                     "random_colors_from_user_id": "Случайные цвета из ID пользователя",
                     "random_colors_from_user_id_description": "Назначьте каждому пользователю последовательный цвет на основе его идентификатора.",
+                    "random_color_style": "Цветовая гамма",
+                    "random_color_styles": {
+                        "classic": "Классическая",
+                        "pastel": "Пастельная",
+                        "warm": "Тёплая",
+                        "cool": "Холодная"
+                    },
                     "trust_colors": "Цвета доверительного уровня",
                     "trust_colors_description": "Настроить цвета, используемые для доверенных имен.",
                     "trust_levels": {

@@ -2678,6 +2678,13 @@
                     "header": "Colores de usuario",
                     "random_colors_from_user_id": "Colores coherentes según el ID de usuario",
                     "random_colors_from_user_id_description": "Asigna un color constante a cada usuario según su ID.",
+                    "random_color_style": "Estilo de color",
+                    "random_color_styles": {
+                        "classic": "Clásico",
+                        "pastel": "Pastel",
+                        "warm": "Cálido",
+                        "cool": "Frío"
+                    },
                     "trust_colors": "Colores del nivel de confianza",
                     "trust_colors_description": "Personaliza los colores usados para los nombres por nivel de confianza.",
                     "trust_levels": {

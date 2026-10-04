@@ -2674,6 +2674,13 @@
                     "header": "Benutzerfarben",
                     "random_colors_from_user_id": "Konsistente Farben pro Benutzer verwenden",
                     "random_colors_from_user_id_description": "Weist jedem Benutzer basierend auf seiner ID eine konsistente Farbe zu.",
+                    "random_color_style": "Farbstil",
+                    "random_color_styles": {
+                        "classic": "Klassisch",
+                        "pastel": "Pastell",
+                        "warm": "Warm",
+                        "cool": "Kühl"
+                    },
                     "trust_colors": "Vertrauensstufen-Farben",
                     "trust_colors_description": "Passt die für Vertrauensstufen-Namen verwendeten Farben an.",
                     "trust_levels": {

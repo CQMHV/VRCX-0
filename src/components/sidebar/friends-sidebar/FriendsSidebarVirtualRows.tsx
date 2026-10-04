@@ -2,6 +2,7 @@ import { ListSectionHeader } from '@/components/layout/ListSectionHeader';
 import type { LocationMetadata } from '@/components/location/useLocationMetadata';
 import { cn } from '@/lib/utils';
 import type { UserStatus } from '@/platform/tauri/bindings';
+import type { UserNameColourStyle } from '@/shared/utils/entityMedia';
 import type { LocalInstanceActionGates } from '@/shared/utils/invite';
 import type { TrustColorMap } from '@/shared/utils/trustColors';
 import type { FriendLocationTimeEntry } from '@/state/friendLocationTimeStore';
@@ -41,6 +42,7 @@ type AppearanceView = {
     ageGatedInstancesVisible?: boolean;
     isDarkMode?: boolean;
     randomUserColours?: boolean;
+    randomUserColourStyle?: UserNameColourStyle;
     recentActionVersion?: number;
     showInstanceIdInLocation?: boolean;
     showSidebarAvatarFrame?: boolean;
@@ -160,6 +162,7 @@ function FriendVirtualRow({
             }}
             appearance={{
                 randomUserColours: appearance.randomUserColours,
+                randomUserColourStyle: appearance.randomUserColourStyle,
                 isDarkMode: appearance.isDarkMode,
                 trustColor: appearance.trustColor,
                 currentLocationStartedAt:

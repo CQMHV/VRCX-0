@@ -28,6 +28,7 @@ import {
     normalizeTablePageSize,
     normalizeTablePageSizes,
     normalizeTranslationApiType,
+    normalizeUserNameColourStyle,
     normalizeWeekStartsOn,
     normalizeWristOverlayButton,
     normalizeWristOverlayHand,
@@ -116,6 +117,7 @@ export async function loadPreferenceSnapshot() {
         hideUnfriends,
         profileBioScanEnabled,
         randomUserColours,
+        randomUserColourStyle,
         notificationIconDot,
         taskbarIconDot,
         showPostUpdateChangelogToast,
@@ -260,6 +262,7 @@ export async function loadPreferenceSnapshot() {
         configRepository.getBool('hideUnfriends', false),
         configRepository.getBool('profileBioScanEnabled', false),
         configRepository.getBool('randomUserColours', false),
+        configRepository.getString('randomUserColourStyle', 'classic'),
         configRepository.getBool('notificationIconDot', true),
         configRepository.getBool('taskbarIconDot', true),
         configRepository.getBool(POST_UPDATE_CHANGELOG_TOAST_CONFIG_KEY, true),
@@ -476,6 +479,9 @@ export async function loadPreferenceSnapshot() {
         hideUnfriends: Boolean(hideUnfriends),
         profileBioScanEnabled: Boolean(profileBioScanEnabled),
         randomUserColours: Boolean(randomUserColours),
+        randomUserColourStyle: normalizeUserNameColourStyle(
+            randomUserColourStyle
+        ),
         notificationIconDot: Boolean(notificationIconDot),
         taskbarIconDot: Boolean(taskbarIconDot),
         showPostUpdateChangelogToast: Boolean(showPostUpdateChangelogToast),

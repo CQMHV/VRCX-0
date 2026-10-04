@@ -2684,6 +2684,13 @@
                     "header": "Uživatelské barvy",
                     "random_colors_from_user_id": "Náhodné barvy z uživatelského ID",
                     "random_colors_from_user_id_description": "Přiřadí každému uživateli konzistentní barvu na základě jeho ID.",
+                    "random_color_style": "Barevný styl",
+                    "random_color_styles": {
+                        "classic": "Klasický",
+                        "pastel": "Pastelový",
+                        "warm": "Teplý",
+                        "cool": "Studený"
+                    },
                     "trust_colors": "Barvy úrovní důvěry",
                     "trust_colors_description": "Přizpůsobí barvy použité pro jména podle úrovně důvěry.",
                     "trust_levels": {
