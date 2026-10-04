@@ -5950,7 +5950,12 @@
             "vrchat_must_be_closed": "이 옵션을 변경하려면 VRChat을 닫아야 합니다."
         },
         "error": "오류",
-        "update_success": "업데이트 성공"
+        "update_success": "업데이트 성공",
+        "external_link": {
+            "open_failed": "브라우저에서 링크를 열 수 없습니다",
+            "copy_link": "링크 복사",
+            "copied": "링크를 클립보드에 복사했습니다"
+        }
     },
     "notifications": {
         "has_joined": "입장했습니다",

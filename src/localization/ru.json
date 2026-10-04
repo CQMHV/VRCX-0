@@ -5974,7 +5974,12 @@
             "vrchat_must_be_closed": "VRChat должен быть закрыт до того, как этот вариант может быть изменен"
         },
         "error": "Ошибка",
-        "update_success": "Успешное обновление"
+        "update_success": "Успешное обновление",
+        "external_link": {
+            "open_failed": "Не удалось открыть ссылку в браузере",
+            "copy_link": "Копировать ссылку",
+            "copied": "Ссылка скопирована в буфер обмена"
+        }
     },
     "notifications": {
         "group_instance_opened": "Создан новый инстанс",

@@ -5964,7 +5964,12 @@
             "vrchat_must_be_closed": "VRChat muss geschlossen werden, bevor diese Option geändert werden kann"
         },
         "error": "Fehler",
-        "update_success": "Update erfolgreich"
+        "update_success": "Update erfolgreich",
+        "external_link": {
+            "open_failed": "Der Link konnte nicht im Browser geöffnet werden",
+            "copy_link": "Link kopieren",
+            "copied": "Link in die Zwischenablage kopiert"
+        }
     },
     "notifications": {
         "group_instance_opened": "Hat eine neue Instanz erstellt",

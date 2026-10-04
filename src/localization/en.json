@@ -6012,7 +6012,12 @@
             "vrchat_must_be_closed": "VRChat needs to be closed before this option can be changed"
         },
         "error": "Error",
-        "update_success": "Update successful"
+        "update_success": "Update successful",
+        "external_link": {
+            "open_failed": "Couldn't open the link in your browser",
+            "copy_link": "Copy link",
+            "copied": "Link copied to clipboard"
+        }
     },
     "notifications": {
         "has_joined": "has joined",

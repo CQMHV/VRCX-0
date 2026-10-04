@@ -5997,7 +5997,12 @@
             "vrchat_must_be_closed": "必須先關閉 VRChat 才能變更此設定"
         },
         "error": "錯誤",
-        "update_success": "更新成功"
+        "update_success": "更新成功",
+        "external_link": {
+            "open_failed": "無法在瀏覽器中開啟連結",
+            "copy_link": "複製連結",
+            "copied": "已將連結複製到剪貼簿"
+        }
     },
     "notifications": {
         "has_joined": "已加入",

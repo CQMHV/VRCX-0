@@ -6012,7 +6012,12 @@
             "vrchat_must_be_closed": "Debes cerrar VRChat antes de poder cambiar esta opción"
         },
         "error": "Error",
-        "update_success": "Actualización correcta"
+        "update_success": "Actualización correcta",
+        "external_link": {
+            "open_failed": "No se pudo abrir el enlace en el navegador",
+            "copy_link": "Copiar enlace",
+            "copied": "Enlace copiado al portapapeles"
+        }
     },
     "notifications": {
         "group_instance_opened": "Ha creado una nueva instancia",

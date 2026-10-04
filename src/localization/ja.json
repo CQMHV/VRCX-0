@@ -6006,7 +6006,12 @@
             "vrchat_must_be_closed": "変更を適用するには、VRChat を閉じてください"
         },
         "error": "エラー",
-        "update_success": "更新に成功しました"
+        "update_success": "更新に成功しました",
+        "external_link": {
+            "open_failed": "ブラウザでリンクを開けませんでした",
+            "copy_link": "リンクをコピー",
+            "copied": "リンクをクリップボードにコピーしました"
+        }
     },
     "notifications": {
         "has_joined": "が参加しました",

@@ -5980,7 +5980,12 @@
             "vrchat_must_be_closed": "Před změnou této možnosti je nutné zavřít VRChat"
         },
         "error": "Chyba",
-        "update_success": "Aktualizace úspěšná"
+        "update_success": "Aktualizace úspěšná",
+        "external_link": {
+            "open_failed": "Odkaz se nepodařilo otevřít v prohlížeči",
+            "copy_link": "Kopírovat odkaz",
+            "copied": "Odkaz zkopírován do schránky"
+        }
     },
     "notifications": {
         "group_instance_opened": "Vytvořena nová instance",
