@@ -1458,7 +1458,8 @@
                 "local_favorite_group_renamed": "本機收藏群組已重新命名",
                 "the_favorites_baseline_did_not_finish_loading": "收藏尚未載入完成",
                 "try_a_different_search_term": "嘗試其他搜尋詞",
-                "online_favorites_copy_hint": "線上收藏只能在各個線上群組之間移動。已在線上收藏的項目無法複製到另一個線上群組。"
+                "online_favorites_copy_hint": "線上收藏只能在各個線上群組之間移動。已在線上收藏的項目無法複製到另一個線上群組。",
+                "sort_by_custom": "自訂順序"
             },
             "success": {
                 "favorite_removed": "收藏已移除",
@@ -1556,6 +1557,13 @@
                     "too_many": "你一次最多可以分享 {cap} 個世界。請先拆分這個群組。",
                     "skipped": "已分享。已跳過 {count} 個世界（未同步或資訊不完整）。"
                 }
+            },
+            "order": {
+                "edit": "編輯排序",
+                "exit_edit": "完成",
+                "hint": "拖曳卡片調整順序，或選取後置頂、置底。",
+                "move_to_bottom": "置底",
+                "move_to_top": "置頂"
             }
         },
         "friend_log": {
@@ -3332,7 +3340,8 @@
                 "failed_to_create_local_favorite_group": "建立本機收藏群組失敗",
                 "failed_to_copy_selected_favorites": "複製所選收藏失敗",
                 "failed_to_move_selected_favorites": "移動所選收藏失敗",
-                "favorites_refresh_unavailable": "若未登入帳號，則無法刷新「我的最愛」"
+                "favorites_refresh_unavailable": "若未登入帳號，則無法刷新「我的最愛」",
+                "failed_to_save_order": "儲存順序失敗"
             },
             "modal": {
                 "remove_local_favorite": "移除本機收藏？",

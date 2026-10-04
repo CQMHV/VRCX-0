@@ -623,7 +623,7 @@ export function FriendsSidebar({
             if (rightIndex >= 0) {
                 return 1;
             }
-            return String(left).localeCompare(String(right));
+            return 0;
         });
 
         for (const group of orderedRemoteGroups) {

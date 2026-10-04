@@ -1458,7 +1458,8 @@
                 "local_favorite_group_renamed": "重命名本地收藏分组成功",
                 "the_favorites_baseline_did_not_finish_loading": "收藏分组数据尚未加载完成",
                 "try_a_different_search_term": "尝试其他搜索词",
-                "online_favorites_copy_hint": "VRChat 收藏只能在 VRChat 分组之间移动；已在 VRChat 中收藏的项目不能再复制到其他 VRChat 分组。"
+                "online_favorites_copy_hint": "VRChat 收藏只能在 VRChat 分组之间移动；已在 VRChat 中收藏的项目不能再复制到其他 VRChat 分组。",
+                "sort_by_custom": "自定义顺序"
             },
             "success": {
                 "favorite_removed": "已移除收藏",
@@ -1556,6 +1557,13 @@
                     "too_many": "单次分享最多 {cap} 个世界，请先拆分该分组。",
                     "skipped": "已分享，跳过 {count} 个世界（未同步或信息不完整）。"
                 }
+            },
+            "order": {
+                "edit": "编辑排序",
+                "exit_edit": "完成",
+                "hint": "拖动卡片调整顺序，或选中后置顶、置底。",
+                "move_to_bottom": "置底",
+                "move_to_top": "置顶"
             }
         },
         "friend_log": {
@@ -3332,7 +3340,8 @@
                 "failed_to_create_local_favorite_group": "创建本地收藏分组失败",
                 "failed_to_copy_selected_favorites": "复制所选收藏失败",
                 "failed_to_move_selected_favorites": "移动所选收藏失败",
-                "favorites_refresh_unavailable": "尚未登录账号，暂时无法刷新收藏"
+                "favorites_refresh_unavailable": "尚未登录账号，暂时无法刷新收藏",
+                "failed_to_save_order": "保存顺序失败"
             },
             "modal": {
                 "remove_local_favorite": "移除本地收藏？",

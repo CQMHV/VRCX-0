@@ -1468,7 +1468,8 @@
                 "local_favorite_group_renamed": "Lokální skupina oblíbených přejmenována",
                 "the_favorites_baseline_did_not_finish_loading": "Oblíbené položky se nenačetly celé",
                 "try_a_different_search_term": "Zkuste jiný hledaný výraz",
-                "online_favorites_copy_hint": "Online oblíbené položky lze přesouvat pouze mezi online skupinami. Položky, které jsou již online oblíbené, nelze zkopírovat do jiné online skupiny."
+                "online_favorites_copy_hint": "Online oblíbené položky lze přesouvat pouze mezi online skupinami. Položky, které jsou již online oblíbené, nelze zkopírovat do jiné online skupiny.",
+                "sort_by_custom": "Vlastní pořadí"
             },
             "success": {
                 "favorite_removed": "Odebráno z oblíbených",
@@ -1568,6 +1569,13 @@
                     "too_many": "Najednou můžeš sdílet nejvýše {cap} světů. Nejdřív tuto skupinu rozděl.",
                     "skipped": "Sdíleno. Přeskočeno {count} světů (nesynchronizované nebo neúplné)."
                 }
+            },
+            "order": {
+                "edit": "Upravit pořadí",
+                "exit_edit": "Hotovo",
+                "hint": "Přetažením karet změníte jejich pořadí, nebo je vyberte a přesuňte na začátek či na konec.",
+                "move_to_bottom": "Přesunout na konec",
+                "move_to_top": "Přesunout na začátek"
             }
         },
         "friend_log": {
@@ -3344,7 +3352,8 @@
                 "failed_to_create_local_favorite_group": "Nepodařilo se vytvořit lokální skupinu oblíbených",
                 "failed_to_copy_selected_favorites": "Nepodařilo se zkopírovat vybrané oblíbené položky",
                 "failed_to_move_selected_favorites": "Nepodařilo se přesunout vybrané oblíbené položky",
-                "favorites_refresh_unavailable": "Bez přihlášeného účtu nelze oblíbené položky obnovit"
+                "favorites_refresh_unavailable": "Bez přihlášeného účtu nelze oblíbené položky obnovit",
+                "failed_to_save_order": "Pořadí se nepodařilo uložit"
             },
             "modal": {
                 "remove_local_favorite": "Odebrat lokální oblíbenou položku?",

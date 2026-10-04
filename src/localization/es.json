@@ -1462,7 +1462,8 @@
                 "local_favorite_group_renamed": "Grupo de favoritos local renombrado",
                 "the_favorites_baseline_did_not_finish_loading": "Los favoritos no terminaron de cargarse",
                 "try_a_different_search_term": "Prueba con otro término de búsqueda",
-                "online_favorites_copy_hint": "Los favoritos de VRChat solo se pueden mover entre grupos de VRChat. Los elementos que ya están en favoritos de VRChat no se pueden copiar a otro grupo de VRChat."
+                "online_favorites_copy_hint": "Los favoritos de VRChat solo se pueden mover entre grupos de VRChat. Los elementos que ya están en favoritos de VRChat no se pueden copiar a otro grupo de VRChat.",
+                "sort_by_custom": "Orden personalizado"
             },
             "success": {
                 "favorite_removed": "Favorito eliminado",
@@ -1560,6 +1561,13 @@
                     "too_many": "Puedes compartir hasta {cap} mundos a la vez. Divide este grupo primero.",
                     "skipped": "Compartido. Se omitieron {count} mundos (sin sincronizar o incompletos)."
                 }
+            },
+            "order": {
+                "edit": "Editar orden",
+                "exit_edit": "Listo",
+                "hint": "Arrastra las tarjetas para reordenarlas o selecciónalas y muévelas al principio o al final.",
+                "move_to_bottom": "Mover al final",
+                "move_to_top": "Mover al principio"
             }
         },
         "friend_log": {
@@ -3338,7 +3346,8 @@
                 "failed_to_create_local_favorite_group": "No se pudo crear el grupo de favoritos local",
                 "failed_to_copy_selected_favorites": "No se pudieron copiar los favoritos seleccionados",
                 "failed_to_move_selected_favorites": "No se pudieron mover los favoritos seleccionados",
-                "favorites_refresh_unavailable": "No se pueden actualizar los favoritos sin una cuenta con sesión iniciada"
+                "favorites_refresh_unavailable": "No se pueden actualizar los favoritos sin una cuenta con sesión iniciada",
+                "failed_to_save_order": "No se pudo guardar el orden"
             },
             "modal": {
                 "remove_local_favorite": "¿Eliminar el favorito local?",

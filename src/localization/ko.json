@@ -1401,7 +1401,8 @@
                 "local_favorite_group_renamed": "로컬 즐겨찾기 그룹 이름이 변경됨",
                 "the_favorites_baseline_did_not_finish_loading": "즐겨찾기를 모두 불러오지 못했습니다.",
                 "try_a_different_search_term": "다른 검색어를 사용해 보세요.",
-                "online_favorites_copy_hint": "VRChat 즐겨찾기는 VRChat 그룹 간에만 이동할 수 있습니다. 이미 VRChat 즐겨찾기에 있는 항목은 다른 VRChat 그룹으로 복사할 수 없습니다."
+                "online_favorites_copy_hint": "VRChat 즐겨찾기는 VRChat 그룹 간에만 이동할 수 있습니다. 이미 VRChat 즐겨찾기에 있는 항목은 다른 VRChat 그룹으로 복사할 수 없습니다.",
+                "sort_by_custom": "사용자 지정 순서"
             },
             "success": {
                 "favorite_removed": "즐겨찾기가 삭제되었습니다.",
@@ -1499,6 +1500,13 @@
                     "too_many": "한 번에 최대 {cap}개의 월드를 공유할 수 있습니다. 그룹을 먼저 나눠 주세요.",
                     "skipped": "공유했습니다. {count}개의 월드를 건너뛰었습니다(동기화되지 않았거나 정보가 불완전함)."
                 }
+            },
+            "order": {
+                "edit": "순서 편집",
+                "exit_edit": "완료",
+                "hint": "카드를 드래그해 순서를 바꾸거나, 선택한 뒤 맨 위나 맨 아래로 옮길 수 있습니다.",
+                "move_to_bottom": "맨 아래로 이동",
+                "move_to_top": "맨 위로 이동"
             }
         },
         "friend_log": {
@@ -3275,7 +3283,8 @@
                 "failed_to_create_local_favorite_group": "로컬 즐겨찾기 그룹을 생성하지 못했습니다.",
                 "failed_to_copy_selected_favorites": "선택한 즐겨찾기를 복사하지 못했습니다.",
                 "failed_to_move_selected_favorites": "선택한 즐겨찾기를 이동하지 못했습니다.",
-                "favorites_refresh_unavailable": "로그인된 계정이 없어 즐겨찾기를 새로고침할 수 없습니다"
+                "favorites_refresh_unavailable": "로그인된 계정이 없어 즐겨찾기를 새로고침할 수 없습니다",
+                "failed_to_save_order": "순서를 저장하지 못했습니다."
             },
             "modal": {
                 "remove_local_favorite": "로컬 즐겨찾기를 삭제하시겠습니까?",

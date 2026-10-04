@@ -1458,7 +1458,8 @@
                 "local_favorite_group_renamed": "ローカルお気に入りグループの名前を変更しました",
                 "the_favorites_baseline_did_not_finish_loading": "お気に入りの読み込みが完了しませんでした",
                 "try_a_different_search_term": "別の検索語を試してください",
-                "online_favorites_copy_hint": "VRChat のお気に入りは、VRChat のグループ間でのみ移動できます。すでに VRChat のお気に入りに登録されているアイテムは、別の VRChat のグループへコピーできません。"
+                "online_favorites_copy_hint": "VRChat のお気に入りは、VRChat のグループ間でのみ移動できます。すでに VRChat のお気に入りに登録されているアイテムは、別の VRChat のグループへコピーできません。",
+                "sort_by_custom": "カスタム順"
             },
             "success": {
                 "favorite_removed": "お気に入りを削除しました",
@@ -1556,6 +1557,13 @@
                     "too_many": "一度に共有できるワールドは最大 {cap} 件です。グループを分割してください。",
                     "skipped": "共有しました。{count} 件をスキップしました（未同期または情報不足）。"
                 }
+            },
+            "order": {
+                "edit": "並び順を編集",
+                "exit_edit": "完了",
+                "hint": "カードをドラッグして並べ替えるか、選択して先頭・末尾へ移動できます。",
+                "move_to_bottom": "末尾へ移動",
+                "move_to_top": "先頭へ移動"
             }
         },
         "friend_log": {
@@ -3332,7 +3340,8 @@
                 "failed_to_create_local_favorite_group": "ローカルお気に入りグループの作成に失敗しました",
                 "failed_to_copy_selected_favorites": "選択したお気に入りのコピーに失敗しました",
                 "failed_to_move_selected_favorites": "選択したお気に入りの移動に失敗しました",
-                "favorites_refresh_unavailable": "アカウントにログインしていないため、お気に入りを更新できません"
+                "favorites_refresh_unavailable": "アカウントにログインしていないため、お気に入りを更新できません",
+                "failed_to_save_order": "並び順を保存できませんでした"
             },
             "modal": {
                 "remove_local_favorite": "ローカルお気に入りを削除しますか？",

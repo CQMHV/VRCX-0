@@ -1460,7 +1460,8 @@
                 "local_favorite_group_renamed": "Lokale Favoritengruppe umbenannt",
                 "the_favorites_baseline_did_not_finish_loading": "Favoriten konnten nicht vollständig geladen werden",
                 "try_a_different_search_term": "Versuche einen anderen Suchbegriff",
-                "online_favorites_copy_hint": "Online-Favoriten können nur zwischen Online-Gruppen verschoben werden. Bereits online favorisierte Elemente können nicht in eine andere Online-Gruppe kopiert werden."
+                "online_favorites_copy_hint": "Online-Favoriten können nur zwischen Online-Gruppen verschoben werden. Bereits online favorisierte Elemente können nicht in eine andere Online-Gruppe kopiert werden.",
+                "sort_by_custom": "Eigene Reihenfolge"
             },
             "success": {
                 "favorite_removed": "Favorit entfernt",
@@ -1558,6 +1559,13 @@
                     "too_many": "Du kannst höchstens {cap} Welten auf einmal teilen. Bitte teile diese Gruppe zuerst auf.",
                     "skipped": "Geteilt. {count} Welten übersprungen (nicht synchronisiert oder unvollständig)."
                 }
+            },
+            "order": {
+                "edit": "Reihenfolge bearbeiten",
+                "exit_edit": "Fertig",
+                "hint": "Ziehe Karten, um sie neu anzuordnen, oder wähle sie aus und verschiebe sie ganz nach oben oder unten.",
+                "move_to_bottom": "Ganz nach unten",
+                "move_to_top": "Ganz nach oben"
             }
         },
         "friend_log": {
@@ -3334,7 +3342,8 @@
                 "failed_to_create_local_favorite_group": "Lokale Favoritengruppe konnte nicht erstellt werden",
                 "failed_to_copy_selected_favorites": "Ausgewählte Favoriten konnten nicht kopiert werden",
                 "failed_to_move_selected_favorites": "Ausgewählte Favoriten konnten nicht verschoben werden",
-                "favorites_refresh_unavailable": "Favoriten können ohne angemeldetes Konto nicht aktualisiert werden"
+                "favorites_refresh_unavailable": "Favoriten können ohne angemeldetes Konto nicht aktualisiert werden",
+                "failed_to_save_order": "Reihenfolge konnte nicht gespeichert werden"
             },
             "modal": {
                 "remove_local_favorite": "Lokalen Favoriten entfernen?",

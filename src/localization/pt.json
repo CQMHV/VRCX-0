@@ -1460,7 +1460,8 @@
                 "local_favorite_group_renamed": "Grupo de favoritos local renomeado",
                 "the_favorites_baseline_did_not_finish_loading": "Os favoritos não terminaram de carregar",
                 "try_a_different_search_term": "Tente um termo de busca diferente",
-                "online_favorites_copy_hint": "Os favoritos on-line só podem ser movidos entre grupos on-line. Itens já favoritados on-line não podem ser copiados para outro grupo on-line."
+                "online_favorites_copy_hint": "Os favoritos on-line só podem ser movidos entre grupos on-line. Itens já favoritados on-line não podem ser copiados para outro grupo on-line.",
+                "sort_by_custom": "Ordem personalizada"
             },
             "success": {
                 "favorite_removed": "Favorito removido",
@@ -1558,6 +1559,13 @@
                     "too_many": "Você pode compartilhar até {cap} mundos por vez. Divida este grupo primeiro.",
                     "skipped": "Compartilhado. {count} mundos ignorados (não sincronizados ou incompletos)."
                 }
+            },
+            "order": {
+                "edit": "Editar ordem",
+                "exit_edit": "Concluir",
+                "hint": "Arraste os cartões para reordená-los ou selecione-os e mova-os para o início ou o fim.",
+                "move_to_bottom": "Mover para o fim",
+                "move_to_top": "Mover para o início"
             }
         },
         "friend_log": {
@@ -3334,7 +3342,8 @@
                 "failed_to_create_local_favorite_group": "Falha ao criar o grupo de favoritos local",
                 "failed_to_copy_selected_favorites": "Falha ao copiar os favoritos selecionados",
                 "failed_to_move_selected_favorites": "Falha ao mover os favoritos selecionados",
-                "favorites_refresh_unavailable": "Não é possível atualizar os favoritos sem uma conta conectada"
+                "favorites_refresh_unavailable": "Não é possível atualizar os favoritos sem uma conta conectada",
+                "failed_to_save_order": "Falha ao salvar a ordem"
             },
             "modal": {
                 "remove_local_favorite": "Remover o favorito local?",
