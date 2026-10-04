@@ -8,7 +8,8 @@ import {
 import type { LocationMetadata } from '@/components/location/useLocationMetadata';
 import {
     SidebarAvatarFrame,
-    SidebarNameplate
+    SidebarNameplate,
+    useSidebarDecorationHover
 } from '@/components/sidebar/SidebarProfileDecorations';
 import { UserHoverCard } from '@/components/user-hover-card/UserHoverCard';
 import { UserDetailContent } from '@/components/UserDetailTile';
@@ -178,6 +179,7 @@ export function FriendRow({
         showAvatarFrame = false,
         showNameplate = false
     } = appearance || {};
+    const decorationHover = useSidebarDecorationHover();
     const iconFrameId = showAvatarFrame ? friend.iconFrame?.trim() : '';
     const nameplateId = showNameplate ? friend.nameplateEffect?.trim() : '';
     const { displaySource, imageUrl, displayName, nameStyle } =
@@ -230,11 +232,12 @@ export function FriendRow({
                     'relative isolate h-auto w-full min-w-0 justify-start gap-2 p-1.5 text-left font-normal'
             })}
             onClick={sidebarWindowMode ? undefined : onOpen}
+            {...decorationHover.hoverProps}
         >
             {nameplateId ? (
                 <SidebarNameplate
                     templateId={nameplateId}
-                    className="opacity-50"
+                    active={decorationHover.active}
                 />
             ) : null}
             <UserDetailContent
@@ -242,7 +245,10 @@ export function FriendRow({
                 statusDotClassName={statusDotClassName}
                 avatarFrame={
                     iconFrameId ? (
-                        <SidebarAvatarFrame templateId={iconFrameId} />
+                        <SidebarAvatarFrame
+                            templateId={iconFrameId}
+                            active={decorationHover.active}
+                        />
                     ) : null
                 }
                 displayName={displayName}

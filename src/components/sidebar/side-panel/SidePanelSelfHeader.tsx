@@ -22,7 +22,8 @@ import { useFriendsSidebarPreferences } from '@/components/sidebar/friends-sideb
 import { SidePanelSelfAccountMenu } from '@/components/sidebar/side-panel/SidePanelSelfAccountMenu';
 import {
     SidebarAvatarFrame,
-    SidebarNameplate
+    SidebarNameplate,
+    useSidebarDecorationHover
 } from '@/components/sidebar/SidebarProfileDecorations';
 import { useFriendsSidebarDisplayPreferences } from '@/components/sidebar/useFriendsSidebarDisplayPreferences';
 import { useFriendsSidebarRuntimeSnapshot } from '@/components/sidebar/useFriendsSidebarRuntimeSnapshot';
@@ -82,6 +83,7 @@ export function SidePanelSelfHeader() {
     const { t } = useTranslation();
     const [isEditingDescription, setIsEditingDescription] = useState(false);
     const [descriptionDraft, setDescriptionDraft] = useState('');
+    const decorationHover = useSidebarDecorationHover();
     const descriptionInputRef = useRef<HTMLInputElement | null>(null);
     const {
         currentEndpoint,
@@ -200,7 +202,10 @@ export function SidePanelSelfHeader() {
     };
 
     return (
-        <div className="vrcx-0-side-panel-self ml-2 flex shrink-0 items-center pt-4 pb-2 pl-2">
+        <div
+            className="vrcx-0-side-panel-self ml-2 flex shrink-0 items-center pt-4 pb-2 pl-2"
+            {...decorationHover.hoverProps}
+        >
             <ContextMenu>
                 <ContextMenuTrigger
                     render={
@@ -208,7 +213,7 @@ export function SidePanelSelfHeader() {
                             {nameplateId ? (
                                 <SidebarNameplate
                                     templateId={nameplateId}
-                                    animated
+                                    active={decorationHover.active}
                                 />
                             ) : null}
                             <button
@@ -228,7 +233,7 @@ export function SidePanelSelfHeader() {
                                         iconFrameId ? (
                                             <SidebarAvatarFrame
                                                 templateId={iconFrameId}
-                                                animated
+                                                active={decorationHover.active}
                                             />
                                         ) : null
                                     }

@@ -40,7 +40,8 @@ vi.mock('@/components/sidebar/SidebarProfileDecorations', () => ({
     ),
     SidebarNameplate: ({ templateId }: { templateId: string }) => (
         <span data-nameplate={templateId} />
-    )
+    ),
+    useSidebarDecorationHover: () => ({ active: false, hoverProps: {} })
 }));
 
 vi.mock('@/ui/shadcn/context-menu', () => ({
