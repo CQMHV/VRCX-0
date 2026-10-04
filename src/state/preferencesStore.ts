@@ -311,6 +311,8 @@ export const DEFAULT_PREFERENCES = Object.freeze({
     showUserDialogAvatarFrame: true,
     showUserDialogProfileEffect: true,
     showUserDialogNameplateEffect: true,
+    showSidebarAvatarFrame: true,
+    showSidebarNameplate: true,
     weekStartsOn: 1,
     dtIsoFormat: false,
     dtHour12: false,
@@ -491,6 +493,8 @@ export function normalizePreferenceSnapshot(snapshot: unknown = {}) {
         showUserDialogNameplateEffect: normalizeBool(
             next.showUserDialogNameplateEffect
         ),
+        showSidebarAvatarFrame: normalizeBool(next.showSidebarAvatarFrame),
+        showSidebarNameplate: normalizeBool(next.showSidebarNameplate),
         weekStartsOn: normalizeWeekStartsOn(next.weekStartsOn),
         dtIsoFormat: normalizeBool(next.dtIsoFormat),
         dtHour12: normalizeBool(next.dtHour12),

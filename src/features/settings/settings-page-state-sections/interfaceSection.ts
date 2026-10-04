@@ -205,6 +205,20 @@ export function buildInterfaceSection({
                 checked
             );
         },
+        onShowSidebarAvatarFrameChange: (checked: boolean) => {
+            saveBoolPreference(
+                'showSidebarAvatarFrame',
+                'showSidebarAvatarFrame',
+                checked
+            );
+        },
+        onShowSidebarNameplateChange: (checked: boolean) => {
+            saveBoolPreference(
+                'showSidebarNameplate',
+                'showSidebarNameplate',
+                checked
+            );
+        },
         onShowNewDashboardButtonChange: (checked: boolean) => {
             savePreferenceValue('showNewDashboardButton', checked, () =>
                 setShowNewDashboardButtonPreference(checked)

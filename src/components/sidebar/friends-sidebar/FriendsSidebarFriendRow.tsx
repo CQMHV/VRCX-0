@@ -6,6 +6,10 @@ import {
     FriendLocationTimer
 } from '@/components/friends/FriendInstanceTimer';
 import type { LocationMetadata } from '@/components/location/useLocationMetadata';
+import {
+    SidebarAvatarFrame,
+    SidebarNameplate
+} from '@/components/sidebar/SidebarProfileDecorations';
 import { UserHoverCard } from '@/components/user-hover-card/UserHoverCard';
 import { UserDetailContent } from '@/components/UserDetailTile';
 import type { InstanceRosterTimestamp } from '@/domain/instances/instanceRoster';
@@ -119,6 +123,8 @@ type FriendRowAppearance = {
     showInstanceIdInLocation?: boolean;
     ageGatedInstancesVisible?: boolean;
     currentLocationStartedAt?: InstanceRosterTimestamp | null;
+    showAvatarFrame?: boolean;
+    showNameplate?: boolean;
 };
 
 type FriendRowProps = {
@@ -168,8 +174,12 @@ export function FriendRow({
         locationMetadata = null,
         showInstanceIdInLocation = false,
         ageGatedInstancesVisible = false,
-        currentLocationStartedAt = null
+        currentLocationStartedAt = null,
+        showAvatarFrame = false,
+        showNameplate = false
     } = appearance || {};
+    const iconFrameId = showAvatarFrame ? friend.iconFrame?.trim() : '';
+    const nameplateId = showNameplate ? friend.nameplateEffect?.trim() : '';
     const { displaySource, imageUrl, displayName, nameStyle } =
         resolveFriendRowDisplay(friend, {
             randomUserColours,
@@ -217,13 +227,24 @@ export function FriendRow({
             className={buttonVariants({
                 variant: 'ghost',
                 className:
-                    'h-auto w-full min-w-0 justify-start gap-2 p-1.5 text-left font-normal'
+                    'relative isolate h-auto w-full min-w-0 justify-start gap-2 p-1.5 text-left font-normal'
             })}
             onClick={sidebarWindowMode ? undefined : onOpen}
         >
+            {nameplateId ? (
+                <SidebarNameplate
+                    templateId={nameplateId}
+                    className="opacity-50"
+                />
+            ) : null}
             <UserDetailContent
                 imageUrl={imageUrl}
                 statusDotClassName={statusDotClassName}
+                avatarFrame={
+                    iconFrameId ? (
+                        <SidebarAvatarFrame templateId={iconFrameId} />
+                    ) : null
+                }
                 displayName={displayName}
                 nameStyle={nameStyle}
                 subline={

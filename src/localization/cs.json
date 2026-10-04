@@ -2655,9 +2655,16 @@
                         "placeholder": "Řazení"
                     }
                 },
+                "profile_appearance": {
+                    "header": "Vzhled profilu",
+                    "sidebar": "Postranní panel",
+                    "sidebar_avatar_frame": "Zobrazit rámeček avatara",
+                    "sidebar_avatar_frame_description": "Zobrazí dekorativní rámeček kolem avatarů v postranním panelu přátel.",
+                    "sidebar_nameplate": "Zobrazit jmenovku",
+                    "sidebar_nameplate_description": "Zobrazí jmenovku vpravo v řádcích postranního panelu přátel."
+                },
                 "user_dialog": {
                     "header": "Dialog uživatele",
-                    "profile_appearance": "Vzhled profilu",
                     "profile_background": "Zobrazit pozadí profilu",
                     "profile_background_description": "Zobrazí přechod nebo texturu vybranou pro profil ve VRChatu.",
                     "avatar_frame": "Zobrazit rámeček avatara",
@@ -2666,7 +2673,6 @@
                     "profile_effect_description": "Zobrazí efekt použitý na celý profil uživatele.",
                     "nameplate_effect": "Zobrazit efekt jmenovky",
                     "nameplate_effect_description": "Zobrazí efekt použitý za zobrazovaným jménem.",
-                    "additional_information": "Další informace",
                     "vrchat_notes": "VRChat poznámky",
                     "vrchat_notes_description": "Zobrazuje poznámky uložené ve VRChat",
                     "vrcx_memos": "VRCX-0 poznámky",

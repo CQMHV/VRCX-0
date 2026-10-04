@@ -2653,9 +2653,16 @@
                         "placeholder": "Порядок сортировки"
                     }
                 },
+                "profile_appearance": {
+                    "header": "Внешний вид профиля",
+                    "sidebar": "Боковая панель",
+                    "sidebar_avatar_frame": "Показывать рамку аватара",
+                    "sidebar_avatar_frame_description": "Показывает декоративную рамку вокруг аватаров в боковой панели друзей.",
+                    "sidebar_nameplate": "Показывать именную табличку",
+                    "sidebar_nameplate_description": "Показывает именную табличку справа в строках боковой панели друзей."
+                },
                 "user_dialog": {
                     "header": "Меню пользователя",
-                    "profile_appearance": "Внешний вид профиля",
                     "profile_background": "Показывать фон профиля",
                     "profile_background_description": "Показывает градиент или текстуру, выбранные для профиля VRChat.",
                     "avatar_frame": "Показывать рамку аватара",
@@ -2664,7 +2671,6 @@
                     "profile_effect_description": "Показывает эффект, применённый ко всему профилю пользователя.",
                     "nameplate_effect": "Показывать эффект именной таблички",
                     "nameplate_effect_description": "Показывает эффект за отображаемым именем.",
-                    "additional_information": "Дополнительная информация",
                     "vrchat_notes": "Заметки VRChat",
                     "vrchat_notes_description": "Показать записи, хранящиеся в VRChat",
                     "vrcx_memos": "Заметки VRCX-0",

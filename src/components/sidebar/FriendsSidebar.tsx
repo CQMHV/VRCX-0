@@ -180,6 +180,8 @@ export function FriendsSidebar({
         ageGatedInstancesVisible,
         randomUserColours,
         showInstanceIdInLocation,
+        showSidebarAvatarFrame,
+        showSidebarNameplate,
         trustColor
     } = useFriendsSidebarDisplayPreferences();
     const { openGroups, statusPresets, toggleSection } =
@@ -786,6 +788,8 @@ export function FriendsSidebar({
         randomUserColours,
         recentActionVersion,
         showInstanceIdInLocation,
+        showSidebarAvatarFrame,
+        showSidebarNameplate,
         trustColor
     };
     const locationView = {

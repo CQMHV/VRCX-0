@@ -2649,9 +2649,16 @@
                         "placeholder": "Sort Order"
                     }
                 },
+                "profile_appearance": {
+                    "header": "Profile Appearance",
+                    "sidebar": "Sidebar",
+                    "sidebar_avatar_frame": "Show Avatar Frame",
+                    "sidebar_avatar_frame_description": "Show the decorative frame around avatars in the friends sidebar.",
+                    "sidebar_nameplate": "Show Nameplate",
+                    "sidebar_nameplate_description": "Show the nameplate on the right side of friend rows in the friends sidebar."
+                },
                 "user_dialog": {
                     "header": "User Dialog",
-                    "profile_appearance": "Profile Appearance",
                     "profile_background": "Show Profile Background",
                     "profile_background_description": "Show the gradient or texture selected for the VRChat profile.",
                     "avatar_frame": "Show Avatar Frame",
@@ -2660,7 +2667,6 @@
                     "profile_effect_description": "Show the effect applied across the user profile.",
                     "nameplate_effect": "Show Nameplate Effect",
                     "nameplate_effect_description": "Show the effect applied behind the display name.",
-                    "additional_information": "Additional Information",
                     "vrchat_notes": "VRChat Notes",
                     "vrchat_notes_description": "Shows notes stored in VRChat",
                     "vrcx_memos": "Local Notes",

@@ -2643,9 +2643,16 @@
                         "placeholder": "並べ替え"
                     }
                 },
+                "profile_appearance": {
+                    "header": "プロフィールの外観",
+                    "sidebar": "サイドバー",
+                    "sidebar_avatar_frame": "アイコンフレームを表示",
+                    "sidebar_avatar_frame_description": "フレンドサイドバーのアイコンにフレームを表示します。",
+                    "sidebar_nameplate": "ネームプレートを表示",
+                    "sidebar_nameplate_description": "フレンドサイドバーの各行の右側にネームプレートを表示します。"
+                },
                 "user_dialog": {
                     "header": "ユーザーダイアログ",
-                    "profile_appearance": "プロフィールの外観",
                     "profile_background": "プロフィール背景を表示",
                     "profile_background_description": "VRChat で設定されているグラデーションまたはテクスチャの背景を表示します。",
                     "avatar_frame": "アイコンフレームを表示",
@@ -2654,7 +2661,6 @@
                     "profile_effect_description": "ユーザー情報全体に適用されるプロフィールエフェクトを表示します。",
                     "nameplate_effect": "ネームプレートテーマを表示",
                     "nameplate_effect_description": "表示名の背景に適用されるネームプレートテーマを表示します。",
-                    "additional_information": "その他の情報",
                     "vrchat_notes": "VRChat のノート",
                     "vrchat_notes_description": "VRChat のノートを表示",
                     "vrcx_memos": "ローカルノート",

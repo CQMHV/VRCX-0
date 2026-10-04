@@ -2645,9 +2645,16 @@
                         "placeholder": "Ordem de Classificação"
                     }
                 },
+                "profile_appearance": {
+                    "header": "Aparência do perfil",
+                    "sidebar": "Barra lateral",
+                    "sidebar_avatar_frame": "Mostrar moldura do avatar",
+                    "sidebar_avatar_frame_description": "Mostra a moldura decorativa ao redor dos avatares na barra lateral de amigos.",
+                    "sidebar_nameplate": "Mostrar placa de nome",
+                    "sidebar_nameplate_description": "Mostra a placa de nome à direita de cada linha na barra lateral de amigos."
+                },
                 "user_dialog": {
                     "header": "Diálogo de Usuário",
-                    "profile_appearance": "Aparência do perfil",
                     "profile_background": "Mostrar plano de fundo do perfil",
                     "profile_background_description": "Mostra o gradiente ou a textura selecionada para o perfil do VRChat.",
                     "avatar_frame": "Mostrar moldura do avatar",
@@ -2656,7 +2663,6 @@
                     "profile_effect_description": "Mostra o efeito aplicado ao perfil do usuário.",
                     "nameplate_effect": "Mostrar efeito da placa de nome",
                     "nameplate_effect_description": "Mostra o efeito aplicado atrás do nome de exibição.",
-                    "additional_information": "Informações adicionais",
                     "vrchat_notes": "Notas do VRChat",
                     "vrchat_notes_description": "Mostra notas armazenadas no VRChat",
                     "vrcx_memos": "Memos do VRCX-0",

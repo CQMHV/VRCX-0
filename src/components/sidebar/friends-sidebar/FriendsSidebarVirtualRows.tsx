@@ -43,6 +43,8 @@ type AppearanceView = {
     randomUserColours?: boolean;
     recentActionVersion?: number;
     showInstanceIdInLocation?: boolean;
+    showSidebarAvatarFrame?: boolean;
+    showSidebarNameplate?: boolean;
     trustColor?: TrustColorMap;
 };
 
@@ -166,7 +168,9 @@ function FriendVirtualRow({
                 locationMetadata:
                     location.locationMetadataByKey.get(metadataKey),
                 showInstanceIdInLocation: appearance.showInstanceIdInLocation,
-                ageGatedInstancesVisible: appearance.ageGatedInstancesVisible
+                ageGatedInstancesVisible: appearance.ageGatedInstancesVisible,
+                showAvatarFrame: appearance.showSidebarAvatarFrame,
+                showNameplate: appearance.showSidebarNameplate
             }}
         />
     );

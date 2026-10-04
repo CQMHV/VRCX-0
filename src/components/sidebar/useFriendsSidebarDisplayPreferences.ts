@@ -14,6 +14,12 @@ export function useFriendsSidebarDisplayPreferences() {
     const showInstanceIdInLocation = usePreferencesStore(
         (state) => state.showInstanceIdInLocation
     );
+    const showSidebarAvatarFrame = usePreferencesStore(
+        (state) => state.showSidebarAvatarFrame
+    );
+    const showSidebarNameplate = usePreferencesStore(
+        (state) => state.showSidebarNameplate
+    );
     const ageGatedInstancesVisible =
         preferencesHydrated && ageGatedInstancesVisiblePreference;
 
@@ -21,6 +27,8 @@ export function useFriendsSidebarDisplayPreferences() {
         ageGatedInstancesVisible,
         randomUserColours,
         showInstanceIdInLocation,
+        showSidebarAvatarFrame,
+        showSidebarNameplate,
         trustColor
     };
 }

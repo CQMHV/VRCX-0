@@ -81,6 +81,8 @@ export const ConfigKeys = defineConfigKeys({
     showUserDialogAvatarFrame: { type: 'bool', default: true },
     showUserDialogProfileEffect: { type: 'bool', default: true },
     showUserDialogNameplateEffect: { type: 'bool', default: true },
+    showSidebarAvatarFrame: { type: 'bool', default: true },
+    showSidebarNameplate: { type: 'bool', default: true },
     hideUserMemos: { type: 'bool', default: false },
     hideUserNotes: { type: 'bool', default: false },
     compactTableMode: { type: 'bool', default: false },
