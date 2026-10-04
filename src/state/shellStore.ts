@@ -5,10 +5,6 @@ import {
     setTrayIconNotification
 } from '@/services/shellIntegrationService';
 import { DEFAULT_THEME_COLOR_KEY } from '@/shared/constants/themes';
-import {
-    DEFAULT_TIME_UNIT_LABELS,
-    type TimeUnitLabels
-} from '@/shared/utils/dateTime';
 import { normalizeThemeColor } from '@/shared/utils/themeColor';
 
 const MIN_NAV_WIDTH = 64;
@@ -62,7 +58,6 @@ type ShellStore = {
     dateCulture: string;
     dateIsoFormat: boolean;
     dateHour12: boolean;
-    timeUnitLabels: TimeUnitLabels;
     notifiedMenus: string[];
     lastSettingsTab: string;
     shortcutHintsVisible: boolean;
@@ -93,7 +88,6 @@ type ShellStore = {
         dateIsoFormat: boolean;
         dateHour12: boolean;
     }): void;
-    setTimeUnitLabels(labels: TimeUnitLabels): void;
     setLastSettingsTab(lastSettingsTab: string): void;
     setShortcutHintsVisible(visible: boolean): void;
     setVrcUnseenNotificationCount(unseenCount: number): void;
@@ -122,7 +116,6 @@ type ShellStoreState = Omit<
     | 'setAppearancePreferences'
     | 'setZoomLevel'
     | 'setDatePreferences'
-    | 'setTimeUnitLabels'
     | 'setLastSettingsTab'
     | 'setShortcutHintsVisible'
     | 'setVrcUnseenNotificationCount'
@@ -150,7 +143,6 @@ const initialState: ShellStoreState = {
     dateCulture: 'en-gb',
     dateIsoFormat: false,
     dateHour12: false,
-    timeUnitLabels: DEFAULT_TIME_UNIT_LABELS,
     notifiedMenus: [],
     lastSettingsTab: 'system',
     shortcutHintsVisible: false,
@@ -275,9 +267,6 @@ export const useShellStore = create<ShellStore>((set, get) => ({
             dateHour12
         });
     },
-    setTimeUnitLabels(labels) {
-        set({ timeUnitLabels: labels });
-    },
     setLastSettingsTab(lastSettingsTab) {
         set({ lastSettingsTab });
     },
@@ -330,5 +319,3 @@ export const useShellStore = create<ShellStore>((set, get) => ({
         get().updateTrayIconNotification();
     }
 }));
-
-export { DEFAULT_TIME_UNIT_LABELS };
