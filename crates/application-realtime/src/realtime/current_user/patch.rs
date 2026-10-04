@@ -154,14 +154,7 @@ pub(super) fn apply_current_user_patch(
     if snapshot.previous_avatar_swap_time != previous.previous_avatar_swap_time {
         state.avatar_wear_checkpoint_ms = 0;
     }
-    append_self_profile_observations(
-        &mut state.observed_self_profile_fields,
-        &previous,
-        &snapshot,
-        &patch,
-        now,
-        &mut persistence,
-    );
+    append_self_profile_observations(&patch, now, &mut persistence);
     if !game.is_game_running() && options.reconciles_remote_location {
         copy_current_user_presence_patch(&snapshot, &mut projection_patch);
     }

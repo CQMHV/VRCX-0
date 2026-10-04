@@ -245,60 +245,54 @@ fn refresh_with(
     )
 }
 
-fn runtime_with_profile(bio: &str) -> RealtimeCurrentUserRuntime {
+fn runtime_with_profile() -> RealtimeCurrentUserRuntime {
     let runtime = RealtimeCurrentUserRuntime::new();
     runtime.set_snapshot(
         "usr_self".into(),
         7,
-        json!({ "id": "usr_self", "status": "join me", "statusDescription": "hi", "bio": bio }),
+        json!({ "id": "usr_self", "status": "join me", "statusDescription": "hi", "bio": "same" }),
     );
     runtime
 }
 
 #[test]
-fn ws_profile_fields_are_observed_on_first_sight_and_then_only_when_changed() {
-    let runtime = runtime_with_profile("same");
-    let update =
-        |user| runtime.apply_ws_message(7, &user_update_message(user), game_not_running(true));
+fn ws_user_update_reports_every_profile_field_it_carries() {
+    let runtime = runtime_with_profile();
+    let update = || {
+        self_profile_observations(runtime.apply_ws_message(
+            7,
+            &user_update_message(json!({
+                "id": "usr_self", "status": "join me", "statusDescription": "hi", "bio": "same"
+            })),
+            game_not_running(true),
+        ))
+    };
+    let expected = vec![
+        (SelfProfileField::Status, "join me".to_string()),
+        (SelfProfileField::StatusDescription, "hi".to_string()),
+        (SelfProfileField::Bio, "same".to_string()),
+    ];
+
+    assert_eq!(update(), expected);
+    assert_eq!(update(), expected);
+}
+
+#[test]
+fn api_refresh_reports_bio_but_leaves_status_to_realtime() {
+    let runtime = runtime_with_profile();
 
     assert_eq!(
-        self_profile_observations(update(json!({
-            "id": "usr_self", "status": "join me", "statusDescription": "hi", "bio": "same"
-        }))),
-        vec![
-            (SelfProfileField::Status, "join me".to_string()),
-            (SelfProfileField::StatusDescription, "hi".to_string()),
-            (SelfProfileField::Bio, "same".to_string()),
-        ]
-    );
-    assert!(self_profile_observations(update(json!({
-        "id": "usr_self", "status": "join me", "statusDescription": "hi", "bio": "same"
-    })))
-    .is_empty());
-    assert_eq!(
-        self_profile_observations(update(json!({
-            "id": "usr_self", "status": "join me", "statusDescription": "hi", "bio": "edited"
-        }))),
+        self_profile_observations(refresh_with(
+            &runtime,
+            json!({ "id": "usr_self", "status": "busy", "statusDescription": "away", "bio": "edited" }),
+        )),
         vec![(SelfProfileField::Bio, "edited".to_string())]
     );
 }
 
 #[test]
-fn api_refresh_observes_bio_but_leaves_status_to_realtime() {
-    let runtime = runtime_with_profile("same");
-
-    assert_eq!(
-        self_profile_observations(refresh_with(
-            &runtime,
-            json!({ "id": "usr_self", "status": "busy", "statusDescription": "away", "bio": "same" }),
-        )),
-        vec![(SelfProfileField::Bio, "same".to_string())]
-    );
-}
-
-#[test]
-fn updates_without_profile_fields_observe_nothing() {
-    let runtime = runtime_with_profile("same");
+fn updates_without_profile_fields_report_nothing() {
+    let runtime = runtime_with_profile();
 
     assert!(self_profile_observations(runtime.apply_ws_message(
         7,
@@ -311,32 +305,6 @@ fn updates_without_profile_fields_observe_nothing() {
         json!({ "id": "usr_self", "bio": null })
     ))
     .is_empty());
-}
-
-#[test]
-fn a_new_session_snapshot_reobserves_the_first_remote_value() {
-    let runtime = runtime_with_profile("same");
-    let refresh_bio = |bio: &str| {
-        self_profile_observations(refresh_with(
-            &runtime,
-            json!({ "id": "usr_self", "bio": bio }),
-        ))
-    };
-    assert_eq!(
-        refresh_bio("edited"),
-        vec![(SelfProfileField::Bio, "edited".to_string())]
-    );
-
-    runtime.set_snapshot(
-        "usr_self".into(),
-        7,
-        json!({ "id": "usr_self", "bio": "same" }),
-    );
-
-    assert_eq!(
-        refresh_bio("edited"),
-        vec![(SelfProfileField::Bio, "edited".to_string())]
-    );
 }
 
 #[test]

@@ -1046,83 +1046,48 @@ fn write_self_profile_observations(
 }
 
 #[test]
-fn first_self_profile_observation_only_records_the_baseline() {
-    let dir = TestDir::new("self-profile-baseline");
-    let db = DatabaseService::new(&dir.path.join("VRCX-0.sqlite3")).unwrap();
-
-    write_self_profile_observations(
-        &db,
-        vec![
-            self_profile_observation("2026-05-15T00:00:00Z", SelfProfileField::Status, "join me"),
-            self_profile_observation("2026-05-15T00:00:00Z", SelfProfileField::Bio, "hello"),
-        ],
-    );
-
-    assert!(self_profile_log_rows(&db).is_empty());
-}
-
-#[test]
-fn self_profile_observations_log_changes_against_the_persisted_baseline() {
+fn self_profile_observations_log_only_values_that_differ_from_the_latest_row() {
     let dir = TestDir::new("self-profile-changes");
     let db = DatabaseService::new(&dir.path.join("VRCX-0.sqlite3")).unwrap();
 
-    write_self_profile_observations(
-        &db,
-        vec![
-            self_profile_observation("2026-05-15T00:00:00Z", SelfProfileField::Status, "join me"),
-            self_profile_observation("2026-05-15T00:00:00Z", SelfProfileField::Bio, "old bio"),
-        ],
-    );
-    write_self_profile_observations(
-        &db,
-        vec![
-            self_profile_observation("2026-05-16T00:00:00Z", SelfProfileField::Status, "join me"),
-            self_profile_observation("2026-05-16T00:00:00Z", SelfProfileField::Bio, "new bio"),
-        ],
-    );
-    write_self_profile_observations(
-        &db,
-        vec![self_profile_observation(
-            "2026-05-17T00:00:00Z",
-            SelfProfileField::Bio,
-            "new bio",
-        )],
-    );
+    for (observed_at, bio) in [
+        ("2026-05-15T00:00:00Z", "old bio"),
+        ("2026-05-16T00:00:00Z", "old bio"),
+        ("2026-05-17T00:00:00Z", "new bio"),
+        ("2026-05-18T00:00:00Z", "new bio"),
+    ] {
+        write_self_profile_observations(
+            &db,
+            vec![
+                self_profile_observation(observed_at, SelfProfileField::Status, "join me"),
+                self_profile_observation(observed_at, SelfProfileField::Bio, bio),
+            ],
+        );
+    }
 
     assert_eq!(
         self_profile_log_rows(&db),
-        vec![vec![
-            json!("2026-05-16T00:00:00Z"),
-            json!("bio"),
-            json!("new bio"),
-            json!("old bio"),
-        ]]
+        vec![
+            vec![
+                json!("2026-05-15T00:00:00Z"),
+                json!("status"),
+                json!("join me"),
+                json!(""),
+            ],
+            vec![
+                json!("2026-05-15T00:00:00Z"),
+                json!("bio"),
+                json!("old bio"),
+                json!(""),
+            ],
+            vec![
+                json!("2026-05-17T00:00:00Z"),
+                json!("bio"),
+                json!("new bio"),
+                json!("old bio"),
+            ],
+        ]
     );
-}
-
-#[test]
-fn self_profile_observations_ignore_surrounding_whitespace() {
-    let dir = TestDir::new("self-profile-whitespace");
-    let db = DatabaseService::new(&dir.path.join("VRCX-0.sqlite3")).unwrap();
-
-    write_self_profile_observations(
-        &db,
-        vec![self_profile_observation(
-            "2026-05-15T00:00:00Z",
-            SelfProfileField::Bio,
-            "hello\n",
-        )],
-    );
-    write_self_profile_observations(
-        &db,
-        vec![self_profile_observation(
-            "2026-05-16T00:00:00Z",
-            SelfProfileField::Bio,
-            "hello",
-        )],
-    );
-
-    assert!(self_profile_log_rows(&db).is_empty());
 }
 
 #[test]
