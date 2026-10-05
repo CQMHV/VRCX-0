@@ -375,7 +375,10 @@ export function useTitleBarActions(
                       }
             }
         >
-            <BellIcon data-icon="icon" />
+            <BellIcon
+                data-icon="icon"
+                className={cn(vrcUnseenNotificationCount > 0 && '-rotate-12')}
+            />
             {vrcUnseenNotificationCount > 0 ? (
                 <Badge className="absolute top-0.5 right-1 h-3 min-w-3 rounded-full px-0.5 py-0 text-[7px] leading-none">
                     {vrcUnseenNotificationCount > 99
