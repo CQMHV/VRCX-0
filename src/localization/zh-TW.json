@@ -3507,7 +3507,6 @@
                 "css_size": "CSS 位元組數"
             },
             "toast": {
-                "catalog_failed": "載入社群主題失敗。",
                 "theme_enabled": "社群主題已啟用。",
                 "theme_disabled": "社群主題已停用。",
                 "theme_deleted": "已刪除安裝的主題。",

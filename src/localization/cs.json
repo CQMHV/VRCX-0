@@ -3523,7 +3523,6 @@
                 "css_size": "Velikost CSS v bajtech"
             },
             "toast": {
-                "catalog_failed": "Načtení komunitních motivů se nezdařilo.",
                 "theme_enabled": "Komunitní motiv byl povolen.",
                 "theme_disabled": "Komunitní motiv byl zakázán.",
                 "theme_deleted": "Nainstalovaný motiv byl smazán.",

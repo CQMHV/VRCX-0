@@ -3507,7 +3507,6 @@
                 "css_size": "CSS 字节数"
             },
             "toast": {
-                "catalog_failed": "加载社区主题失败。",
                 "theme_enabled": "社区主题已启用。",
                 "theme_disabled": "社区主题已禁用。",
                 "theme_deleted": "已删除安装的主题。",

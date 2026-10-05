@@ -3509,7 +3509,6 @@
                 "css_size": "CSS-Bytes"
             },
             "toast": {
-                "catalog_failed": "Community-Themes konnten nicht geladen werden.",
                 "theme_enabled": "Community-Theme aktiviert.",
                 "theme_disabled": "Community-Theme deaktiviert.",
                 "theme_deleted": "Installiertes Theme gelöscht.",

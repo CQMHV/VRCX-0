@@ -3507,7 +3507,6 @@
                 "css_size": "CSS バイト数"
             },
             "toast": {
-                "catalog_failed": "コミュニティテーマの読み込みに失敗しました。",
                 "theme_enabled": "コミュニティテーマを有効化しました。",
                 "theme_disabled": "コミュニティテーマを無効化しました。",
                 "theme_deleted": "インストール済みテーマを削除しました。",

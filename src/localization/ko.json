@@ -3450,7 +3450,6 @@
                 "css_size": "CSS 크기(바이트)"
             },
             "toast": {
-                "catalog_failed": "커뮤니티 테마를 불러오지 못했습니다.",
                 "theme_enabled": "커뮤니티 테마가 활성화되었습니다.",
                 "theme_disabled": "커뮤니티 테마가 비활성화되었습니다.",
                 "theme_deleted": "설치된 테마가 삭제되었습니다.",
