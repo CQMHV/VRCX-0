@@ -47,7 +47,10 @@ import { usePreferencesStore } from '@/state/preferencesStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
 import { useSessionStore } from '@/state/sessionStore';
 import { useShellStore } from '@/state/shellStore';
-import { useVrcNotificationStore } from '@/state/vrcNotificationStore';
+import {
+    selectCanMarkAllSeen,
+    useVrcNotificationStore
+} from '@/state/vrcNotificationStore';
 import { AnimatedThemeToggler } from '@/ui/shadcn/animated-theme-toggler';
 import { Badge } from '@/ui/shadcn/badge';
 import { Button, buttonVariants } from '@/ui/shadcn/button';
@@ -167,6 +170,8 @@ export function useTitleBarActions(
     const vrcUnseenNotificationCount = useVrcNotificationStore(
         (state) => state.unseenCount
     );
+    const canMarkAllVrcNotificationsSeen =
+        useVrcNotificationStore(selectCanMarkAllSeen);
     const isVrcNotificationCenterOpen = useVrcNotificationStore(
         (state) => state.isCenterOpen
     );
@@ -325,12 +330,6 @@ export function useTitleBarActions(
     ]);
 
     async function markAllNotificationsRead() {
-        const store = useVrcNotificationStore.getState();
-        if (!store.unseenCount) {
-            removeNavNotification('notification');
-            return;
-        }
-
         try {
             await markAllVrcNotificationsSeen();
             removeNavNotification('notification');
@@ -388,7 +387,7 @@ export function useTitleBarActions(
     );
 
     const notificationAction = notificationActionVisible ? (
-        vrcUnseenNotificationCount > 0 ? (
+        canMarkAllVrcNotificationsSeen ? (
             <ContextMenu>
                 <ContextMenuTrigger render={notificationButton} />
                 <ContextMenuContent className="w-48">
