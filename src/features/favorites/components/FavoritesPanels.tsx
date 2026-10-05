@@ -697,10 +697,14 @@ export function FavoritesContentPanel({
                     onMoveSelection={handleMoveSelection}
                     onBulkRemove={handleBulkRemoveSelection}
                     onMoveToTop={
-                        order.editing ? handleMoveSelectionToTop : undefined
+                        order.canMoveSelection
+                            ? handleMoveSelectionToTop
+                            : undefined
                     }
                     onMoveToBottom={
-                        order.editing ? handleMoveSelectionToBottom : undefined
+                        order.canMoveSelection
+                            ? handleMoveSelectionToBottom
+                            : undefined
                     }
                 />
             </div>
