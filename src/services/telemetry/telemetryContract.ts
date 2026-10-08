@@ -42,6 +42,7 @@ export const TELEMETRY_TOOL_KEYS = [
     'group-calendar',
     'group-moderation',
     'my-groups',
+    'offline-record',
     'discord-names',
     'export-notes',
     'export-friend-list',

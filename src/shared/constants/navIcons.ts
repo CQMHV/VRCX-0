@@ -50,6 +50,7 @@ const navIconEntries: Array<readonly [NavIconKey, string]> = [
     ['lucide:Database', 'Database'],
     ['lucide:DatabaseBackup', 'Database Backup'],
     ['lucide:ServerCog', 'Server'],
+    ['lucide:RadioTower', 'Radio Tower'],
     ['lucide:Archive', 'Archive'],
     ['lucide:Package', 'Package'],
     ['lucide:SlidersHorizontal', 'Sliders'],

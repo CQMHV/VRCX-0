@@ -204,7 +204,9 @@ function ToolRow({
                                 'flex items-center gap-1.5 text-xs whitespace-nowrap tabular-nums',
                                 status.tone === 'active'
                                     ? 'text-primary'
-                                    : 'text-muted-foreground'
+                                    : status.tone === 'warning'
+                                      ? 'text-[var(--status-askme)]'
+                                      : 'text-muted-foreground'
                             )}
                         >
                             {status.toggle ? null : (
@@ -214,7 +216,9 @@ function ToolRow({
                                         'size-1.5 rounded-full',
                                         status.tone === 'active'
                                             ? 'bg-primary'
-                                            : 'bg-muted-foreground/70'
+                                            : status.tone === 'warning'
+                                              ? 'bg-[var(--status-askme)]'
+                                              : 'bg-muted-foreground/70'
                                     )}
                                 />
                             )}

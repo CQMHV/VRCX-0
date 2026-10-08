@@ -36,7 +36,8 @@ type ToolDialogHostKey =
     | 'exportAvatarsListOpen'
     | 'editInviteMessagesOpen'
     | 'llmEndpointsOpen'
-    | 'profileBackupOpen';
+    | 'profileBackupOpen'
+    | 'offlineRecordOpen';
 
 const toolRouteMap = {
     gallery: '/tools/gallery',
@@ -59,7 +60,8 @@ const toolDialogHostMap: Record<ToolDialogKey, ToolDialogHostKey> = {
     'export-avatars-list': 'exportAvatarsListOpen',
     'edit-invite-messages': 'editInviteMessagesOpen',
     'llm-endpoints': 'llmEndpointsOpen',
-    'profile-backup': 'profileBackupOpen'
+    'profile-backup': 'profileBackupOpen',
+    'offline-record': 'offlineRecordOpen'
 };
 
 const toolAppApiCommands: Record<ToolAppApiMethod, () => Promise<boolean>> = {

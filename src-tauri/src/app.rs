@@ -436,9 +436,10 @@ pub fn run() {
                     api.prevent_exit();
                     return;
                 }
+                api.prevent_exit();
                 let snapshot = state.runtime_host().backend_runtime_snapshot();
-                if is_background_running(snapshot.mode, snapshot.phase) {
-                    api.prevent_exit();
+                if !is_background_running(snapshot.mode, snapshot.phase) {
+                    commands::host::window::request_application_exit(app);
                 }
             }
         });

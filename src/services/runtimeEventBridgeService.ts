@@ -42,6 +42,10 @@ import {
     hydrateIntegrationApiStatus
 } from './integrationApiService';
 import { handleMutualGraphFetchStatusEvent } from './mutualGraphFetchService';
+import {
+    handleFeedLoggerHealthEvent,
+    handleFeedLoggerSyncEvent
+} from './offlineRecordService';
 import { handleRealtimeEntryCorrection } from './realtimePresenceService';
 import { runForegroundUpdateRegistryBackupMaintenance } from './registryBackupMaintenanceService';
 import {
@@ -294,6 +298,16 @@ function handleRuntimeEvent(event: RuntimeEvent): void {
         return;
     }
 
+    if (event.name === 'feedLoggerHealth') {
+        handleFeedLoggerHealthEvent(event.payload);
+        return;
+    }
+
+    if (event.name === 'feedLoggerSync') {
+        handleFeedLoggerSyncEvent(event.payload);
+        return;
+    }
+
     if (event.name === 'browserFocus') {
         handleBrowserFocusEvent();
     }
@@ -492,6 +506,8 @@ export async function bindRuntimeEvents(): Promise<() => void> {
         'realtimeProjectionSync',
         'updateIsGameRunning',
         'integrationApiStartFailed',
+        'feedLoggerHealth',
+        'feedLoggerSync',
         'browserFocus'
     ];
 
@@ -531,6 +547,12 @@ export async function bindRuntimeEvents(): Promise<() => void> {
             hydrateIntegrationApiStatus(
                 await commands.appIntegrationApiStatus()
             );
+        }
+    );
+    void hydrateRuntimeState(
+        'Failed to hydrate offline record status:',
+        async () => {
+            handleFeedLoggerHealthEvent(await commands.appFeedLoggerStatus());
         }
     );
     let combinedSnapshot: BackendRuntimeCombinedSnapshot | null = null;
