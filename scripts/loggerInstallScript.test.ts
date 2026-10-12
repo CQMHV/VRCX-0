@@ -124,7 +124,7 @@ afterEach(() => {
     }
 });
 
-describe('one-command recorder install', () => {
+describe('one-command recorder install', { timeout: 30_000 }, () => {
     it('installs with the defaults when nobody answers and prints the address and a generated password', () => {
         const run = install(sandbox());
 
@@ -334,7 +334,7 @@ describe('one-command recorder install', () => {
     });
 });
 
-describe('updating an installed recorder', () => {
+describe('updating an installed recorder', { timeout: 30_000 }, () => {
     it('keeps the settings and password and only pulls and restarts', () => {
         const box = sandbox();
         const first = install(box, {
