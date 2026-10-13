@@ -407,7 +407,7 @@
         "tools_description": "关闭 VRCX-0 时继续记录好友动态",
         "dialog_description": "在自己的服务器上运行记录端，VRCX-0 关闭期间继续记录好友动态，下次打开时补回。",
         "guide": "使用说明",
-        "scope_note": "补回上线、下线、位置、状态和模型变更；开启「自动更新好友简介」后也补回简介。",
+        "scope_note": "补回上线、下线、位置、状态和模型变更；开启“自动更新好友简介”后也补回简介。",
         "shutdown_note": "崩溃、强制退出、睡眠或断网时，约丢失 30 秒的记录。",
         "setup": {
             "progress": "第 {current} 步，共 {total} 步",
