@@ -67,11 +67,6 @@ impl DesktopWidgetSettings {
         config.set_bool(DESKTOP_WIDGET_ENABLED_CONFIG_KEY, self.enabled)?;
         config.set_bool(DESKTOP_WIDGET_PINNED_CONFIG_KEY, self.pinned)?;
         config.set_bool(DESKTOP_WIDGET_CLICK_THROUGH_CONFIG_KEY, self.click_through)?;
-        config.set_raw(
-            DESKTOP_WIDGET_OPACITY_CONFIG_KEY,
-            &self.background_opacity.to_string(),
-        )?;
-        config.set_bool(DESKTOP_WIDGET_NEWEST_ON_TOP_CONFIG_KEY, self.newest_on_top)?;
         match self.bounds {
             Some(bounds) => config.set_json(
                 DESKTOP_WIDGET_BOUNDS_CONFIG_KEY,

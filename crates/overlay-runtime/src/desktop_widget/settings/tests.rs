@@ -6,8 +6,8 @@ use vrcx_0_persistence::DatabaseService;
 
 use super::{
     place_on_screens, DesktopWidgetBounds, DesktopWidgetSettings,
-    DESKTOP_WIDGET_CLICK_THROUGH_CONFIG_KEY, DESKTOP_WIDGET_OPACITY_CONFIG_KEY,
-    DESKTOP_WIDGET_PINNED_CONFIG_KEY,
+    DESKTOP_WIDGET_CLICK_THROUGH_CONFIG_KEY, DESKTOP_WIDGET_NEWEST_ON_TOP_CONFIG_KEY,
+    DESKTOP_WIDGET_OPACITY_CONFIG_KEY, DESKTOP_WIDGET_PINNED_CONFIG_KEY,
 };
 
 #[test]
@@ -51,11 +51,15 @@ fn unpinning_also_turns_click_through_off() {
 #[test]
 fn the_widget_comes_back_the_same_after_a_restart() {
     let (dir, config) = test_config();
+    config
+        .set_raw(DESKTOP_WIDGET_OPACITY_CONFIG_KEY, "0")
+        .unwrap();
+    config
+        .set_bool(DESKTOP_WIDGET_NEWEST_ON_TOP_CONFIG_KEY, false)
+        .unwrap();
     let mut settings = DesktopWidgetSettings::load(&config);
     settings.enabled = true;
     settings.set_click_through(true);
-    settings.background_opacity = 0;
-    settings.newest_on_top = false;
     settings.bounds = Some(bounds(100, 200, 300, 400));
     settings.save(&config).unwrap();
 

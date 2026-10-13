@@ -142,6 +142,9 @@ impl DesktopWidgetRuntime {
             let Ok(mut inner) = self.inner.lock() else {
                 return;
             };
+            if inner.settings == loaded {
+                return;
+            }
             let previous = state_of(&inner.settings);
             inner.settings = loaded;
             (previous != state_of(&loaded)).then(|| state_of(&loaded))

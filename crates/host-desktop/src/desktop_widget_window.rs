@@ -18,8 +18,8 @@ use windows_sys::Win32::UI::Input::KeyboardAndMouse::{
 };
 use windows_sys::Win32::UI::WindowsAndMessaging::{
     AppendMenuW, CreatePopupMenu, CreateWindowExW, DefWindowProcW, DestroyMenu, DestroyWindow,
-    DispatchMessageW, GetMessageW, GetWindowLongPtrW, GetWindowRect, IsWindow, KillTimer,
-    LoadCursorW, PostMessageW, PostQuitMessage, RegisterClassExW, SendMessageW,
+    DispatchMessageW, GetForegroundWindow, GetMessageW, GetWindowLongPtrW, GetWindowRect, IsWindow,
+    KillTimer, LoadCursorW, PostMessageW, PostQuitMessage, RegisterClassExW, SendMessageW,
     SetForegroundWindow, SetTimer, SetWindowLongPtrW, SetWindowPos, ShowWindow, TrackPopupMenu,
     TranslateMessage, UpdateLayeredWindow, CREATESTRUCTW, GWLP_USERDATA, GWL_EXSTYLE, HTBOTTOM,
     HTBOTTOMLEFT, HTBOTTOMRIGHT, HTCAPTION, HTCLIENT, HTLEFT, HTRIGHT, HTTOP, HTTOPLEFT,
@@ -27,9 +27,10 @@ use windows_sys::Win32::UI::WindowsAndMessaging::{
     MF_STRING, MINMAXINFO, MSG, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER,
     SWP_SHOWWINDOW, SW_SHOWNOACTIVATE, TPM_NONOTIFY, TPM_RETURNCMD, TPM_RIGHTBUTTON, ULW_ALPHA,
     WM_APP, WM_CLOSE, WM_DESTROY, WM_DPICHANGED, WM_EXITSIZEMOVE, WM_GETMINMAXINFO, WM_LBUTTONDOWN,
-    WM_LBUTTONUP, WM_MOUSEACTIVATE, WM_MOUSEMOVE, WM_NCCREATE, WM_NCDESTROY, WM_NCHITTEST,
-    WM_NCLBUTTONDOWN, WM_NULL, WM_RBUTTONUP, WM_SIZE, WM_TIMER, WNDCLASSEXW, WS_EX_LAYERED,
-    WS_EX_NOACTIVATE, WS_EX_TOOLWINDOW, WS_EX_TOPMOST, WS_EX_TRANSPARENT, WS_POPUP,
+    WM_LBUTTONUP, WM_MOUSEACTIVATE, WM_MOUSEMOVE, WM_NCCALCSIZE, WM_NCCREATE, WM_NCDESTROY,
+    WM_NCHITTEST, WM_NCLBUTTONDOWN, WM_NULL, WM_RBUTTONUP, WM_SIZE, WM_TIMER, WNDCLASSEXW,
+    WS_EX_LAYERED, WS_EX_NOACTIVATE, WS_EX_TOOLWINDOW, WS_EX_TOPMOST, WS_EX_TRANSPARENT, WS_POPUP,
+    WS_THICKFRAME,
 };
 
 const WM_MOUSELEAVE: u32 = 0x02A3;
@@ -170,7 +171,7 @@ impl LayeredWindow {
     ) -> Result<Self, String> {
         let class_name = wide("VRCX0DesktopWidget");
         register_class(&class_name);
-        let state = Box::into_raw(Box::new(WindowState {
+        let mut state = Some(Box::new(WindowState {
             handler: RefCell::new(Box::new(handler)),
             pending: RefCell::new(VecDeque::new()),
             click_through: Cell::new(options.click_through),
@@ -192,7 +193,7 @@ impl LayeredWindow {
                 ex_style,
                 class_name.as_ptr(),
                 title.as_ptr(),
-                WS_POPUP,
+                WS_POPUP | WS_THICKFRAME,
                 bounds.x,
                 bounds.y,
                 bounds.width,
@@ -200,15 +201,11 @@ impl LayeredWindow {
                 std::ptr::null_mut(),
                 std::ptr::null_mut(),
                 GetModuleHandleW(std::ptr::null()),
-                state.cast_const().cast(),
+                (&mut state as *mut Option<Box<WindowState>>).cast(),
             )
         };
         if hwnd.is_null() {
-            let error = std::io::Error::last_os_error().to_string();
-            if unsafe { GetWindowLongPtrW(hwnd, GWLP_USERDATA) } == 0 {
-                drop(unsafe { Box::from_raw(state) });
-            }
-            return Err(error);
+            return Err(std::io::Error::last_os_error().to_string());
         }
         unsafe {
             ShowWindow(hwnd, SW_SHOWNOACTIVATE);
@@ -411,6 +408,7 @@ impl LayeredWindow {
                 };
                 AppendMenuW(menu, flags, item.id as usize, label.as_ptr());
             }
+            let previous = GetForegroundWindow();
             SetForegroundWindow(self.handle());
             let selected = TrackPopupMenu(
                 menu,
@@ -423,6 +421,9 @@ impl LayeredWindow {
             );
             PostMessageW(self.handle(), WM_NULL, 0, 0);
             DestroyMenu(menu);
+            if !previous.is_null() && previous != self.handle() {
+                SetForegroundWindow(previous);
+            }
             u32::try_from(selected).ok().filter(|id| *id != 0)
         }
     }
@@ -549,8 +550,12 @@ unsafe extern "system" fn window_proc(
     match message {
         WM_NCCREATE => {
             let create = unsafe { &*(lparam as *const CREATESTRUCTW) };
-            unsafe { SetWindowLongPtrW(hwnd, GWLP_USERDATA, create.lpCreateParams as isize) };
+            let slot = unsafe { &mut *(create.lpCreateParams as *mut Option<Box<WindowState>>) };
+            if let Some(state) = slot.take() {
+                unsafe { SetWindowLongPtrW(hwnd, GWLP_USERDATA, Box::into_raw(state) as isize) };
+            }
         }
+        WM_NCCALCSIZE => return 0,
         WM_NCDESTROY => {
             let pointer = unsafe { SetWindowLongPtrW(hwnd, GWLP_USERDATA, 0) };
             if pointer != 0 {

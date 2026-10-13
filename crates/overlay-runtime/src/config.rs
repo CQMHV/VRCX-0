@@ -38,14 +38,19 @@ pub(crate) fn load_app_language(config: &ConfigRepository) -> String {
         .unwrap_or_else(|_| "en".to_string())
 }
 
-pub(crate) fn load_localizer(config: &ConfigRepository) -> OverlayLocalizer {
+fn load_locale_settings(config: &ConfigRepository) -> (OverlayLocale, bool) {
     let locale = config
         .get_string(APP_LANGUAGE_CONFIG_KEY, "en")
         .map(|value| OverlayLocale::from_config(&value))
         .unwrap_or_default();
-    let show_instance_id = config
+    let show_instance_id_in_location = config
         .get_bool(SHOW_INSTANCE_ID_IN_LOCATION_CONFIG_KEY, false)
         .unwrap_or(false);
+    (locale, show_instance_id_in_location)
+}
+
+pub(crate) fn load_localizer(config: &ConfigRepository) -> OverlayLocalizer {
+    let (locale, show_instance_id) = load_locale_settings(config);
     OverlayLocalizer::with_instance_id(locale, show_instance_id)
 }
 
@@ -120,15 +125,9 @@ pub(super) fn load_runtime_config(
         .get_string(HMD_NOTIFICATION_STYLE_CONFIG_KEY, "standard")
         .map(|value| HmdNotificationStyle::from_config(&value))
         .unwrap_or_default();
-    let locale = config
-        .get_string(APP_LANGUAGE_CONFIG_KEY, "en")
-        .map(|value| OverlayLocale::from_config(&value))
-        .unwrap_or_default();
+    let (locale, show_instance_id_in_location) = load_locale_settings(config);
     let dt_hour12 = config
         .get_bool(DATE_TIME_HOUR12_CONFIG_KEY, false)
-        .unwrap_or(false);
-    let show_instance_id_in_location = config
-        .get_bool(SHOW_INSTANCE_ID_IN_LOCATION_CONFIG_KEY, false)
         .unwrap_or(false);
 
     VrOverlayRuntimeConfig {

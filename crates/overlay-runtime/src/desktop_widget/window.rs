@@ -1,8 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::mpsc;
-use std::sync::{Arc, Weak};
+use std::sync::{Arc, Mutex, Weak};
 use std::thread::JoinHandle;
 use std::time::Duration;
 
@@ -15,12 +14,12 @@ use vrcx_0_vr_overlay::{DesktopWidgetAction, DesktopWidgetSurfaceModel, SlintDes
 
 use super::feed::DesktopWidgetRowPart;
 use super::runtime::{
-    DesktopWidgetMenuCommand, DesktopWidgetRuntime, DesktopWidgetWindow, DesktopWidgetWindows,
+    DesktopWidgetMenuCommand, DesktopWidgetRuntime, DesktopWidgetView, DesktopWidgetWindow,
+    DesktopWidgetWindows,
 };
 use super::settings::{place_on_screens, DesktopWidgetBounds};
 
 const ANIMATION_FRAME: Duration = Duration::from_millis(16);
-const OPEN_TIMEOUT: Duration = Duration::from_secs(3);
 const MIN_SIZE: (i32, i32) = (160, 80);
 const MENU_PIN: u32 = 1;
 const MENU_CLICK_THROUGH: u32 = 2;
@@ -29,7 +28,7 @@ const MENU_CLOSE: u32 = 3;
 #[derive(Default)]
 pub struct NativeDesktopWidgetWindows {
     #[cfg(test)]
-    last_handle: std::sync::Mutex<Option<isize>>,
+    last_handle: Arc<Mutex<Option<isize>>>,
 }
 
 impl NativeDesktopWidgetWindows {
@@ -43,20 +42,40 @@ impl NativeDesktopWidgetWindows {
     }
 }
 
-struct NativeDesktopWidgetWindow {
+#[derive(Default)]
+struct Shared {
     waker: Option<LayeredWindowWaker>,
+    closed: bool,
+}
+
+struct NativeDesktopWidgetWindow {
+    shared: Arc<Mutex<Shared>>,
     bring_to_front: Arc<AtomicBool>,
     thread: Option<JoinHandle<()>>,
 }
 
+struct WindowThreadParts {
+    runtime: Weak<DesktopWidgetRuntime>,
+    shared: Arc<Mutex<Shared>>,
+    bring_to_front: Arc<AtomicBool>,
+    #[cfg(test)]
+    last_handle: Arc<Mutex<Option<isize>>>,
+}
+
 impl DesktopWidgetWindows for NativeDesktopWidgetWindows {
     fn open(&self, runtime: Weak<DesktopWidgetRuntime>) -> Box<dyn DesktopWidgetWindow> {
-        let (ready, opened) = mpsc::channel();
+        let shared = Arc::new(Mutex::new(Shared::default()));
         let bring_to_front = Arc::new(AtomicBool::new(false));
-        let thread_front = Arc::clone(&bring_to_front);
+        let parts = WindowThreadParts {
+            runtime,
+            shared: Arc::clone(&shared),
+            bring_to_front: Arc::clone(&bring_to_front),
+            #[cfg(test)]
+            last_handle: Arc::clone(&self.last_handle),
+        };
         let thread = std::thread::Builder::new()
             .name("vrcx-desktop-widget".to_string())
-            .spawn(move || run_window(runtime, thread_front, ready));
+            .spawn(move || run_window(parts));
         let thread = match thread {
             Ok(thread) => Some(thread),
             Err(error) => {
@@ -64,13 +83,8 @@ impl DesktopWidgetWindows for NativeDesktopWidgetWindows {
                 None
             }
         };
-        let opened = opened.recv_timeout(OPEN_TIMEOUT).ok().flatten();
-        #[cfg(test)]
-        {
-            *self.last_handle.lock().unwrap() = opened.map(|(_, handle)| handle);
-        }
         Box::new(NativeDesktopWidgetWindow {
-            waker: opened.map(|(waker, _)| waker),
+            shared,
             bring_to_front,
             thread,
         })
@@ -79,7 +93,8 @@ impl DesktopWidgetWindows for NativeDesktopWidgetWindows {
 
 impl DesktopWidgetWindow for NativeDesktopWidgetWindow {
     fn refresh(&self) {
-        if let Some(waker) = &self.waker {
+        let waker = self.shared.lock().ok().and_then(|shared| shared.waker);
+        if let Some(waker) = waker {
             waker.wake();
         }
     }
@@ -90,7 +105,11 @@ impl DesktopWidgetWindow for NativeDesktopWidgetWindow {
     }
 
     fn close(mut self: Box<Self>) {
-        if let Some(waker) = &self.waker {
+        let waker = self.shared.lock().ok().and_then(|mut shared| {
+            shared.closed = true;
+            shared.waker.take()
+        });
+        if let Some(waker) = waker {
             waker.close();
         }
         let Some(thread) = self.thread.take() else {
@@ -104,6 +123,7 @@ impl DesktopWidgetWindow for NativeDesktopWidgetWindow {
 
 struct WidgetLoop {
     runtime: Weak<DesktopWidgetRuntime>,
+    view: DesktopWidgetView,
     host: SlintDesktopWidgetHost,
     frame: Vec<u8>,
     width: u32,
@@ -114,17 +134,18 @@ struct WidgetLoop {
     bring_to_front: Arc<AtomicBool>,
 }
 
-type Opened = Option<(LayeredWindowWaker, isize)>;
-
-fn run_window(
-    runtime: Weak<DesktopWidgetRuntime>,
-    bring_to_front: Arc<AtomicBool>,
-    ready: mpsc::Sender<Opened>,
-) {
-    let Some(settings) = runtime.upgrade().map(|runtime| runtime.view().settings) else {
-        let _ = ready.send(None);
+fn run_window(parts: WindowThreadParts) {
+    let WindowThreadParts {
+        runtime,
+        shared,
+        bring_to_front,
+        #[cfg(test)]
+        last_handle,
+    } = parts;
+    let Some(view) = runtime.upgrade().map(|runtime| runtime.view()) else {
         return;
     };
+    let settings = view.settings;
     let (screens, primary) = screen_work_areas();
     let screens = screens.into_iter().map(bounds_from).collect::<Vec<_>>();
     let primary = primary
@@ -161,7 +182,6 @@ fn run_window(
         Ok(window) => window,
         Err(error) => {
             tracing::warn!(error = %error, "failed to create the desktop widget window");
-            let _ = ready.send(None);
             return;
         }
     };
@@ -183,12 +203,25 @@ fn run_window(
         Ok(host) => host,
         Err(error) => {
             tracing::warn!(error = %error, "failed to create the desktop widget view");
-            let _ = ready.send(None);
             return;
         }
     };
+    {
+        let Ok(mut shared) = shared.lock() else {
+            return;
+        };
+        if shared.closed {
+            return;
+        }
+        shared.waker = Some(window.waker());
+    }
+    #[cfg(test)]
+    {
+        *last_handle.lock().unwrap() = Some(window.raw_handle());
+    }
     *state.borrow_mut() = Some(WidgetLoop {
         runtime,
+        view,
         host,
         frame: vec![0; width as usize * height as usize * 4],
         width,
@@ -201,7 +234,6 @@ fn run_window(
     if let Some(widget) = state.borrow_mut().as_mut() {
         widget.redraw(&window);
     }
-    let _ = ready.send(Some((window.waker(), window.raw_handle())));
     window.run();
     state.borrow_mut().take();
 }
@@ -209,7 +241,17 @@ fn run_window(
 impl WidgetLoop {
     fn handle(&mut self, window: &LayeredWindow, event: LayeredWindowEvent) {
         match event {
-            LayeredWindowEvent::Wake | LayeredWindowEvent::Timer => {}
+            LayeredWindowEvent::Wake => {
+                let Some(runtime) = self.runtime.upgrade() else {
+                    window.waker().close();
+                    return;
+                };
+                self.view = runtime.view();
+            }
+            LayeredWindowEvent::Timer => {
+                self.present(window);
+                return;
+            }
             LayeredWindowEvent::PointerMoved { x, y } => {
                 self.hovered = true;
                 self.host.pointer_moved(x, y);
@@ -302,17 +344,13 @@ impl WidgetLoop {
     }
 
     fn redraw(&mut self, window: &LayeredWindow) {
-        let Some(runtime) = self.runtime.upgrade() else {
-            window.waker().close();
-            return;
-        };
-        let view = runtime.view();
-        if view.settings.pinned != self.pinned {
-            self.pinned = view.settings.pinned;
+        let settings = self.view.settings;
+        if settings.pinned != self.pinned {
+            self.pinned = settings.pinned;
             window.set_topmost(self.pinned);
         }
-        if view.settings.click_through != self.click_through {
-            self.click_through = view.settings.click_through;
+        if settings.click_through != self.click_through {
+            self.click_through = settings.click_through;
             window.set_click_through(self.click_through);
             self.hovered &= !self.click_through;
         }
@@ -321,12 +359,16 @@ impl WidgetLoop {
             window.bring_to_front();
         }
         self.host.write_model(&DesktopWidgetSurfaceModel {
-            rows: view.rows,
-            background_opacity: view.settings.background_opacity,
+            rows: self.view.rows.clone(),
+            background_opacity: settings.background_opacity,
             interactive: !self.click_through,
             hovered: self.hovered,
-            newest_on_top: view.settings.newest_on_top,
+            newest_on_top: settings.newest_on_top,
         });
+        self.present(window);
+    }
+
+    fn present(&mut self, window: &LayeredWindow) {
         if self.host.render_bgra(&mut self.frame) {
             window.present(&self.frame, self.width, self.height);
         }
