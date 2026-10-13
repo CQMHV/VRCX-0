@@ -321,7 +321,6 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
         const sessionActions = (
             <>
                 <DoNotDisturbMenu />
-                <DesktopWidgetToggle />
                 <Tooltip>
                     <TooltipTrigger
                         render={
@@ -362,6 +361,7 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
                 >
                     {connections}
                     <div className="ml-auto flex shrink-0 items-center">
+                        <DesktopWidgetToggle />
                         {sessionActions}
                     </div>
                 </footer>
@@ -879,6 +879,7 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
                                 </TooltipContent>
                             </Tooltip>
                         ) : null}
+                        <DesktopWidgetToggle />
                         <OfflineRecordIndicator />
                         {proxyEnabled ? (
                             <Popover
