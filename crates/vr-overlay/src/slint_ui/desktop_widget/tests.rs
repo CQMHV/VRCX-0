@@ -196,6 +196,23 @@ fn pressing_on_empty_space_starts_moving_the_widget() {
 }
 
 #[test]
+fn pressing_beside_a_short_line_of_what_happened_starts_moving_the_widget() {
+    let mut short = row(7, "Ada", false);
+    short.detail = "left".to_string();
+    let mut widget = Widget::new();
+    widget.settled(&model(vec![short], 0, true));
+
+    assert_eq!(
+        widget.click(200.0, top_row_y()),
+        [DesktopWidgetAction::Drag]
+    );
+    assert_eq!(
+        widget.click(48.0, top_row_y()),
+        [DesktopWidgetAction::Detail(7)]
+    );
+}
+
+#[test]
 fn hovering_a_clickable_widget_shows_a_faint_frame() {
     let mut hovered = model(Vec::new(), 0, true);
     hovered.hovered = true;

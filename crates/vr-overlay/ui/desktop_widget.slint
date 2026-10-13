@@ -173,6 +173,8 @@ component WidgetRow inherits Rectangle {
             }
 
             TouchArea {
+                x: 0px;
+                width: min(parent.width, detail-text.preferred-width);
                 clicked => {
                     root.detail-clicked();
                 }
