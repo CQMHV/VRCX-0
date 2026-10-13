@@ -49,6 +49,16 @@ fn load_locale_settings(config: &ConfigRepository) -> (OverlayLocale, bool) {
     (locale, show_instance_id_in_location)
 }
 
+pub(crate) fn is_localizer_config_key(key: &str) -> bool {
+    let key = vrcx_0_contracts::resolve_config_key(key);
+    [
+        APP_LANGUAGE_CONFIG_KEY,
+        SHOW_INSTANCE_ID_IN_LOCATION_CONFIG_KEY,
+    ]
+    .into_iter()
+    .any(|localizer_key| vrcx_0_contracts::resolve_config_key(localizer_key) == key)
+}
+
 pub(crate) fn load_localizer(config: &ConfigRepository) -> OverlayLocalizer {
     let (locale, show_instance_id) = load_locale_settings(config);
     OverlayLocalizer::with_instance_id(locale, show_instance_id)
