@@ -11,6 +11,7 @@ use crate::app_launcher::start_app_launcher_snapshot_events;
 use crate::avatar::DesktopAvatarRuntime;
 use crate::context::DesktopRuntimeServicesDeps;
 use crate::data_dir::DesktopDataDirRuntime;
+use crate::desktop_widget::is_desktop_widget_config_key;
 use crate::external_api::ExternalApiRuntime;
 use crate::group::DesktopGroupRuntime;
 use crate::group_order::HostGroupOrderSource;
@@ -89,7 +90,6 @@ use vrcx_0_host_desktop::host_capabilities::{
 use vrcx_0_integration_api::{
     integration_api_publisher_channel, IntegrationApiConfigStore, IntegrationApiController,
 };
-use vrcx_0_overlay_runtime::desktop_widget::is_desktop_widget_config_key;
 use vrcx_0_persistence::legacy_migration::cleanup_legacy_updater_files;
 use vrcx_0_persistence::screenshot_cache::MetadataCacheDb;
 use vrcx_0_platform::app_paths::AppDataDirResolution;

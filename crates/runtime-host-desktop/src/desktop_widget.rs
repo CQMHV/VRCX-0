@@ -18,6 +18,8 @@ use vrcx_0_application_core::{
 #[cfg(windows)]
 use vrcx_0_core::OwnerId;
 #[cfg(windows)]
+pub(crate) use vrcx_0_overlay_runtime::desktop_widget::is_desktop_widget_config_key;
+#[cfg(windows)]
 use vrcx_0_overlay_runtime::desktop_widget::{
     DesktopWidgetHost, DesktopWidgetMenuCommand, DesktopWidgetRuntime, DesktopWidgetState,
     DesktopWidgetTarget, DesktopWidgetWindows, NativeDesktopWidgetWindows,
@@ -200,6 +202,11 @@ impl DesktopWidget {
         #[cfg(windows)]
         self.runtime.shutdown();
     }
+}
+
+#[cfg(not(windows))]
+pub(crate) fn is_desktop_widget_config_key(_key: &str) -> bool {
+    false
 }
 
 #[cfg(windows)]
