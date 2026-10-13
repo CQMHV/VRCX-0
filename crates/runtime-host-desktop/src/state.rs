@@ -89,6 +89,7 @@ use vrcx_0_host_desktop::host_capabilities::{
 use vrcx_0_integration_api::{
     integration_api_publisher_channel, IntegrationApiConfigStore, IntegrationApiController,
 };
+use vrcx_0_overlay_runtime::desktop_widget::is_desktop_widget_config_key;
 use vrcx_0_persistence::legacy_migration::cleanup_legacy_updater_files;
 use vrcx_0_persistence::screenshot_cache::MetadataCacheDb;
 use vrcx_0_platform::app_paths::AppDataDirResolution;
@@ -2170,18 +2171,26 @@ impl DesktopRuntimeHostState {
         &self,
         entries: Vec<crate::local_data::ConfigWriteEntry>,
     ) -> Result<()> {
+        let touches_desktop_widget = entries
+            .iter()
+            .any(|entry| is_desktop_widget_config_key(&entry.key));
         self.local_data.config_set_values(entries)?;
         self.desktop.services.reload_overlay_activity_filters();
         self.desktop.vr_overlay_runtime.mark_config_dirty();
-        self.desktop.desktop_widget.reload_settings();
+        if touches_desktop_widget {
+            self.desktop.desktop_widget.reload_settings();
+        }
         Ok(())
     }
 
     pub fn config_remove_value(&self, key: String) -> Result<i64> {
+        let touches_desktop_widget = is_desktop_widget_config_key(&key);
         let removed = self.local_data.config_remove_value(key)?;
         self.desktop.services.reload_overlay_activity_filters();
         self.desktop.vr_overlay_runtime.mark_config_dirty();
-        self.desktop.desktop_widget.reload_settings();
+        if touches_desktop_widget {
+            self.desktop.desktop_widget.reload_settings();
+        }
         Ok(removed)
     }
 

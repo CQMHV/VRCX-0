@@ -6,6 +6,11 @@ pub const DESKTOP_WIDGET_CLICK_THROUGH_CONFIG_KEY: &str = "desktopWidgetClickThr
 pub const DESKTOP_WIDGET_OPACITY_CONFIG_KEY: &str = "desktopWidgetOpacity";
 pub const DESKTOP_WIDGET_BOUNDS_CONFIG_KEY: &str = "desktopWidgetBounds";
 pub const DESKTOP_WIDGET_NEWEST_ON_TOP_CONFIG_KEY: &str = "desktopWidgetNewestOnTop";
+const DESKTOP_WIDGET_CONFIG_KEY_PREFIX: &str = "desktopWidget";
+
+pub fn is_desktop_widget_config_key(key: &str) -> bool {
+    key.starts_with(DESKTOP_WIDGET_CONFIG_KEY_PREFIX)
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct DesktopWidgetBounds {

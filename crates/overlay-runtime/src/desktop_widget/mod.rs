@@ -10,10 +10,10 @@ pub use runtime::{
     DesktopWidgetView, DesktopWidgetWindow, DesktopWidgetWindows,
 };
 pub use settings::{
-    place_on_screens, DesktopWidgetBounds, DesktopWidgetSettings, DESKTOP_WIDGET_BOUNDS_CONFIG_KEY,
-    DESKTOP_WIDGET_CLICK_THROUGH_CONFIG_KEY, DESKTOP_WIDGET_ENABLED_CONFIG_KEY,
-    DESKTOP_WIDGET_NEWEST_ON_TOP_CONFIG_KEY, DESKTOP_WIDGET_OPACITY_CONFIG_KEY,
-    DESKTOP_WIDGET_PINNED_CONFIG_KEY,
+    is_desktop_widget_config_key, place_on_screens, DesktopWidgetBounds, DesktopWidgetSettings,
+    DESKTOP_WIDGET_BOUNDS_CONFIG_KEY, DESKTOP_WIDGET_CLICK_THROUGH_CONFIG_KEY,
+    DESKTOP_WIDGET_ENABLED_CONFIG_KEY, DESKTOP_WIDGET_NEWEST_ON_TOP_CONFIG_KEY,
+    DESKTOP_WIDGET_OPACITY_CONFIG_KEY, DESKTOP_WIDGET_PINNED_CONFIG_KEY,
 };
 pub use vrcx_0_vr_overlay::DesktopWidgetRow;
 #[cfg(windows)]

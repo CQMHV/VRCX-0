@@ -5,7 +5,7 @@ use vrcx_0_core::location::world_id_from_location;
 use vrcx_0_vr_overlay::{AvatarBitmap, DesktopWidgetRow, FeedRelation, FeedSeverity};
 
 use crate::localization::OverlayLocalizer;
-use crate::surfaces::wrist::feed_line_from_activity;
+use crate::surfaces::wrist::feed_text_from_activity;
 
 const ROW_CAPACITY: usize = 50;
 
@@ -116,20 +116,14 @@ impl DesktopWidgetFeed {
 
 impl FeedRow {
     fn view(&self, localizer: &OverlayLocalizer) -> DesktopWidgetRow {
-        let line = feed_line_from_activity(&self.entry, localizer);
-        let actor = line.actor_text.trim();
-        let detail = line.detail.trim();
-        let (actor, detail) = match detail.strip_prefix(actor) {
-            Some(rest) if !actor.is_empty() => (actor.to_string(), rest.trim_start().to_string()),
-            _ => (String::new(), detail.to_string()),
-        };
+        let text = feed_text_from_activity(&self.entry, localizer);
         DesktopWidgetRow {
             id: self.id,
-            time_text: line.time_text,
-            actor,
-            detail,
-            favorite: line.relation == FeedRelation::Favorite,
-            warning: line.severity == FeedSeverity::Warning,
+            time_text: text.time_text,
+            actor: text.subject,
+            detail: text.action,
+            favorite: text.relation == FeedRelation::Favorite,
+            warning: text.severity == FeedSeverity::Warning,
             show_avatar_slot: self.entry.actor_user_id.trim().starts_with("usr_"),
             avatar: self.avatar.clone(),
         }
