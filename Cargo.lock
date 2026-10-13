@@ -9458,6 +9458,7 @@ dependencies = [
  "vrcx-0-i18n",
  "vrcx-0-persistence",
  "vrcx-0-vr-overlay",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

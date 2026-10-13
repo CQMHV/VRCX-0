@@ -637,6 +637,18 @@
             }
         }
     },
+    "desktop_widget": {
+        "title": "Desktopový overlay",
+        "menu": {
+            "pin": "Vždy navrchu",
+            "click_through": "Propouštět kliknutí myši",
+            "close": "Zavřít"
+        },
+        "tray": {
+            "turn_on": "Zapnout",
+            "show": "Přenést do popředí"
+        }
+    },
     "nativeShell": {
         "tray": {
             "open": "Otevřít VRCX-0",
@@ -2906,6 +2918,16 @@
                         "desktop_notification_while_afk": "Desktop Notifications While AFK",
                         "notification_sound": "Zvuk oznámení",
                         "friend_icons": "Zobrazit ikony přátel"
+                    },
+                    "desktop_widget": {
+                        "header": "Desktopový overlay",
+                        "description": "Zobrazuje nedávné aktivity v okně na ploše a uchovává nejvýše 50 položek.",
+                        "usage_hint": "Zapíná a vypíná se na stavovém řádku. Kliknutím pravým tlačítkem na okno nastavíte Vždy navrchu nebo propouštění kliknutí myši. Když okno propouští kliknutí, vypněte to v nabídce na hlavním panelu.",
+                        "background_opacity": "Neprůhlednost pozadí",
+                        "order": "Pořadí",
+                        "order_newest_top": "Nejnovější nahoře",
+                        "order_newest_bottom": "Nejnovější dole",
+                        "activity_filters": "Filtry desktopového overlaye"
                     },
                     "webhook": {
                         "header": "Oznámení webhooku",
@@ -5445,6 +5467,10 @@
             "title": "Filtry desktopových oznámení",
             "description": "Vyberte, které aktivity spouští desktopová (systémová) oznámení. Výše uvedená podmínka pro desktopová oznámení stále platí."
         },
+        "desktop_widget": {
+            "title": "Filtry desktopového overlaye",
+            "description": "Vyberte, které aktivity se zobrazí v desktopovém overlayi."
+        },
         "webhook_notifications": {
             "title": "Filtry webhook oznámení",
             "description": "Vyberte, která běhová oznámení se odesílají na nakonfigurovaný webhook."
@@ -6402,7 +6428,11 @@
         "proxy_disabled": "Proxy zakázána",
         "proxy_enabled_direct": "Proxy povolena, připojuje se přímo",
         "proxy_enabled_server": "Proxy povolena: {proxy}",
-        "proxy_network_issue": "Proxy povolena, síťový požadavek selhal"
+        "proxy_network_issue": "Proxy povolena, síťový požadavek selhal",
+        "desktop_widget_off": "Desktopový overlay je vypnutý",
+        "desktop_widget_on": "Desktopový overlay je zapnutý",
+        "desktop_widget_click_through": "Desktopový overlay je zapnutý (propouští kliknutí myši)",
+        "desktop_widget_failed": "Desktopový overlay se nepodařilo změnit"
     },
     "component": {
         "favorite_action_menu": {

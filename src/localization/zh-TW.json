@@ -637,6 +637,18 @@
             }
         }
     },
+    "desktop_widget": {
+        "title": "桌面嵌入介面",
+        "menu": {
+            "pin": "視窗置頂",
+            "click_through": "滑鼠穿透",
+            "close": "關閉"
+        },
+        "tray": {
+            "turn_on": "開啟",
+            "show": "顯示到最前"
+        }
+    },
     "nativeShell": {
         "tray": {
             "open": "開啟 VRCX-0",
@@ -2894,6 +2906,16 @@
                         "desktop_notification_while_afk": "在 AFK 時顯示桌面通知",
                         "notification_sound": "通知音",
                         "friend_icons": "顯示好友頭像"
+                    },
+                    "desktop_widget": {
+                        "header": "桌面嵌入介面",
+                        "description": "在桌面視窗中顯示最近的活動，最多保留 50 則。",
+                        "usage_hint": "可在狀態列中開啟或關閉。在視窗上按右鍵可設定視窗置頂或滑鼠穿透；啟用滑鼠穿透後，請透過系統匣選單關閉。",
+                        "background_opacity": "背景不透明度",
+                        "order": "排列順序",
+                        "order_newest_top": "最新在上",
+                        "order_newest_bottom": "最新在下",
+                        "activity_filters": "桌面嵌入介面過濾器"
                     },
                     "webhook": {
                         "header": "Webhook 通知",
@@ -5450,6 +5472,10 @@
             "title": "桌面通知過濾器",
             "description": "選擇哪些活動會觸發桌面（系統）通知。上方的桌面通知顯示條件依然生效。"
         },
+        "desktop_widget": {
+            "title": "桌面嵌入介面過濾器",
+            "description": "選擇哪些活動會顯示在桌面嵌入介面中。"
+        },
         "webhook_notifications": {
             "title": "Webhook 通知篩選器",
             "description": "選擇要傳送至已設定 Webhook 的執行階段通知。"
@@ -6411,7 +6437,11 @@
         "proxy_disabled": "代理已停用",
         "proxy_enabled_direct": "已啟用代理，正在直接連線",
         "proxy_enabled_server": "已啟用代理： {proxy}",
-        "proxy_network_issue": "已啟用代理，網路請求失敗"
+        "proxy_network_issue": "已啟用代理，網路請求失敗",
+        "desktop_widget_off": "桌面嵌入介面已關閉",
+        "desktop_widget_on": "桌面嵌入介面已開啟",
+        "desktop_widget_click_through": "桌面嵌入介面已開啟（滑鼠穿透）",
+        "desktop_widget_failed": "無法更新桌面嵌入介面"
     },
     "component": {
         "favorite_action_menu": {

@@ -45,6 +45,7 @@ import {
 } from '@/ui/shadcn/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
+import { DesktopWidgetToggle } from './DesktopWidgetToggle';
 import { DoNotDisturbMenu } from './DoNotDisturbMenu';
 import { OfflineRecordIndicator } from './OfflineRecordIndicator';
 import {
@@ -320,6 +321,7 @@ export const StatusBarFooter = forwardRef<HTMLElement, StatusBarFooterProps>(
         const sessionActions = (
             <>
                 <DoNotDisturbMenu />
+                <DesktopWidgetToggle />
                 <Tooltip>
                     <TooltipTrigger
                         render={

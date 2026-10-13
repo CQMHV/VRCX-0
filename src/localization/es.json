@@ -637,6 +637,18 @@
             }
         }
     },
+    "desktop_widget": {
+        "title": "Overlay de escritorio",
+        "menu": {
+            "pin": "Siempre visible",
+            "click_through": "Dejar pasar los clics del ratón",
+            "close": "Cerrar"
+        },
+        "tray": {
+            "turn_on": "Activar",
+            "show": "Traer al frente"
+        }
+    },
     "nativeShell": {
         "tray": {
             "open": "Abrir VRCX-0",
@@ -2900,6 +2912,16 @@
                         "desktop_notification_while_afk": "Mostrar notificaciones estando AFK",
                         "notification_sound": "Sonido de notificación",
                         "friend_icons": "Mostrar iconos de amigos"
+                    },
+                    "desktop_widget": {
+                        "header": "Overlay de escritorio",
+                        "description": "Muestra la actividad reciente en una ventana del escritorio y conserva hasta 50 entradas.",
+                        "usage_hint": "Actívalo o desactívalo desde la barra de estado. Haz clic derecho en la ventana para configurar Siempre visible o dejar pasar los clics del ratón. Mientras deje pasar los clics, desactívalo desde el menú de la bandeja.",
+                        "background_opacity": "Opacidad del fondo",
+                        "order": "Orden",
+                        "order_newest_top": "Más recientes arriba",
+                        "order_newest_bottom": "Más recientes abajo",
+                        "activity_filters": "Filtros del overlay de escritorio"
                     },
                     "webhook": {
                         "header": "Notificaciones por webhook",
@@ -5469,6 +5491,10 @@
             "title": "Filtros de notificaciones de escritorio",
             "description": "Elige qué actividades activan las notificaciones de escritorio (del sistema). La condición de notificación de escritorio anterior sigue aplicándose."
         },
+        "desktop_widget": {
+            "title": "Filtros del overlay de escritorio",
+            "description": "Elige qué actividades aparecen en el overlay de escritorio."
+        },
         "webhook_notifications": {
             "title": "Filtros de notificaciones de Webhook",
             "description": "Elige qué notificaciones se envían al webhook configurado."
@@ -6430,7 +6456,11 @@
         "proxy_disabled": "Proxy desactivado",
         "proxy_enabled_direct": "Proxy activado, conectando directamente",
         "proxy_enabled_server": "Proxy activado: {proxy}",
-        "proxy_network_issue": "Proxy activado, la solicitud de red falló"
+        "proxy_network_issue": "Proxy activado, la solicitud de red falló",
+        "desktop_widget_off": "El overlay de escritorio está desactivado",
+        "desktop_widget_on": "El overlay de escritorio está activado",
+        "desktop_widget_click_through": "El overlay de escritorio está activado (deja pasar los clics)",
+        "desktop_widget_failed": "No se pudo actualizar el overlay de escritorio"
     },
     "component": {
         "favorite_action_menu": {

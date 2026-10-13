@@ -637,6 +637,18 @@
             }
         }
     },
+    "desktop_widget": {
+        "title": "Desktop Overlay",
+        "menu": {
+            "pin": "Always on Top",
+            "click_through": "Click-Through",
+            "close": "Close"
+        },
+        "tray": {
+            "turn_on": "Turn On",
+            "show": "Bring to Front"
+        }
+    },
     "nativeShell": {
         "tray": {
             "open": "Open VRCX-0",
@@ -2900,6 +2912,16 @@
                         "desktop_notification_while_afk": "Show Notifications While AFK",
                         "notification_sound": "Notification Sound",
                         "friend_icons": "Show Friend Icons"
+                    },
+                    "desktop_widget": {
+                        "header": "Desktop Overlay",
+                        "description": "Shows recent activity in a window on the desktop, keeping up to 50 entries.",
+                        "usage_hint": "Turn it on or off from the status bar. Right-click the window to set Always on Top or Click-Through. While Click-Through is on, turn it off from the tray menu.",
+                        "background_opacity": "Background Opacity",
+                        "order": "Order",
+                        "order_newest_top": "Newest at Top",
+                        "order_newest_bottom": "Newest at Bottom",
+                        "activity_filters": "Desktop Overlay Filters"
                     },
                     "webhook": {
                         "header": "Webhook Notifications",
@@ -5469,6 +5491,10 @@
             "title": "Desktop Notification Filters",
             "description": "Choose which activities trigger desktop (OS) notifications. The desktop notification condition above still applies."
         },
+        "desktop_widget": {
+            "title": "Desktop Overlay Filters",
+            "description": "Choose which activities appear in the desktop overlay."
+        },
         "webhook_notifications": {
             "title": "Webhook Notification Filters",
             "description": "Choose which notifications are sent to the configured webhook."
@@ -6430,7 +6456,11 @@
         "proxy_disabled": "Proxy disabled",
         "proxy_enabled_direct": "Proxy enabled, connecting directly",
         "proxy_enabled_server": "Proxy enabled: {proxy}",
-        "proxy_network_issue": "Proxy enabled, network request failed"
+        "proxy_network_issue": "Proxy enabled, network request failed",
+        "desktop_widget_off": "Desktop Overlay is off",
+        "desktop_widget_on": "Desktop Overlay is on",
+        "desktop_widget_click_through": "Desktop Overlay is on (Click-Through)",
+        "desktop_widget_failed": "Failed to update Desktop Overlay"
     },
     "component": {
         "favorite_action_menu": {

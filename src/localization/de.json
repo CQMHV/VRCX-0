@@ -637,6 +637,18 @@
             }
         }
     },
+    "desktop_widget": {
+        "title": "Desktop-Overlay",
+        "menu": {
+            "pin": "Immer im Vordergrund",
+            "click_through": "Mausklicks durchlassen",
+            "close": "Schließen"
+        },
+        "tray": {
+            "turn_on": "Einschalten",
+            "show": "In den Vordergrund holen"
+        }
+    },
     "nativeShell": {
         "tray": {
             "open": "VRCX-0 öffnen",
@@ -2896,6 +2908,16 @@
                         "desktop_notification_while_afk": "Benachrichtigungen bei AFK anzeigen",
                         "notification_sound": "Benachrichtigungston",
                         "friend_icons": "Freundessymbole anzeigen"
+                    },
+                    "desktop_widget": {
+                        "header": "Desktop-Overlay",
+                        "description": "Zeigt aktuelle Aktivitäten in einem Fenster auf dem Desktop an und behält bis zu 50 Einträge.",
+                        "usage_hint": "Schalte es in der Statusleiste ein oder aus. Mit einem Rechtsklick auf das Fenster legst du Immer im Vordergrund oder das Durchlassen von Mausklicks fest. Solange Mausklicks durchgelassen werden, schaltest du das im Tray-Menü wieder aus.",
+                        "background_opacity": "Hintergrunddeckkraft",
+                        "order": "Reihenfolge",
+                        "order_newest_top": "Neueste oben",
+                        "order_newest_bottom": "Neueste unten",
+                        "activity_filters": "Desktop-Overlay-Filter"
                     },
                     "webhook": {
                         "header": "Webhook-Benachrichtigungen",
@@ -5421,6 +5443,10 @@
             "title": "Desktop-Benachrichtigungsfilter",
             "description": "Wähle aus, welche Aktivitäten Desktop-Benachrichtigungen (Betriebssystem) auslösen. Die obige Bedingung für Desktop-Benachrichtigungen gilt weiterhin."
         },
+        "desktop_widget": {
+            "title": "Desktop-Overlay-Filter",
+            "description": "Wähle aus, welche Aktivitäten im Desktop-Overlay erscheinen."
+        },
         "webhook_notifications": {
             "title": "Webhook-Benachrichtigungsfilter",
             "description": "Wähle aus, welche Laufzeitbenachrichtigungen an den konfigurierten Webhook gesendet werden."
@@ -6378,7 +6404,11 @@
         "proxy_disabled": "Proxy deaktiviert",
         "proxy_enabled_direct": "Proxy aktiviert, direkte Verbindung",
         "proxy_enabled_server": "Proxy aktiviert: {proxy}",
-        "proxy_network_issue": "Proxy aktiviert, Netzwerkanfrage fehlgeschlagen"
+        "proxy_network_issue": "Proxy aktiviert, Netzwerkanfrage fehlgeschlagen",
+        "desktop_widget_off": "Desktop-Overlay ist aus",
+        "desktop_widget_on": "Desktop-Overlay ist an",
+        "desktop_widget_click_through": "Desktop-Overlay ist an (Mausklicks werden durchgelassen)",
+        "desktop_widget_failed": "Desktop-Overlay konnte nicht geändert werden"
     },
     "component": {
         "favorite_action_menu": {

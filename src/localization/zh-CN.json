@@ -637,6 +637,18 @@
             }
         }
     },
+    "desktop_widget": {
+        "title": "桌面叠加界面",
+        "menu": {
+            "pin": "窗口置顶",
+            "click_through": "鼠标穿透",
+            "close": "关闭"
+        },
+        "tray": {
+            "turn_on": "开启",
+            "show": "显示到最前"
+        }
+    },
     "nativeShell": {
         "tray": {
             "open": "打开 VRCX-0",
@@ -2894,6 +2906,16 @@
                         "desktop_notification_while_afk": "当处于 AFK 状态时显示桌面通知",
                         "notification_sound": "通知音",
                         "friend_icons": "显示好友头像"
+                    },
+                    "desktop_widget": {
+                        "header": "桌面叠加界面",
+                        "description": "在桌面窗口中显示最近的活动，最多保留 50 条。",
+                        "usage_hint": "可在状态栏中开启或关闭。右键单击窗口可设置窗口置顶或鼠标穿透；启用鼠标穿透后，请通过托盘菜单关闭。",
+                        "background_opacity": "背景不透明度",
+                        "order": "排列顺序",
+                        "order_newest_top": "最新在上",
+                        "order_newest_bottom": "最新在下",
+                        "activity_filters": "桌面叠加界面过滤器"
                     },
                     "webhook": {
                         "header": "Webhook 通知",
@@ -5459,6 +5481,10 @@
             "title": "桌面通知过滤器",
             "description": "选择哪些活动会触发桌面（系统）通知。上方的桌面通知显示条件依然生效。"
         },
+        "desktop_widget": {
+            "title": "桌面叠加界面过滤器",
+            "description": "选择哪些活动会显示在桌面叠加界面中。"
+        },
         "webhook_notifications": {
             "title": "Webhook 通知过滤器",
             "description": "选择哪些通知会发送到已配置的 Webhook。"
@@ -6420,7 +6446,11 @@
         "proxy_disabled": "代理已关闭",
         "proxy_enabled_direct": "代理已启用，当前直连",
         "proxy_enabled_server": "代理已启用：{proxy}",
-        "proxy_network_issue": "代理已启用，网络请求失败"
+        "proxy_network_issue": "代理已启用，网络请求失败",
+        "desktop_widget_off": "桌面叠加界面已关闭",
+        "desktop_widget_on": "桌面叠加界面已开启",
+        "desktop_widget_click_through": "桌面叠加界面已开启（鼠标穿透）",
+        "desktop_widget_failed": "无法更新桌面叠加界面"
     },
     "component": {
         "favorite_action_menu": {

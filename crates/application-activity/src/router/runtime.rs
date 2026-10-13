@@ -99,6 +99,7 @@ impl ActivityFavoriteGroups {
             NotificationSurface::Hmd,
             NotificationSurface::Webhook,
             NotificationSurface::Tts,
+            NotificationSurface::DesktopWidget,
         ] {
             let rule = filters.rule_for(surface, ActivityKind::GroupInstanceOpened);
             match rule.scope {
@@ -405,6 +406,13 @@ impl ActivityRouter {
                 && surface_matches(&state, &event, NotificationSurface::Webhook, &definition);
             let tts =
                 notifies && surface_matches(&state, &event, NotificationSurface::Tts, &definition);
+            let widget = notifies
+                && surface_matches(
+                    &state,
+                    &event,
+                    NotificationSurface::DesktopWidget,
+                    &definition,
+                );
             let vr_suppressed = vr
                 && suppresses_current_instance_gps(
                     &state,
@@ -419,7 +427,7 @@ impl ActivityRouter {
             if hmd_suppressed {
                 hmd = false;
             }
-            if !wrist && !desktop && !vr && !hmd && !webhook && !tts {
+            if !wrist && !desktop && !vr && !hmd && !webhook && !tts && !widget {
                 if vr_suppressed || hmd_suppressed {
                     remember_source_id(&mut state, source_id);
                 }
@@ -452,7 +460,7 @@ impl ActivityRouter {
                 None
             };
 
-            let delivery_is_live = (desktop || vr || hmd || webhook || tts)
+            let delivery_is_live = (desktop || vr || hmd || webhook || tts || widget)
                 && is_live_event(&state, &entry.created_at);
             let delivery = if delivery_is_live {
                 remember_joined_delivery(&mut state, &entry, vr, hmd);
@@ -463,6 +471,7 @@ impl ActivityRouter {
                     hmd,
                     webhook,
                     tts,
+                    widget,
                 })
             } else {
                 None
@@ -512,6 +521,7 @@ impl ActivityRouter {
             hmd: true,
             webhook: false,
             tts: true,
+            widget: true,
         });
     }
 

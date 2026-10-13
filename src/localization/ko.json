@@ -637,6 +637,18 @@
             }
         }
     },
+    "desktop_widget": {
+        "title": "데스크톱 오버레이",
+        "menu": {
+            "pin": "항상 위에 표시",
+            "click_through": "마우스 클릭 통과",
+            "close": "닫기"
+        },
+        "tray": {
+            "turn_on": "켜기",
+            "show": "맨 앞으로 가져오기"
+        }
+    },
     "nativeShell": {
         "tray": {
             "open": "VRCX-0 열기",
@@ -2837,6 +2849,16 @@
                         "desktop_notification_while_afk": "AFK 동안 알림 표시",
                         "notification_sound": "알림음",
                         "friend_icons": "친구 아이콘 표시"
+                    },
+                    "desktop_widget": {
+                        "header": "데스크톱 오버레이",
+                        "description": "최근 활동을 데스크톱 창에 표시하며, 최대 50개까지 유지합니다.",
+                        "usage_hint": "상태 표시줄에서 켜거나 끌 수 있습니다. 창을 마우스 오른쪽 버튼으로 클릭하면 항상 위에 표시와 마우스 클릭 통과를 설정할 수 있습니다. 마우스 클릭 통과를 켠 동안에는 트레이 메뉴에서 해제하세요.",
+                        "background_opacity": "배경 불투명도",
+                        "order": "정렬 순서",
+                        "order_newest_top": "최신 항목을 위에",
+                        "order_newest_bottom": "최신 항목을 아래에",
+                        "activity_filters": "데스크톱 오버레이 필터"
                     },
                     "webhook": {
                         "header": "Webhook 알림",
@@ -5403,6 +5425,10 @@
             "title": "데스크톱 알림 필터",
             "description": "어떤 활동이 데스크톱(OS) 알림을 표시할지 선택합니다. 위의 데스크톱 알림 조건도 계속 적용됩니다."
         },
+        "desktop_widget": {
+            "title": "데스크톱 오버레이 필터",
+            "description": "데스크톱 오버레이에 표시할 활동을 선택합니다."
+        },
         "webhook_notifications": {
             "title": "Webhook 알림 필터",
             "description": "설정한 웹훅으로 보낼 알림을 선택합니다."
@@ -6364,7 +6390,11 @@
         "proxy_disabled": "프록시 비활성화됨",
         "proxy_enabled_direct": "프록시 활성화됨, 직접 연결 중",
         "proxy_enabled_server": "프록시 활성화됨: {proxy}",
-        "proxy_network_issue": "프록시가 활성화되었지만 네트워크 요청에 실패했습니다"
+        "proxy_network_issue": "프록시가 활성화되었지만 네트워크 요청에 실패했습니다",
+        "desktop_widget_off": "데스크톱 오버레이가 꺼져 있습니다",
+        "desktop_widget_on": "데스크톱 오버레이가 켜져 있습니다",
+        "desktop_widget_click_through": "데스크톱 오버레이가 켜져 있습니다(마우스 클릭 통과)",
+        "desktop_widget_failed": "데스크톱 오버레이를 변경하지 못했습니다"
     },
     "component": {
         "favorite_action_menu": {

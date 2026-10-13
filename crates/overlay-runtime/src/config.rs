@@ -2,13 +2,14 @@ use crate::VrOverlayRuntimeServices;
 use vrcx_0_host_desktop::vr_overlay::OverlayActivationButton;
 
 use super::eligibility::WristOverlayStartMode;
-use super::localization::OverlayLocale;
+use super::localization::{OverlayLocale, OverlayLocalizer};
 use super::runtime::{
     HmdNotificationConfig, HmdNotificationPosition, HmdNotificationStyle, VrOverlayRuntimeConfig,
     WristOverlayHand,
 };
 use super::service::OverlayBackendPreference;
 use super::{WristOverlayRenderOptions, WristOverlaySizePreset};
+use vrcx_0_persistence::config::ConfigRepository;
 
 pub const VR_OVERLAY_ENABLED_CONFIG_KEY: &str = "wristOverlayEnabled";
 pub const VR_OVERLAY_BACKEND_CONFIG_KEY: &str = "wristOverlayBackend";
@@ -30,6 +31,23 @@ pub const HMD_NOTIFICATION_AVATARS_CONFIG_KEY: &str = "hmdNotificationAvatars";
 const APP_LANGUAGE_CONFIG_KEY: &str = "appLanguage";
 const DATE_TIME_HOUR12_CONFIG_KEY: &str = "dtHour12";
 const SHOW_INSTANCE_ID_IN_LOCATION_CONFIG_KEY: &str = "VRCX_showInstanceIdInLocation";
+
+pub(crate) fn load_app_language(config: &ConfigRepository) -> String {
+    config
+        .get_string(APP_LANGUAGE_CONFIG_KEY, "en")
+        .unwrap_or_else(|_| "en".to_string())
+}
+
+pub(crate) fn load_localizer(config: &ConfigRepository) -> OverlayLocalizer {
+    let locale = config
+        .get_string(APP_LANGUAGE_CONFIG_KEY, "en")
+        .map(|value| OverlayLocale::from_config(&value))
+        .unwrap_or_default();
+    let show_instance_id = config
+        .get_bool(SHOW_INSTANCE_ID_IN_LOCATION_CONFIG_KEY, false)
+        .unwrap_or(false);
+    OverlayLocalizer::with_instance_id(locale, show_instance_id)
+}
 
 pub(super) fn load_runtime_config(
     services: &dyn VrOverlayRuntimeServices,

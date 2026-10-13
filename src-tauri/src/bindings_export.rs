@@ -94,6 +94,7 @@ struct BackendRuntimeEventPayloadMap {
     feed_logger_health: vrcx_0_runtime_host_desktop::feed_logger::FeedLoggerProbe,
     notification_do_not_disturb_state: NotificationDoNotDisturbSnapshot,
     privacy_lock_state: PrivacyLockSnapshot,
+    desktop_widget_state: vrcx_0_runtime_host_desktop::desktop_widget::DesktopWidgetSnapshot,
 }
 
 pub fn builder() -> Builder<tauri::Wry> {
@@ -260,6 +261,7 @@ pub fn builder() -> Builder<tauri::Wry> {
             commands::application::presence_automation::app__presence_automation_rule_enabled_set,
             commands::application::favorite_transfer::app__favorites_transfer_selection,
             commands::application::favorite_transfer::app__favorites_remove_selection,
+            commands::application::desktop_widget::app__desktop_widget_enabled_set,
             commands::application::vr_overlay::app__vr_overlay_enabled_set,
             commands::application::vr_overlay::app__vr_overlay_test_mode_set,
             commands::application::registry_backup::app__registry_backup_list,

@@ -669,6 +669,13 @@ const generatedCommands = {
     ): Promise<FavoriteBulkRemoveResult> {
         return await TAURI_INVOKE('app__favorites_remove_selection', { input });
     },
+    async appDesktopWidgetEnabledSet(
+        enabled: boolean
+    ): Promise<DesktopWidgetSnapshot> {
+        return await TAURI_INVOKE('app__desktop_widget_enabled_set', {
+            enabled
+        });
+    },
     async appVrOverlayEnabledSet(
         enabled: boolean
     ): Promise<VrOverlayRuntimeSnapshot> {
@@ -3055,6 +3062,7 @@ export type ActivityTypeDefinition = {
     wristDefaultScope: ActivityScope;
     alertDefaultScope: ActivityScope;
     ttsDefaultScope: ActivityScope;
+    widgetDefaultScope: ActivityScope;
     aliases: string[];
 };
 export type ActivityViewBuildInput = {
@@ -3090,6 +3098,7 @@ export type AncillaryRuntimeSnapshot = {
     backgroundImageState: BackgroundImageProjection;
     notificationDoNotDisturbState: NotificationDoNotDisturbSnapshot;
     privacyLockState: PrivacyLockSnapshot;
+    desktopWidgetState: DesktopWidgetSnapshot;
 };
 export type AppDataDirSource = 'cli' | 'persisted' | 'default';
 export type AppDataDirState = {
@@ -3493,6 +3502,7 @@ export type BackendRuntimeEventPayloadMap = {
     feedLoggerHealth: FeedLoggerProbe;
     notificationDoNotDisturbState: NotificationDoNotDisturbSnapshot;
     privacyLockState: PrivacyLockSnapshot;
+    desktopWidgetState: DesktopWidgetSnapshot;
 };
 export type BackendRuntimeGameLogStatus =
     | 'idle'
@@ -3938,7 +3948,14 @@ export type DesktopNotificationActivation = {
 };
 export type DesktopNotificationTarget =
     | { kind: 'openUserProfile'; userId: string }
-    | { kind: 'openGroupProfile'; groupId: string };
+    | { kind: 'openGroupProfile'; groupId: string }
+    | { kind: 'openLocation'; location: string };
+export type DesktopWidgetSnapshot = {
+    supported: boolean;
+    enabled: boolean;
+    pinned: boolean;
+    clickThrough: boolean;
+};
 export type EmojiLoopStyle = 'pingpong';
 export type EmojiUploadParams =
     | {
@@ -5702,6 +5719,7 @@ export type NotificationActivityFilterProfiles = {
     desktop: ActivityFilterProfile;
     webhook: ActivityFilterProfile;
     tts: ActivityFilterProfile;
+    widget: ActivityFilterProfile;
 };
 export type NotificationActivityFilterSurface =
     | 'wrist'
@@ -5709,7 +5727,8 @@ export type NotificationActivityFilterSurface =
     | 'hmd'
     | 'desktop'
     | 'webhook'
-    | 'tts';
+    | 'tts'
+    | 'widget';
 export type NotificationActivityFiltersSetInput = {
     surface: NotificationActivityFilterSurface;
     filters: ActivityFilterProfile;

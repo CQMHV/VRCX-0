@@ -182,6 +182,11 @@ function handleRuntimeEvent(event: RuntimeEvent): void {
         return;
     }
 
+    if (event.name === 'desktopWidgetState') {
+        runtimeStore.setDesktopWidget(event.payload);
+        return;
+    }
+
     if (event.name === 'vrcStatus') {
         applyVrcStatusSnapshot(event.payload);
         return;
@@ -445,6 +450,11 @@ async function hydrateAncillaryRuntimeState(): Promise<void> {
                 .getState()
                 .setPrivacyLock(snapshot.privacyLockState);
         }),
+        hydrateRuntimeState('Failed to hydrate activity window state:', () => {
+            useRuntimeStore
+                .getState()
+                .setDesktopWidget(snapshot.desktopWidgetState);
+        }),
         hydrateRuntimeState(
             'Failed to hydrate app update download status:',
             async () => {
@@ -473,6 +483,7 @@ export async function bindRuntimeEvents(): Promise<() => void> {
         'communityThemeState',
         'notificationDoNotDisturbState',
         'privacyLockState',
+        'desktopWidgetState',
         'gameLogProjection',
         'gameLogPersistenceFallback',
         'gameLogSideEffect',

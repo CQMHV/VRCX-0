@@ -288,7 +288,10 @@ fn device_role(label: &str) -> DeviceRole {
     }
 }
 
-fn feed_line_from_activity(entry: &ActivityEntry, localizer: &OverlayLocalizer) -> FeedLine {
+pub(crate) fn feed_line_from_activity(
+    entry: &ActivityEntry,
+    localizer: &OverlayLocalizer,
+) -> FeedLine {
     FeedLine {
         time_text: time_text(&entry.created_at),
         kind: feed_kind(entry),

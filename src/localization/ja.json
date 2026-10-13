@@ -637,6 +637,18 @@
             }
         }
     },
+    "desktop_widget": {
+        "title": "デスクトップのオーバーレイ",
+        "menu": {
+            "pin": "常に手前に表示",
+            "click_through": "クリックを透過",
+            "close": "閉じる"
+        },
+        "tray": {
+            "turn_on": "オンにする",
+            "show": "最前面に表示"
+        }
+    },
     "nativeShell": {
         "tray": {
             "open": "VRCX-0 を開く",
@@ -2894,6 +2906,16 @@
                         "desktop_notification_while_afk": "AFK 中でもデスクトップに通知",
                         "notification_sound": "通知音",
                         "friend_icons": "フレンドのアイコン画像を表示"
+                    },
+                    "desktop_widget": {
+                        "header": "デスクトップのオーバーレイ",
+                        "description": "最近のアクティビティをデスクトップ上のウィンドウに表示します。最大 50 件まで保持します。",
+                        "usage_hint": "ステータスバーからオン・オフを切り替えます。ウィンドウを右クリックすると、常に手前に表示とクリックの透過を設定できます。クリックを透過している間は、トレイメニューから解除してください。",
+                        "background_opacity": "背景の不透明度",
+                        "order": "表示順",
+                        "order_newest_top": "新しいものを上に表示",
+                        "order_newest_bottom": "新しいものを下に表示",
+                        "activity_filters": "デスクトップのオーバーレイのフィルター"
                     },
                     "webhook": {
                         "header": "Webhook 通知",
@@ -5459,6 +5481,10 @@
             "title": "デスクトップ通知フィルター",
             "description": "どのアクティビティでデスクトップ（OS）通知を表示するかを選択します。上記のデスクトップ通知の条件も引き続き適用されます。"
         },
+        "desktop_widget": {
+            "title": "デスクトップのオーバーレイのフィルター",
+            "description": "デスクトップのオーバーレイに表示するアクティビティを選択します。"
+        },
         "webhook_notifications": {
             "title": "Webhook 通知フィルター",
             "description": "設定済みの Webhook に送信する通知を選択します。"
@@ -6420,7 +6446,11 @@
         "proxy_disabled": "プロキシ無効",
         "proxy_enabled_direct": "プロキシが有効ですが、直接接続しています",
         "proxy_enabled_server": "プロキシ有効: {proxy}",
-        "proxy_network_issue": "プロキシが有効ですが、ネットワークリクエストに失敗しました"
+        "proxy_network_issue": "プロキシが有効ですが、ネットワークリクエストに失敗しました",
+        "desktop_widget_off": "デスクトップのオーバーレイはオフです",
+        "desktop_widget_on": "デスクトップのオーバーレイはオンです",
+        "desktop_widget_click_through": "デスクトップのオーバーレイはオンです（クリックを透過中）",
+        "desktop_widget_failed": "デスクトップのオーバーレイを変更できませんでした"
     },
     "component": {
         "favorite_action_menu": {

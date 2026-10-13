@@ -637,6 +637,18 @@
             }
         }
     },
+    "desktop_widget": {
+        "title": "Overlay da Área de Trabalho",
+        "menu": {
+            "pin": "Sempre visível",
+            "click_through": "Deixar passar cliques do mouse",
+            "close": "Fechar"
+        },
+        "tray": {
+            "turn_on": "Ativar",
+            "show": "Trazer para a frente"
+        }
+    },
     "nativeShell": {
         "tray": {
             "open": "Abrir VRCX-0",
@@ -2896,6 +2908,16 @@
                         "desktop_notification_while_afk": "Notificações de Desktop Enquanto AFK",
                         "notification_sound": "Som da Notificação",
                         "friend_icons": "Mostrar Ícones de Amigos"
+                    },
+                    "desktop_widget": {
+                        "header": "Overlay da Área de Trabalho",
+                        "description": "Mostra a atividade recente em uma janela na área de trabalho, mantendo até 50 itens.",
+                        "usage_hint": "Ative ou desative pela barra de status. Clique com o botão direito na janela para definir Sempre visível ou deixar passar cliques do mouse. Enquanto os cliques passarem, desative isso pelo menu da bandeja.",
+                        "background_opacity": "Opacidade do fundo",
+                        "order": "Ordem",
+                        "order_newest_top": "Mais recentes em cima",
+                        "order_newest_bottom": "Mais recentes embaixo",
+                        "activity_filters": "Filtros do overlay da área de trabalho"
                     },
                     "webhook": {
                         "header": "Notificações por Webhook",
@@ -5421,6 +5443,10 @@
             "title": "Filtros de Notificação da Área de Trabalho",
             "description": "Escolha quais atividades disparam notificações da área de trabalho (do sistema). A condição de notificação da área de trabalho acima continua valendo."
         },
+        "desktop_widget": {
+            "title": "Filtros do overlay da área de trabalho",
+            "description": "Escolha quais atividades aparecem no overlay da área de trabalho."
+        },
         "webhook_notifications": {
             "title": "Filtros de Notificação por Webhook",
             "description": "Escolha quais notificações em tempo real são enviadas para o webhook configurado."
@@ -6378,7 +6404,11 @@
         "proxy_disabled": "Proxy disabled",
         "proxy_enabled_direct": "Proxy enabled, connecting directly",
         "proxy_enabled_server": "Proxy enabled: {proxy}",
-        "proxy_network_issue": "Proxy enabled, network request failed"
+        "proxy_network_issue": "Proxy enabled, network request failed",
+        "desktop_widget_off": "O overlay da área de trabalho está desativado",
+        "desktop_widget_on": "O overlay da área de trabalho está ativado",
+        "desktop_widget_click_through": "O overlay da área de trabalho está ativado (deixa passar cliques)",
+        "desktop_widget_failed": "Não foi possível atualizar o overlay da área de trabalho"
     },
     "component": {
         "favorite_action_menu": {
