@@ -3,6 +3,7 @@ use std::time::Duration;
 
 use rusqlite::{Connection, OpenFlags};
 
+use crate::config::{read_preserved_config, write_preserved_config};
 use crate::database::{backup_connection_to_path, remove_sidecars};
 use crate::legacy_vrcx::{LegacyVrcxDiscovery, LegacyVrcxSource};
 use crate::Error;
@@ -13,7 +14,6 @@ const STAGED_FLAG_CONTENTS: &[u8] = b"staged-v1";
 const STAGING_DIRECTORY: &str = "legacy-migration-staging";
 const STAGED_DATABASE_FILE: &str = "VRCX-0.sqlite3";
 const STAGED_CONFIG_FILE: &str = "VRCX-0.json";
-const PRESERVED_CONFIG_KEYS: [&str; 1] = ["config:vrcx_telemetryinstallid"];
 
 pub fn cleanup_legacy_updater_files(app_data: &Path) {
     for file_name in ["update.exe", "VRCX-0_Setup.exe", "tempDownload"] {
@@ -182,48 +182,6 @@ fn install_staged_legacy_vrcx_data(
     crate::profile_backup::replace_file_atomically(&staged_database, &paths.db_file)?;
     crate::profile_backup::sync_directory_durable(&paths.app_data)?;
     Ok(())
-}
-
-fn read_preserved_config(db_file: &Path) -> Vec<(String, String)> {
-    if !db_file.is_file() {
-        return Vec::new();
-    }
-    let connection = match Connection::open(db_file) {
-        Ok(connection) => connection,
-        Err(error) => {
-            tracing::warn!(error = %error, "failed to read config preserved across legacy migration");
-            return Vec::new();
-        }
-    };
-    PRESERVED_CONFIG_KEYS
-        .iter()
-        .filter_map(|key| {
-            connection
-                .query_row("SELECT value FROM configs WHERE key = ?1", [key], |row| {
-                    row.get::<_, String>(0)
-                })
-                .ok()
-                .map(|value| (key.to_string(), value))
-        })
-        .collect()
-}
-
-fn write_preserved_config(db_file: &Path, entries: &[(String, String)]) {
-    if entries.is_empty() {
-        return;
-    }
-    let result = Connection::open(db_file).and_then(|connection| {
-        for (key, value) in entries {
-            connection.execute(
-                "INSERT OR REPLACE INTO configs (key, value) VALUES (?1, ?2)",
-                [key, value],
-            )?;
-        }
-        Ok(())
-    });
-    if let Err(error) = result {
-        tracing::warn!(error = %error, "failed to carry config across legacy migration");
-    }
 }
 
 fn copy_database_snapshot(
