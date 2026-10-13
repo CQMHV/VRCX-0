@@ -232,6 +232,33 @@ fn a_blocked_player_row_reads_in_dark_red() {
     );
 }
 
+#[test]
+fn moving_to_a_screen_with_a_larger_scale_keeps_filling_the_same_window() {
+    let mut widget = Widget::new();
+    widget.host.set_scale_factor(1.25);
+
+    let frame = widget.render(&model(Vec::new(), 100, false));
+
+    assert_eq!(frame.alpha(WIDTH - 20, HEIGHT - 20), 255);
+}
+
+#[test]
+fn a_resize_that_arrives_before_the_new_scale_still_fills_the_resized_window() {
+    let (width, height) = (WIDTH * 5 / 4, HEIGHT * 5 / 4);
+    let mut host = SlintDesktopWidgetHost::new(WIDTH, HEIGHT, 1.0).unwrap();
+    let mut out = vec![0; (width * height * 4) as usize];
+    host.resize(width, height);
+    host.set_scale_factor(1.25);
+
+    host.write_model(&model(Vec::new(), 100, false));
+    host.render_bgra(&mut out);
+
+    assert_eq!(
+        out[(((height - 20) * width + width - 20) * 4 + 3) as usize],
+        255
+    );
+}
+
 struct Widget {
     host: SlintDesktopWidgetHost,
     out: Vec<u8>,
