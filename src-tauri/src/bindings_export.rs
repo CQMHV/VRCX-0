@@ -212,6 +212,7 @@ pub fn builder() -> Builder<tauri::Wry> {
             commands::application::feed_logger::app__feed_logger_settings_save,
             commands::application::feed_logger::app__feed_logger_settings_clear,
             commands::application::feed_logger::app__feed_logger_status,
+            commands::application::feed_logger::app__feed_logger_backfill_history,
             commands::application::feed_logger::app__feed_logger_push_credentials,
             commands::application::feed_logger::app__feed_logger_push_saved_credentials,
             commands::application::feed_logger::app__feed_logger_submit_two_factor,

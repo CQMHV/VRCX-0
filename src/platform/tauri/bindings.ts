@@ -395,6 +395,9 @@ const generatedCommands = {
     async appFeedLoggerStatus(): Promise<FeedLoggerProbe> {
         return await TAURI_INVOKE('app__feed_logger_status');
     },
+    async appFeedLoggerBackfillHistory(): Promise<FeedLoggerBackfillHistory> {
+        return await TAURI_INVOKE('app__feed_logger_backfill_history');
+    },
     async appFeedLoggerPushCredentials(
         username: string,
         password: string,
@@ -4370,6 +4373,11 @@ export type FeedLiveEntry =
           displayLocation?: string | null;
           ownerUserId: string;
       };
+export type FeedLoggerBackfillHistory = {
+    total: number;
+    recent: FeedLoggerBackfillRecord[];
+};
+export type FeedLoggerBackfillRecord = { at: number; inserted: number };
 export type FeedLoggerErrorCode =
     | 'notConfigured'
     | 'notSignedIn'
