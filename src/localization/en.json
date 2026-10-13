@@ -241,6 +241,7 @@
         "error": {
             "operationBusy": "Another backup, restore, or data move is already running.",
             "databaseUnavailable": "Your data can't be copied right now. Try again later.",
+            "databaseInUse": "Another program is using VRCX-0's data. Close it and try again.",
             "pendingRestore": "Finish or cancel the pending profile restore first.",
             "pendingLegacyMigration": "A VRCX data migration is pending. Restart VRCX-0 to finish it first.",
             "pendingMigration": "A data folder move is already pending. Restart VRCX-0 to finish it.",

@@ -3804,6 +3804,7 @@ export type DataDirMigrationError = {
 export type DataDirMigrationErrorCode =
     | 'operationBusy'
     | 'databaseUnavailable'
+    | 'databaseInUse'
     | 'pendingRestore'
     | 'pendingLegacyMigration'
     | 'pendingMigration'

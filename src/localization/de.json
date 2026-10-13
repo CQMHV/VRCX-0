@@ -241,6 +241,7 @@
         "error": {
             "operationBusy": "Eine andere Sicherung, Wiederherstellung oder Verschiebung läuft bereits.",
             "databaseUnavailable": "Die Daten können gerade nicht kopiert werden. Versuche es später noch einmal.",
+            "databaseInUse": "Ein anderes Programm verwendet gerade die Daten von VRCX-0. Schließe es und versuche es dann erneut.",
             "pendingRestore": "Schließe zuerst die ausstehende Profilwiederherstellung ab oder brich sie ab.",
             "pendingLegacyMigration": "Schließe zuerst die ausstehende Altdatenmigration ab.",
             "pendingMigration": "Ein Datenordnerwechsel steht aus. Starte VRCX-0 neu.",

@@ -241,6 +241,7 @@
         "error": {
             "operationBusy": "另一個備份、還原或資料移轉作業正在執行。",
             "databaseUnavailable": "目前無法複製資料，請稍後再試。",
+            "databaseInUse": "有其他程式正在使用 VRCX-0 的資料，請關閉相關程式後再試一次。",
             "pendingRestore": "請先完成或取消待處理的備份還原。",
             "pendingLegacyMigration": "有待處理的 VRCX 資料遷移。請先重新啟動 VRCX-0 以完成遷移。",
             "pendingMigration": "已有待完成的資料夾移轉，請重新啟動 VRCX-0。",

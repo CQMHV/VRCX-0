@@ -241,6 +241,7 @@
         "error": {
             "operationBusy": "Již probíhá jiné zálohování, obnovení nebo přesun.",
             "databaseUnavailable": "Data teď nelze zkopírovat. Zkuste to později.",
+            "databaseInUse": "Data VRCX-0 právě používá jiný program. Zavřete ho a zkuste to znovu.",
             "pendingRestore": "Nejprve dokončete nebo zrušte čekající obnovení.",
             "pendingLegacyMigration": "Nejprve dokončete čekající převod starých dat.",
             "pendingMigration": "Čeká změna datové složky. Restartujte VRCX-0.",

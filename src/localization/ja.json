@@ -241,6 +241,7 @@
         "error": {
             "operationBusy": "別のバックアップ、復元、またはデータ移動が実行中です。",
             "databaseUnavailable": "今はデータをコピーできません。しばらくしてからもう一度お試しください。",
+            "databaseInUse": "別のプログラムが VRCX-0 のデータを使用しています。そのプログラムを閉じてから、もう一度お試しください。",
             "pendingRestore": "保留中のプロファイル復元を先に完了またはキャンセルしてください。",
             "pendingLegacyMigration": "VRCX データの移行が保留中です。先に VRCX-0 を再起動して移行を完了してください。",
             "pendingMigration": "保存先の変更が保留中です。VRCX-0 を再起動して完了してください。",

@@ -241,6 +241,7 @@
         "error": {
             "operationBusy": "另一个备份、恢复或数据迁移任务正在运行。",
             "databaseUnavailable": "暂时无法复制数据，请稍后重试。",
+            "databaseInUse": "有其他程序正在使用 VRCX-0 的数据，请关闭相关程序后重试。",
             "pendingRestore": "请先完成或取消待进行的数据恢复。",
             "pendingLegacyMigration": "有一项 VRCX 数据迁移尚未完成，请先重启 VRCX-0 完成迁移。",
             "pendingMigration": "已有待完成的数据文件夹迁移，请重启 VRCX-0 完成。",

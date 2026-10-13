@@ -241,6 +241,7 @@
         "error": {
             "operationBusy": "Ya hay otra copia, restauración o traslado en curso.",
             "databaseUnavailable": "Ahora mismo no se pueden copiar los datos. Inténtalo de nuevo más tarde.",
+            "databaseInUse": "Otro programa está usando los datos de VRCX-0. Ciérralo e inténtalo de nuevo.",
             "pendingRestore": "Termina o cancela primero la restauración pendiente.",
             "pendingLegacyMigration": "Hay una migración de datos de VRCX pendiente. Reinicia VRCX-0 para completarla primero.",
             "pendingMigration": "Hay un traslado de datos pendiente. Reinicia VRCX-0.",
