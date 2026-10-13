@@ -5,7 +5,7 @@ use vrcx_0_persistence::config::ConfigRepository;
 use vrcx_0_persistence::DatabaseService;
 
 use super::{
-    place_on_screens, DesktopWidgetBounds, DesktopWidgetSettings,
+    is_desktop_widget_config_key, place_on_screens, DesktopWidgetBounds, DesktopWidgetSettings,
     DESKTOP_WIDGET_CLICK_THROUGH_CONFIG_KEY, DESKTOP_WIDGET_NEWEST_ON_TOP_CONFIG_KEY,
     DESKTOP_WIDGET_OPACITY_CONFIG_KEY, DESKTOP_WIDGET_PINNED_CONFIG_KEY,
 };
@@ -22,6 +22,25 @@ fn a_new_widget_is_off_pinned_clickable_half_see_through_and_lists_newest_on_top
     assert_eq!(settings.background_opacity, 55);
     assert!(settings.newest_on_top);
     assert_eq!(settings.bounds, None);
+}
+
+#[test]
+fn settings_written_from_the_settings_page_are_recognised_as_desktop_overlay_settings() {
+    for key in [
+        "config:vrcx_desktopwidgetnewestontop",
+        "config:vrcx_desktopwidgetopacity",
+        "desktopWidgetNewestOnTop",
+        "VRCX_desktopWidgetOpacity",
+    ] {
+        assert!(is_desktop_widget_config_key(key), "{key}");
+    }
+    for key in [
+        "config:vrcx_hmdnotificationopacity",
+        "config:vrcx_desktopnotificationavatars",
+        "hmdNotificationOpacity",
+    ] {
+        assert!(!is_desktop_widget_config_key(key), "{key}");
+    }
 }
 
 #[test]

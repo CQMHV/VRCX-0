@@ -19,7 +19,9 @@ use windows_sys::Win32::UI::WindowsAndMessaging::{
 use super::NativeDesktopWidgetWindows;
 use crate::desktop_widget::feed::DesktopWidgetTarget;
 use crate::desktop_widget::runtime::{DesktopWidgetHost, DesktopWidgetRuntime, DesktopWidgetState};
-use crate::desktop_widget::settings::{DesktopWidgetBounds, DesktopWidgetSettings};
+use crate::desktop_widget::settings::{
+    DesktopWidgetBounds, DesktopWidgetSettings, DESKTOP_WIDGET_NEWEST_ON_TOP_CONFIG_KEY,
+};
 
 #[test]
 fn turning_the_widget_on_shows_a_window_where_it_was_left_and_turning_it_off_removes_it() {
@@ -61,8 +63,53 @@ fn clicking_a_name_in_the_window_asks_the_app_to_open_that_user() {
     widget.runtime.set_enabled(false).unwrap();
 }
 
+#[test]
+fn switching_to_newest_at_the_bottom_redraws_the_open_window_right_away() {
+    let widget = TestWidget::new();
+    widget.runtime.set_enabled(true).unwrap();
+    let handle = widget.window_handle();
+    widget.runtime.ingest_delivery(delivery("Ada"));
+    widget.runtime.ingest_delivery(delivery("Bob"));
+    std::thread::sleep(Duration::from_millis(200));
+
+    widget
+        .config
+        .set_bool(DESKTOP_WIDGET_NEWEST_ON_TOP_CONFIG_KEY, false)
+        .unwrap();
+    widget.runtime.reload_settings();
+    std::thread::sleep(Duration::from_millis(200));
+    click(
+        handle,
+        (widget.bounds.height as f32) - 18.0 * scale_of(handle),
+    );
+
+    assert_eq!(
+        widget.host.targets.lock().unwrap().clone(),
+        [DesktopWidgetTarget::User {
+            user_id: "usr_Bob".to_string()
+        }]
+    );
+    widget.runtime.set_enabled(false).unwrap();
+}
+
+fn scale_of(handle: isize) -> f32 {
+    let dpi = unsafe { GetDpiForWindow(handle as _) };
+    dpi as f32 / 96.0
+}
+
+fn click(handle: isize, y: f32) {
+    let x = (40.0 * scale_of(handle)) as isize;
+    let point = ((y as isize) << 16) | x;
+    unsafe {
+        SendMessageW(handle as _, WM_MOUSEMOVE, 0, point);
+        SendMessageW(handle as _, WM_LBUTTONDOWN, 1, point);
+        SendMessageW(handle as _, WM_LBUTTONUP, 0, point);
+    }
+}
+
 struct TestWidget {
     _dir: TestDir,
+    config: ConfigRepository,
     host: Arc<RecordingHost>,
     windows: Arc<NativeDesktopWidgetWindows>,
     runtime: Arc<DesktopWidgetRuntime>,
@@ -96,13 +143,14 @@ impl TestWidget {
         let host = Arc::new(RecordingHost::default());
         let windows = Arc::new(NativeDesktopWidgetWindows::new());
         let runtime = DesktopWidgetRuntime::new(
-            config,
+            config.clone(),
             Arc::clone(&host) as Arc<dyn DesktopWidgetHost>,
             Arc::clone(&windows) as Arc<dyn super::DesktopWidgetWindows>,
             false,
         );
         Self {
             _dir: dir,
+            config,
             host,
             windows,
             runtime,

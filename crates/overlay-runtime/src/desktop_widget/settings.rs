@@ -1,3 +1,4 @@
+use vrcx_0_contracts::resolve_config_key;
 use vrcx_0_persistence::config::ConfigRepository;
 
 pub const DESKTOP_WIDGET_ENABLED_CONFIG_KEY: &str = "desktopWidgetEnabled";
@@ -9,7 +10,7 @@ pub const DESKTOP_WIDGET_NEWEST_ON_TOP_CONFIG_KEY: &str = "desktopWidgetNewestOn
 const DESKTOP_WIDGET_CONFIG_KEY_PREFIX: &str = "desktopWidget";
 
 pub fn is_desktop_widget_config_key(key: &str) -> bool {
-    key.starts_with(DESKTOP_WIDGET_CONFIG_KEY_PREFIX)
+    resolve_config_key(key).starts_with(&resolve_config_key(DESKTOP_WIDGET_CONFIG_KEY_PREFIX))
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]

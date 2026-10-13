@@ -102,6 +102,23 @@ fn switching_the_order_moves_the_newest_row_to_the_other_end() {
 }
 
 #[test]
+fn switching_the_order_repaints_exactly_like_a_freshly_opened_widget() {
+    let rows: Vec<_> = (1..=3).map(|id| row(id, "Ada", false)).collect();
+    let mut bottom = model(rows.clone(), 60, true);
+    bottom.newest_on_top = false;
+    let mut switched = Widget::new();
+    switched.settled(&model(rows, 60, true));
+
+    let after_switch = switched.settled(&bottom);
+    let fresh = Widget::new().settled(&bottom);
+
+    assert!(
+        after_switch.0 == fresh.0,
+        "the switched widget kept stale pixels"
+    );
+}
+
+#[test]
 fn every_rows_avatar_sits_level_with_its_text() {
     let rows = vec![
         DesktopWidgetRow {
