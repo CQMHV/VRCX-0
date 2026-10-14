@@ -324,6 +324,7 @@ export const ConfigKeys = defineConfigKeys({
     localFavoriteFriendsGroups: { type: 'string', default: null },
     feedHiddenUsers: { type: 'string', default: null },
     feedHiddenUsersHideNotifications: { type: 'bool', default: true },
+    feedHiddenUsersHideAll: { type: 'bool', default: false },
 
     // ── Onboarding ───────────────────────────────────
     onboarding_welcome_seen: { type: 'bool', default: false },

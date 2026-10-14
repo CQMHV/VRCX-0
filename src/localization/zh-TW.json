@@ -1308,7 +1308,9 @@
             },
             "context": {
                 "hide_user": "從動態中隱藏位置變動",
-                "unhide_user": "在動態中顯示位置變動"
+                "unhide_user": "在動態中顯示位置變動",
+                "hide_user_all": "從動態中隱藏",
+                "unhide_user_all": "在動態中顯示"
             }
         },
         "friends_locations": {
@@ -2501,15 +2503,17 @@
                     "description": "定期取得好友的公開自我介紹，變更會顯示在好友動態中。更新可能延遲，部分變更可能漏記。"
                 },
                 "hidden_feed": {
-                    "header": "已隱藏位置變動的好友",
-                    "description": "在好友動態中隱藏所選好友的位置變動，其他動態照常顯示，也不會刪除已儲存的資料。",
+                    "header": "在動態中隱藏的好友",
+                    "description": "在好友動態中隱藏所選好友的位置變動或全部動態，不會刪除已儲存的資料。",
                     "add": "新增好友",
                     "search_placeholder": "搜尋好友",
                     "empty": "還沒有隱藏任何人。",
                     "remove": "取消隱藏好友",
                     "unknown_friend": "未知好友",
+                    "hide_all": "隱藏全部動態",
+                    "hide_all_description": "隱藏這些好友的所有動態。關閉時只隱藏位置變動。",
                     "hide_notifications": "通知中也隱藏",
-                    "hide_notifications_description": "這些好友的位置變動也不會出現在桌面通知、TTS、VR 疊加介面、Webhook 與應用程式內通知中。",
+                    "hide_notifications_description": "被隱藏的動態也不會出現在桌面通知、TTS、VR 疊加介面、Webhook 與應用程式內通知中。",
                     "hide_private_location_changes": "好友進入私人世界時不通知",
                     "hide_private_location_changes_description": "好友進入私人世界時，不發送桌面通知、TTS、VR 通知與 Webhook。手腕嵌入介面的動態由它自己的「隱藏私人世界」設定控制。"
                 }

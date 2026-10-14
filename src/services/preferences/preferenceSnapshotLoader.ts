@@ -204,6 +204,7 @@ export async function loadPreferenceSnapshot() {
         localFavoriteFriendsGroups,
         feedHiddenUsers,
         feedHiddenUsersHideNotifications,
+        feedHiddenUsersHideAll,
         hidePrivateFromFeed,
         activityFilterProfiles,
         feedTimeDisplayMode,
@@ -378,6 +379,7 @@ export async function loadPreferenceSnapshot() {
         configRepository.getArray('localFavoriteFriendsGroups', []),
         configRepository.getString('feedHiddenUsers', '[]'),
         configRepository.getBool('feedHiddenUsersHideNotifications', true),
+        configRepository.getBool('feedHiddenUsersHideAll', false),
         configRepository.getBool('hidePrivateFromFeed', false),
         commands.appNotificationActivityFiltersGet(),
         configRepository.getString('feedTimeDisplayMode', 'relative'),
@@ -631,6 +633,7 @@ export async function loadPreferenceSnapshot() {
         feedHiddenUsersHideNotifications: Boolean(
             feedHiddenUsersHideNotifications
         ),
+        feedHiddenUsersHideAll: Boolean(feedHiddenUsersHideAll),
         hidePrivateFromFeed: Boolean(hidePrivateFromFeed),
         overlayActivityFilters: activityFilterProfiles.wrist,
         vrNotificationActivityFilters: activityFilterProfiles.vr,

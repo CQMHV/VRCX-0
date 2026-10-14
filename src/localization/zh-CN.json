@@ -1308,7 +1308,9 @@
             },
             "context": {
                 "hide_user": "在动态中隐藏位置变动",
-                "unhide_user": "在动态中显示位置变动"
+                "unhide_user": "在动态中显示位置变动",
+                "hide_user_all": "在动态中隐藏",
+                "unhide_user_all": "在动态中显示"
             }
         },
         "friends_locations": {
@@ -2501,15 +2503,17 @@
                     "description": "定期获取好友的公开简介，变化会显示在好友动态中。更新可能延迟，部分变化可能漏记。"
                 },
                 "hidden_feed": {
-                    "header": "已隐藏位置变动的好友",
-                    "description": "在好友动态中隐藏所选好友的位置变动，其他动态照常显示，也不会删除已保存的数据。",
+                    "header": "在动态中隐藏的好友",
+                    "description": "在好友动态中隐藏所选好友的位置变动或全部动态，不会删除已保存的数据。",
                     "add": "添加好友",
                     "search_placeholder": "搜索好友",
                     "empty": "还没有隐藏任何人。",
                     "remove": "取消隐藏好友",
                     "unknown_friend": "未知好友",
+                    "hide_all": "隐藏全部动态",
+                    "hide_all_description": "隐藏这些好友的所有动态。关闭时只隐藏位置变动。",
                     "hide_notifications": "通知中也隐藏",
-                    "hide_notifications_description": "这些好友的位置变动也不会出现在桌面通知、TTS、VR 叠加界面、Webhook 和应用内通知中。",
+                    "hide_notifications_description": "被隐藏的动态也不会出现在桌面通知、TTS、VR 叠加界面、Webhook 和应用内通知中。",
                     "hide_private_location_changes": "好友进入私人世界时不通知",
                     "hide_private_location_changes_description": "好友进入私人世界时，不发送桌面通知、TTS、VR 通知和 Webhook。手腕叠加界面的动态由它自己的“隐藏私人世界”设置控制。"
                 }

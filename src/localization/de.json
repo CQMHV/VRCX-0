@@ -1310,7 +1310,9 @@
             },
             "context": {
                 "hide_user": "Ortswechsel im Feed ausblenden",
-                "unhide_user": "Ortswechsel im Feed einblenden"
+                "unhide_user": "Ortswechsel im Feed einblenden",
+                "hide_user_all": "Im Feed ausblenden",
+                "unhide_user_all": "Im Feed einblenden"
             }
         },
         "friends_locations": {
@@ -2503,15 +2505,17 @@
                     "description": "Ruft regelmäßig die öffentlichen Bios von Freunden ab und zeigt Änderungen im Feed. Aktualisierungen können sich verzögern, und einzelne Änderungen können unbemerkt bleiben."
                 },
                 "hidden_feed": {
-                    "header": "Freunde mit ausgeblendeten Ortswechseln",
-                    "description": "Blendet die Ortswechsel ausgewählter Freunde im Feed aus. Ihre übrigen Aktivitäten bleiben sichtbar, gespeicherte Daten werden nicht gelöscht.",
+                    "header": "Im Feed ausgeblendete Freunde",
+                    "description": "Blendet die Ortswechsel oder alle Aktivitäten ausgewählter Freunde im Feed aus. Gespeicherte Daten werden nicht gelöscht.",
                     "add": "Freund hinzufügen",
                     "search_placeholder": "Freunde suchen",
                     "empty": "Du hast noch niemanden ausgeblendet.",
                     "remove": "Ausgeblendeten Freund entfernen",
                     "unknown_friend": "Unbekannter Freund",
+                    "hide_all": "Alle Aktivitäten ausblenden",
+                    "hide_all_description": "Blendet alle Aktivitäten dieser Freunde aus. Wenn deaktiviert, werden nur ihre Ortswechsel ausgeblendet.",
                     "hide_notifications": "Auch in Benachrichtigungen ausblenden",
-                    "hide_notifications_description": "Ihre Ortswechsel erscheinen auch nicht in Desktop-Benachrichtigungen, TTS, VR-Overlays, Webhooks oder App-Benachrichtigungen.",
+                    "hide_notifications_description": "Ausgeblendete Aktivitäten erscheinen auch nicht in Desktop-Benachrichtigungen, TTS, VR-Overlays, Webhooks oder App-Benachrichtigungen.",
                     "hide_private_location_changes": "Wechsel in private Welten nicht melden",
                     "hide_private_location_changes_description": "Wenn ein Freund in eine private Welt wechselt, werden keine Desktop-Benachrichtigung, kein TTS, keine VR-Benachrichtigung und kein Webhook gesendet. Der Feed des Handgelenk-Overlays folgt seiner eigenen Einstellung „Private Welten ausblenden“."
                 }

@@ -421,6 +421,7 @@ export const DEFAULT_PREFERENCES = Object.freeze({
     localFavoriteFriendsGroups: [],
     feedHiddenUsers: [],
     feedHiddenUsersHideNotifications: true,
+    feedHiddenUsersHideAll: false,
     hidePrivateFromFeed: false,
     overlayActivityFilters: EMPTY_ACTIVITY_FILTER_PROFILE,
     vrNotificationActivityFilters: EMPTY_ACTIVITY_FILTER_PROFILE,
@@ -709,6 +710,7 @@ export function normalizePreferenceSnapshot(snapshot: unknown = {}) {
         feedHiddenUsersHideNotifications: normalizeBool(
             next.feedHiddenUsersHideNotifications
         ),
+        feedHiddenUsersHideAll: normalizeBool(next.feedHiddenUsersHideAll),
         hidePrivateFromFeed: normalizeBool(next.hidePrivateFromFeed),
         overlayActivityFilters: normalizeActivityFilterProfile(
             next.overlayActivityFilters

@@ -1310,7 +1310,9 @@
             },
             "context": {
                 "hide_user": "Ocultar cambios de ubicación del feed",
-                "unhide_user": "Mostrar cambios de ubicación en el feed"
+                "unhide_user": "Mostrar cambios de ubicación en el feed",
+                "hide_user_all": "Ocultar del feed",
+                "unhide_user_all": "Mostrar en el feed"
             }
         },
         "friends_locations": {
@@ -2507,15 +2509,17 @@
                     "description": "Obtiene periódicamente las biografías públicas de tus amigos y muestra los cambios en el feed. Las actualizaciones pueden retrasarse y algunos cambios pueden pasar inadvertidos."
                 },
                 "hidden_feed": {
-                    "header": "Amigos con cambios de ubicación ocultos",
-                    "description": "Oculta en el feed los cambios de ubicación de los amigos seleccionados. El resto de su actividad se sigue mostrando y no se eliminan datos guardados.",
+                    "header": "Amigos ocultos en el feed",
+                    "description": "Oculta en el feed los cambios de ubicación o toda la actividad de los amigos seleccionados. No se eliminan datos guardados.",
                     "add": "Añadir amigo",
                     "search_placeholder": "Buscar amigos",
                     "empty": "Aún no has ocultado a nadie.",
                     "remove": "Volver a mostrar amigo",
                     "unknown_friend": "Amigo desconocido",
+                    "hide_all": "Ocultar toda la actividad",
+                    "hide_all_description": "Oculta toda la actividad de estos amigos. Si está desactivado, solo se ocultan sus cambios de ubicación.",
                     "hide_notifications": "Ocultar también en las notificaciones",
-                    "hide_notifications_description": "Sus cambios de ubicación tampoco aparecerán en las notificaciones del escritorio, TTS, overlays de VR, webhooks ni en las notificaciones de la app.",
+                    "hide_notifications_description": "La actividad oculta tampoco aparecerá en las notificaciones del escritorio, TTS, overlays de VR, webhooks ni en las notificaciones de la app.",
                     "hide_private_location_changes": "No avisar al ir a mundos privados",
                     "hide_private_location_changes_description": "Cuando un amigo va a un mundo privado, no se envían notificaciones de escritorio, TTS, notificaciones de VR ni webhooks. El feed del overlay de muñeca usa su propio ajuste de ocultar mundos privados."
                 }

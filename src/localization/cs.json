@@ -1314,7 +1314,9 @@
             },
             "context": {
                 "hide_user": "Skrýt změny polohy z Feedu",
-                "unhide_user": "Zobrazit změny polohy ve Feedu"
+                "unhide_user": "Zobrazit změny polohy ve Feedu",
+                "hide_user_all": "Skrýt z Feedu",
+                "unhide_user_all": "Zobrazit ve Feedu"
             }
         },
         "friends_locations": {
@@ -2513,15 +2515,17 @@
                     "description": "Pravidelně načítá veřejná bio přátel a změny zobrazuje ve Feedu. Aktualizace se mohou zpozdit a některé změny mohou být vynechány."
                 },
                 "hidden_feed": {
-                    "header": "Přátelé se skrytými změnami polohy",
-                    "description": "Skryje ve Feedu změny polohy vybraných přátel. Jejich ostatní aktivita se dál zobrazuje a uložená data se neodstraní.",
+                    "header": "Přátelé skrytí ve Feedu",
+                    "description": "Skryje ve Feedu změny polohy vybraných přátel, nebo veškerou jejich aktivitu. Uložená data se neodstraní.",
                     "add": "Přidat přítele",
                     "search_placeholder": "Hledat přátele",
                     "empty": "Zatím jste nikoho neskryli.",
                     "remove": "Odebrat skrytého přítele",
                     "unknown_friend": "Neznámý přítel",
+                    "hide_all": "Skrýt veškerou aktivitu",
+                    "hide_all_description": "Skryje veškerou aktivitu těchto přátel. Když je vypnuto, skrývají se jen změny polohy.",
                     "hide_notifications": "Skrýt i v oznámeních",
-                    "hide_notifications_description": "Jejich změny polohy se nezobrazí ani v oznámeních na ploše, TTS, VR overlayích, webhoocích ani v oznámeních v aplikaci.",
+                    "hide_notifications_description": "Skrytá aktivita se nezobrazí ani v oznámeních na ploše, TTS, VR overlayích, webhoocích ani v oznámeních v aplikaci.",
                     "hide_private_location_changes": "Neoznamovat přesuny do soukromých světů",
                     "hide_private_location_changes_description": "Když se přítel přesune do soukromého světa, neodešle se oznámení na ploše, TTS, VR oznámení ani webhook. Kanál zápěstního overlaye se řídí vlastním nastavením skrytí soukromých světů."
                 }

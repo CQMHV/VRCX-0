@@ -1308,7 +1308,9 @@
             },
             "context": {
                 "hide_user": "フィードで現在地の変化を非表示",
-                "unhide_user": "フィードで現在地の変化を表示"
+                "unhide_user": "フィードで現在地の変化を表示",
+                "hide_user_all": "フィードで非表示",
+                "unhide_user_all": "フィードで表示"
             }
         },
         "friends_locations": {
@@ -2501,15 +2503,17 @@
                     "description": "フレンドの公開自己紹介を定期的に取得し、変化をフィードに表示します。反映が遅れたり、一部が抜けたりすることがあります。"
                 },
                 "hidden_feed": {
-                    "header": "現在地の変化を非表示にしたフレンド",
-                    "description": "選択したフレンドの現在地の変化をフィードから非表示にします。そのほかの更新は通常どおり表示され、保存済みデータも削除されません。",
+                    "header": "フィードで非表示にしたフレンド",
+                    "description": "選択したフレンドの現在地の変化、またはすべての更新をフィードから非表示にします。保存済みデータは削除されません。",
                     "add": "フレンドを追加",
                     "search_placeholder": "フレンドを検索",
                     "empty": "まだ誰も非表示にしていません。",
                     "remove": "非表示を解除",
                     "unknown_friend": "不明なフレンド",
+                    "hide_all": "すべての更新を非表示",
+                    "hide_all_description": "このフレンドの更新をすべて非表示にします。オフのときは現在地の変化だけを非表示にします。",
                     "hide_notifications": "通知でも非表示にする",
-                    "hide_notifications_description": "デスクトップ通知、TTS、VR オーバーレイ、Webhook、アプリ内通知でも、このフレンドの現在地の変化を知らせません。",
+                    "hide_notifications_description": "非表示にした更新は、デスクトップ通知、TTS、VR オーバーレイ、Webhook、アプリ内通知でも知らせません。",
                     "hide_private_location_changes": "プライベートワールドへの移動は通知しない",
                     "hide_private_location_changes_description": "フレンドがプライベートワールドへ移動しても、デスクトップ通知、TTS、VR 通知、Webhook を送りません。手首のオーバーレイのフィードは「プライベートワールドを表示しない」設定に従います。"
                 }
