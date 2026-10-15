@@ -1449,7 +1449,8 @@
                 "style_list_could_not_be_loaded_unknown_style_selections_will": "アバタースタイルを読み込めませんでした。現在のスタイルの選択はそのまま保持されます。",
                 "selected_image_is_too_large": "選択した画像が大きすぎます",
                 "selected_file_is_not_an_image": "選択したファイルは画像ではありません",
-                "avatar_inventory_failed_to_load": "アバターを読み込めませんでした"
+                "avatar_inventory_failed_to_load": "アバターを読み込めませんでした",
+                "local_test_avatars_failed_to_load": "ローカルテストアバターを読み込めませんでした"
             },
             "success": {
                 "avatar_styles_updated": "アバタースタイルを更新しました",
@@ -1479,7 +1480,9 @@
                 "make_private": "非公開にする",
                 "avatar_made_public": "アバターを公開しました",
                 "avatar_made_private": "アバターを非公開にしました",
-                "untitled_avatar": "無題のアバター"
+                "untitled_avatar": "無題のアバター",
+                "local_test_avatars": "ローカルテストアバター",
+                "local_test_avatars_description": "VRChat SDK の Build & Test でビルドしたアバターです。ゲーム内では自分にしか見えません。"
             },
             "action": {
                 "select_style": "スタイルを選択",
@@ -1490,12 +1493,16 @@
                 "show_avatar_grid": "アバターグリッドを表示",
                 "show_avatar_table": "アバターテーブルを表示",
                 "refresh_avatar_inventory": "アバター一覧を更新",
-                "change_avatar_image": "アバター画像を変更"
+                "change_avatar_image": "アバター画像を変更",
+                "open_local_test_avatars": "ローカルテストアバター"
             },
             "empty": {
                 "this_avatar_has_no_local_tags_yet": "このアバターにはまだローカルタグがありません",
                 "no_avatars_match_the_current_filters": "現在のフィルターに一致するアバターはありません",
-                "no_authenticated_user_is_available_for_the_avatar_inventory": "アバターを表示するにはログインしてください。"
+                "no_authenticated_user_is_available_for_the_avatar_inventory": "アバターを表示するにはログインしてください。",
+                "no_local_test_avatars": "ローカルテストアバターはありません",
+                "local_test_avatars_hint": "VRChat SDK の Build & Test でビルドしたアバターがここに表示されます。",
+                "no_local_test_avatars_match_the_search": "検索に一致するローカルテストアバターはありません"
             },
             "loading": {
                 "loading_the_avatar_inventory": "アバターを読み込み中"
@@ -1507,13 +1514,16 @@
                 "failed_to_update_avatar": "アバターの更新に失敗しました",
                 "failed_to_select_avatar": "アバターの選択に失敗しました",
                 "failed_to_create_impostor": "インポスターの作成に失敗しました",
-                "failed_to_upload_avatar_image": "アバター画像のアップロードに失敗しました"
+                "failed_to_upload_avatar_image": "アバター画像のアップロードに失敗しました",
+                "failed_to_delete_local_test_avatar": "ローカルテストアバターを削除できませんでした"
             },
             "modal": {
                 "create_impostor": "インポスターを作成しますか？",
                 "create": "作成",
                 "make_avatar_public": "アバターを公開しますか？",
-                "make_avatar_private": "アバターを非公開にしますか？"
+                "make_avatar_private": "アバターを非公開にしますか？",
+                "delete_local_test_avatar": "{value} を削除しますか？",
+                "delete_local_test_avatar_description": "このパソコンからファイルが削除されます。次に VRChat でアバターメニューを開くと、SDK Test Avatars から消えます。"
             },
             "dynamic": {
                 "updated_local_tags_for_value": "{value} のローカルタグを更新しました",

@@ -1449,7 +1449,8 @@
                 "style_list_could_not_be_loaded_unknown_style_selections_will": "无法加载模型样式，将保留你当前选择的样式。",
                 "selected_image_is_too_large": "所选图片过大",
                 "selected_file_is_not_an_image": "所选文件不是图片",
-                "avatar_inventory_failed_to_load": "模型列表加载失败"
+                "avatar_inventory_failed_to_load": "模型列表加载失败",
+                "local_test_avatars_failed_to_load": "无法加载本地测试模型"
             },
             "success": {
                 "avatar_styles_updated": "模型样式已更新",
@@ -1479,7 +1480,9 @@
                 "make_private": "设为私密",
                 "avatar_made_public": "模型已设为公开",
                 "avatar_made_private": "模型已设为私密",
-                "untitled_avatar": "未命名模型"
+                "untitled_avatar": "未命名模型",
+                "local_test_avatars": "本地测试模型",
+                "local_test_avatars_description": "在 VRChat SDK 中通过 Build & Test 构建的模型，游戏内只有你自己能看到。"
             },
             "action": {
                 "select_style": "选择样式",
@@ -1490,12 +1493,16 @@
                 "show_avatar_grid": "显示模型网格",
                 "show_avatar_table": "显示模型表格",
                 "refresh_avatar_inventory": "刷新模型列表",
-                "change_avatar_image": "更换模型图片"
+                "change_avatar_image": "更换模型图片",
+                "open_local_test_avatars": "本地测试模型"
             },
             "empty": {
                 "this_avatar_has_no_local_tags_yet": "这个模型还没有本地标签",
                 "no_avatars_match_the_current_filters": "没有符合当前筛选器设置的模型",
-                "no_authenticated_user_is_available_for_the_avatar_inventory": "登录后即可查看你的模型。"
+                "no_authenticated_user_is_available_for_the_avatar_inventory": "登录后即可查看你的模型。",
+                "no_local_test_avatars": "没有本地测试模型",
+                "local_test_avatars_hint": "在 VRChat SDK 中用 Build & Test 构建的模型会显示在这里。",
+                "no_local_test_avatars_match_the_search": "没有符合搜索条件的本地测试模型"
             },
             "loading": {
                 "loading_the_avatar_inventory": "正在加载模型列表"
@@ -1507,13 +1514,16 @@
                 "failed_to_update_avatar": "更新模型失败",
                 "failed_to_select_avatar": "切换模型失败",
                 "failed_to_create_impostor": "创建模型替身失败",
-                "failed_to_upload_avatar_image": "上传模型图片失败"
+                "failed_to_upload_avatar_image": "上传模型图片失败",
+                "failed_to_delete_local_test_avatar": "删除本地测试模型失败"
             },
             "modal": {
                 "create_impostor": "创建模型替身？",
                 "create": "创建",
                 "make_avatar_public": "将模型设为公开？",
-                "make_avatar_private": "将模型设为私密？"
+                "make_avatar_private": "将模型设为私密？",
+                "delete_local_test_avatar": "删除 {value}？",
+                "delete_local_test_avatar_description": "文件将从这台电脑上删除。下次在 VRChat 中打开模型菜单时，它会从 SDK Test Avatars 中消失。"
             },
             "dynamic": {
                 "updated_local_tags_for_value": "已更新 {value} 的本地标签",

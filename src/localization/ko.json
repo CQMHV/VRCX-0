@@ -1392,7 +1392,8 @@
                 "style_list_could_not_be_loaded_unknown_style_selections_will": "아바타 스타일을 불러오지 못했습니다. 현재 스타일 선택은 그대로 유지됩니다.",
                 "selected_image_is_too_large": "선택한 이미지가 너무 큽니다.",
                 "selected_file_is_not_an_image": "선택한 파일은 이미지가 아닙니다",
-                "avatar_inventory_failed_to_load": "아바타를 불러오지 못했습니다."
+                "avatar_inventory_failed_to_load": "아바타를 불러오지 못했습니다.",
+                "local_test_avatars_failed_to_load": "로컬 테스트 아바타를 불러오지 못했습니다"
             },
             "success": {
                 "avatar_styles_updated": "아바타 스타일이 업데이트되었습니다.",
@@ -1422,7 +1423,9 @@
                 "make_private": "비공개로 설정",
                 "avatar_made_public": "아바타를 공개했습니다",
                 "avatar_made_private": "아바타가 비공개로 설정됨",
-                "untitled_avatar": "제목 없는 아바타"
+                "untitled_avatar": "제목 없는 아바타",
+                "local_test_avatars": "로컬 테스트 아바타",
+                "local_test_avatars_description": "VRChat SDK의 Build & Test로 빌드한 아바타입니다. 게임에서는 본인에게만 보입니다."
             },
             "action": {
                 "select_style": "스타일 선택",
@@ -1433,12 +1436,16 @@
                 "show_avatar_grid": "아바타 그리드 표시",
                 "show_avatar_table": "아바타 테이블 표시",
                 "refresh_avatar_inventory": "아바타 새로고침",
-                "change_avatar_image": "아바타 이미지 변경"
+                "change_avatar_image": "아바타 이미지 변경",
+                "open_local_test_avatars": "로컬 테스트 아바타"
             },
             "empty": {
                 "this_avatar_has_no_local_tags_yet": "이 아바타에는 아직 로컬 태그가 없습니다.",
                 "no_avatars_match_the_current_filters": "현재 필터와 일치하는 아바타가 없습니다.",
-                "no_authenticated_user_is_available_for_the_avatar_inventory": "아바타를 보려면 로그인하세요."
+                "no_authenticated_user_is_available_for_the_avatar_inventory": "아바타를 보려면 로그인하세요.",
+                "no_local_test_avatars": "로컬 테스트 아바타가 없습니다",
+                "local_test_avatars_hint": "VRChat SDK의 Build & Test로 빌드한 아바타가 여기에 표시됩니다.",
+                "no_local_test_avatars_match_the_search": "검색과 일치하는 로컬 테스트 아바타가 없습니다"
             },
             "loading": {
                 "loading_the_avatar_inventory": "아바타 불러오는 중"
@@ -1450,13 +1457,16 @@
                 "failed_to_update_avatar": "아바타를 업데이트하지 못했습니다.",
                 "failed_to_select_avatar": "아바타를 선택하지 못했습니다.",
                 "failed_to_create_impostor": "임포스터를 생성하지 못했습니다.",
-                "failed_to_upload_avatar_image": "아바타 이미지를 업로드하지 못했습니다."
+                "failed_to_upload_avatar_image": "아바타 이미지를 업로드하지 못했습니다.",
+                "failed_to_delete_local_test_avatar": "로컬 테스트 아바타를 삭제하지 못했습니다"
             },
             "modal": {
                 "create_impostor": "임포스터를 생성하시겠습니까?",
                 "create": "만들기",
                 "make_avatar_public": "아바타를 공개하시겠습니까?",
-                "make_avatar_private": "아바타를 비공개로 설정하시겠습니까?"
+                "make_avatar_private": "아바타를 비공개로 설정하시겠습니까?",
+                "delete_local_test_avatar": "{value}을(를) 삭제할까요?",
+                "delete_local_test_avatar_description": "이 컴퓨터에서 파일이 삭제됩니다. 다음에 VRChat에서 아바타 메뉴를 열면 SDK Test Avatars에서 사라집니다."
             },
             "dynamic": {
                 "updated_local_tags_for_value": "{value}에 대한 로컬 태그가 업데이트되었습니다.",

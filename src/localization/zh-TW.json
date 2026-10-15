@@ -1449,7 +1449,8 @@
                 "style_list_could_not_be_loaded_unknown_style_selections_will": "無法載入角色樣式，目前的樣式選擇會維持不變。",
                 "selected_image_is_too_large": "所選圖片過大",
                 "selected_file_is_not_an_image": "所選檔案不是圖片",
-                "avatar_inventory_failed_to_load": "角色列表載入失敗"
+                "avatar_inventory_failed_to_load": "角色列表載入失敗",
+                "local_test_avatars_failed_to_load": "無法載入本機測試角色"
             },
             "success": {
                 "avatar_styles_updated": "角色樣式已更新",
@@ -1479,7 +1480,9 @@
                 "make_private": "設為私密",
                 "avatar_made_public": "角色已設為公開",
                 "avatar_made_private": "角色已設為私密",
-                "untitled_avatar": "未命名角色"
+                "untitled_avatar": "未命名角色",
+                "local_test_avatars": "本機測試角色",
+                "local_test_avatars_description": "在 VRChat SDK 中透過 Build & Test 建置的角色，遊戲內只有你自己看得到。"
             },
             "action": {
                 "select_style": "選擇樣式",
@@ -1490,12 +1493,16 @@
                 "show_avatar_grid": "顯示角色網格",
                 "show_avatar_table": "顯示角色表格",
                 "refresh_avatar_inventory": "重新整理角色列表",
-                "change_avatar_image": "更換角色圖片"
+                "change_avatar_image": "更換角色圖片",
+                "open_local_test_avatars": "本機測試角色"
             },
             "empty": {
                 "this_avatar_has_no_local_tags_yet": "這個角色還沒有本機標籤",
                 "no_avatars_match_the_current_filters": "沒有符合目前篩選的角色",
-                "no_authenticated_user_is_available_for_the_avatar_inventory": "目前沒有已登入用戶，無法載入角色列表。"
+                "no_authenticated_user_is_available_for_the_avatar_inventory": "目前沒有已登入用戶，無法載入角色列表。",
+                "no_local_test_avatars": "沒有本機測試角色",
+                "local_test_avatars_hint": "在 VRChat SDK 中用 Build & Test 建置的角色會顯示在這裡。",
+                "no_local_test_avatars_match_the_search": "沒有符合搜尋條件的本機測試角色"
             },
             "loading": {
                 "loading_the_avatar_inventory": "正在載入角色列表"
@@ -1507,13 +1514,16 @@
                 "failed_to_update_avatar": "更新角色失敗",
                 "failed_to_select_avatar": "切換角色失敗",
                 "failed_to_create_impostor": "建立投影替身失敗",
-                "failed_to_upload_avatar_image": "上傳角色圖片失敗"
+                "failed_to_upload_avatar_image": "上傳角色圖片失敗",
+                "failed_to_delete_local_test_avatar": "刪除本機測試角色失敗"
             },
             "modal": {
                 "create_impostor": "建立投影替身？",
                 "create": "建立",
                 "make_avatar_public": "將角色設為公開？",
-                "make_avatar_private": "將角色設為私密？"
+                "make_avatar_private": "將角色設為私密？",
+                "delete_local_test_avatar": "刪除 {value}？",
+                "delete_local_test_avatar_description": "檔案將從這台電腦中刪除。下次在 VRChat 開啟角色選單時，它會從 SDK Test Avatars 中消失。"
             },
             "dynamic": {
                 "updated_local_tags_for_value": "已更新 {value} 的本機標籤",

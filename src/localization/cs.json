@@ -1457,7 +1457,8 @@
                 "style_list_could_not_be_loaded_unknown_style_selections_will": "Seznam stylů se nepodařilo načíst. Neznámé výběry stylů budou zachovány",
                 "selected_image_is_too_large": "Vybraný obrázek je příliš velký",
                 "selected_file_is_not_an_image": "Vybraný soubor není obrázek",
-                "avatar_inventory_failed_to_load": "Inventář avatarů se nepodařilo načíst"
+                "avatar_inventory_failed_to_load": "Inventář avatarů se nepodařilo načíst",
+                "local_test_avatars_failed_to_load": "Místní testovací avatary se nepodařilo načíst"
             },
             "success": {
                 "avatar_styles_updated": "Styly avataru aktualizovány",
@@ -1487,7 +1488,9 @@
                 "make_private": "Zneviditelnit",
                 "avatar_made_public": "Avatar zveřejněn",
                 "avatar_made_private": "Avatar zneviditelněn",
-                "untitled_avatar": "Avatar bez názvu"
+                "untitled_avatar": "Avatar bez názvu",
+                "local_test_avatars": "Místní testovací avatary",
+                "local_test_avatars_description": "Avatary sestavené pomocí Build & Test ve VRChat SDK. Ve hře je vidíte jen vy."
             },
             "action": {
                 "select_style": "Vybrat styl",
@@ -1498,12 +1501,16 @@
                 "show_avatar_grid": "Zobrazit mřížku avatarů",
                 "show_avatar_table": "Zobrazit tabulku avatarů",
                 "refresh_avatar_inventory": "Obnovit inventář avatarů",
-                "change_avatar_image": "Upravit obrázek avataru"
+                "change_avatar_image": "Upravit obrázek avataru",
+                "open_local_test_avatars": "Místní testovací avatary"
             },
             "empty": {
                 "this_avatar_has_no_local_tags_yet": "Tento avatar zatím nemá žádné lokální štítky",
                 "no_avatars_match_the_current_filters": "Žádné avatary neodpovídají aktuálním filtrům",
-                "no_authenticated_user_is_available_for_the_avatar_inventory": "Pro inventář avatarů není k dispozici žádný přihlášený uživatel."
+                "no_authenticated_user_is_available_for_the_avatar_inventory": "Pro inventář avatarů není k dispozici žádný přihlášený uživatel.",
+                "no_local_test_avatars": "Žádné místní testovací avatary",
+                "local_test_avatars_hint": "Zde se zobrazí avatary, které sestavíte pomocí Build & Test ve VRChat SDK.",
+                "no_local_test_avatars_match_the_search": "Hledání neodpovídají žádné místní testovací avatary"
             },
             "loading": {
                 "loading_the_avatar_inventory": "Načítání inventáře avatarů"
@@ -1515,13 +1522,16 @@
                 "failed_to_update_avatar": "Nepodařilo se aktualizovat avatar",
                 "failed_to_select_avatar": "Nepodařilo se vybrat avatar",
                 "failed_to_create_impostor": "Nepodařilo se vytvořit impostora",
-                "failed_to_upload_avatar_image": "Nepodařilo se nahrát obrázek avataru"
+                "failed_to_upload_avatar_image": "Nepodařilo se nahrát obrázek avataru",
+                "failed_to_delete_local_test_avatar": "Místní testovací avatar se nepodařilo smazat"
             },
             "modal": {
                 "create_impostor": "Vytvořit impostora?",
                 "create": "Vytvořit",
                 "make_avatar_public": "Zveřejnit avatar?",
-                "make_avatar_private": "Zneviditelnit avatar?"
+                "make_avatar_private": "Zneviditelnit avatar?",
+                "delete_local_test_avatar": "Smazat {value}?",
+                "delete_local_test_avatar_description": "Soubor bude z tohoto počítače odstraněn. Při příštím otevření nabídky avatarů ve VRChatu zmizí ze SDK Test Avatars."
             },
             "dynamic": {
                 "updated_local_tags_for_value": "Lokální štítky pro {value} aktualizovány",

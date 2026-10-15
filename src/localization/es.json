@@ -1452,7 +1452,8 @@
                 "style_list_could_not_be_loaded_unknown_style_selections_will": "No se pudieron cargar los estilos de avatar. Se conservarán tus selecciones de estilo actuales.",
                 "selected_image_is_too_large": "La imagen seleccionada es demasiado grande",
                 "selected_file_is_not_an_image": "El archivo seleccionado no es una imagen",
-                "avatar_inventory_failed_to_load": "No se pudieron cargar tus avatares"
+                "avatar_inventory_failed_to_load": "No se pudieron cargar tus avatares",
+                "local_test_avatars_failed_to_load": "No se pudieron cargar los avatares de prueba locales"
             },
             "success": {
                 "avatar_styles_updated": "Estilos de avatar actualizados",
@@ -1483,7 +1484,9 @@
                 "make_private": "Hacer privado",
                 "avatar_made_public": "El avatar ahora es público",
                 "avatar_made_private": "El avatar ahora es privado",
-                "untitled_avatar": "Avatar sin título"
+                "untitled_avatar": "Avatar sin título",
+                "local_test_avatars": "Avatares de prueba locales",
+                "local_test_avatars_description": "Avatares creados con Build & Test en el SDK de VRChat. En el juego solo los ves tú."
             },
             "action": {
                 "select_style": "Seleccionar estilo",
@@ -1494,12 +1497,16 @@
                 "show_avatar_grid": "Mostrar cuadrícula de avatares",
                 "show_avatar_table": "Mostrar tabla de avatares",
                 "refresh_avatar_inventory": "Actualizar avatares",
-                "change_avatar_image": "Editar imagen del avatar"
+                "change_avatar_image": "Editar imagen del avatar",
+                "open_local_test_avatars": "Avatares de prueba locales"
             },
             "empty": {
                 "this_avatar_has_no_local_tags_yet": "Este avatar aún no tiene etiquetas locales",
                 "no_avatars_match_the_current_filters": "Ningún avatar coincide con los filtros actuales",
-                "no_authenticated_user_is_available_for_the_avatar_inventory": "Inicia sesión para ver tus avatares."
+                "no_authenticated_user_is_available_for_the_avatar_inventory": "Inicia sesión para ver tus avatares.",
+                "no_local_test_avatars": "No hay avatares de prueba locales",
+                "local_test_avatars_hint": "Los avatares que crees con Build & Test en el SDK de VRChat aparecerán aquí.",
+                "no_local_test_avatars_match_the_search": "Ningún avatar de prueba local coincide con la búsqueda"
             },
             "loading": {
                 "loading_the_avatar_inventory": "Cargando tus avatares"
@@ -1511,13 +1518,16 @@
                 "failed_to_update_avatar": "No se pudo actualizar el avatar",
                 "failed_to_select_avatar": "No se pudo seleccionar el avatar",
                 "failed_to_create_impostor": "No se pudo crear el impostor",
-                "failed_to_upload_avatar_image": "No se pudo subir la imagen del avatar"
+                "failed_to_upload_avatar_image": "No se pudo subir la imagen del avatar",
+                "failed_to_delete_local_test_avatar": "No se pudo eliminar el avatar de prueba local"
             },
             "modal": {
                 "create_impostor": "¿Crear impostor?",
                 "create": "Crear",
                 "make_avatar_public": "¿Hacer público el avatar?",
-                "make_avatar_private": "¿Hacer privado el avatar?"
+                "make_avatar_private": "¿Hacer privado el avatar?",
+                "delete_local_test_avatar": "¿Eliminar {value}?",
+                "delete_local_test_avatar_description": "El archivo se eliminará de este equipo. Desaparecerá de SDK Test Avatars la próxima vez que abras el menú de avatares en VRChat."
             },
             "dynamic": {
                 "updated_local_tags_for_value": "Etiquetas locales actualizadas para {value}",

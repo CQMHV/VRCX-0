@@ -1457,7 +1457,8 @@
                 "style_list_could_not_be_loaded_unknown_style_selections_will": "Не удалось загрузить список стилей. Неизвестные выбранные стили будут сохранены",
                 "selected_image_is_too_large": "Выбранное изображение слишком большое",
                 "selected_file_is_not_an_image": "Выбранный файл не является изображением",
-                "avatar_inventory_failed_to_load": "Не удалось загрузить инвентарь аватаров"
+                "avatar_inventory_failed_to_load": "Не удалось загрузить инвентарь аватаров",
+                "local_test_avatars_failed_to_load": "Не удалось загрузить локальные тестовые аватары"
             },
             "success": {
                 "avatar_styles_updated": "Обновленные стили аватара",
@@ -1487,7 +1488,9 @@
                 "make_private": "Сделать приватным",
                 "avatar_made_public": "Аватар стал публичным",
                 "avatar_made_private": "Аватар стал частным",
-                "untitled_avatar": "Безымянный аватар"
+                "untitled_avatar": "Безымянный аватар",
+                "local_test_avatars": "Локальные тестовые аватары",
+                "local_test_avatars_description": "Аватары, собранные через Build & Test в VRChat SDK. В игре их видите только вы."
             },
             "action": {
                 "select_style": "Выбрать стиль",
@@ -1498,12 +1501,16 @@
                 "show_avatar_grid": "Показать аватарную сетку",
                 "show_avatar_table": "Показать аватарный стол",
                 "refresh_avatar_inventory": "Обновить инвентарь аватаров",
-                "change_avatar_image": "Редактировать изображение аватара"
+                "change_avatar_image": "Редактировать изображение аватара",
+                "open_local_test_avatars": "Локальные тестовые аватары"
             },
             "empty": {
                 "this_avatar_has_no_local_tags_yet": "У этого аватара пока нет местных ярлыков.",
                 "no_avatars_match_the_current_filters": "Нет аватаров, соответствующих текущим фильтрам",
-                "no_authenticated_user_is_available_for_the_avatar_inventory": "Нет авторизованного пользователя для инвентаря аватаров."
+                "no_authenticated_user_is_available_for_the_avatar_inventory": "Нет авторизованного пользователя для инвентаря аватаров.",
+                "no_local_test_avatars": "Нет локальных тестовых аватаров",
+                "local_test_avatars_hint": "Здесь появятся аватары, которые вы соберёте через Build & Test в VRChat SDK.",
+                "no_local_test_avatars_match_the_search": "Нет локальных тестовых аватаров, соответствующих поиску"
             },
             "loading": {
                 "loading_the_avatar_inventory": "Загрузка инвентаря аватаров"
@@ -1515,13 +1522,16 @@
                 "failed_to_update_avatar": "Не удалось обновить аватар",
                 "failed_to_select_avatar": "Не удалось выбрать аватар",
                 "failed_to_create_impostor": "Не удалось создать импостора",
-                "failed_to_upload_avatar_image": "Не удалось загрузить изображение аватара"
+                "failed_to_upload_avatar_image": "Не удалось загрузить изображение аватара",
+                "failed_to_delete_local_test_avatar": "Не удалось удалить локальный тестовый аватар"
             },
             "modal": {
                 "create_impostor": "Создать импостора?",
                 "create": "Создать",
                 "make_avatar_public": "Обнародовать Аватар?",
-                "make_avatar_private": "Сделать аватар частным?"
+                "make_avatar_private": "Сделать аватар частным?",
+                "delete_local_test_avatar": "Удалить {value}?",
+                "delete_local_test_avatar_description": "Файл будет удалён с этого компьютера. Аватар исчезнет из SDK Test Avatars, когда вы в следующий раз откроете меню аватаров в VRChat."
             },
             "dynamic": {
                 "updated_local_tags_for_value": "Обновленные местные метки для {value}",
