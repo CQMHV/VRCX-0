@@ -2252,7 +2252,9 @@
             "other": {
                 "header": "기타",
                 "edit_invite_message": "메시지 템플릿",
-                "edit_invite_message_description": "초대 및 요청 메시지 템플릿 편집"
+                "edit_invite_message_description": "초대 및 요청 메시지 템플릿 편집",
+                "moderation_reports": "신고 내역",
+                "moderation_reports_description": "제출한 신고를 확인하거나 철회"
             },
             "success": {
                 "media_item_deleted": "미디어 항목이 삭제되었습니다.",
@@ -5896,6 +5898,19 @@
             "modal": {
                 "delete_instance_record": "이 방문 기록을 삭제할까요?"
             }
+        },
+        "moderation_reports": {
+            "header": "신고 내역",
+            "description": "VRChat에 제출한 신고입니다.",
+            "empty_open": "처리 중인 신고가 없습니다",
+            "empty_closed": "종료된 신고가 없습니다",
+            "failed_to_load": "신고 내역을 불러오지 못했습니다",
+            "withdraw": "철회",
+            "withdraw_title": "{value}에 대한 신고를 철회하시겠습니까?",
+            "withdraw_description": "이 작업은 되돌릴 수 없습니다.",
+            "failed_to_withdraw": "신고를 철회하지 못했습니다",
+            "status_open": "처리 중",
+            "status_closed": "종료됨"
         }
     },
     "confirm": {

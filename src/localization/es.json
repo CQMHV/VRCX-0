@@ -2315,7 +2315,9 @@
             "other": {
                 "header": "Otros",
                 "edit_invite_message": "Plantillas de mensajes",
-                "edit_invite_message_description": "Editar plantillas de mensajes de invitación y solicitud"
+                "edit_invite_message_description": "Editar plantillas de mensajes de invitación y solicitud",
+                "moderation_reports": "Mis denuncias",
+                "moderation_reports_description": "Consulta o retira las denuncias que has enviado"
             },
             "success": {
                 "media_item_deleted": "Elemento multimedia eliminado",
@@ -5962,6 +5964,19 @@
             "modal": {
                 "delete_instance_record": "¿Eliminar esta visita?"
             }
+        },
+        "moderation_reports": {
+            "header": "Mis denuncias",
+            "description": "Denuncias que has enviado a VRChat.",
+            "empty_open": "No hay denuncias abiertas",
+            "empty_closed": "No hay denuncias cerradas",
+            "failed_to_load": "No se pudieron cargar las denuncias",
+            "withdraw": "Retirar",
+            "withdraw_title": "¿Retirar tu denuncia sobre {value}?",
+            "withdraw_description": "Esta acción no se puede deshacer.",
+            "failed_to_withdraw": "No se pudo retirar la denuncia",
+            "status_open": "Abierta",
+            "status_closed": "Cerrada"
         }
     },
     "confirm": {

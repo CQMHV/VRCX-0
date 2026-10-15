@@ -2311,7 +2311,9 @@
             "other": {
                 "header": "Sonstiges",
                 "edit_invite_message": "Nachrichtenvorlagen",
-                "edit_invite_message_description": "Vorlagen für Einladungen und Anfragen bearbeiten"
+                "edit_invite_message_description": "Vorlagen für Einladungen und Anfragen bearbeiten",
+                "moderation_reports": "Meine Meldungen",
+                "moderation_reports_description": "Eingereichte Meldungen ansehen oder zurückziehen"
             },
             "success": {
                 "media_item_deleted": "Medienelement gelöscht",
@@ -5914,6 +5916,19 @@
             "modal": {
                 "delete_instance_record": "Instanzeintrag löschen?"
             }
+        },
+        "moderation_reports": {
+            "header": "Meine Meldungen",
+            "description": "Meldungen, die du an VRChat gesendet hast.",
+            "empty_open": "Keine offenen Meldungen",
+            "empty_closed": "Keine geschlossenen Meldungen",
+            "failed_to_load": "Meldungen konnten nicht geladen werden",
+            "withdraw": "Zurückziehen",
+            "withdraw_title": "Meldung zu {value} zurückziehen?",
+            "withdraw_description": "Das kann nicht rückgängig gemacht werden.",
+            "failed_to_withdraw": "Meldung konnte nicht zurückgezogen werden",
+            "status_open": "Offen",
+            "status_closed": "Geschlossen"
         }
     },
     "confirm": {

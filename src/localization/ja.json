@@ -2309,7 +2309,9 @@
             "other": {
                 "header": "その他",
                 "edit_invite_message": "メッセージテンプレート",
-                "edit_invite_message_description": "招待とリクエストのメッセージテンプレートを編集"
+                "edit_invite_message_description": "招待とリクエストのメッセージテンプレートを編集",
+                "moderation_reports": "通報履歴",
+                "moderation_reports_description": "送信した通報を確認・取り消しする"
             },
             "success": {
                 "media_item_deleted": "メディア項目を削除しました",
@@ -5952,6 +5954,19 @@
             "modal": {
                 "delete_instance_record": "この訪問記録を削除しますか？"
             }
+        },
+        "moderation_reports": {
+            "header": "通報履歴",
+            "description": "VRChat に送信した通報です。",
+            "empty_open": "対応中の通報はありません",
+            "empty_closed": "終了した通報はありません",
+            "failed_to_load": "通報を読み込めませんでした",
+            "withdraw": "取り消す",
+            "withdraw_title": "{value} への通報を取り消しますか？",
+            "withdraw_description": "この操作は元に戻せません。",
+            "failed_to_withdraw": "通報を取り消せませんでした",
+            "status_open": "対応中",
+            "status_closed": "終了"
         }
     },
     "confirm": {

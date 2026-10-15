@@ -2311,7 +2311,9 @@
             "other": {
                 "header": "Outros",
                 "edit_invite_message": "Modelos de mensagem",
-                "edit_invite_message_description": "Editar modelos de mensagem de convite e pedido"
+                "edit_invite_message_description": "Editar modelos de mensagem de convite e pedido",
+                "moderation_reports": "Minhas denúncias",
+                "moderation_reports_description": "Veja ou retire as denúncias que você enviou"
             },
             "success": {
                 "media_item_deleted": "Item de mídia excluído",
@@ -5914,6 +5916,19 @@
             "modal": {
                 "delete_instance_record": "Excluir registro de instância?"
             }
+        },
+        "moderation_reports": {
+            "header": "Minhas denúncias",
+            "description": "Denúncias que você enviou ao VRChat.",
+            "empty_open": "Nenhuma denúncia aberta",
+            "empty_closed": "Nenhuma denúncia encerrada",
+            "failed_to_load": "Não foi possível carregar as denúncias",
+            "withdraw": "Retirar",
+            "withdraw_title": "Retirar sua denúncia sobre {value}?",
+            "withdraw_description": "Esta ação não pode ser desfeita.",
+            "failed_to_withdraw": "Não foi possível retirar a denúncia",
+            "status_open": "Aberta",
+            "status_closed": "Encerrada"
         }
     },
     "confirm": {
