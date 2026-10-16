@@ -559,7 +559,10 @@
             "search": "Suchen",
             "select": "Auswählen",
             "cancel": "Abbrechen",
-            "view_options": "Ansichtsoptionen"
+            "view_options": "Ansichtsoptionen",
+            "cut": "Ausschneiden",
+            "paste": "Einfügen",
+            "select_all": "Alles auswählen"
         },
         "sort_by": "Sortieren nach:",
         "time_units": {
@@ -3314,6 +3317,10 @@
             },
             "dynamic": {
                 "value_value": "{value} {value2}"
+            },
+            "restart_pending": {
+                "description": "Einige Änderungen werden erst nach einem Neustart von VRCX-0 wirksam.",
+                "restart_now": "Jetzt neu starten"
             }
         },
         "dashboard": {
@@ -3696,6 +3703,12 @@
                 "override_disabled": "Benutzerdefiniertes CSS deaktiviert.",
                 "override_cleared": "Override-CSS gelöscht.",
                 "disable_failed": "Einstellungen für Community-Theme konnten nicht aktualisiert werden."
+            },
+            "confirm": {
+                "delete_theme_title": "Dieses Theme löschen?",
+                "delete_theme_description": "Das Theme wird von diesem Gerät entfernt.",
+                "clear_override_title": "Benutzerdefiniertes CSS löschen?",
+                "clear_override_description": "Ihr gespeichertes CSS wird gelöscht. Das lässt sich nicht rückgängig machen."
             }
         },
         "themes": {

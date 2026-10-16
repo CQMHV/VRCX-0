@@ -559,7 +559,10 @@
             "search": "Search",
             "select": "Select",
             "cancel": "Cancel",
-            "view_options": "View options"
+            "view_options": "View options",
+            "cut": "Cut",
+            "paste": "Paste",
+            "select_all": "Select all"
         },
         "sort_by": "Sort by:",
         "time_units": {
@@ -3318,6 +3321,10 @@
             },
             "dynamic": {
                 "value_value": "{value} {value2}"
+            },
+            "restart_pending": {
+                "description": "Some changes take effect after VRCX-0 restarts.",
+                "restart_now": "Restart now"
             }
         },
         "dashboard": {
@@ -3700,6 +3707,12 @@
                 "override_disabled": "Custom CSS disabled.",
                 "override_cleared": "Custom CSS cleared.",
                 "disable_failed": "Failed to update community theme settings."
+            },
+            "confirm": {
+                "delete_theme_title": "Delete this theme?",
+                "delete_theme_description": "The theme will be removed from this device.",
+                "clear_override_title": "Clear custom CSS?",
+                "clear_override_description": "Your saved custom CSS will be deleted. This can't be undone."
             }
         },
         "themes": {

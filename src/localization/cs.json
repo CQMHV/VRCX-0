@@ -559,7 +559,10 @@
             "search": "Vyhledat",
             "select": "Vybrat",
             "cancel": "Zrušit",
-            "view_options": "Možnosti zobrazení"
+            "view_options": "Možnosti zobrazení",
+            "cut": "Vyjmout",
+            "paste": "Vložit",
+            "select_all": "Vybrat vše"
         },
         "sort_by": "Seřadit dle:",
         "time_units": {
@@ -3324,6 +3327,10 @@
             },
             "dynamic": {
                 "value_value": "{value} {value2}"
+            },
+            "restart_pending": {
+                "description": "Některé změny se projeví až po restartu VRCX-0.",
+                "restart_now": "Restartovat nyní"
             }
         },
         "dashboard": {
@@ -3710,6 +3717,12 @@
                 "override_disabled": "Vlastní CSS bylo zakázáno.",
                 "override_cleared": "Upravené CSS bylo vymazáno.",
                 "disable_failed": "Aktualizace nastavení komunitního motivu se nezdařila."
+            },
+            "confirm": {
+                "delete_theme_title": "Smazat tento motiv?",
+                "delete_theme_description": "Motiv bude z tohoto zařízení odstraněn.",
+                "clear_override_title": "Vymazat vlastní CSS?",
+                "clear_override_description": "Uložené vlastní CSS bude smazáno. Tuto akci nelze vrátit."
             }
         },
         "themes": {

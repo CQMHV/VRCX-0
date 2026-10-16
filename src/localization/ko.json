@@ -559,7 +559,10 @@
             "search": "검색",
             "select": "선택",
             "cancel": "취소",
-            "view_options": "보기 옵션"
+            "view_options": "보기 옵션",
+            "cut": "잘라내기",
+            "paste": "붙여넣기",
+            "select_all": "모두 선택"
         },
         "sort_by": "정렬 기준:",
         "time_units": {
@@ -3255,6 +3258,10 @@
             },
             "dynamic": {
                 "value_value": "{value} {value2}"
+            },
+            "restart_pending": {
+                "description": "일부 설정은 VRCX-0을 다시 시작해야 적용됩니다.",
+                "restart_now": "지금 다시 시작"
             }
         },
         "dashboard": {
@@ -3637,6 +3644,12 @@
                 "override_disabled": "사용자 정의 CSS가 비활성화되었습니다.",
                 "override_cleared": "사용자 정의 CSS를 지웠습니다.",
                 "disable_failed": "커뮤니티 테마 설정을 업데이트하지 못했습니다."
+            },
+            "confirm": {
+                "delete_theme_title": "이 테마를 삭제할까요?",
+                "delete_theme_description": "테마가 이 기기에서 제거됩니다.",
+                "clear_override_title": "사용자 정의 CSS를 지울까요?",
+                "clear_override_description": "저장된 사용자 정의 CSS가 삭제되며 되돌릴 수 없습니다."
             }
         },
         "themes": {
