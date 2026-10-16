@@ -2338,8 +2338,9 @@
                 "refresh_this_tab_to_load_inventory_items": "Aktualisiere diesen Tab, um Inventar-Items zu laden",
                 "load_a_screenshot_to_inspect_embedded_world_player_and_file_metadata": "Lade einen Screenshot, um eingebettete Welt-, Spieler- und Dateimetadaten zu untersuchen"
             },
-            "error": {
-                "dropped_screenshot_path_is_not_available": "Der Pfad des abgelegten Screenshots ist nicht verfügbar"
+            "file_drop": {
+                "upload_to": "Zum Hochladen in „{target}“ hier ablegen",
+                "open_screenshot": "Zum Öffnen des Screenshots hier ablegen"
             },
             "loading": {
                 "deleting_metadata": "Metadaten werden gelöscht",

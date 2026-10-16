@@ -2336,8 +2336,9 @@
                 "refresh_this_tab_to_load_inventory_items": "刷新此标签页以加载库存项目",
                 "load_a_screenshot_to_inspect_embedded_world_player_and_file_metadata": "加载截图以查看嵌入的世界、玩家和文件元数据"
             },
-            "error": {
-                "dropped_screenshot_path_is_not_available": "无法读取拖入的文件，请重新选择截图。"
+            "file_drop": {
+                "upload_to": "松开即可上传到{target}",
+                "open_screenshot": "松开即可打开截图"
             },
             "loading": {
                 "deleting_metadata": "正在删除元数据",

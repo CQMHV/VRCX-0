@@ -2346,8 +2346,9 @@
                 "refresh_this_tab_to_load_inventory_items": "Обновить эту вкладку для загрузки инвентарных запасов",
                 "load_a_screenshot_to_inspect_embedded_world_player_and_file_metadata": "Загрузить скриншот для проверки встроенного мира, игрока и файловых метаданных"
             },
-            "error": {
-                "dropped_screenshot_path_is_not_available": "Сбросить скриншот недоступен"
+            "file_drop": {
+                "upload_to": "Отпустите, чтобы загрузить в раздел «{target}»",
+                "open_screenshot": "Отпустите, чтобы открыть скриншот"
             },
             "loading": {
                 "deleting_metadata": "Удаление метаданных",

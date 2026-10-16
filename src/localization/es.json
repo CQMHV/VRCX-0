@@ -2342,8 +2342,9 @@
                 "refresh_this_tab_to_load_inventory_items": "Actualiza esta pestaña para cargar los elementos del inventario",
                 "load_a_screenshot_to_inspect_embedded_world_player_and_file_metadata": "Carga una captura para inspeccionar los metadatos embebidos de mundo, jugador y archivo"
             },
-            "error": {
-                "dropped_screenshot_path_is_not_available": "No se pudo leer el archivo soltado. Vuelve a seleccionar la captura."
+            "file_drop": {
+                "upload_to": "Suelta para subir a {target}",
+                "open_screenshot": "Suelta para abrir la captura"
             },
             "loading": {
                 "deleting_metadata": "Eliminando metadatos",

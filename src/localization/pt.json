@@ -2338,8 +2338,9 @@
                 "refresh_this_tab_to_load_inventory_items": "Atualize esta aba para carregar os itens de inventário",
                 "load_a_screenshot_to_inspect_embedded_world_player_and_file_metadata": "Carregue uma captura de tela para inspecionar os metadados embutidos de mundo, jogador e arquivo"
             },
-            "error": {
-                "dropped_screenshot_path_is_not_available": "O caminho da captura de tela arrastada não está disponível"
+            "file_drop": {
+                "upload_to": "Solte para enviar para {target}",
+                "open_screenshot": "Solte para abrir a captura de tela"
             },
             "loading": {
                 "deleting_metadata": "Excluindo metadados",

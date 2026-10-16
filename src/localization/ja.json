@@ -2336,8 +2336,9 @@
                 "refresh_this_tab_to_load_inventory_items": "このタブを更新してインベントリ項目を読み込みます",
                 "load_a_screenshot_to_inspect_embedded_world_player_and_file_metadata": "スクリーンショットを読み込んで、埋め込みのワールド、プレイヤー、ファイルメタデータを確認します"
             },
-            "error": {
-                "dropped_screenshot_path_is_not_available": "ドロップされたファイルを読み込めませんでした。スクリーンショットを選択し直してください。"
+            "file_drop": {
+                "upload_to": "ドロップして{target}にアップロード",
+                "open_screenshot": "ドロップしてスクリーンショットを開く"
             },
             "loading": {
                 "deleting_metadata": "メタデータを削除中",

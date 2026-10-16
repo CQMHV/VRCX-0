@@ -2342,8 +2342,9 @@
                 "refresh_this_tab_to_load_inventory_items": "Refresh this tab to load inventory items",
                 "load_a_screenshot_to_inspect_embedded_world_player_and_file_metadata": "Load a screenshot to inspect embedded world, player and file metadata"
             },
-            "error": {
-                "dropped_screenshot_path_is_not_available": "Couldn't read the dropped file. Try selecting the screenshot again."
+            "file_drop": {
+                "upload_to": "Drop to upload to {target}",
+                "open_screenshot": "Drop to open the screenshot"
             },
             "loading": {
                 "deleting_metadata": "Deleting metadata",

@@ -2336,8 +2336,9 @@
                 "refresh_this_tab_to_load_inventory_items": "重新整理此標籤頁以載入庫存物品",
                 "load_a_screenshot_to_inspect_embedded_world_player_and_file_metadata": "載入螢幕截圖以查看嵌入的世界、用戶和檔案後設資料"
             },
-            "error": {
-                "dropped_screenshot_path_is_not_available": "無法取得拖曳的螢幕截圖路徑"
+            "file_drop": {
+                "upload_to": "放開即可上傳到{target}",
+                "open_screenshot": "放開即可開啟螢幕截圖"
             },
             "loading": {
                 "deleting_metadata": "正在刪除後設資料",
