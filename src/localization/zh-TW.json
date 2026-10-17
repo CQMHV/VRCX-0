@@ -2898,7 +2898,9 @@
                         "end_on_game_start": "啟動 VRChat 時關閉勿擾模式",
                         "end_on_game_start_description": "僅在 VRChat 從未執行變為執行時觸發。進入遊戲後仍可再次開啟勿擾模式。",
                         "busy_status": "VRChat 狀態為「請勿打擾」時開啟勿擾模式",
-                        "busy_status_description": "你的 VRChat 狀態為「請勿打擾」時，通知會像勿擾模式一樣暫停。"
+                        "busy_status_description": "你的 VRChat 狀態為「請勿打擾」時，通知會像勿擾模式一樣暫停。",
+                        "hide_video_errors": "影片播放失敗時不通知",
+                        "hide_video_errors_description": "影片播放器出錯（例如無法載入 YouTube）時，不發送桌面通知、TTS、VR 通知與 Webhook。"
                     },
                     "vr_notifications": {
                         "header": "VR 疊加通知",

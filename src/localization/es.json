@@ -2904,7 +2904,9 @@
                         "end_on_game_start": "Desactivar al iniciar VRChat",
                         "end_on_game_start_description": "Solo se aplica cuando VRChat pasa de estar cerrado a ejecutarse. Puedes volver a activar No molestar mientras juegas.",
                         "busy_status": "Activar con el estado «No molestar»",
-                        "busy_status_description": "Mientras tu estado de VRChat sea «No molestar», las notificaciones se pausan como en el modo No molestar."
+                        "busy_status_description": "Mientras tu estado de VRChat sea «No molestar», las notificaciones se pausan como en el modo No molestar.",
+                        "hide_video_errors": "No avisar errores de reproducción de vídeo",
+                        "hide_video_errors_description": "Cuando el reproductor de vídeo falla (por ejemplo, si YouTube no carga), no se envían notificaciones de escritorio, TTS, notificaciones de VR ni webhooks."
                     },
                     "vr_notifications": {
                         "header": "Notificaciones del overlay VR",

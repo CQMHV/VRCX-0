@@ -2898,7 +2898,9 @@
                         "end_on_game_start": "VRChatの起動時に一時停止を解除",
                         "end_on_game_start_description": "VRChatが停止中から起動中に変わったときだけ解除します。プレイ中にもう一度一時停止することもできます。",
                         "busy_status": "ステータスが「取り込み中」の間も一時停止",
-                        "busy_status_description": "VRChat のステータスが「取り込み中」の間は、通知の一時停止と同じように通知を止めます。"
+                        "busy_status_description": "VRChat のステータスが「取り込み中」の間は、通知の一時停止と同じように通知を止めます。",
+                        "hide_video_errors": "動画の再生エラーは通知しない",
+                        "hide_video_errors_description": "動画プレイヤーのエラー（YouTube が読み込めない場合など）では、デスクトップ通知、TTS、VR 通知、Webhook を送りません。"
                     },
                     "vr_notifications": {
                         "header": "VR オーバーレイ通知",

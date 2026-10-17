@@ -2910,7 +2910,9 @@
                         "end_on_game_start": "Vypnout při spuštění VRChat",
                         "end_on_game_start_description": "Platí pouze při přechodu VRChat z vypnutého do spuštěného stavu. Během hraní lze režim Nerušit znovu zapnout.",
                         "busy_status": "Zapnout při stavu Busy",
-                        "busy_status_description": "Dokud je tvůj stav ve VRChatu Busy, oznámení se pozastaví stejně jako v režimu Nerušit."
+                        "busy_status_description": "Dokud je tvůj stav ve VRChatu Busy, oznámení se pozastaví stejně jako v režimu Nerušit.",
+                        "hide_video_errors": "Neoznamovat chyby přehrávání videa",
+                        "hide_video_errors_description": "Při chybách přehrávače videa (například když se YouTube nenačte) se neodešle oznámení na ploše, TTS, VR oznámení ani webhook."
                     },
                     "vr_notifications": {
                         "header": "Oznámení v překryvné vrstvě VR",
