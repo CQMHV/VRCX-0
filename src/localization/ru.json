@@ -627,7 +627,8 @@
     "overlay": {
         "footer": {
             "players": "Игроков: {count}",
-            "instance_duration": "Инстанс {duration}"
+            "instance_duration": "Инстанс {duration}",
+            "online_duration": "Онлайн {duration}"
         },
         "generic_instance_location": "инстанс",
         "discord": {
@@ -2561,6 +2562,7 @@
                     "style_standard": "Стандартный",
                     "style_compact": "Компактный",
                     "friend_icons": "Показывать иконки друзей",
+                    "tracker_disconnect": "Уведомлять об отключении трекера",
                     "timeout": "Длительность показа",
                     "opacity": "Непрозрачность",
                     "filters": "Фильтры уведомлений в шлеме"

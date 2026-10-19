@@ -627,7 +627,8 @@
     "overlay": {
         "footer": {
             "players": "{count} jogadores",
-            "instance_duration": "Instância {duration}"
+            "instance_duration": "Instância {duration}",
+            "online_duration": "Online {duration}"
         },
         "generic_instance_location": "uma instância",
         "discord": {
@@ -2553,6 +2554,7 @@
                     "style_standard": "Padrão",
                     "style_compact": "Compacto",
                     "friend_icons": "Mostrar Ícones de Amigos",
+                    "tracker_disconnect": "Avisar quando um tracker desconectar",
                     "timeout": "Duração",
                     "opacity": "Opacidade",
                     "filters": "Filtros de notificações do headset"
