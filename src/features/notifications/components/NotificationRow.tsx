@@ -183,6 +183,8 @@ export function NotificationRow({
                 </div>
                 <NotificationText
                     notificationId={notification.id}
+                    translatable={view.template === 'broadcast'}
+                    revealActionOnHover
                     headline={view.headline}
                     message={body}
                     accessory={

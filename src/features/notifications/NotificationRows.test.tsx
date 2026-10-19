@@ -12,6 +12,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NotificationRow as NotificationRecord } from '@/repositories/notificationPersistenceRepository';
 import { openGroupDialog, openUserDialog } from '@/services/dialogService';
 import { translateTextDetailed } from '@/services/translationService';
+import { usePreferencesStore } from '@/state/preferencesStore';
 import { HoverCard } from '@/ui/shadcn/hover-card';
 
 import {
@@ -41,13 +42,20 @@ vi.mock('@/services/translationService', () => ({
     translateTextDetailed: vi.fn()
 }));
 
+const initialPreferencesState = usePreferencesStore.getState();
+
 beforeEach(() => {
     vi.mocked(translateTextDetailed).mockReset();
+    usePreferencesStore.setState({
+        translationAPI: true,
+        bioLanguage: 'zh-CN'
+    });
 });
 
 afterEach(() => {
     cleanup();
     vi.clearAllMocks();
+    usePreferencesStore.setState(initialPreferencesState);
 });
 
 function friendRequest(): NotificationRecord {
@@ -124,7 +132,7 @@ describe.each(['page', 'drawer'] as const)(
                     })
                 );
                 renderTextNotification(surface, {
-                    id: 'not_translate',
+                    id: `not_translate_${surface}_${type}`,
                     type,
                     message: 'See you on Friday!',
                     data: {
@@ -134,14 +142,19 @@ describe.each(['page', 'drawer'] as const)(
                 });
 
                 expect(translateTextDetailed).not.toHaveBeenCalled();
-                fireEvent.click(
-                    screen.getByRole('button', {
-                        name: 'translation.translate'
-                    })
+                const translateButton = screen.getByRole('button', {
+                    name: 'translation.translate'
+                });
+                expect(translateButton.parentElement?.className).toContain(
+                    'group-hover:opacity-100'
                 );
-                await screen.findByRole('button', {
+                fireEvent.click(translateButton);
+                const showOriginalButton = await screen.findByRole('button', {
                     name: 'translation.show_original'
                 });
+                expect(
+                    showOriginalButton.parentElement?.className
+                ).not.toContain('opacity-0');
                 expect(translateTextDetailed).toHaveBeenCalledTimes(2);
                 expect(translateTextDetailed).toHaveBeenCalledWith(
                     'Weekly meetup',
@@ -187,8 +200,8 @@ describe.each(['page', 'drawer'] as const)(
                 new Error('Failed to fetch')
             );
             renderTextNotification(surface, {
-                id: 'not_error',
-                type: 'message',
+                id: `not_error_${surface}`,
+                type: 'group.announcement',
                 message: 'Hello there'
             });
             fireEvent.click(
@@ -215,7 +228,7 @@ describe.each(['page', 'drawer'] as const)(
                 })
                 .mockRejectedValueOnce(new Error('Failed to fetch'));
             renderTextNotification(surface, {
-                id: 'not_partial_translation',
+                id: `not_partial_translation_${surface}`,
                 type: 'group.announcement',
                 message: 'See you on Friday!',
                 data: { announcementTitle: 'Weekly meetup' }
@@ -254,8 +267,8 @@ describe.each(['page', 'drawer'] as const)(
                 detectedSourceLang: 'en'
             });
             renderTextNotification(surface, {
-                id: 'not_paragraphs',
-                type: 'message',
+                id: `not_paragraphs_${surface}`,
+                type: 'group.announcement',
                 message: source
             });
             fireEvent.click(
@@ -272,34 +285,37 @@ describe.each(['page', 'drawer'] as const)(
             );
         });
 
-        it('keeps the emoji preview when translating a boop message', async () => {
-            vi.mocked(translateTextDetailed).mockResolvedValueOnce({
-                text: '你好',
-                detectedSourceLang: 'en'
-            });
-            renderTextNotification(surface, {
-                id: 'not_boop',
-                type: 'boop',
-                message: 'Hello there',
-                details: {
-                    emojiId: 'file_emoji',
-                    imageUrl: 'https://example.com/emoji.png'
-                }
-            });
-            expect(screen.getByAltText('file_emoji')).toBeTruthy();
-            fireEvent.click(
-                screen.getByRole('button', { name: 'translation.translate' })
-            );
-            await screen.findByText('你好');
-            expect(screen.getByAltText('file_emoji')).toBeTruthy();
-        });
+        it.each([
+            { type: 'group.announcement', translationAPI: false },
+            { type: 'boop', translationAPI: true },
+            { type: 'group.invite', translationAPI: true }
+        ])(
+            'offers translation only for broadcasts when enabled: $type with translation $translationAPI',
+            async ({ type, translationAPI }) => {
+                usePreferencesStore.setState({ translationAPI });
+                renderTextNotification(surface, {
+                    id: `not_untranslatable_${surface}_${type}`,
+                    type,
+                    message: 'Hello there',
+                    data: { announcementTitle: 'Weekly meetup' }
+                });
+                await waitFor(() =>
+                    expect(
+                        screen.queryByRole('button', {
+                            name: 'translation.translate'
+                        })
+                    ).toBeNull()
+                );
+                expect(screen.getByText('Hello there')).toBeTruthy();
+            }
+        );
 
         it.each(['', '🎉🎉'])(
             'hides translation for empty or symbol-only messages: %s',
             async (message) => {
                 renderTextNotification(surface, {
                     id: 'not_empty',
-                    type: 'message',
+                    type: 'group.announcement',
                     message
                 });
                 await waitFor(() =>
@@ -319,7 +335,7 @@ describe.each(['page', 'drawer'] as const)(
                 detectedSourceLang: 'en'
             });
             renderTextNotification(surface, {
-                id: 'not_title',
+                id: `not_title_${surface}`,
                 type: 'group.announcement',
                 message: 'Weekly meetup',
                 data: { announcementTitle: 'Weekly meetup' }
@@ -350,6 +366,7 @@ it('preserves the translated announcement headline in the hover details', async 
                     message: 'See you on Friday!',
                     data: { announcementTitle: 'Weekly meetup' }
                 }}
+                translatable
                 senderName="Maple Club"
                 typeLabel="Announcement"
                 message="See you on Friday!"
@@ -374,6 +391,46 @@ it('preserves the translated announcement headline in the hover details', async 
         'See you on Friday!',
         'zh-CN'
     );
+});
+
+it('reuses the row translation in the hover details without translating again', async () => {
+    vi.mocked(translateTextDetailed).mockImplementation(async (source) => ({
+        text: source === 'Weekly meetup' ? '每周聚会' : '周五见！',
+        detectedSourceLang: 'en'
+    }));
+    const notification: NotificationRecord = {
+        id: 'not_shared_cache',
+        type: 'group.announcement',
+        message: 'See you on Friday!',
+        data: { announcementTitle: 'Weekly meetup' }
+    };
+    renderTextNotification('page', notification);
+    fireEvent.click(
+        screen.getByRole('button', { name: 'translation.translate' })
+    );
+    await screen.findByText('每周聚会');
+    expect(translateTextDetailed).toHaveBeenCalledTimes(2);
+    cleanup();
+
+    render(
+        <HoverCard open>
+            <NotificationHoverContent
+                notification={notification}
+                translatable
+                senderName="Maple Club"
+                typeLabel="Announcement"
+                message="See you on Friday!"
+                absoluteTime=""
+                actorImageUrl=""
+            />
+        </HoverCard>
+    );
+    fireEvent.click(
+        screen.getByRole('button', { name: 'translation.translate' })
+    );
+    await screen.findByText('每周聚会');
+    expect(screen.getByText('周五见！')).toBeTruthy();
+    expect(translateTextDetailed).toHaveBeenCalledTimes(2);
 });
 
 describe('group invite notification rows', () => {

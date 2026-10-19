@@ -336,6 +336,8 @@ export function NotificationDrawerRow({
                             </div>
                             <NotificationText
                                 notificationId={notification.id}
+                                translatable={isBroadcast}
+                                revealActionOnHover
                                 headline={headline}
                                 message={previewMessage}
                                 accessory={
@@ -464,6 +466,7 @@ export function NotificationDrawerRow({
             />
             <NotificationHoverContent
                 notification={notification}
+                translatable={isBroadcast}
                 senderName={senderName || typeLabel}
                 typeLabel={typeLabel}
                 message={message}

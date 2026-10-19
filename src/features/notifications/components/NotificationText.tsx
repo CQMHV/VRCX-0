@@ -4,17 +4,28 @@ import { useTranslation } from 'react-i18next';
 import { TranslationAction } from '@/components/translation/TranslationAction';
 import { TranslationMeta } from '@/components/translation/TranslationMeta';
 import { translationErrorI18nKey } from '@/components/translation/types';
-import { useTextTranslation } from '@/components/translation/useTextTranslation';
+import {
+    useTextTranslation,
+    type TranslatedEntry
+} from '@/components/translation/useTextTranslation';
+import { cn } from '@/lib/utils';
 import { getLanguageName } from '@/localization/index';
+import { usePreferencesStore } from '@/state/preferencesStore';
+
+const notificationTranslationCache = new Map<string, TranslatedEntry>();
 
 export function NotificationText({
     notificationId,
+    translatable,
+    revealActionOnHover = false,
     headline = '',
     message,
     accessory,
     children
 }: {
     notificationId?: string;
+    translatable: boolean;
+    revealActionOnHover?: boolean;
     headline?: string;
     message: string;
     accessory?: ReactNode;
@@ -25,13 +36,21 @@ export function NotificationText({
     }) => ReactNode;
 }) {
     const { t } = useTranslation();
+    const translationEnabled = usePreferencesStore(
+        (state) => state.translationAPI
+    );
+    const targetLanguage = usePreferencesStore((state) => state.bioLanguage);
+    const canOfferTranslation = translatable && translationEnabled;
+    const entityPrefix = `notification:${targetLanguage}:${notificationId || ''}`;
     const titleTranslation = useTextTranslation({
-        source: headline,
-        entityId: `notification:${notificationId || ''}:headline`
+        source: canOfferTranslation ? headline : '',
+        entityId: `${entityPrefix}:headline`,
+        cache: notificationTranslationCache
     });
     const bodyTranslation = useTextTranslation({
-        source: message === headline ? '' : message,
-        entityId: `notification:${notificationId || ''}:message`
+        source: canOfferTranslation && message !== headline ? message : '',
+        entityId: `${entityPrefix}:message`,
+        cache: notificationTranslationCache
     });
     const translations = [titleTranslation, bodyTranslation];
     const canTranslate = translations.some((part) => part.canTranslate);
@@ -76,28 +95,39 @@ export function NotificationText({
                 ) : null}
             </div>
             {accessory}
-            <TranslationAction
-                density="icon"
-                status={
-                    isLoading
-                        ? 'loading'
-                        : errorKind
-                          ? 'error'
-                          : isTranslated
-                            ? 'translated'
-                            : 'idle'
-                }
-                isTranslated={isTranslated}
-                canTranslate={canTranslate}
-                onTranslate={() => {
-                    void Promise.all(
-                        translations.map((part) => part.translate())
-                    );
-                }}
-                onShowOriginal={() =>
-                    translations.forEach((part) => part.showOriginal())
-                }
-            />
+            <div
+                className={cn(
+                    'shrink-0 transition-opacity',
+                    revealActionOnHover &&
+                        !isTranslated &&
+                        !isLoading &&
+                        !errorKind &&
+                        'opacity-0 group-hover:opacity-100 focus-within:opacity-100'
+                )}
+            >
+                <TranslationAction
+                    density="icon"
+                    status={
+                        isLoading
+                            ? 'loading'
+                            : errorKind
+                              ? 'error'
+                              : isTranslated
+                                ? 'translated'
+                                : 'idle'
+                    }
+                    isTranslated={isTranslated}
+                    canTranslate={canTranslate}
+                    onTranslate={() => {
+                        void Promise.all(
+                            translations.map((part) => part.translate())
+                        );
+                    }}
+                    onShowOriginal={() =>
+                        translations.forEach((part) => part.showOriginal())
+                    }
+                />
+            </div>
         </div>
     );
 }

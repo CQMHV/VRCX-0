@@ -80,6 +80,7 @@ function NotificationHoverHeader({
 
 export function NotificationHoverContent({
     notification,
+    translatable,
     senderName,
     typeLabel,
     message,
@@ -90,6 +91,7 @@ export function NotificationHoverContent({
     actorImageUrl: string;
     message: string;
     notification: NotificationRow;
+    translatable: boolean;
     senderName: string;
     typeLabel: string;
 }) {
@@ -119,6 +121,7 @@ export function NotificationHoverContent({
                     />
                     <NotificationText
                         notificationId={notification.id}
+                        translatable={translatable}
                         headline={hoverTitle}
                         message={notification.message || ''}
                     >
@@ -156,18 +159,11 @@ export function NotificationHoverContent({
                     <div className="mb-1 text-xs">
                         <NotificationLocationLine notification={notification} />
                     </div>
-                    <NotificationText
-                        notificationId={notification.id}
-                        message={friendMessage}
-                    >
-                        {({ message }) =>
-                            message ? (
-                                <p className="text-muted-foreground text-xs leading-relaxed break-words whitespace-pre-wrap">
-                                    {message}
-                                </p>
-                            ) : null
-                        }
-                    </NotificationText>
+                    {friendMessage ? (
+                        <p className="text-muted-foreground text-xs leading-relaxed break-words">
+                            {friendMessage}
+                        </p>
+                    ) : null}
                 </>
             ) : (
                 <>
@@ -178,26 +174,16 @@ export function NotificationHoverContent({
                         title={fallbackTitle}
                         typeLabel={typeLabel}
                     />
-                    <NotificationText
-                        notificationId={notification.id}
-                        headline={notification.title || ''}
-                        message={message}
-                    >
-                        {({ headline, message: visibleMessage }) => (
-                            <>
-                                {headline ? (
-                                    <p className="mb-1 text-sm font-medium break-words whitespace-pre-wrap">
-                                        {headline}
-                                    </p>
-                                ) : null}
-                                {visibleMessage ? (
-                                    <p className="text-muted-foreground text-xs leading-relaxed break-words whitespace-pre-wrap">
-                                        {visibleMessage}
-                                    </p>
-                                ) : null}
-                            </>
-                        )}
-                    </NotificationText>
+                    {notification?.title ? (
+                        <p className="mb-1 text-sm font-medium">
+                            {notification.title}
+                        </p>
+                    ) : null}
+                    {message ? (
+                        <p className="text-muted-foreground text-xs leading-relaxed break-words whitespace-pre-line">
+                            {message}
+                        </p>
+                    ) : null}
                 </>
             )}
             {absoluteTime ? (
