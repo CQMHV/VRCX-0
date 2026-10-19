@@ -870,6 +870,8 @@
             "notification_center_page": "Seite der Benachrichtigungszentrale.",
             "my_avatars": "Meine Avatare",
             "avatar_collection_page": "Avatar-Sammlungsseite.",
+            "vrchat_log": "VRChat-Log-Viewer",
+            "vrchat_log_page": "VRChat-Ausgabeprotokoll live ansehen und filtern.",
             "tools": "Werkzeuge",
             "tools_launcher_page": "Werkzeug-Startseite."
         }

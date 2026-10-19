@@ -870,6 +870,8 @@
             "notification_center_page": "Страница центра уведомлений.",
             "my_avatars": "Мои Аватары",
             "avatar_collection_page": "Страница коллекции аватаров.",
+            "vrchat_log": "VRChat Просмотр журнала",
+            "vrchat_log_page": "Выходной журнал VRChat в реальном времени с фильтрами.",
             "tools": "Инструменты",
             "tools_launcher_page": "Страница для запуска инструментов."
         }

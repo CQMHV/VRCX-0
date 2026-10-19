@@ -870,6 +870,8 @@
             "notification_center_page": "모든 알림입니다.",
             "my_avatars": "내 아바타",
             "avatar_collection_page": "업로드한 아바타입니다.",
+            "vrchat_log": "VRChat 로그 뷰어",
+            "vrchat_log_page": "VRChat 출력 로그를 실시간으로 보고 필터링합니다.",
             "tools": "도구",
             "tools_launcher_page": "모든 도구를 한곳에 모았습니다."
         }

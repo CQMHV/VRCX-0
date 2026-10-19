@@ -870,6 +870,8 @@
             "notification_center_page": "すべての通知を表示します。",
             "my_avatars": "自分のアバター",
             "avatar_collection_page": "アップロードしたアバターを表示します。",
+            "vrchat_log": "VRChat ログビューアー",
+            "vrchat_log_page": "VRChat の出力ログをリアルタイムで確認・絞り込みできます。",
             "tools": "ツール",
             "tools_launcher_page": "すべてのツールをまとめて表示します。"
         }

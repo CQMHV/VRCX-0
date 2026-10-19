@@ -870,6 +870,8 @@
             "notification_center_page": "你的所有通知。",
             "my_avatars": "我的角色",
             "avatar_collection_page": "你上傳的角色。",
+            "vrchat_log": "VRChat 紀錄查看器",
+            "vrchat_log_page": "即時查看並篩選 VRChat 輸出日誌。",
             "tools": "工具",
             "tools_launcher_page": "所有工具集中於此。"
         }

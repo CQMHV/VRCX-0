@@ -870,6 +870,8 @@
             "notification_center_page": "Stránka centra oznámení.",
             "my_avatars": "Moji avataři",
             "avatar_collection_page": "Stránka sbírky avatarů.",
+            "vrchat_log": "Prohlížeč záznamů VRChat",
+            "vrchat_log_page": "Živý výstupní protokol VRChat s filtry.",
             "tools": "Nástroje",
             "tools_launcher_page": "Stránka spouštěče nástrojů."
         }
