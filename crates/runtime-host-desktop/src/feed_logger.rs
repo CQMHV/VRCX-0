@@ -873,7 +873,7 @@ impl DesktopFeedLoggerRuntime {
 }
 
 fn store_settings(config: &ConfigRepository, settings: &PersistedSettings) -> Result<()> {
-    let sealed = secrets::seal_secret_with_status(&settings.password);
+    let sealed = secrets::seal_secret_with_status(None, &settings.password);
     if secrets::is_initialized() && !sealed.encrypted && !settings.password.is_empty() {
         config
             .remove(secrets::CLEANUP_COMPLETED_CONFIG_KEY)
