@@ -5764,7 +5764,7 @@
                 "next_day": "后一天",
                 "zoom_in": "放大",
                 "zoom_out": "缩小",
-                "jump_to_event": "跳到「{title}」",
+                "jump_to_event": "跳到“{title}”",
                 "continues": "（续）"
             },
             "series": {
