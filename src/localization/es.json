@@ -3669,7 +3669,7 @@
             },
             "action": {
                 "install": "Instalar y activar",
-                "update_enable": "Actualizar",
+                "update": "Actualizar",
                 "enable_theme": "Activar tema",
                 "disable_theme": "Desactivar tema",
                 "delete_theme": "Eliminar tema",
@@ -3712,7 +3712,10 @@
                 "override_saved": "CSS personalizado aplicado.",
                 "override_disabled": "CSS personalizado desactivado.",
                 "override_cleared": "CSS personalizado borrado.",
-                "disable_failed": "No se pudieron actualizar los ajustes de tema de la comunidad."
+                "disable_failed": "No se pudieron actualizar los ajustes de tema de la comunidad.",
+                "update_available": "Hay una nueva versión de {{name}}",
+                "theme_updated": "Tema de la comunidad actualizado a {{version}}.",
+                "update_failed": "No se pudo actualizar el tema de la comunidad."
             },
             "confirm": {
                 "delete_theme_title": "¿Eliminar este tema?",

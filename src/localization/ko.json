@@ -3606,7 +3606,7 @@
             },
             "action": {
                 "install": "설치 및 활성화",
-                "update_enable": "업데이트",
+                "update": "업데이트",
                 "enable_theme": "테마 활성화",
                 "disable_theme": "테마 비활성화",
                 "delete_theme": "테마 삭제",
@@ -3649,7 +3649,10 @@
                 "override_saved": "사용자 정의 CSS를 적용했습니다.",
                 "override_disabled": "사용자 정의 CSS가 비활성화되었습니다.",
                 "override_cleared": "사용자 정의 CSS를 지웠습니다.",
-                "disable_failed": "커뮤니티 테마 설정을 업데이트하지 못했습니다."
+                "disable_failed": "커뮤니티 테마 설정을 업데이트하지 못했습니다.",
+                "update_available": "{{name}} 테마의 새 버전이 있습니다",
+                "theme_updated": "커뮤니티 테마를 {{version}}(으)로 업데이트했습니다.",
+                "update_failed": "커뮤니티 테마를 업데이트하지 못했습니다."
             },
             "confirm": {
                 "delete_theme_title": "이 테마를 삭제할까요?",

@@ -3665,7 +3665,7 @@
             },
             "action": {
                 "install": "Installieren und aktivieren",
-                "update_enable": "Aktualisieren",
+                "update": "Aktualisieren",
                 "enable_theme": "Theme aktivieren",
                 "disable_theme": "Theme deaktivieren",
                 "delete_theme": "Theme löschen",
@@ -3708,7 +3708,10 @@
                 "override_saved": "Override-CSS angewendet.",
                 "override_disabled": "Benutzerdefiniertes CSS deaktiviert.",
                 "override_cleared": "Override-CSS gelöscht.",
-                "disable_failed": "Einstellungen für Community-Theme konnten nicht aktualisiert werden."
+                "disable_failed": "Einstellungen für Community-Theme konnten nicht aktualisiert werden.",
+                "update_available": "Neue Version von {{name}} verfügbar",
+                "theme_updated": "Community-Theme auf {{version}} aktualisiert.",
+                "update_failed": "Community-Theme konnte nicht aktualisiert werden."
             },
             "confirm": {
                 "delete_theme_title": "Dieses Theme löschen?",

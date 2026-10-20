@@ -3663,7 +3663,7 @@
             },
             "action": {
                 "install": "安装并启用",
-                "update_enable": "更新",
+                "update": "更新",
                 "enable_theme": "启用主题",
                 "disable_theme": "禁用主题",
                 "delete_theme": "删除主题",
@@ -3706,7 +3706,10 @@
                 "override_saved": "自定义 CSS 已应用。",
                 "override_disabled": "自定义 CSS 已禁用。",
                 "override_cleared": "自定义 CSS 已清空。",
-                "disable_failed": "更新社区主题设置失败。"
+                "disable_failed": "更新社区主题设置失败。",
+                "update_available": "主题“{{name}}”有新版本",
+                "theme_updated": "社区主题已更新到 {{version}}。",
+                "update_failed": "更新社区主题失败。"
             },
             "confirm": {
                 "delete_theme_title": "删除这个主题？",

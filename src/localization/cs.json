@@ -3679,7 +3679,7 @@
             },
             "action": {
                 "install": "Nainstalovat a povolit",
-                "update_enable": "Aktualizovat",
+                "update": "Aktualizovat",
                 "enable_theme": "Povolit motiv",
                 "disable_theme": "Zakázat motiv",
                 "delete_theme": "Smazat motiv",
@@ -3722,7 +3722,10 @@
                 "override_saved": "Upravené CSS bylo použito.",
                 "override_disabled": "Vlastní CSS bylo zakázáno.",
                 "override_cleared": "Upravené CSS bylo vymazáno.",
-                "disable_failed": "Aktualizace nastavení komunitního motivu se nezdařila."
+                "disable_failed": "Aktualizace nastavení komunitního motivu se nezdařila.",
+                "update_available": "Je k dispozici nová verze motivu {{name}}",
+                "theme_updated": "Komunitní motiv byl aktualizován na verzi {{version}}.",
+                "update_failed": "Aktualizace komunitního motivu se nezdařila."
             },
             "confirm": {
                 "delete_theme_title": "Smazat tento motiv?",

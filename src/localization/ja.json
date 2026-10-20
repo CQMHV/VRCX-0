@@ -3663,7 +3663,7 @@
             },
             "action": {
                 "install": "インストールして有効化",
-                "update_enable": "更新",
+                "update": "更新",
                 "enable_theme": "テーマを有効化",
                 "disable_theme": "テーマを無効化",
                 "delete_theme": "テーマを削除",
@@ -3706,7 +3706,10 @@
                 "override_saved": "カスタム CSS を適用しました。",
                 "override_disabled": "カスタム CSS を無効化しました。",
                 "override_cleared": "カスタム CSS をクリアしました。",
-                "disable_failed": "コミュニティテーマ設定の更新に失敗しました。"
+                "disable_failed": "コミュニティテーマ設定の更新に失敗しました。",
+                "update_available": "テーマ「{{name}}」の新しいバージョンがあります",
+                "theme_updated": "コミュニティテーマを {{version}} に更新しました。",
+                "update_failed": "コミュニティテーマを更新できませんでした。"
             },
             "confirm": {
                 "delete_theme_title": "このテーマを削除しますか？",

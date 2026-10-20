@@ -3728,6 +3728,7 @@ export type CommunityThemeCatalog = {
 };
 export type CommunityThemeConfigureInput =
     | { kind: 'install'; themeId: string }
+    | { kind: 'update'; themeId: string }
     | { kind: 'enable'; themeId: string | null }
     | { kind: 'disable' }
     | { kind: 'delete'; themeId: string | null }
@@ -3777,8 +3778,14 @@ export type CommunityThemeProjection = {
     installedCssSnapshot: string;
     overrideCss: string;
     overrideCssEnabled: boolean;
+    updates: CommunityThemeUpdate[];
 };
 export type CommunityThemeStatsEntry = { downloads: number };
+export type CommunityThemeUpdate = {
+    themeId: string;
+    installedVersion: string;
+    latestVersion: string;
+};
 export type ConfigReadEntry = { key: string; value: string };
 export type ConfigWriteEntry = { key: string; value: string };
 export type ContentFilter =
