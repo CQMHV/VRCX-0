@@ -2766,6 +2766,14 @@ const generatedCommands = {
             folderPath
         });
     },
+    async appPickRandomScreenshotInFolderTree(
+        folderPath: string
+    ): Promise<string | null> {
+        return await TAURI_INVOKE(
+            'app__pick_random_screenshot_in_folder_tree',
+            { folderPath }
+        );
+    },
     async appGetWorldScreenshots(
         worldId: string
     ): Promise<ScreenshotLibraryImage[]> {
