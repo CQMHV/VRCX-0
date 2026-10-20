@@ -590,6 +590,7 @@ fn fresh_offline_baseline_keeps_a_pending_offline_through_reconnect() -> Result<
         runtime_with_active_session("reconnect-placeholder-offline")?;
     let old_transport = active_transport(&runtime);
     seed_online_friend(&runtime, &active_session, old_transport.generation)?;
+    runtime.set_task_executor_for_test(DiscardTaskExecutor);
     runtime.handle_active_friend_ws_message_for_test(&RealtimeWsMessagePayload {
         json: json!({"type": "friend-offline", "content": {"userId": "usr_friend"}}),
         raw: "{}".into(),
@@ -624,7 +625,6 @@ fn fresh_offline_baseline_keeps_a_pending_offline_through_reconnect() -> Result<
         None,
         HashMap::from([("usr_friend".into(), placeholder)]),
     )?;
-    runtime.set_task_executor_for_test(DiscardTaskExecutor);
 
     runtime.runtime().start_from_friend_baseline(
         active_session.user_id.clone(),
