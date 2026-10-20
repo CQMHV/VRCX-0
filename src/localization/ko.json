@@ -3991,11 +3991,10 @@
                 "moderation_enable_chatbox": "채팅창 음소거 해제",
                 "moderation_disable_chatbox": "채팅창 음소거",
                 "edit_status": "소셜 상태 수정",
-                "edit_profile_details": "프로필 세부정보 수정",
-                "edit_profile_media": "배너 및 아이콘 수정",
                 "report_hacking": "불법 프로그램 신고",
                 "unfriend": "친구 삭제",
-                "edit_note_memo": "메모 및 로컬 메모 편집"
+                "edit_note_memo": "메모 및 로컬 메모 편집",
+                "edit_profile": "프로필 편집"
             },
             "group_invite": {
                 "select_group": "그룹 선택",
@@ -4267,9 +4266,7 @@
             "description": {
                 "update_your_social_status_and_status_description": "소셜 상태 및 상태 메시지 업데이트",
                 "status_description": "상태 메시지",
-                "clear_status_description": "상태 메시지 지우기",
-                "edit_profile_details": "프로필 세부정보 편집",
-                "update_your_profile_details": "카드에 표시된 프로필 세부정보를 편집하세요."
+                "clear_status_description": "상태 메시지 지우기"
             },
             "toast": {
                 "memo_saved": "로컬 메모가 저장되었습니다.",
@@ -4340,6 +4337,12 @@
                 "left_value_groups": "그룹 {value}개에서 탈퇴했습니다",
                 "enable_value": "{value} 활성화",
                 "disable_value": "{value} 비활성화"
+            },
+            "profile_edit": {
+                "details": "기본 정보",
+                "avatar_image": "아바타 이미지",
+                "solid_color": "단색",
+                "apply_color": "색상 적용"
             }
         },
         "world": {
@@ -5237,7 +5240,9 @@
                 "compact": "콤팩트",
                 "dense": "조밀"
             },
-            "crop_image": "업로드 확인"
+            "crop_image": "업로드 확인",
+            "locked_title": "업로드한 이미지가 일시적으로 잠겨 있습니다",
+            "locked_description": "이미지는 그대로 저장되어 있습니다. VRC+에 가입하면 다시 사용할 수 있습니다."
         },
         "inventory": {
             "header": "인벤토리",

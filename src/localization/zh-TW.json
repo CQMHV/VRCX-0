@@ -4048,11 +4048,10 @@
                 "moderation_enable_chatbox": "顯示對話框",
                 "moderation_disable_chatbox": "隱藏對話框",
                 "edit_status": "編輯社交狀態",
-                "edit_profile_details": "編輯個人資料",
-                "edit_profile_media": "編輯橫幅和頭像",
                 "report_hacking": "以駭入原因檢舉",
                 "unfriend": "解除好友",
-                "edit_note_memo": "編輯備註與本機備註"
+                "edit_note_memo": "編輯備註與本機備註",
+                "edit_profile": "編輯個人資料"
             },
             "group_invite": {
                 "description": "選擇要邀請 {value} 加入的群組。",
@@ -4324,9 +4323,7 @@
             "description": {
                 "update_your_social_status_and_status_description": "更新你的社交狀態和狀態訊息",
                 "status_description": "狀態訊息",
-                "clear_status_description": "清除狀態訊息",
-                "edit_profile_details": "編輯個人資料詳細資訊",
-                "update_your_profile_details": "編輯顯示在你的卡片上的個人資料詳細資訊。"
+                "clear_status_description": "清除狀態訊息"
             },
             "toast": {
                 "memo_saved": "本機備註已儲存",
@@ -4397,6 +4394,12 @@
                 "left_value_groups": "已退出 {value} 個群組",
                 "enable_value": "啟用 {value}",
                 "disable_value": "停用 {value}"
+            },
+            "profile_edit": {
+                "details": "基本資料",
+                "avatar_image": "角色圖片",
+                "solid_color": "純色",
+                "apply_color": "套用顏色"
             }
         },
         "world": {
@@ -5284,7 +5287,9 @@
                 "compact": "緊湊",
                 "dense": "緊密"
             },
-            "crop_image": "確認上傳"
+            "crop_image": "確認上傳",
+            "locked_title": "已上傳的圖片暫時鎖定",
+            "locked_description": "圖片仍會保留，加入 VRC+ 後即可恢復使用。"
         },
         "inventory": {
             "header": "庫存",

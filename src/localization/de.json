@@ -4054,11 +4054,10 @@
                 "moderation_enable_chatbox": "Chatbox-Stummschaltung aufheben",
                 "moderation_disable_chatbox": "Chatbox stummschalten",
                 "edit_status": "Sozialen Status bearbeiten",
-                "edit_profile_details": "Profildetails bearbeiten",
-                "edit_profile_media": "Banner und Icon bearbeiten",
                 "report_hacking": "Wegen Hacking melden",
                 "unfriend": "Freundschaft beenden",
-                "edit_note_memo": "Notiz und lokale Notiz bearbeiten"
+                "edit_note_memo": "Notiz und lokale Notiz bearbeiten",
+                "edit_profile": "Profil bearbeiten"
             },
             "group_invite": {
                 "select_group": "Gruppe auswählen",
@@ -4330,9 +4329,7 @@
             "description": {
                 "update_your_social_status_and_status_description": "Aktualisiere deinen sozialen Status und deine Statusnachricht",
                 "status_description": "Statusnachricht",
-                "clear_status_description": "Statusnachricht löschen",
-                "edit_profile_details": "Profildetails bearbeiten",
-                "update_your_profile_details": "Bearbeite die Profildetails, die auf deiner Karte angezeigt werden."
+                "clear_status_description": "Statusnachricht löschen"
             },
             "toast": {
                 "memo_saved": "Lokale Notiz gespeichert",
@@ -4403,6 +4400,12 @@
                 "left_value_groups": "{value} Gruppen verlassen",
                 "enable_value": "{value} aktivieren",
                 "disable_value": "{value} deaktivieren"
+            },
+            "profile_edit": {
+                "details": "Basisinfos",
+                "avatar_image": "Avatarbild",
+                "solid_color": "Einfarbig",
+                "apply_color": "Farbe anwenden"
             }
         },
         "world": {
@@ -5255,7 +5258,9 @@
                 "compact": "Kompakt",
                 "dense": "Dicht"
             },
-            "crop_image": "Upload bestätigen"
+            "crop_image": "Upload bestätigen",
+            "locked_title": "Deine hochgeladenen Bilder sind vorübergehend gesperrt",
+            "locked_description": "Sie bleiben gespeichert. Mit VRC+ kannst du sie wieder verwenden."
         },
         "inventory": {
             "header": "Inventar",

@@ -4058,11 +4058,10 @@
                 "moderation_enable_chatbox": "Dejar de silenciar el chatbox",
                 "moderation_disable_chatbox": "Silenciar el chatbox",
                 "edit_status": "Editar estado social",
-                "edit_profile_details": "Editar detalles del perfil",
-                "edit_profile_media": "Editar banner e icono",
                 "report_hacking": "Denunciar por trampas",
                 "unfriend": "Eliminar amigo",
-                "edit_note_memo": "Editar nota y nota local"
+                "edit_note_memo": "Editar nota y nota local",
+                "edit_profile": "Editar perfil"
             },
             "group_invite": {
                 "select_group": "Selecciona un grupo",
@@ -4334,9 +4333,7 @@
             "description": {
                 "update_your_social_status_and_status_description": "Actualiza tu estado social y tu mensaje de estado",
                 "status_description": "Mensaje de estado",
-                "clear_status_description": "Borrar el mensaje de estado",
-                "edit_profile_details": "Editar detalles del perfil",
-                "update_your_profile_details": "Edita los detalles del perfil que se muestran en tu tarjeta."
+                "clear_status_description": "Borrar el mensaje de estado"
             },
             "toast": {
                 "memo_saved": "Nota local guardada",
@@ -4407,6 +4404,12 @@
                 "left_value_groups": "Has abandonado {value} grupos",
                 "enable_value": "Activar {value}",
                 "disable_value": "Desactivar {value}"
+            },
+            "profile_edit": {
+                "details": "Información básica",
+                "avatar_image": "Imagen del avatar",
+                "solid_color": "Color sólido",
+                "apply_color": "Aplicar color"
             }
         },
         "world": {
@@ -5303,7 +5306,9 @@
                 "compact": "Compacta",
                 "dense": "Densa"
             },
-            "crop_image": "Confirmar subida"
+            "crop_image": "Confirmar subida",
+            "locked_title": "Tus imágenes subidas están bloqueadas temporalmente",
+            "locked_description": "Siguen guardadas. Únete a VRC+ para volver a usarlas."
         },
         "inventory": {
             "header": "Inventario",

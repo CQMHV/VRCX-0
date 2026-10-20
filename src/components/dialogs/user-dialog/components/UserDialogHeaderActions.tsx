@@ -5,7 +5,6 @@ import {
     EyeOffIcon,
     HandIcon,
     HistoryIcon,
-    ImageIcon,
     MailPlusIcon,
     MailQuestionIcon,
     MessageSquarePlusIcon,
@@ -18,7 +17,6 @@ import {
     RotateCcwIcon,
     SettingsIcon,
     ShieldIcon,
-    SparklesIcon,
     UserIcon,
     UserCheckIcon,
     UserPlusIcon,
@@ -68,9 +66,7 @@ type UserActionMenuCommands = Pick<
     | 'onShowAvatarAuthor'
     | 'onOpenFallbackAvatar'
     | 'onEditSelfStatus'
-    | 'onEditSelfProfileDetails'
-    | 'onEditSelfProfileMedia'
-    | 'onEditSelfProfileDecorations'
+    | 'onEditSelfProfile'
     | 'onFriendRequest'
     | 'onInvite'
     | 'onInviteMessage'
@@ -117,9 +113,7 @@ export function UserDialogHeaderActions({
         onShowAvatarAuthor,
         onOpenFallbackAvatar,
         onEditSelfStatus,
-        onEditSelfProfileDetails,
-        onEditSelfProfileMedia,
-        onEditSelfProfileDecorations,
+        onEditSelfProfile,
         onFriendRequest,
         onInvite,
         onInviteMessage,
@@ -206,23 +200,9 @@ export function UserDialogHeaderActions({
                         <EntityActionItem
                             icon={PencilIcon}
                             disabled={actionsDisabled}
-                            onClick={onEditSelfProfileDetails}
+                            onClick={onEditSelfProfile}
                         >
-                            {t('dialog.user.actions.edit_profile_details')}
-                        </EntityActionItem>
-                        <EntityActionItem
-                            icon={ImageIcon}
-                            disabled={actionsDisabled}
-                            onClick={onEditSelfProfileMedia}
-                        >
-                            {t('dialog.user.actions.edit_profile_media')}
-                        </EntityActionItem>
-                        <EntityActionItem
-                            icon={SparklesIcon}
-                            disabled={actionsDisabled}
-                            onClick={onEditSelfProfileDecorations}
-                        >
-                            {t('dialog.inventory.profile_decorations')}
+                            {t('dialog.user.actions.edit_profile')}
                         </EntityActionItem>
                     </>
                 ) : null}

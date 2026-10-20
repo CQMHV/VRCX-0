@@ -4054,11 +4054,10 @@
                 "moderation_enable_chatbox": "Ativar Chatbox",
                 "moderation_disable_chatbox": "Desativar Chatbox",
                 "edit_status": "Editar Status Social",
-                "edit_profile_details": "Editar Detalhes do Perfil",
-                "edit_profile_media": "Editar Banner e Ícone",
                 "report_hacking": "Denunciar por Hacking",
                 "unfriend": "Desfazer Amizade",
-                "edit_note_memo": "Editar Nota e Memo"
+                "edit_note_memo": "Editar Nota e Memo",
+                "edit_profile": "Editar perfil"
             },
             "group_invite": {
                 "description": "Escolha o grupo para o qual deseja convidar {value}.",
@@ -4330,9 +4329,7 @@
             "description": {
                 "update_your_social_status_and_status_description": "Atualize seu status social e a mensagem de status",
                 "status_description": "Mensagem de status",
-                "clear_status_description": "Limpar mensagem de status",
-                "edit_profile_details": "Editar Detalhes do Perfil",
-                "update_your_profile_details": "Edite os detalhes do perfil exibidos no seu cartão."
+                "clear_status_description": "Limpar mensagem de status"
             },
             "toast": {
                 "memo_saved": "Nota local salva",
@@ -4403,6 +4400,12 @@
                 "left_value_groups": "Saiu de {value} grupos",
                 "enable_value": "Ativar {value}",
                 "disable_value": "Desativar {value}"
+            },
+            "profile_edit": {
+                "details": "Informações básicas",
+                "avatar_image": "Imagem do avatar",
+                "solid_color": "Cor sólida",
+                "apply_color": "Aplicar cor"
             }
         },
         "world": {
@@ -5255,7 +5258,9 @@
                 "compact": "Compacta",
                 "dense": "Densa"
             },
-            "crop_image": "Confirmar Envio"
+            "crop_image": "Confirmar Envio",
+            "locked_title": "Suas imagens enviadas estão temporariamente bloqueadas",
+            "locked_description": "Elas continuam salvas. Assine o VRC+ para usá-las novamente."
         },
         "inventory": {
             "header": "Inventário",

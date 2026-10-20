@@ -4076,11 +4076,10 @@
                 "moderation_enable_chatbox": "Zrušit ztlumení chatboxu",
                 "moderation_disable_chatbox": "Ztlumit chatbox",
                 "edit_status": "Upravit sociální stav",
-                "edit_profile_details": "Upravit údaje profilu",
-                "edit_profile_media": "Upravit banner a ikonu",
                 "report_hacking": "Report For Hacking",
                 "unfriend": "Odebrat z přátel",
-                "edit_note_memo": "Upravit poznámku a lokální poznámku"
+                "edit_note_memo": "Upravit poznámku a lokální poznámku",
+                "edit_profile": "Upravit profil"
             },
             "group_invite": {
                 "select_group": "Vyberte skupinu",
@@ -4352,9 +4351,7 @@
             "description": {
                 "update_your_social_status_and_status_description": "Aktualizujte svůj sociální stav a stavovou zprávu",
                 "status_description": "Stavová zpráva",
-                "clear_status_description": "Vymazat stavovou zprávu",
-                "edit_profile_details": "Upravit údaje profilu",
-                "update_your_profile_details": "Upravte údaje profilu zobrazené na vaší kartě."
+                "clear_status_description": "Vymazat stavovou zprávu"
             },
             "toast": {
                 "memo_saved": "Lokální poznámka uložena",
@@ -4425,6 +4422,12 @@
                 "left_value_groups": "Opuštěno {value} skupin",
                 "enable_value": "Povolit {value}",
                 "disable_value": "Zakázat {value}"
+            },
+            "profile_edit": {
+                "details": "Základní údaje",
+                "avatar_image": "Obrázek avataru",
+                "solid_color": "Jednobarevné",
+                "apply_color": "Použít barvu"
             }
         },
         "world": {
@@ -5279,7 +5282,9 @@
                 "compact": "Kompaktní",
                 "dense": "Hustá"
             },
-            "crop_image": "Potvrdit nahrání"
+            "crop_image": "Potvrdit nahrání",
+            "locked_title": "Nahrané obrázky jsou dočasně uzamčené",
+            "locked_description": "Zůstávají uložené. Po připojení k VRC+ je můžeš znovu používat."
         },
         "inventory": {
             "header": "Inventář",

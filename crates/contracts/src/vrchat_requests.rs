@@ -680,6 +680,7 @@ pub enum ProfileBackgroundType {
 pub enum ProfileBannerType {
     AvatarBanner,
     CustomImage,
+    Color,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, PartialEq, Eq, specta::Type)]
@@ -695,6 +696,8 @@ pub struct CurrentUserProfileUpdateRequest {
     pub banner_type: Option<ProfileBannerType>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub banner_custom_url: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub banner_color: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub background_type: Option<ProfileBackgroundType>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

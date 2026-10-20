@@ -4048,11 +4048,10 @@
                 "moderation_enable_chatbox": "取消屏蔽聊天气泡",
                 "moderation_disable_chatbox": "屏蔽聊天气泡",
                 "edit_status": "编辑社交状态",
-                "edit_profile_details": "编辑个人资料",
-                "edit_profile_media": "编辑横幅和头像",
                 "report_hacking": "举报此玩家盗模/开挂",
                 "unfriend": "删除好友",
-                "edit_note_memo": "编辑线上备注与本地备注"
+                "edit_note_memo": "编辑线上备注与本地备注",
+                "edit_profile": "编辑个人资料"
             },
             "group_invite": {
                 "description": "选择要邀请 {value} 加入的群组。",
@@ -4324,9 +4323,7 @@
             "description": {
                 "update_your_social_status_and_status_description": "更新你的社交状态和签名",
                 "status_description": "签名",
-                "clear_status_description": "清除签名",
-                "edit_profile_details": "编辑个人资料",
-                "update_your_profile_details": "编辑你的个人资料。"
+                "clear_status_description": "清除签名"
             },
             "toast": {
                 "memo_saved": "本地备注已保存",
@@ -4397,6 +4394,12 @@
                 "left_value_groups": "已成功退出 {value} 个群组",
                 "enable_value": "启用 {value}",
                 "disable_value": "禁用 {value}"
+            },
+            "profile_edit": {
+                "details": "基本资料",
+                "avatar_image": "模型图片",
+                "solid_color": "纯色",
+                "apply_color": "应用颜色"
             }
         },
         "world": {
@@ -5293,7 +5296,9 @@
                 "compact": "紧凑",
                 "dense": "紧密"
             },
-            "crop_image": "确认上传"
+            "crop_image": "确认上传",
+            "locked_title": "已上传的图片暂时锁定",
+            "locked_description": "图片仍然保存着，加入 VRC+ 后即可恢复使用。"
         },
         "inventory": {
             "header": "库存",

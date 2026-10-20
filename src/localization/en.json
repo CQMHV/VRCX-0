@@ -4058,11 +4058,10 @@
                 "moderation_enable_chatbox": "Unmute Chatbox",
                 "moderation_disable_chatbox": "Mute Chatbox",
                 "edit_status": "Edit Social Status",
-                "edit_profile_details": "Edit Profile Details",
-                "edit_profile_media": "Edit Banner and Icon",
                 "report_hacking": "Report for Hacking",
                 "unfriend": "Unfriend",
-                "edit_note_memo": "Edit Note and Local Note"
+                "edit_note_memo": "Edit Note and Local Note",
+                "edit_profile": "Edit Profile"
             },
             "group_invite": {
                 "select_group": "Select a group",
@@ -4334,9 +4333,7 @@
             "description": {
                 "update_your_social_status_and_status_description": "Update your social status and status message",
                 "status_description": "Status message",
-                "clear_status_description": "Clear status message",
-                "edit_profile_details": "Edit Profile Details",
-                "update_your_profile_details": "Edit the profile details shown on your card."
+                "clear_status_description": "Clear status message"
             },
             "toast": {
                 "memo_saved": "Local note saved",
@@ -4407,6 +4404,12 @@
                 "left_value_groups": "Left {value} groups",
                 "enable_value": "Enable {value}",
                 "disable_value": "Disable {value}"
+            },
+            "profile_edit": {
+                "details": "Basic Info",
+                "avatar_image": "Avatar Image",
+                "solid_color": "Solid Color",
+                "apply_color": "Apply Color"
             }
         },
         "world": {
@@ -5303,7 +5306,9 @@
                 "compact": "Compact",
                 "dense": "Dense"
             },
-            "crop_image": "Confirm Upload"
+            "crop_image": "Confirm Upload",
+            "locked_title": "Your uploaded images are temporarily locked",
+            "locked_description": "They're still saved. Join VRC+ to use them again."
         },
         "inventory": {
             "header": "Inventory",

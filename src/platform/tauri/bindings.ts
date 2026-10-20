@@ -3803,6 +3803,7 @@ export type CurrentUserProfileUpdateRequest = {
     userIcon?: string | null;
     bannerType?: ProfileBannerType | null;
     bannerCustomUrl?: string | null;
+    bannerColor?: string | null;
     backgroundType?: ProfileBackgroundType | null;
     backgroundGradientBottom?: string | null;
     backgroundGradientTop?: string | null;
@@ -6111,7 +6112,7 @@ export type ProfileBackupStatus = {
     error: ProfileBackupError | null;
     lastOutcome: ProfileBackupOutcome | null;
 };
-export type ProfileBannerType = 'avatarBanner' | 'customImage';
+export type ProfileBannerType = 'avatarBanner' | 'customImage' | 'color';
 export type ProfileDecorationEquipSlot =
     | 'iconFrame'
     | 'profileEffect'

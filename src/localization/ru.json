@@ -4070,11 +4070,10 @@
                 "moderation_enable_chatbox": "Включить Chatbox",
                 "moderation_disable_chatbox": "Заглушить Chatbox",
                 "edit_status": "Редактировать статус",
-                "edit_profile_details": "Редактировать профиль",
-                "edit_profile_media": "Редактировать баннер и значок",
                 "report_hacking": "Сообщить о взломе",
                 "unfriend": "Удалить из друзей",
-                "edit_note_memo": "Редактировать примечание и локальное примечание"
+                "edit_note_memo": "Редактировать примечание и локальное примечание",
+                "edit_profile": "Редактировать профиль"
             },
             "group_invite": {
                 "description": "Выберите группу, в которую хотите пригласить {value}.",
@@ -4346,9 +4345,7 @@
             "description": {
                 "update_your_social_status_and_status_description": "Обновите социальный статус и статусное сообщение",
                 "status_description": "Сообщение о состоянии",
-                "clear_status_description": "Очистить статусное сообщение",
-                "edit_profile_details": "Редактировать профиль",
-                "update_your_profile_details": "Изменить сведения профиля, отображаемые на вашей карточке."
+                "clear_status_description": "Очистить статусное сообщение"
             },
             "toast": {
                 "memo_saved": "Локальная заметка сохранена",
@@ -4419,6 +4416,12 @@
                 "left_value_groups": "Покинуто групп: {value}",
                 "enable_value": "Включить {value}",
                 "disable_value": "Отключить {value}"
+            },
+            "profile_edit": {
+                "details": "Основное",
+                "avatar_image": "Изображение аватара",
+                "solid_color": "Сплошной цвет",
+                "apply_color": "Применить цвет"
             }
         },
         "world": {
@@ -5273,7 +5276,9 @@
                 "compact": "Соглашение",
                 "dense": "Плотность"
             },
-            "crop_image": "Подтвердить загрузку"
+            "crop_image": "Подтвердить загрузку",
+            "locked_title": "Загруженные изображения временно заблокированы",
+            "locked_description": "Они по-прежнему сохранены. Оформите VRC+, чтобы снова ими пользоваться."
         },
         "inventory": {
             "header": "Инвентарь",
