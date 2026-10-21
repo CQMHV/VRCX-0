@@ -556,6 +556,7 @@ pub fn builder() -> Builder<tauri::Wry> {
             commands::vrchat::users::service::app__vrchat_current_user_update,
             commands::vrchat::users::service::app__vrchat_user_get,
             commands::vrchat::users::service::app__vrchat_user_profile_get,
+            commands::vrchat::users::service::app__vrchat_current_user_account_standing_get,
             commands::vrchat::users::service::app__vrchat_user_represented_group_get,
             commands::vrchat::worlds::service::app__vrchat_world_delete,
             commands::vrchat::worlds::service::app__vrchat_world_list_by_user_get,

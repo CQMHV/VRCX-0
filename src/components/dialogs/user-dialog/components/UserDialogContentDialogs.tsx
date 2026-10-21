@@ -4,6 +4,7 @@ import { CurrentUserSocialStatusDialog } from '../UserSelfEditDialogs';
 import type { useUserDialogActions } from '../useUserDialogActions';
 import type { useUserDialogMemoState } from '../useUserDialogMemoState';
 import type { useUserDialogSelfActions } from '../useUserDialogSelfActions';
+import { UserAccountStandingDialog } from './UserAccountStandingDialog';
 import { UserDialogGroupInviteDialog } from './UserDialogGroupInviteDialog';
 import { UserDialogGroupQuickModerationDialog } from './UserDialogGroupQuickModerationDialog';
 import { UserNoteMemoDialog } from './UserNoteMemoDialog';
@@ -13,6 +14,10 @@ type UserActionsState = ReturnType<typeof useUserDialogActions>;
 type SelfActionsState = ReturnType<typeof useUserDialogSelfActions>;
 
 type UserDialogContentDialogsProps = {
+    accountStandingDialog: {
+        open: boolean;
+        onOpenChange: (open: boolean) => void;
+    };
     actionStatus: string;
     boopDialog: {
         request: UserActionsState['boopDialogRequest'];
@@ -58,6 +63,7 @@ type UserDialogContentDialogsProps = {
 };
 
 export function UserDialogContentDialogs({
+    accountStandingDialog,
     actionStatus,
     boopDialog,
     groupInviteDialog,
@@ -149,6 +155,10 @@ export function UserDialogContentDialogs({
                 targetUserId={reportDialog.targetUserId}
                 targetLabel={reportDialog.targetLabel}
                 onOpenChange={reportDialog.onOpenChange}
+            />
+            <UserAccountStandingDialog
+                open={accountStandingDialog.open}
+                onOpenChange={accountStandingDialog.onOpenChange}
             />
         </>
     );

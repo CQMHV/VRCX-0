@@ -1853,7 +1853,8 @@
                         "closed": "Moderationsmeldung geschlossen"
                     },
                     "contentrestriction": "Moderations-Inhaltseinschränkung",
-                    "notice": "Moderationshinweis"
+                    "notice": "Moderationshinweis",
+                    "sanction": "Moderationssanktion"
                 },
                 "instance": {
                     "closed": "Instanz geschlossen"
@@ -4071,7 +4072,8 @@
                 "report_user": "Nutzer melden…",
                 "unfriend": "Freundschaft beenden",
                 "edit_note_memo": "Notiz und lokale Notiz bearbeiten",
-                "edit_profile": "Profil bearbeiten"
+                "edit_profile": "Profil bearbeiten",
+                "account_standing": "Kontostatus"
             },
             "group_invite": {
                 "select_group": "Gruppe auswählen",
@@ -4427,6 +4429,14 @@
                 "avatar_image": "Avatarbild",
                 "solid_color": "Einfarbig",
                 "apply_color": "Farbe anwenden"
+            },
+            "account_standing": {
+                "header": "Kontostatus",
+                "description": "Der Status deines Kontos laut VRChat.",
+                "status": "Status",
+                "issue_clear_days": "Tage bis zur Aufhebung",
+                "sanctions": "Sanktionen",
+                "load_failed": "Kontostatus konnte nicht geladen werden"
             }
         },
         "world": {

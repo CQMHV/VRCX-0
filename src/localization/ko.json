@@ -1794,7 +1794,8 @@
                         "closed": "신고 처리 완료"
                     },
                     "contentrestriction": "콘텐츠 제한 조치",
-                    "notice": "관리 알림"
+                    "notice": "관리 알림",
+                    "sanction": "제재 조치"
                 },
                 "instance": {
                     "closed": "인스턴스 종료"
@@ -4008,7 +4009,8 @@
                 "report_user": "사용자 신고…",
                 "unfriend": "친구 삭제",
                 "edit_note_memo": "메모 및 로컬 메모 편집",
-                "edit_profile": "프로필 편집"
+                "edit_profile": "프로필 편집",
+                "account_standing": "계정 상태"
             },
             "group_invite": {
                 "select_group": "그룹 선택",
@@ -4364,6 +4366,14 @@
                 "avatar_image": "아바타 이미지",
                 "solid_color": "단색",
                 "apply_color": "색상 적용"
+            },
+            "account_standing": {
+                "header": "계정 상태",
+                "description": "VRChat에서 받은 계정 상태입니다.",
+                "status": "상태",
+                "issue_clear_days": "문제 해소까지 남은 일수",
+                "sanctions": "제재",
+                "load_failed": "계정 상태를 불러오지 못했습니다"
             }
         },
         "world": {

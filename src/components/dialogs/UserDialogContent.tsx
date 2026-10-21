@@ -132,6 +132,7 @@ export function UserDialogContent({
     const [actionStatus, setActionStatus] = useState('idle');
     const [groupInviteOpen, setGroupInviteOpen] = useState(false);
     const [reportOpen, setReportOpen] = useState(false);
+    const [accountStandingOpen, setAccountStandingOpen] = useState(false);
     const [groupQuickModerationOpen, setGroupQuickModerationOpen] =
         useState(false);
     const [recentActionVersion, setRecentActionVersion] = useState(0);
@@ -165,6 +166,7 @@ export function UserDialogContent({
         setGroupInviteOpen(false);
         setGroupQuickModerationOpen(false);
         setReportOpen(false);
+        setAccountStandingOpen(false);
     }, [targetIdentity]);
 
     const currentGameLocation = normalizeUserId(gameState?.currentLocation);
@@ -416,6 +418,10 @@ export function UserDialogContent({
                     ),
                     currentUserBoopingEnabled:
                         currentUserSnapshot?.isBoopingEnabled !== false,
+                    currentUserAccountStanding:
+                        typeof currentUserSnapshot?.accountStanding === 'string'
+                            ? currentUserSnapshot.accountStanding
+                            : '',
                     userStats,
                     loadPreviousInstances,
                     previousInstances,
@@ -438,7 +444,10 @@ export function UserDialogContent({
                 }}
                 profileControls={{
                     onRefresh: refreshProfile,
-                    onEditMemo: editMemo
+                    onEditMemo: editMemo,
+                    onShowAccountStanding: () => {
+                        setAccountStandingOpen(true);
+                    }
                 }}
                 friendControls={{
                     onFriendRequest: (action: string) => {
@@ -490,6 +499,10 @@ export function UserDialogContent({
                 selfProfileDetails={profileDetails}
             />
             <UserDialogContentDialogs
+                accountStandingDialog={{
+                    open: accountStandingOpen,
+                    onOpenChange: setAccountStandingOpen
+                }}
                 actionStatus={actionStatus}
                 noteMemoDialog={memoDialog}
                 socialStatusDialog={socialStatusDialog}

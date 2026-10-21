@@ -1856,7 +1856,8 @@
                         "closed": "Moderation Report Closed"
                     },
                     "contentrestriction": "Moderation Content Restriction",
-                    "notice": "Moderation Notice"
+                    "notice": "Moderation Notice",
+                    "sanction": "Moderation Sanction"
                 },
                 "instance": {
                     "closed": "Instance Closed"
@@ -4075,7 +4076,8 @@
                 "report_user": "Report User…",
                 "unfriend": "Unfriend",
                 "edit_note_memo": "Edit Note and Local Note",
-                "edit_profile": "Edit Profile"
+                "edit_profile": "Edit Profile",
+                "account_standing": "Account Standing"
             },
             "group_invite": {
                 "select_group": "Select a group",
@@ -4431,6 +4433,14 @@
                 "avatar_image": "Avatar Image",
                 "solid_color": "Solid Color",
                 "apply_color": "Apply Color"
+            },
+            "account_standing": {
+                "header": "Account Standing",
+                "description": "Your account standing as reported by VRChat.",
+                "status": "Status",
+                "issue_clear_days": "Days until cleared",
+                "sanctions": "Sanctions",
+                "load_failed": "Couldn't load account standing"
             }
         },
         "world": {

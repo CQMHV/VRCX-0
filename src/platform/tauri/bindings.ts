@@ -2332,6 +2332,11 @@ const generatedCommands = {
     ): Promise<HttpApiExecuteResponse> {
         return await TAURI_INVOKE('app__vrchat_user_profile_get', { input });
     },
+    async appVrchatCurrentUserAccountStandingGet(): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE(
+            'app__vrchat_current_user_account_standing_get'
+        );
+    },
     async appVrchatUserRepresentedGroupGet(
         input: VrchatUserInput
     ): Promise<HttpApiExecuteResponse> {

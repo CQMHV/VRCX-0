@@ -1851,7 +1851,8 @@
                         "closed": "举报完成"
                     },
                     "contentrestriction": "内容限制",
-                    "notice": "管理通知"
+                    "notice": "管理通知",
+                    "sanction": "账号处罚"
                 },
                 "instance": {
                     "closed": "房间关闭"
@@ -4065,7 +4066,8 @@
                 "report_user": "举报玩家…",
                 "unfriend": "删除好友",
                 "edit_note_memo": "编辑线上备注与本地备注",
-                "edit_profile": "编辑个人资料"
+                "edit_profile": "编辑个人资料",
+                "account_standing": "账号状态"
             },
             "group_invite": {
                 "description": "选择要邀请 {value} 加入的群组。",
@@ -4421,6 +4423,14 @@
                 "avatar_image": "模型图片",
                 "solid_color": "纯色",
                 "apply_color": "应用颜色"
+            },
+            "account_standing": {
+                "header": "账号状态",
+                "description": "VRChat 返回的账号状态。",
+                "status": "状态",
+                "issue_clear_days": "问题清除剩余天数",
+                "sanctions": "处罚",
+                "load_failed": "无法加载账号状态"
             }
         },
         "world": {

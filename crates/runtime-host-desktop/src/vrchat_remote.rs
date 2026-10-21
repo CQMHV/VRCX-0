@@ -43,7 +43,9 @@ use vrcx_0_vrchat_client::tools::{
     user_note_save_input, user_report_input, CalendarListParams, GroupCalendarEventMutation,
     InviteMessageType, ModerationReportType,
 };
-use vrcx_0_vrchat_client::users::{profile_get_input, user_represented_group_get_input};
+use vrcx_0_vrchat_client::users::{
+    account_standing_get_input, profile_get_input, user_represented_group_get_input,
+};
 
 use crate::profile_bio::ProfileBioObserver;
 use crate::DesktopMediaRuntime;
@@ -122,6 +124,16 @@ impl DesktopVrchatRemoteFacade {
             .await?;
         self.profile_bio.observe(&response);
         Ok(response)
+    }
+
+    pub async fn account_standing(&self) -> Result<VrchatApiResponse> {
+        self.execute(
+            "app__vrchat_current_user_account_standing_get",
+            "Getting current user account standing.",
+            account_standing_get_input(VRCHAT_API_DEFAULT_ENDPOINT.into()),
+            VrchatScope::Vrchat,
+        )
+        .await
     }
 
     pub async fn user_represented_group(&self, user_id: String) -> Result<VrchatApiResponse> {

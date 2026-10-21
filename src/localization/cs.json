@@ -1863,7 +1863,8 @@
                         "closed": "Nahlášení moderace uzavřeno"
                     },
                     "contentrestriction": "Omezení obsahu moderace",
-                    "notice": "Oznámení moderace"
+                    "notice": "Oznámení moderace",
+                    "sanction": "Sankce moderace"
                 },
                 "instance": {
                     "closed": "Instance uzavřena"
@@ -4093,7 +4094,8 @@
                 "report_user": "Nahlásit uživatele…",
                 "unfriend": "Odebrat z přátel",
                 "edit_note_memo": "Upravit poznámku a lokální poznámku",
-                "edit_profile": "Upravit profil"
+                "edit_profile": "Upravit profil",
+                "account_standing": "Stav účtu"
             },
             "group_invite": {
                 "select_group": "Vyberte skupinu",
@@ -4449,6 +4451,14 @@
                 "avatar_image": "Obrázek avataru",
                 "solid_color": "Jednobarevné",
                 "apply_color": "Použít barvu"
+            },
+            "account_standing": {
+                "header": "Stav účtu",
+                "description": "Stav vašeho účtu podle VRChatu.",
+                "status": "Stav",
+                "issue_clear_days": "Dní do odstranění",
+                "sanctions": "Sankce",
+                "load_failed": "Stav účtu se nepodařilo načíst"
             }
         },
         "world": {
