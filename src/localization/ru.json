@@ -5974,7 +5974,14 @@
             "withdraw_description": "Это действие нельзя отменить.",
             "failed_to_withdraw": "Не удалось отозвать жалобу",
             "status_open": "Открыта",
-            "status_closed": "Закрыта"
+            "status_closed": "Закрыта",
+            "type_filter": {
+                "all": "Все",
+                "user": "Пользователи",
+                "world": "Миры",
+                "avatar": "Аватары",
+                "group": "Группы"
+            }
         }
     },
     "confirm": {

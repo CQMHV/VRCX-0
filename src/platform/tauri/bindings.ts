@@ -5633,6 +5633,7 @@ export type Message = {
     toolCall: ToolCallRecord | null;
     toolResult: ToolResultRecord | null;
 };
+export type ModerationReportType = 'avatar' | 'group' | 'user' | 'world';
 export type ModerationSyncLocalOutput = {
     userId: string;
     updatedAt: string;
@@ -7156,6 +7157,7 @@ export type VrchatToolsModerationReportsInput = {
     currentUserId?: string;
     offset?: number;
     closedOnly?: boolean;
+    reportType?: ModerationReportType | null;
 };
 export type VrchatToolsUserNoteSaveInput = {
     targetUserId?: string;

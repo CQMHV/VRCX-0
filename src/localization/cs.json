@@ -5980,7 +5980,14 @@
             "withdraw_description": "Tuto akci nelze vrátit zpět.",
             "failed_to_withdraw": "Nahlášení se nepodařilo stáhnout",
             "status_open": "Otevřené",
-            "status_closed": "Uzavřené"
+            "status_closed": "Uzavřené",
+            "type_filter": {
+                "all": "Vše",
+                "user": "Uživatelé",
+                "world": "Světy",
+                "avatar": "Avataři",
+                "group": "Skupiny"
+            }
         }
     },
     "confirm": {

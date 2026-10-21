@@ -5994,7 +5994,14 @@
             "withdraw_description": "撤回后无法恢复。",
             "failed_to_withdraw": "无法撤回举报",
             "status_open": "处理中",
-            "status_closed": "已关闭"
+            "status_closed": "已关闭",
+            "type_filter": {
+                "all": "全部",
+                "user": "用户",
+                "world": "世界",
+                "avatar": "模型",
+                "group": "群组"
+            }
         }
     },
     "confirm": {

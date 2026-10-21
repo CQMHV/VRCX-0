@@ -5956,7 +5956,14 @@
             "withdraw_description": "Esta ação não pode ser desfeita.",
             "failed_to_withdraw": "Não foi possível retirar a denúncia",
             "status_open": "Aberta",
-            "status_closed": "Encerrada"
+            "status_closed": "Encerrada",
+            "type_filter": {
+                "all": "Tudo",
+                "user": "Utilizadores",
+                "world": "Mundos",
+                "avatar": "Avatares",
+                "group": "Grupos"
+            }
         }
     },
     "confirm": {

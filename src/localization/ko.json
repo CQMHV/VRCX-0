@@ -5938,7 +5938,14 @@
             "withdraw_description": "이 작업은 되돌릴 수 없습니다.",
             "failed_to_withdraw": "신고를 철회하지 못했습니다",
             "status_open": "처리 중",
-            "status_closed": "종료됨"
+            "status_closed": "종료됨",
+            "type_filter": {
+                "all": "전체",
+                "user": "사용자",
+                "world": "월드",
+                "avatar": "아바타",
+                "group": "그룹"
+            }
         }
     },
     "confirm": {

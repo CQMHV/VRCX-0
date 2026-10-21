@@ -5956,7 +5956,14 @@
             "withdraw_description": "Das kann nicht rückgängig gemacht werden.",
             "failed_to_withdraw": "Meldung konnte nicht zurückgezogen werden",
             "status_open": "Offen",
-            "status_closed": "Geschlossen"
+            "status_closed": "Geschlossen",
+            "type_filter": {
+                "all": "Alle",
+                "user": "Benutzer",
+                "world": "Welten",
+                "avatar": "Avatare",
+                "group": "Gruppen"
+            }
         }
     },
     "confirm": {

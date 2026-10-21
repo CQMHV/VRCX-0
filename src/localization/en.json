@@ -6004,7 +6004,14 @@
             "withdraw_description": "This can't be undone.",
             "failed_to_withdraw": "Couldn't withdraw the report",
             "status_open": "Open",
-            "status_closed": "Closed"
+            "status_closed": "Closed",
+            "type_filter": {
+                "all": "All",
+                "user": "Users",
+                "world": "Worlds",
+                "avatar": "Avatars",
+                "group": "Groups"
+            }
         }
     },
     "confirm": {

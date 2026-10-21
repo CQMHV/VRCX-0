@@ -5985,7 +5985,14 @@
             "withdraw_description": "撤回後無法復原。",
             "failed_to_withdraw": "無法撤回檢舉",
             "status_open": "處理中",
-            "status_closed": "已結案"
+            "status_closed": "已結案",
+            "type_filter": {
+                "all": "全部",
+                "user": "用戶",
+                "world": "世界",
+                "avatar": "角色",
+                "group": "群組"
+            }
         }
     },
     "confirm": {

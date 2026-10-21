@@ -486,6 +486,15 @@ pub enum InviteMessageType {
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub enum ModerationReportType {
+    Avatar,
+    Group,
+    User,
+    World,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq, specta::Type)]
 pub enum QueryOrder {
     #[serde(rename = "ascending")]
     Ascending,
@@ -619,6 +628,17 @@ impl InviteMessageType {
             Self::Request => "request",
             Self::RequestResponse => "requestResponse",
             Self::Response => "response",
+        }
+    }
+}
+
+impl ModerationReportType {
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Avatar => "avatar",
+            Self::Group => "group",
+            Self::User => "user",
+            Self::World => "world",
         }
     }
 }
