@@ -17,9 +17,10 @@ use vrcx_0_application::social::{
 use vrcx_0_application_core::{
     BackendRuntimeTelemetry, FavoritesChangedPayload, FriendProfileLoadStatusPayload,
     FriendProjection, HostSessionProjection, ParsedLocation, PrintAutoCleanupEvent,
-    RealtimeCurrentUserProjection, RealtimeEntryCorrection, RealtimeInstanceClosedProjection,
-    RealtimeInstanceQueueProjection, RealtimeNotificationProjection, RealtimeProjectionSync,
-    RealtimeUserProjection, RuntimeVrchatAuthFailurePayload, VrcStatusSnapshot,
+    RealtimeCurrentUserProjection, RealtimeEconomyBalancePayload, RealtimeEntryCorrection,
+    RealtimeInstanceClosedProjection, RealtimeInstanceQueueProjection,
+    RealtimeNotificationProjection, RealtimeProjectionSync, RealtimeUserProjection,
+    RuntimeVrchatAuthFailurePayload, VrcStatusSnapshot,
 };
 use vrcx_0_application_game::{
     GameClientEvent, GameLogPersistenceFallbackPayload, GameLogProjection, GameLogSideEffectEvent,
@@ -87,6 +88,7 @@ struct BackendRuntimeEventPayloadMap {
     realtime_current_user_projection: RealtimeCurrentUserProjection,
     realtime_instance_closed_projection: RealtimeInstanceClosedProjection,
     realtime_instance_queue_projection: RealtimeInstanceQueueProjection,
+    realtime_economy_balance: RealtimeEconomyBalancePayload,
     realtime_projection_sync: RealtimeProjectionSync,
     update_is_game_running: HostSessionProjection,
     integration_api_start_failed: IntegrationApiStartFailedPayload,
@@ -539,6 +541,11 @@ pub fn builder() -> Builder<tauri::Wry> {
             commands::vrchat::tools::service::app__vrchat_tools_group_calendar_get,
             commands::vrchat::tools::service::app__vrchat_tools_group_calendar_ics_get,
             commands::vrchat::tools::service::app__vrchat_tools_group_event_follow,
+            commands::vrchat::economy::service::app__vrchat_economy_licensed_avatars_get,
+            commands::vrchat::economy::service::app__vrchat_economy_purchases_get,
+            commands::vrchat::economy::service::app__vrchat_economy_transactions_get,
+            commands::vrchat::economy::service::app__vrchat_economy_balance_get,
+            commands::vrchat::economy::service::app__vrchat_economy_store_get,
             commands::vrchat::tools::service::app__vrchat_tools_group_calendar_event_get,
             commands::vrchat::tools::service::app__vrchat_tools_group_event_create,
             commands::vrchat::tools::service::app__vrchat_tools_group_event_update,

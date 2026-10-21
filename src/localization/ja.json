@@ -624,6 +624,23 @@
             "label_count": "フィルター ({count})"
         }
     },
+    "economy": {
+        "free": "無料",
+        "vrc_plus_price": "VRC+ なら {price}",
+        "subscription_term": "サブスクリプション・{duration}",
+        "permanent": "買い切り",
+        "owned": "所持済み",
+        "store_header": "ストア",
+        "store_read_only_hint": "購入はゲーム内か公式サイトから行えます。",
+        "store_failed_to_load": "ストアを読み込めませんでした",
+        "store_empty": "出品中の商品はありません",
+        "duration": {
+            "day_other": "{count} 日",
+            "week_other": "{count} 週間",
+            "month_other": "{count} か月",
+            "year_other": "{count} 年"
+        }
+    },
     "overlay": {
         "footer": {
             "players": "{count}人",
@@ -1490,6 +1507,10 @@
                 "local_test_avatars": "ローカルテストアバター",
                 "local_test_avatars_description": "VRChat SDK の Build & Test でビルドしたアバターです。ゲーム内では自分にしか見えません。"
             },
+            "source": {
+                "own": "アップロード",
+                "licensed": "購入済み"
+            },
             "action": {
                 "select_style": "スタイルを選択",
                 "add_local_tag": "ローカルタグを追加",
@@ -2124,6 +2145,7 @@
                 "last_backup": "最終バックアップ {date}",
                 "connections_configured": "接続 {count} 件",
                 "apps_count": "アプリ {count} 件",
+                "unopened_bundles": "未開封 {count} 件",
                 "automatic_backup": "自動バックアップ",
                 "show_details": "詳細を表示"
             },
@@ -2320,7 +2342,9 @@
                 "edit_invite_message": "メッセージテンプレート",
                 "edit_invite_message_description": "招待とリクエストのメッセージテンプレートを編集",
                 "moderation_reports": "通報履歴",
-                "moderation_reports_description": "送信した通報を確認・取り消しする"
+                "moderation_reports_description": "送信した通報を確認・取り消しする",
+                "purchase_history": "購入履歴",
+                "purchase_history_description": "購入したアイテムとクレジットの履歴を確認する"
             },
             "success": {
                 "media_item_deleted": "メディア項目を削除しました",
@@ -4128,6 +4152,7 @@
                 "join_count": "参加した回数",
                 "time_together": "一緒に居た時間",
                 "play_time": "プレイ時間",
+                "vrc_credits": "VRChat クレジット",
                 "estimated_online_for": "約 {duration} オンライン",
                 "last_activity": "最終活動時間",
                 "date_joined": "アカウント作成日",
@@ -4191,7 +4216,8 @@
                 "sort_by_uploaded": "アップロード順",
                 "all": "すべて",
                 "public": "パブリック",
-                "private": "プライベート"
+                "private": "プライベート",
+                "licensed": "購入済み"
             },
             "json": {
                 "header": "JSON"
@@ -6169,6 +6195,23 @@
                 "avatar": "アバター",
                 "group": "グループ"
             }
+        },
+        "purchase_history": {
+            "header": "購入履歴",
+            "description": "購入したアイテムと VRChat クレジットの履歴",
+            "purchases": "購入",
+            "transactions": "クレジット履歴",
+            "all_types": "すべての種類",
+            "gift": "ギフト",
+            "inactive": "期限切れ",
+            "seller": "販売者 {name}",
+            "ends": "{date} に終了",
+            "from": "送り主",
+            "to": "宛先",
+            "balance": "残高 {value}",
+            "failed_to_load": "購入履歴を読み込めませんでした",
+            "empty_purchases": "購入履歴はまだありません",
+            "empty_transactions": "クレジットの履歴はまだありません"
         }
     },
     "confirm": {

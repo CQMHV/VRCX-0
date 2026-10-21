@@ -624,6 +624,27 @@
             "label_count": "筛选 ({count})"
         }
     },
+    "economy": {
+        "free": "免费",
+        "vrc_plus_price": "VRC+ 价 {price}",
+        "subscription_term": "订阅 · {duration}",
+        "permanent": "永久",
+        "owned": "已拥有",
+        "store_header": "商店",
+        "store_read_only_hint": "购买请前往游戏内或官网。",
+        "store_failed_to_load": "无法加载商店",
+        "store_empty": "暂无在售商品",
+        "duration": {
+            "day_one": "{count} 天",
+            "day_other": "{count} 天",
+            "week_one": "{count} 周",
+            "week_other": "{count} 周",
+            "month_one": "{count} 个月",
+            "month_other": "{count} 个月",
+            "year_one": "{count} 年",
+            "year_other": "{count} 年"
+        }
+    },
     "overlay": {
         "footer": {
             "players": "{count} 名玩家",
@@ -1490,6 +1511,10 @@
                 "local_test_avatars": "本地测试模型",
                 "local_test_avatars_description": "在 VRChat SDK 中通过 Build & Test 构建的模型，游戏内只有你自己能看到。"
             },
+            "source": {
+                "own": "我上传的",
+                "licensed": "已购买"
+            },
             "action": {
                 "select_style": "选择样式",
                 "add_local_tag": "添加本地标签",
@@ -2124,6 +2149,7 @@
                 "last_backup": "上次备份 {date}",
                 "connections_configured": "{count} 个连接",
                 "apps_count": "{count} 个应用",
+                "unopened_bundles": "{count} 个礼包未拆",
                 "automatic_backup": "自动备份",
                 "show_details": "展开详情"
             },
@@ -2320,7 +2346,9 @@
                 "edit_invite_message": "消息模板",
                 "edit_invite_message_description": "编辑邀请或申请加入时使用的消息",
                 "moderation_reports": "我的举报",
-                "moderation_reports_description": "查看或撤回你提交过的举报"
+                "moderation_reports_description": "查看或撤回你提交过的举报",
+                "purchase_history": "购买记录",
+                "purchase_history_description": "查看购买过的商品和 VRChat 点数收支"
             },
             "success": {
                 "media_item_deleted": "已删除媒体项目",
@@ -4128,6 +4156,7 @@
                 "join_count": "见面的次数",
                 "time_together": "一起游玩的时长",
                 "play_time": "总在线时长",
+                "vrc_credits": "VRChat 点数",
                 "estimated_online_for": "已在线约 {duration}",
                 "last_activity": "最后活动时间",
                 "date_joined": "账号创建日期",
@@ -4191,7 +4220,8 @@
                 "sort_by_uploaded": "上传时间",
                 "all": "所有",
                 "public": "公开",
-                "private": "私人"
+                "private": "私人",
+                "licensed": "已购买"
             },
             "json": {
                 "header": "原始 JSON 信息"
@@ -6169,6 +6199,23 @@
                 "avatar": "模型",
                 "group": "群组"
             }
+        },
+        "purchase_history": {
+            "header": "购买记录",
+            "description": "你购买的商品和 VRChat 点数收支",
+            "purchases": "购买",
+            "transactions": "点数流水",
+            "all_types": "全部类型",
+            "gift": "礼物",
+            "inactive": "已失效",
+            "seller": "卖家 {name}",
+            "ends": "到期 {date}",
+            "from": "来自",
+            "to": "给",
+            "balance": "余额 {value}",
+            "failed_to_load": "无法加载购买记录",
+            "empty_purchases": "还没有购买记录",
+            "empty_transactions": "还没有点数流水"
         }
     },
     "confirm": {

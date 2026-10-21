@@ -624,6 +624,27 @@
             "label_count": "Filter ({count})"
         }
     },
+    "economy": {
+        "free": "Free",
+        "vrc_plus_price": "{price} with VRC+",
+        "subscription_term": "Subscription · {duration}",
+        "permanent": "Permanent",
+        "owned": "Owned",
+        "store_header": "Store",
+        "store_read_only_hint": "To buy, use VRChat or the website.",
+        "store_failed_to_load": "Couldn't load the store",
+        "store_empty": "Nothing for sale here",
+        "duration": {
+            "day_one": "{count} day",
+            "day_other": "{count} days",
+            "week_one": "{count} week",
+            "week_other": "{count} weeks",
+            "month_one": "{count} month",
+            "month_other": "{count} months",
+            "year_one": "{count} year",
+            "year_other": "{count} years"
+        }
+    },
     "overlay": {
         "footer": {
             "players": "{count} players",
@@ -1494,6 +1515,10 @@
                 "local_test_avatars": "Local test avatars",
                 "local_test_avatars_description": "Avatars built with Build & Test in the VRChat SDK. Only you can see them in game."
             },
+            "source": {
+                "own": "Uploaded",
+                "licensed": "Purchased"
+            },
             "action": {
                 "select_style": "Select style",
                 "add_local_tag": "Add local tag",
@@ -2130,6 +2155,7 @@
                 "last_backup": "Backed up {date}",
                 "connections_configured": "{count} connections",
                 "apps_count": "{count} apps",
+                "unopened_bundles": "{count} unopened",
                 "automatic_backup": "Auto backup",
                 "show_details": "Show details"
             },
@@ -2326,7 +2352,9 @@
                 "edit_invite_message": "Message Templates",
                 "edit_invite_message_description": "Edit invite and request message templates",
                 "moderation_reports": "My Reports",
-                "moderation_reports_description": "View or withdraw reports you've submitted"
+                "moderation_reports_description": "View or withdraw reports you've submitted",
+                "purchase_history": "Purchase History",
+                "purchase_history_description": "View items you bought and your VRChat Credits activity"
             },
             "success": {
                 "media_item_deleted": "Media item deleted",
@@ -4138,6 +4166,7 @@
                 "join_count": "Join Count",
                 "time_together": "Time Together",
                 "play_time": "Play Time",
+                "vrc_credits": "VRChat Credits",
                 "estimated_online_for": "Online for about {duration}",
                 "last_activity": "Last Activity",
                 "date_joined": "Date Joined",
@@ -4201,7 +4230,8 @@
                 "sort_by_uploaded": "Uploaded",
                 "all": "All",
                 "public": "Public",
-                "private": "Private"
+                "private": "Private",
+                "licensed": "Purchased"
             },
             "json": {
                 "header": "JSON"
@@ -6179,6 +6209,23 @@
                 "avatar": "Avatars",
                 "group": "Groups"
             }
+        },
+        "purchase_history": {
+            "header": "Purchase History",
+            "description": "Items you bought and your VRChat Credits activity",
+            "purchases": "Purchases",
+            "transactions": "Credits Activity",
+            "all_types": "All types",
+            "gift": "Gift",
+            "inactive": "Expired",
+            "seller": "Seller {name}",
+            "ends": "Ends {date}",
+            "from": "From",
+            "to": "To",
+            "balance": "Balance {value}",
+            "failed_to_load": "Couldn't load purchase history",
+            "empty_purchases": "No purchases yet",
+            "empty_transactions": "No Credits activity yet"
         }
     },
     "confirm": {

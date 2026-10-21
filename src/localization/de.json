@@ -624,6 +624,27 @@
             "label_count": "Filter ({count})"
         }
     },
+    "economy": {
+        "free": "Kostenlos",
+        "vrc_plus_price": "{price} mit VRC+",
+        "subscription_term": "Abo · {duration}",
+        "permanent": "Dauerhaft",
+        "owned": "Im Besitz",
+        "store_header": "Shop",
+        "store_read_only_hint": "Kaufen kannst du in VRChat oder auf der Website.",
+        "store_failed_to_load": "Shop konnte nicht geladen werden",
+        "store_empty": "Hier wird nichts verkauft",
+        "duration": {
+            "day_one": "{count} Tag",
+            "day_other": "{count} Tage",
+            "week_one": "{count} Woche",
+            "week_other": "{count} Wochen",
+            "month_one": "{count} Monat",
+            "month_other": "{count} Monate",
+            "year_one": "{count} Jahr",
+            "year_other": "{count} Jahre"
+        }
+    },
     "overlay": {
         "footer": {
             "players": "{count} Spieler",
@@ -1492,6 +1513,10 @@
                 "local_test_avatars": "Lokale Test-Avatare",
                 "local_test_avatars_description": "Mit Build & Test im VRChat SDK erstellte Avatare. Im Spiel sind sie nur für dich sichtbar."
             },
+            "source": {
+                "own": "Hochgeladen",
+                "licensed": "Gekauft"
+            },
             "action": {
                 "select_style": "Stil auswählen",
                 "add_local_tag": "Lokales Tag hinzufügen",
@@ -2126,6 +2151,7 @@
                 "last_backup": "Gesichert {date}",
                 "connections_configured": "{count} Verbindungen",
                 "apps_count": "{count} Apps",
+                "unopened_bundles": "{count} ungeöffnet",
                 "automatic_backup": "Auto-Backup",
                 "show_details": "Details anzeigen"
             },
@@ -2322,7 +2348,9 @@
                 "edit_invite_message": "Nachrichtenvorlagen",
                 "edit_invite_message_description": "Vorlagen für Einladungen und Anfragen bearbeiten",
                 "moderation_reports": "Meine Meldungen",
-                "moderation_reports_description": "Eingereichte Meldungen ansehen oder zurückziehen"
+                "moderation_reports_description": "Eingereichte Meldungen ansehen oder zurückziehen",
+                "purchase_history": "Kaufverlauf",
+                "purchase_history_description": "Gekaufte Artikel und Credits-Verlauf ansehen"
             },
             "success": {
                 "media_item_deleted": "Medienelement gelöscht",
@@ -4134,6 +4162,7 @@
                 "join_count": "Beitrittsanzahl",
                 "time_together": "Gemeinsame Zeit",
                 "play_time": "Spielzeit",
+                "vrc_credits": "VRChat Credits",
                 "estimated_online_for": "Etwa {duration} online",
                 "last_activity": "Letzte Aktivität",
                 "date_joined": "Beigetreten am",
@@ -4197,7 +4226,8 @@
                 "sort_by_uploaded": "Hochgeladen",
                 "all": "Alle",
                 "public": "Öffentlich",
-                "private": "Privat"
+                "private": "Privat",
+                "licensed": "Gekauft"
             },
             "json": {
                 "header": "JSON"
@@ -6131,6 +6161,23 @@
                 "avatar": "Avatare",
                 "group": "Gruppen"
             }
+        },
+        "purchase_history": {
+            "header": "Kaufverlauf",
+            "description": "Gekaufte Artikel und deine VRChat Credits-Bewegungen",
+            "purchases": "Käufe",
+            "transactions": "Credits-Verlauf",
+            "all_types": "Alle Typen",
+            "gift": "Geschenk",
+            "inactive": "Abgelaufen",
+            "seller": "Verkäufer {name}",
+            "ends": "Endet {date}",
+            "from": "Von",
+            "to": "An",
+            "balance": "Guthaben {value}",
+            "failed_to_load": "Kaufverlauf konnte nicht geladen werden",
+            "empty_purchases": "Noch keine Käufe",
+            "empty_transactions": "Noch kein Credits-Verlauf"
         }
     },
     "confirm": {

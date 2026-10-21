@@ -386,6 +386,9 @@ export function WorldDialogTabbedView({
               ]
             : []),
         { value: 'info', label: t('dialog.world.info.header') },
+        ...(typeof world.storeId === 'string' && world.storeId
+            ? [{ value: 'store', label: t('economy.store_header') }]
+            : []),
         { value: 'json', label: t('dialog.world.json.header') }
     ];
 

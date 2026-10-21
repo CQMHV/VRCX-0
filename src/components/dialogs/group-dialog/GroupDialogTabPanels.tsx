@@ -2,6 +2,7 @@ import { ExternalLinkIcon, EyeIcon, ImageIcon } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { EconomyStoreListings } from '@/components/economy/EconomyStoreListings';
 import { FadeInImage } from '@/components/media/FadeInImage';
 import { TranslatableText } from '@/components/translation/TranslatableText';
 import type {
@@ -609,6 +610,11 @@ export function GroupDialogTabPanels({
                     onPreviewImage={onPreviewRowImage}
                 />
             </EntityDialogTabContent>
+            {group.storeId ? (
+                <EntityDialogTabContent value="store">
+                    <EconomyStoreListings storeId={group.storeId} />
+                </EntityDialogTabContent>
+            ) : null}
             <EntityDialogTabContent value="json">
                 <EntityRawJson value={group} />
             </EntityDialogTabContent>

@@ -14,8 +14,7 @@ import {
 } from '../../EntityDialogScaffold';
 import type {
     AvatarActionStatus,
-    AvatarGalleryEntry,
-    AvatarListing
+    AvatarGalleryEntry
 } from '../avatarDialogTypes';
 
 export function AvatarDialogGalleryTab({
@@ -36,7 +35,6 @@ export function AvatarDialogGalleryTab({
         galleryImages: AvatarGalleryEntry[];
         currentGalleryImage: string;
         galleryIndex: number;
-        listings: AvatarListing[];
     };
     onOpenGalleryPreview(): void;
     onGalleryIndexChange(updater: (currentIndex: number) => number): void;
@@ -45,8 +43,7 @@ export function AvatarDialogGalleryTab({
     onDeleteGalleryImage(): void;
 }) {
     const { t } = useTranslation();
-    const { galleryImages, currentGalleryImage, galleryIndex, listings } =
-        media;
+    const { galleryImages, currentGalleryImage, galleryIndex } = media;
     const galleryEditDisabled = actionStatus !== 'idle';
 
     return (
@@ -208,35 +205,6 @@ export function AvatarDialogGalleryTab({
                         )}
                     </div>
                 </EntityInfoBlock>
-                {listings.length ? (
-                    <EntityInfoBlock
-                        label={t('dialog.avatar.info.listings')}
-                        full
-                    >
-                        <div className="flex flex-col gap-2">
-                            {listings.map((listing, index) => (
-                                <div
-                                    key={`${listing?.id || listing?.platform || index}`}
-                                    className="box-border flex flex-col p-1.5 text-sm"
-                                >
-                                    <div className="font-medium">
-                                        {listing?.displayName ||
-                                            listing?.name ||
-                                            listing?.platform ||
-                                            listing?.id ||
-                                            t('dialog.avatar.info.listings')}
-                                    </div>
-                                    <div className="text-muted-foreground text-xs">
-                                        {listing?.description ||
-                                            listing?.createdAt ||
-                                            listing?.id ||
-                                            ''}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </EntityInfoBlock>
-                ) : null}
             </EntityInfoGrid>
         </EntityDialogTabContent>
     );

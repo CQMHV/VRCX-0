@@ -624,6 +624,27 @@
             "label_count": "필터 ({count})"
         }
     },
+    "economy": {
+        "free": "무료",
+        "vrc_plus_price": "VRC+ {price}",
+        "subscription_term": "구독 · {duration}",
+        "permanent": "영구",
+        "owned": "보유 중",
+        "store_header": "스토어",
+        "store_read_only_hint": "구매는 게임 내 또는 웹사이트에서 할 수 있습니다.",
+        "store_failed_to_load": "스토어를 불러오지 못했습니다",
+        "store_empty": "판매 중인 상품이 없습니다",
+        "duration": {
+            "day_one": "{count}일",
+            "day_other": "{count}일",
+            "week_one": "{count}주",
+            "week_other": "{count}주",
+            "month_one": "{count}개월",
+            "month_other": "{count}개월",
+            "year_one": "{count}년",
+            "year_other": "{count}년"
+        }
+    },
     "overlay": {
         "footer": {
             "players": "{count}명",
@@ -1433,6 +1454,10 @@
                 "local_test_avatars": "로컬 테스트 아바타",
                 "local_test_avatars_description": "VRChat SDK의 Build & Test로 빌드한 아바타입니다. 게임에서는 본인에게만 보입니다."
             },
+            "source": {
+                "own": "업로드",
+                "licensed": "구매함"
+            },
             "action": {
                 "select_style": "스타일 선택",
                 "add_local_tag": "로컬 태그 추가",
@@ -2067,6 +2092,7 @@
                 "last_backup": "마지막 백업 {date}",
                 "connections_configured": "연결 {count}개",
                 "apps_count": "앱 {count}개",
+                "unopened_bundles": "안 연 번들 {count}개",
                 "automatic_backup": "자동 백업",
                 "show_details": "세부 항목 표시"
             },
@@ -2263,7 +2289,9 @@
                 "edit_invite_message": "메시지 템플릿",
                 "edit_invite_message_description": "초대 및 요청 메시지 템플릿 편집",
                 "moderation_reports": "신고 내역",
-                "moderation_reports_description": "제출한 신고를 확인하거나 철회"
+                "moderation_reports_description": "제출한 신고를 확인하거나 철회",
+                "purchase_history": "구매 내역",
+                "purchase_history_description": "구매한 상품과 크레딧 내역 확인"
             },
             "success": {
                 "media_item_deleted": "미디어 항목이 삭제되었습니다.",
@@ -4071,6 +4099,7 @@
                 "join_count": "방문 횟수",
                 "time_together": "함께한 시간",
                 "play_time": "플레이 시간",
+                "vrc_credits": "VRChat 크레딧",
                 "estimated_online_for": "온라인 시간 약 {duration}",
                 "last_activity": "마지막 활동",
                 "date_joined": "계정 생성일",
@@ -4134,7 +4163,8 @@
                 "sort_by_uploaded": "업로드순",
                 "all": "전체",
                 "public": "공개",
-                "private": "비공개"
+                "private": "비공개",
+                "licensed": "구매함"
             },
             "json": {
                 "header": "JSON"
@@ -6113,6 +6143,23 @@
                 "avatar": "아바타",
                 "group": "그룹"
             }
+        },
+        "purchase_history": {
+            "header": "구매 내역",
+            "description": "구매한 상품과 VRChat 크레딧 내역",
+            "purchases": "구매",
+            "transactions": "크레딧 내역",
+            "all_types": "모든 유형",
+            "gift": "선물",
+            "inactive": "만료됨",
+            "seller": "판매자 {name}",
+            "ends": "{date} 종료",
+            "from": "보낸 사람",
+            "to": "받는 사람",
+            "balance": "잔액 {value}",
+            "failed_to_load": "구매 내역을 불러오지 못했습니다",
+            "empty_purchases": "구매 내역이 없습니다",
+            "empty_transactions": "크레딧 내역이 없습니다"
         }
     },
     "confirm": {

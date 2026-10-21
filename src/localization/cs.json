@@ -624,6 +624,35 @@
             "label_count": "Filtry ({count})"
         }
     },
+    "economy": {
+        "free": "Zdarma",
+        "vrc_plus_price": "{price} s VRC+",
+        "subscription_term": "Předplatné · {duration}",
+        "permanent": "Trvalé",
+        "owned": "Vlastněno",
+        "store_header": "Obchod",
+        "store_read_only_hint": "Nakupovat můžeš ve VRChatu nebo na webu.",
+        "store_failed_to_load": "Obchod se nepodařilo načíst",
+        "store_empty": "Nic tu není na prodej",
+        "duration": {
+            "day_one": "{count} den",
+            "day_few": "{count} dny",
+            "day_many": "{count} dne",
+            "day_other": "{count} dní",
+            "week_one": "{count} týden",
+            "week_few": "{count} týdny",
+            "week_many": "{count} týdne",
+            "week_other": "{count} týdnů",
+            "month_one": "{count} měsíc",
+            "month_few": "{count} měsíce",
+            "month_many": "{count} měsíce",
+            "month_other": "{count} měsíců",
+            "year_one": "{count} rok",
+            "year_few": "{count} roky",
+            "year_many": "{count} roku",
+            "year_other": "{count} let"
+        }
+    },
     "overlay": {
         "footer": {
             "players": "{count} hráčů",
@@ -1498,6 +1527,10 @@
                 "local_test_avatars": "Místní testovací avatary",
                 "local_test_avatars_description": "Avatary sestavené pomocí Build & Test ve VRChat SDK. Ve hře je vidíte jen vy."
             },
+            "source": {
+                "own": "Nahrané",
+                "licensed": "Zakoupené"
+            },
             "action": {
                 "select_style": "Vybrat styl",
                 "add_local_tag": "Přidat lokální štítek",
@@ -2136,6 +2169,7 @@
                 "last_backup": "Záloha {date}",
                 "connections_configured": "{count} připojení",
                 "apps_count": "{count} aplikací",
+                "unopened_bundles": "Neotevřeno: {count}",
                 "automatic_backup": "Auto záloha",
                 "show_details": "Zobrazit podrobnosti"
             },
@@ -2332,7 +2366,9 @@
                 "edit_invite_message": "Šablony zpráv",
                 "edit_invite_message_description": "Upravte šablony zpráv pro pozvánky a žádosti",
                 "moderation_reports": "Moje nahlášení",
-                "moderation_reports_description": "Zobrazit nebo stáhnout odeslaná nahlášení"
+                "moderation_reports_description": "Zobrazit nebo stáhnout odeslaná nahlášení",
+                "purchase_history": "Historie nákupů",
+                "purchase_history_description": "Zobrazit nákupy a pohyby kreditů"
             },
             "success": {
                 "media_item_deleted": "Mediální položka byla odstraněna",
@@ -4156,6 +4192,7 @@
                 "join_count": "Počet připojení",
                 "time_together": "Společně strávený čas",
                 "play_time": "Doba hraní",
+                "vrc_credits": "VRChat Credits",
                 "estimated_online_for": "Online přibližně {duration}",
                 "last_activity": "Poslední aktivita",
                 "date_joined": "Datum registrace",
@@ -4219,7 +4256,8 @@
                 "sort_by_uploaded": "Nahráno",
                 "all": "Vše",
                 "public": "Veřejné",
-                "private": "Soukromé"
+                "private": "Soukromé",
+                "licensed": "Zakoupené"
             },
             "json": {
                 "header": "JSON"
@@ -6155,6 +6193,23 @@
                 "avatar": "Avataři",
                 "group": "Skupiny"
             }
+        },
+        "purchase_history": {
+            "header": "Historie nákupů",
+            "description": "Zakoupené položky a pohyby VRChat Credits",
+            "purchases": "Nákupy",
+            "transactions": "Pohyby kreditů",
+            "all_types": "Všechny typy",
+            "gift": "Dárek",
+            "inactive": "Vypršelo",
+            "seller": "Prodejce {name}",
+            "ends": "Končí {date}",
+            "from": "Od",
+            "to": "Komu",
+            "balance": "Zůstatek {value}",
+            "failed_to_load": "Historii nákupů se nepodařilo načíst",
+            "empty_purchases": "Zatím žádné nákupy",
+            "empty_transactions": "Zatím žádné pohyby"
         }
     },
     "confirm": {

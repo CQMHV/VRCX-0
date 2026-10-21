@@ -612,6 +612,8 @@ export function AvatarDialogTabbedView({
                         fileAnalysis={fileAnalysis}
                         hasImposter={hasImposter}
                         imposterVersion={imposterVersion}
+                        listings={listings}
+                        avatarUrl={avatarUrl}
                         onOpenAuthor={openAvatarAuthor}
                         onSaveMemo={onSaveMemo}
                     />
@@ -629,8 +631,7 @@ export function AvatarDialogTabbedView({
                         media={{
                             galleryImages,
                             currentGalleryImage,
-                            galleryIndex,
-                            listings
+                            galleryIndex
                         }}
                         onOpenGalleryPreview={openGalleryPreview}
                         onGalleryIndexChange={setGalleryIndex}

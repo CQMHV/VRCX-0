@@ -161,7 +161,7 @@ export function GroupDialogTabbedView({
     const groupEventsRequestRef = useRef(0);
     const groupFollowingRequestRef = useRef(0);
     const followingEventIdsRef = useRef<Set<string>>(new Set());
-    const tabs = getGroupDialogTabs(t);
+    const tabs = getGroupDialogTabs(t, Boolean(group.storeId));
     const posts =
         remoteStatus.posts === 'ready'
             ? remoteData.posts

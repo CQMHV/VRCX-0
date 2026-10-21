@@ -624,6 +624,35 @@
             "label_count": "Фильтры ({count})"
         }
     },
+    "economy": {
+        "free": "Бесплатно",
+        "vrc_plus_price": "{price} с VRC+",
+        "subscription_term": "Подписка · {duration}",
+        "permanent": "Навсегда",
+        "owned": "Куплено",
+        "store_header": "Магазин",
+        "store_read_only_hint": "Купить можно в VRChat или на сайте.",
+        "store_failed_to_load": "Не удалось загрузить магазин",
+        "store_empty": "Здесь ничего не продаётся",
+        "duration": {
+            "day_one": "{count} день",
+            "day_few": "{count} дня",
+            "day_many": "{count} дней",
+            "day_other": "{count} дня",
+            "week_one": "{count} неделя",
+            "week_few": "{count} недели",
+            "week_many": "{count} недель",
+            "week_other": "{count} недели",
+            "month_one": "{count} месяц",
+            "month_few": "{count} месяца",
+            "month_many": "{count} месяцев",
+            "month_other": "{count} месяца",
+            "year_one": "{count} год",
+            "year_few": "{count} года",
+            "year_many": "{count} лет",
+            "year_other": "{count} года"
+        }
+    },
     "overlay": {
         "footer": {
             "players": "Игроков: {count}",
@@ -1498,6 +1527,10 @@
                 "local_test_avatars": "Локальные тестовые аватары",
                 "local_test_avatars_description": "Аватары, собранные через Build & Test в VRChat SDK. В игре их видите только вы."
             },
+            "source": {
+                "own": "Загруженные",
+                "licensed": "Купленные"
+            },
             "action": {
                 "select_style": "Выбрать стиль",
                 "add_local_tag": "Добавить локальный тег",
@@ -2134,6 +2167,7 @@
                 "last_backup": "Копия {date}",
                 "connections_configured": "Подключений: {count}",
                 "apps_count": "Приложений: {count}",
+                "unopened_bundles": "Не открыто: {count}",
                 "automatic_backup": "Автокопия",
                 "show_details": "Показать подробности"
             },
@@ -2330,7 +2364,9 @@
                 "edit_invite_message": "Образцы сообщений",
                 "edit_invite_message_description": "Редактировать шаблоны предложений и запросов сообщений",
                 "moderation_reports": "Мои жалобы",
-                "moderation_reports_description": "Просмотр и отзыв отправленных жалоб"
+                "moderation_reports_description": "Просмотр и отзыв отправленных жалоб",
+                "purchase_history": "История покупок",
+                "purchase_history_description": "Просмотр покупок и операций с Credits"
             },
             "success": {
                 "media_item_deleted": "Медиафайл удален",
@@ -4150,6 +4186,7 @@
                 "join_count": "Счетчик присоединений",
                 "time_together": "Время вместе",
                 "play_time": "Время игры",
+                "vrc_credits": "VRChat Credits",
                 "estimated_online_for": "Онлайн для примерно {duration}",
                 "last_activity": "Последняя активность",
                 "date_joined": "Дата регистрации",
@@ -4213,7 +4250,8 @@
                 "sort_by_uploaded": "Загружено",
                 "all": "Все",
                 "public": "Публичные",
-                "private": "Приватные"
+                "private": "Приватные",
+                "licensed": "Купленные"
             },
             "json": {
                 "header": "JSON"
@@ -6149,6 +6187,23 @@
                 "avatar": "Аватары",
                 "group": "Группы"
             }
+        },
+        "purchase_history": {
+            "header": "История покупок",
+            "description": "Купленные товары и движение VRChat Credits",
+            "purchases": "Покупки",
+            "transactions": "Операции",
+            "all_types": "Все типы",
+            "gift": "Подарок",
+            "inactive": "Истекло",
+            "seller": "Продавец {name}",
+            "ends": "До {date}",
+            "from": "От",
+            "to": "Кому",
+            "balance": "Баланс {value}",
+            "failed_to_load": "Не удалось загрузить историю покупок",
+            "empty_purchases": "Покупок пока нет",
+            "empty_transactions": "Операций пока нет"
         }
     },
     "confirm": {

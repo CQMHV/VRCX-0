@@ -1,6 +1,7 @@
 import { ImageIcon, RefreshCwIcon, UserIcon, UsersIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { EconomyStoreListings } from '@/components/economy/EconomyStoreListings';
 import { CurrentInstanceBadge } from '@/components/instances/CurrentInstanceBadge';
 import { InstanceActionBar } from '@/components/instances/InstanceActionBar';
 import { InstanceVisitedBadge } from '@/components/instances/InstanceVisitedBadge';
@@ -676,6 +677,11 @@ export function WorldDialogTabPanels({
                     ) : null}
                 </EntityInfoGrid>
             </EntityDialogTabContent>
+            {typeof world.storeId === 'string' && world.storeId ? (
+                <EntityDialogTabContent value="store">
+                    <EconomyStoreListings storeId={world.storeId} />
+                </EntityDialogTabContent>
+            ) : null}
             <EntityDialogTabContent value="json">
                 <EntityRawJson value={world} />
             </EntityDialogTabContent>

@@ -624,6 +624,27 @@
             "label_count": "Filtros ({count})"
         }
     },
+    "economy": {
+        "free": "Gratis",
+        "vrc_plus_price": "{price} con VRC+",
+        "subscription_term": "Suscripción · {duration}",
+        "permanent": "Permanente",
+        "owned": "Adquirido",
+        "store_header": "Tienda",
+        "store_read_only_hint": "Para comprar, usa VRChat o el sitio web.",
+        "store_failed_to_load": "No se pudo cargar la tienda",
+        "store_empty": "No hay nada a la venta",
+        "duration": {
+            "day_one": "{count} día",
+            "day_other": "{count} días",
+            "week_one": "{count} semana",
+            "week_other": "{count} semanas",
+            "month_one": "{count} mes",
+            "month_other": "{count} meses",
+            "year_one": "{count} año",
+            "year_other": "{count} años"
+        }
+    },
     "overlay": {
         "footer": {
             "players": "{count} jugadores",
@@ -1494,6 +1515,10 @@
                 "local_test_avatars": "Avatares de prueba locales",
                 "local_test_avatars_description": "Avatares creados con Build & Test en el SDK de VRChat. En el juego solo los ves tú."
             },
+            "source": {
+                "own": "Subidos",
+                "licensed": "Comprados"
+            },
             "action": {
                 "select_style": "Seleccionar estilo",
                 "add_local_tag": "Añadir etiqueta local",
@@ -2130,6 +2155,7 @@
                 "last_backup": "Última copia: {date}",
                 "connections_configured": "{count} conexiones",
                 "apps_count": "{count} apps",
+                "unopened_bundles": "{count} sin abrir",
                 "automatic_backup": "Copia automática",
                 "show_details": "Mostrar detalles"
             },
@@ -2326,7 +2352,9 @@
                 "edit_invite_message": "Plantillas de mensajes",
                 "edit_invite_message_description": "Editar plantillas de mensajes de invitación y solicitud",
                 "moderation_reports": "Mis denuncias",
-                "moderation_reports_description": "Consulta o retira las denuncias que has enviado"
+                "moderation_reports_description": "Consulta o retira las denuncias que has enviado",
+                "purchase_history": "Historial de compras",
+                "purchase_history_description": "Consulta tus compras y movimientos de Credits"
             },
             "success": {
                 "media_item_deleted": "Elemento multimedia eliminado",
@@ -4138,6 +4166,7 @@
                 "join_count": "Encuentros",
                 "time_together": "Tiempo juntos",
                 "play_time": "Tiempo de juego",
+                "vrc_credits": "VRChat Credits",
                 "estimated_online_for": "En línea desde hace unos {duration}",
                 "last_activity": "Última actividad",
                 "date_joined": "Fecha de ingreso",
@@ -4201,7 +4230,8 @@
                 "sort_by_uploaded": "Subido",
                 "all": "Todos",
                 "public": "Público",
-                "private": "Privado"
+                "private": "Privado",
+                "licensed": "Comprados"
             },
             "json": {
                 "header": "JSON"
@@ -6179,6 +6209,23 @@
                 "avatar": "Avatares",
                 "group": "Grupos"
             }
+        },
+        "purchase_history": {
+            "header": "Historial de compras",
+            "description": "Artículos que compraste y movimientos de VRChat Credits",
+            "purchases": "Compras",
+            "transactions": "Movimientos",
+            "all_types": "Todos los tipos",
+            "gift": "Regalo",
+            "inactive": "Caducado",
+            "seller": "Vendedor {name}",
+            "ends": "Termina {date}",
+            "from": "De",
+            "to": "Para",
+            "balance": "Saldo {value}",
+            "failed_to_load": "No se pudo cargar el historial de compras",
+            "empty_purchases": "Aún no hay compras",
+            "empty_transactions": "Aún no hay movimientos"
         }
     },
     "confirm": {

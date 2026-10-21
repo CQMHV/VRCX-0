@@ -2219,6 +2219,37 @@ const generatedCommands = {
             input
         });
     },
+    async appVrchatEconomyLicensedAvatarsGet(
+        input: VrchatEconomyPageInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_economy_licensed_avatars_get', {
+            input
+        });
+    },
+    async appVrchatEconomyPurchasesGet(
+        input: VrchatEconomyPurchasesInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_economy_purchases_get', {
+            input
+        });
+    },
+    async appVrchatEconomyTransactionsGet(
+        input: VrchatEconomyTransactionsInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_economy_transactions_get', {
+            input
+        });
+    },
+    async appVrchatEconomyBalanceGet(
+        input: VrchatEconomyUserInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_economy_balance_get', { input });
+    },
+    async appVrchatEconomyStoreGet(
+        input: VrchatEconomyStoreInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_economy_store_get', { input });
+    },
     async appVrchatToolsGroupCalendarEventGet(
         input: VrchatToolsCalendarEventInput
     ): Promise<HttpApiExecuteResponse> {
@@ -3629,6 +3660,7 @@ export type BackendRuntimeEventPayloadMap = {
     realtimeCurrentUserProjection: RealtimeCurrentUserProjection;
     realtimeInstanceClosedProjection: RealtimeInstanceClosedProjection;
     realtimeInstanceQueueProjection: RealtimeInstanceQueueProjection;
+    realtimeEconomyBalance: RealtimeEconomyBalancePayload;
     realtimeProjectionSync: RealtimeProjectionSync;
     updateIsGameRunning: HostSessionProjection;
     integrationApiStartFailed: IntegrationApiStartFailedPayload;
@@ -6382,6 +6414,10 @@ export type RealtimeCurrentUserProjection = {
     patch: RawJsonObject;
     gameStatePatch?: RawJsonObject | null;
 };
+export type RealtimeEconomyBalancePayload = {
+    userId: string;
+    walletBalance: number;
+};
 export type RealtimeEntryCorrection = {
     stream: RealtimeEntryCorrectionStream;
     id: string;
@@ -7024,6 +7060,15 @@ export type VrchatCurrentUserProfileUpdateInput = {
 };
 export type VrchatCurrentUserTagsInput = { tags?: string[] };
 export type VrchatCurrentUserUpdateInput = { params: CurrentUserUpdateRequest };
+export type VrchatEconomyPageInput = { n: number; offset?: number };
+export type VrchatEconomyPurchasesInput = {
+    buyerId: string;
+    n: number;
+    offset?: number;
+};
+export type VrchatEconomyStoreInput = { storeId: string };
+export type VrchatEconomyTransactionsInput = { userId: string; n: number };
+export type VrchatEconomyUserInput = { userId: string };
 export type VrchatFavoriteAddInput = {
     type: VrchatFavoriteType;
     favoriteId?: string;

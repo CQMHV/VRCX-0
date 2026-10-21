@@ -624,6 +624,27 @@
             "label_count": "篩選 ({count})"
         }
     },
+    "economy": {
+        "free": "免費",
+        "vrc_plus_price": "VRC+ 價 {price}",
+        "subscription_term": "訂閱 · {duration}",
+        "permanent": "永久",
+        "owned": "已擁有",
+        "store_header": "商店",
+        "store_read_only_hint": "購買請前往遊戲內或官網。",
+        "store_failed_to_load": "無法載入商店",
+        "store_empty": "暫無在售商品",
+        "duration": {
+            "day_one": "{count} 天",
+            "day_other": "{count} 天",
+            "week_one": "{count} 週",
+            "week_other": "{count} 週",
+            "month_one": "{count} 個月",
+            "month_other": "{count} 個月",
+            "year_one": "{count} 年",
+            "year_other": "{count} 年"
+        }
+    },
     "overlay": {
         "footer": {
             "players": "{count} 位用戶",
@@ -1490,6 +1511,10 @@
                 "local_test_avatars": "本機測試角色",
                 "local_test_avatars_description": "在 VRChat SDK 中透過 Build & Test 建置的角色，遊戲內只有你自己看得到。"
             },
+            "source": {
+                "own": "我上傳的",
+                "licensed": "已購買"
+            },
             "action": {
                 "select_style": "選擇樣式",
                 "add_local_tag": "新增本機標籤",
@@ -2124,6 +2149,7 @@
                 "last_backup": "上次備份 {date}",
                 "connections_configured": "{count} 個連線",
                 "apps_count": "{count} 個應用程式",
+                "unopened_bundles": "{count} 個禮包未開",
                 "automatic_backup": "自動備份",
                 "show_details": "展開詳情"
             },
@@ -2320,7 +2346,9 @@
                 "edit_invite_message": "編輯邀請訊息",
                 "edit_invite_message_description": "編輯邀請與回覆邀請的訊息",
                 "moderation_reports": "我的檢舉",
-                "moderation_reports_description": "查看或撤回你提交過的檢舉"
+                "moderation_reports_description": "查看或撤回你提交過的檢舉",
+                "purchase_history": "購買紀錄",
+                "purchase_history_description": "查看購買過的商品與 VRChat 點數收支"
             },
             "success": {
                 "media_item_deleted": "媒體項目已刪除",
@@ -4128,6 +4156,7 @@
                 "join_count": "加入次數",
                 "time_together": "一起遊玩時長",
                 "play_time": "遊玩時長",
+                "vrc_credits": "VRChat 點數",
                 "estimated_online_for": "已在線約 {duration}",
                 "last_activity": "最後動態",
                 "date_joined": "加入時間",
@@ -4191,7 +4220,8 @@
                 "sort_by_uploaded": "上傳日期",
                 "all": "所有",
                 "public": "公開",
-                "private": "私人"
+                "private": "私人",
+                "licensed": "已購買"
             },
             "json": {
                 "header": "原始資料"
@@ -6160,6 +6190,23 @@
                 "avatar": "角色",
                 "group": "群組"
             }
+        },
+        "purchase_history": {
+            "header": "購買紀錄",
+            "description": "你購買的商品與 VRChat 點數收支",
+            "purchases": "購買",
+            "transactions": "點數紀錄",
+            "all_types": "全部類型",
+            "gift": "禮物",
+            "inactive": "已失效",
+            "seller": "賣家 {name}",
+            "ends": "到期 {date}",
+            "from": "來自",
+            "to": "給",
+            "balance": "餘額 {value}",
+            "failed_to_load": "無法載入購買紀錄",
+            "empty_purchases": "還沒有購買紀錄",
+            "empty_transactions": "還沒有點數紀錄"
         }
     },
     "confirm": {
