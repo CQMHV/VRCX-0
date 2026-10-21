@@ -246,7 +246,7 @@ export interface UserHeaderCommands {
     onOpenUserIcon: () => void;
     onOpenUserUrl: () => void;
     onRefresh: () => void;
-    onReportHacking: () => void;
+    onReportUser: () => void;
     onShowAvatarAuthor: () => void;
     onShowInstanceHistory: () => void;
     onToggleBadgeShowcased: (
@@ -566,7 +566,7 @@ export function UserDialogHeaderSection({
         onOpenUserIcon,
         onOpenUserUrl,
         onRefresh,
-        onReportHacking,
+        onReportUser,
         onShowAvatarAuthor,
         onShowInstanceHistory,
         onToggleBadgeShowcased,
@@ -610,7 +610,7 @@ export function UserDialogHeaderSection({
         onModeration,
         onOpenFallbackAvatar,
         onRefresh,
-        onReportHacking,
+        onReportUser,
         onShowAvatarAuthor,
         onShowInstanceHistory,
         onUnfriend

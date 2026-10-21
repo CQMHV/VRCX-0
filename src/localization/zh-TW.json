@@ -2304,6 +2304,8 @@
                 "all_favorite_friends": "所有收藏好友",
                 "selected_favorite_groups": "指定收藏群組",
                 "selected_favorite_groups_label": "指定收藏群組",
+                "allowed_statuses_label": "僅在我的狀態為",
+                "allowed_statuses_description": "全部不勾選則不限狀態。",
                 "automatic_replies_note": "自動回應只會在 VRChat 執行中且目前位置可傳送邀請時運作。每位傳送者各有冷卻時間。",
                 "failed_to_load_schedule_rules": "載入時間規則失敗。",
                 "failed_to_save_schedule_rules": "儲存時間規則失敗。",
@@ -4048,7 +4050,7 @@
                 "moderation_enable_chatbox": "顯示對話框",
                 "moderation_disable_chatbox": "隱藏對話框",
                 "edit_status": "編輯社交狀態",
-                "report_hacking": "以駭入原因檢舉",
+                "report_user": "檢舉用戶…",
                 "unfriend": "解除好友",
                 "edit_note_memo": "編輯備註與本機備註",
                 "edit_profile": "編輯個人資料"
@@ -4240,6 +4242,14 @@
             "note_memo": {
                 "header": "編輯備註與本機備註"
             },
+            "report": {
+                "header": "檢舉用戶",
+                "category": "類別",
+                "reason": "原因",
+                "description": "補充說明（選填）",
+                "description_placeholder": "描述發生了什麼事",
+                "no_options": "尚未從 VRChat 取得檢舉選項，請稍後再試。"
+            },
             "action": {
                 "open_user_icon": "開啟用戶頭像",
                 "invite_message_slot_must_be_a_number": "邀請訊息編號必須是數字",
@@ -4366,7 +4376,6 @@
                 "failed_to_update_group_order": "更新群組排序失敗"
             },
             "modal": {
-                "report_hacking": "檢舉作弊？",
                 "report": "檢舉",
                 "send_invite": "傳送邀請？",
                 "request_invite": "申請加入？",
@@ -4694,6 +4703,9 @@
                 "memo_placeholder": "按一下以新增本機備註",
                 "listings": "列表",
                 "gallery": "相簿",
+                "gallery_move_earlier": "往前移",
+                "gallery_move_later": "往後移",
+                "gallery_delete_image": "刪除圖片",
                 "attributes": "特性"
             },
             "performance": {
@@ -4772,6 +4784,7 @@
             },
             "label": {
                 "avatar_gallery_image_uploaded": "角色相簿圖片已上傳",
+                "avatar_gallery_image_deleted": "已刪除相簿圖片",
                 "local_tags": "本機標籤",
                 "vrchat_tags": "VRChat 標籤",
                 "built_in_content_tags": "內建內容標籤",
@@ -4809,6 +4822,8 @@
                 "selected_file_is_not_an_image": "所選檔案不是圖片",
                 "failed_to_upload_avatar_image": "上傳角色圖片失敗",
                 "failed_to_upload_avatar_gallery_image": "上傳角色相簿圖片失敗",
+                "failed_to_reorder_avatar_gallery": "調整相簿順序失敗",
+                "failed_to_delete_avatar_gallery_image": "刪除相簿圖片失敗",
                 "impostor_queued_for_creation": "已排隊建立投影替身",
                 "failed_to_create_impostor": "建立投影替身失敗",
                 "impostor_deleted": "投影替身已刪除",
@@ -4821,6 +4836,7 @@
                 "select_fallback_avatar": "選擇後備角色？",
                 "select_fallback": "選擇後備角色",
                 "delete_avatar": "刪除角色？",
+                "delete_gallery_image": "刪除這張相簿圖片？",
                 "edit_local_memo": "編輯本機備註",
                 "create_impostor_title": "建立投影替身？",
                 "create": "建立",

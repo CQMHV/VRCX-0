@@ -17,13 +17,13 @@ use vrcx_0_vrchat_client::instances::{
 };
 use vrcx_0_vrchat_client::media::{
     asset_upload_input, avatar_gallery_image_upload_input, file_delete_input, files_get_input,
-    image_upload_input, inventory_bundle_consume_input, inventory_item_equip_input,
-    inventory_item_update_input, inventory_items_get_input, inventory_slot_unequip_input,
-    inventory_template_get_input, print_delete_input, print_get_input, print_upload_input,
-    prints_get_input, reward_redeem_input, sticker_upload_input, tagged_image_upload_input,
-    user_inventory_item_get_input, EmojiUploadParams, InventoryItemUpdateRequest,
-    InventoryListParams, MediaAssetUploadRequest, MediaFileListParams, PrintUploadParams,
-    ProfileDecorationEquipSlot,
+    gallery_file_order_input, image_upload_input, inventory_bundle_consume_input,
+    inventory_item_equip_input, inventory_item_update_input, inventory_items_get_input,
+    inventory_slot_unequip_input, inventory_template_get_input, print_delete_input,
+    print_get_input, print_upload_input, prints_get_input, reward_redeem_input,
+    sticker_upload_input, tagged_image_upload_input, user_inventory_item_get_input,
+    EmojiUploadParams, InventoryItemUpdateRequest, InventoryListParams, MediaAssetUploadRequest,
+    MediaFileListParams, PrintUploadParams, ProfileDecorationEquipSlot,
 };
 use vrcx_0_vrchat_client::notifications::{
     boop_send_input, request_invite_photo_input, request_invite_send_input, RequestInviteRequest,
@@ -464,9 +464,20 @@ impl DesktopVrchatRemoteFacade {
         .await
     }
 
-    pub async fn report_user(&self, user_id: String, reason: String) -> Result<VrchatApiResponse> {
-        let (user_id, request) =
-            user_report_input(VRCHAT_API_DEFAULT_ENDPOINT.into(), user_id, reason)?;
+    pub async fn report_user(
+        &self,
+        user_id: String,
+        category: String,
+        reason: String,
+        description: String,
+    ) -> Result<VrchatApiResponse> {
+        let (user_id, request) = user_report_input(
+            VRCHAT_API_DEFAULT_ENDPOINT.into(),
+            user_id,
+            category,
+            reason,
+            description,
+        )?;
         self.execute(
             "app__vrchat_tools_user_report",
             format!("Reporting user {user_id}."),
@@ -631,6 +642,23 @@ impl DesktopVrchatRemoteFacade {
         let request = file_delete_input(VRCHAT_API_DEFAULT_ENDPOINT.into(), file_id)?;
         self.execute(
             "app__vrchat_media_file_delete",
+            detail,
+            request,
+            VrchatScope::VrchatMedia,
+        )
+        .await
+    }
+
+    pub async fn set_avatar_gallery_order(
+        &self,
+        avatar_id: String,
+        file_ids: Vec<String>,
+    ) -> Result<VrchatApiResponse> {
+        let detail = format!("Reordering avatar gallery {avatar_id}.");
+        let request =
+            gallery_file_order_input(VRCHAT_API_DEFAULT_ENDPOINT.into(), avatar_id, file_ids)?;
+        self.execute(
+            "app__vrchat_media_avatar_gallery_order_set",
             detail,
             request,
             VrchatScope::VrchatMedia,

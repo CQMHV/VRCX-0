@@ -2304,6 +2304,8 @@
                 "all_favorite_friends": "所有收藏好友",
                 "selected_favorite_groups": "指定收藏分组",
                 "selected_favorite_groups_label": "指定收藏分组",
+                "allowed_statuses_label": "仅当我的状态为",
+                "allowed_statuses_description": "全部不勾选则不限状态。",
                 "automatic_replies_note": "自动回应只会在 VRChat 运行中且当前位置可发送邀请时运行。冷却按发送者单独计算，并且只有邀请 API 返回成功后才会隐藏通知。",
                 "failed_to_load_schedule_rules": "加载时间规则失败。",
                 "failed_to_save_schedule_rules": "保存时间规则失败。",
@@ -4048,7 +4050,7 @@
                 "moderation_enable_chatbox": "取消屏蔽聊天气泡",
                 "moderation_disable_chatbox": "屏蔽聊天气泡",
                 "edit_status": "编辑社交状态",
-                "report_hacking": "举报此玩家盗模/开挂",
+                "report_user": "举报玩家…",
                 "unfriend": "删除好友",
                 "edit_note_memo": "编辑线上备注与本地备注",
                 "edit_profile": "编辑个人资料"
@@ -4240,6 +4242,14 @@
             "note_memo": {
                 "header": "编辑线上备注与本地备注"
             },
+            "report": {
+                "header": "举报玩家",
+                "category": "类别",
+                "reason": "原因",
+                "description": "补充说明（可选）",
+                "description_placeholder": "描述发生了什么",
+                "no_options": "尚未从 VRChat 获取到举报选项，请稍后再试。"
+            },
             "action": {
                 "open_user_icon": "打开用户头像",
                 "invite_message_slot_must_be_a_number": "邀请消息槽位必须是数字",
@@ -4366,7 +4376,6 @@
                 "failed_to_update_group_order": "更新群组排序失败"
             },
             "modal": {
-                "report_hacking": "确定要举报此玩家 盗模/开挂 吗？",
                 "report": "举报",
                 "send_invite": "确定要发送邀请吗？",
                 "request_invite": "确定要发送加入申请吗？",
@@ -4694,6 +4703,9 @@
                 "memo_placeholder": "点此添加本地备注",
                 "listings": "列表",
                 "gallery": "模型相册",
+                "gallery_move_earlier": "前移",
+                "gallery_move_later": "后移",
+                "gallery_delete_image": "删除图片",
                 "attributes": "特性"
             },
             "performance": {
@@ -4781,6 +4793,7 @@
             },
             "label": {
                 "avatar_gallery_image_uploaded": "已将图片上传至模型图库",
+                "avatar_gallery_image_deleted": "已删除相册图片",
                 "local_tags": "本地标签",
                 "vrchat_tags": "VRChat 标签",
                 "built_in_content_tags": "内置内容标签",
@@ -4818,6 +4831,8 @@
                 "selected_file_is_not_an_image": "所选文件不是图片",
                 "failed_to_upload_avatar_image": "上传模型图片失败",
                 "failed_to_upload_avatar_gallery_image": "上传模型相册图片失败",
+                "failed_to_reorder_avatar_gallery": "调整相册顺序失败",
+                "failed_to_delete_avatar_gallery_image": "删除相册图片失败",
                 "impostor_queued_for_creation": "已排队创建模型替身",
                 "failed_to_create_impostor": "创建模型替身失败",
                 "impostor_deleted": "模型替身已删除",
@@ -4830,6 +4845,7 @@
                 "select_fallback_avatar": "要将该模型作为备用模型使用吗？",
                 "select_fallback": "作为备用模型",
                 "delete_avatar": "删除模型？",
+                "delete_gallery_image": "删除这张相册图片？",
                 "edit_local_memo": "编辑本地备注",
                 "create_impostor_title": "创建模型替身？",
                 "create": "创建",

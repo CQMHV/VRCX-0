@@ -2314,6 +2314,8 @@
                 "all_favorite_friends": "Все избранные друзья",
                 "selected_favorite_groups": "Отдельные избранные группы",
                 "selected_favorite_groups_label": "Отдельные избранные группы",
+                "allowed_statuses_label": "Только когда мой статус",
+                "allowed_statuses_description": "Если ничего не отмечено, ответ отправляется при любом статусе.",
                 "automatic_replies_note": "Работает только пока VRChat запущен и ваше местоположение позволяет отправлять приглашения. У каждого отправителя есть кулдаун.",
                 "failed_to_load_schedule_rules": "Не удалось загрузить график.",
                 "failed_to_save_schedule_rules": "Не удалось сохранить правила расписания.",
@@ -4070,7 +4072,7 @@
                 "moderation_enable_chatbox": "Включить Chatbox",
                 "moderation_disable_chatbox": "Заглушить Chatbox",
                 "edit_status": "Редактировать статус",
-                "report_hacking": "Сообщить о взломе",
+                "report_user": "Пожаловаться на пользователя…",
                 "unfriend": "Удалить из друзей",
                 "edit_note_memo": "Редактировать примечание и локальное примечание",
                 "edit_profile": "Редактировать профиль"
@@ -4262,6 +4264,14 @@
             "note_memo": {
                 "header": "Редактировать примечание и локальное примечание"
             },
+            "report": {
+                "header": "Пожаловаться на пользователя",
+                "category": "Категория",
+                "reason": "Причина",
+                "description": "Подробности (необязательно)",
+                "description_placeholder": "Опишите, что произошло",
+                "no_options": "Варианты жалоб ещё не загружены из VRChat. Попробуйте позже."
+            },
             "action": {
                 "open_user_icon": "Открыть значок пользователя",
                 "invite_message_slot_must_be_a_number": "Номер слота сообщения приглашения должен быть числом",
@@ -4388,7 +4398,6 @@
                 "failed_to_update_group_order": "Не удалось обновить порядок группы"
             },
             "modal": {
-                "report_hacking": "Отчет о взломе?",
                 "report": "Отчет",
                 "send_invite": "Послать приглашение?",
                 "request_invite": "Запросить приглашение?",
@@ -4718,6 +4727,9 @@
                 "memo_placeholder": "Нажмите, чтобы добавить локальную заметку",
                 "listings": "Списки",
                 "gallery": "Галерея",
+                "gallery_move_earlier": "Переместить раньше",
+                "gallery_move_later": "Переместить позже",
+                "gallery_delete_image": "Удалить изображение",
                 "attributes": "Атрибуты"
             },
             "performance": {
@@ -4761,6 +4773,7 @@
             },
             "label": {
                 "avatar_gallery_image_uploaded": "Загружено изображение галереи аватара",
+                "avatar_gallery_image_deleted": "Изображение галереи удалено",
                 "local_tags": "Местные метки",
                 "vrchat_tags": "VRChat Метки",
                 "built_in_content_tags": "Встроенные метки содержания",
@@ -4798,6 +4811,8 @@
                 "selected_file_is_not_an_image": "Выбранный файл не является изображением",
                 "failed_to_upload_avatar_image": "Не удалось загрузить изображение аватара",
                 "failed_to_upload_avatar_gallery_image": "Не удалось загрузить изображение галереи аватара",
+                "failed_to_reorder_avatar_gallery": "Не удалось изменить порядок галереи",
+                "failed_to_delete_avatar_gallery_image": "Не удалось удалить изображение галереи",
                 "impostor_queued_for_creation": "Импостор поставлен в очередь на создание",
                 "failed_to_create_impostor": "Не удалось создать импостора",
                 "impostor_deleted": "Импостолка удалена",
@@ -4810,6 +4825,7 @@
                 "select_fallback_avatar": "Выбрать запасной аватар?",
                 "select_fallback": "Выбрать откидку",
                 "delete_avatar": "Удалить аватар?",
+                "delete_gallery_image": "Удалить это изображение из галереи?",
                 "edit_local_memo": "Правка локальной ноты",
                 "create_impostor_title": "Создать импостора?",
                 "create": "Создать",

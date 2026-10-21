@@ -7,6 +7,7 @@ import type { useUserDialogSelfActions } from '../useUserDialogSelfActions';
 import { UserDialogGroupInviteDialog } from './UserDialogGroupInviteDialog';
 import { UserDialogGroupQuickModerationDialog } from './UserDialogGroupQuickModerationDialog';
 import { UserNoteMemoDialog } from './UserNoteMemoDialog';
+import { UserReportDialog } from './UserReportDialog';
 
 type UserActionsState = ReturnType<typeof useUserDialogActions>;
 type SelfActionsState = ReturnType<typeof useUserDialogSelfActions>;
@@ -38,6 +39,12 @@ type UserDialogContentDialogsProps = {
         onOpenChange: (open: boolean) => void;
     };
     noteMemoDialog: ReturnType<typeof useUserDialogMemoState>['memoDialog'];
+    reportDialog: {
+        open: boolean;
+        targetUserId: string;
+        targetLabel?: string;
+        onOpenChange: (open: boolean) => void;
+    };
     socialStatusDialog: SelfActionsState['socialStatusDialog'];
     inviteMessageDialog: {
         request: UserActionsState['inviteMessageRequest'];
@@ -56,6 +63,7 @@ export function UserDialogContentDialogs({
     groupInviteDialog,
     groupQuickModerationDialog,
     noteMemoDialog,
+    reportDialog,
     socialStatusDialog,
     inviteMessageDialog
 }: UserDialogContentDialogsProps) {
@@ -135,6 +143,12 @@ export function UserDialogContentDialogs({
                 onDetailedManagement={
                     groupQuickModerationDialog.onDetailedManagement
                 }
+            />
+            <UserReportDialog
+                open={reportDialog.open}
+                targetUserId={reportDialog.targetUserId}
+                targetLabel={reportDialog.targetLabel}
+                onOpenChange={reportDialog.onOpenChange}
             />
         </>
     );

@@ -1841,6 +1841,14 @@ const generatedCommands = {
             { input }
         );
     },
+    async appVrchatMediaAvatarGalleryOrderSet(
+        input: VrchatMediaAvatarGalleryOrderInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE(
+            'app__vrchat_media_avatar_gallery_order_set',
+            { input }
+        );
+    },
     async appVrchatMediaAvatarImageUploadLegacy(
         input: VrchatMediaLegacyImageUploadInput
     ): Promise<HttpApiExecuteResponse> {
@@ -7065,6 +7073,10 @@ export type VrchatMediaAvatarGalleryImageUploadInput = {
     imageData?: string;
     avatarId: string;
 };
+export type VrchatMediaAvatarGalleryOrderInput = {
+    avatarId: string;
+    fileIds: string[];
+};
 export type VrchatMediaEmojiUploadInput = {
     imageData?: string;
     params: EmojiUploadParams;
@@ -7163,7 +7175,12 @@ export type VrchatToolsUserNoteSaveInput = {
     targetUserId?: string;
     note?: string;
 };
-export type VrchatToolsUserReportInput = { userId?: string; reason?: string };
+export type VrchatToolsUserReportInput = {
+    userId: string;
+    category: string;
+    reason: string;
+    description?: string;
+};
 export type VrchatUserInput = {
     userId?: string;
     force?: boolean;

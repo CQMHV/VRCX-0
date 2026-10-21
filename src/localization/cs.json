@@ -2316,6 +2316,8 @@
                 "all_favorite_friends": "Všichni oblíbení přátelé",
                 "selected_favorite_groups": "Vybrané oblíbené skupiny",
                 "selected_favorite_groups_label": "Vybrané oblíbené skupiny",
+                "allowed_statuses_label": "Jen když mám stav",
+                "allowed_statuses_description": "Když nic nezaškrtnete, odpovídá se při jakémkoli stavu.",
                 "automatic_replies_note": "Funguje jen při spuštěném VRChatu a pokud vaše lokace umožňuje posílat pozvánky. Každý odesílatel má cooldown.",
                 "failed_to_load_schedule_rules": "Nepodařilo se načíst pravidla plánu.",
                 "failed_to_save_schedule_rules": "Nepodařilo se uložit pravidla plánu.",
@@ -4076,7 +4078,7 @@
                 "moderation_enable_chatbox": "Zrušit ztlumení chatboxu",
                 "moderation_disable_chatbox": "Ztlumit chatbox",
                 "edit_status": "Upravit sociální stav",
-                "report_hacking": "Report For Hacking",
+                "report_user": "Nahlásit uživatele…",
                 "unfriend": "Odebrat z přátel",
                 "edit_note_memo": "Upravit poznámku a lokální poznámku",
                 "edit_profile": "Upravit profil"
@@ -4268,6 +4270,14 @@
             "note_memo": {
                 "header": "Upravit poznámku a lokální poznámku"
             },
+            "report": {
+                "header": "Nahlásit uživatele",
+                "category": "Kategorie",
+                "reason": "Důvod",
+                "description": "Podrobnosti (nepovinné)",
+                "description_placeholder": "Popište, co se stalo",
+                "no_options": "Možnosti nahlášení se z VRChatu zatím nenačetly. Zkuste to později."
+            },
             "action": {
                 "open_user_icon": "Otevřít ikonu uživatele",
                 "invite_message_slot_must_be_a_number": "Slot pozvánkové zprávy musí být číslo",
@@ -4394,7 +4404,6 @@
                 "failed_to_update_group_order": "Nepodařilo se aktualizovat pořadí skupin"
             },
             "modal": {
-                "report_hacking": "Nahlásit hackování?",
                 "report": "Nahlásit",
                 "send_invite": "Odeslat pozvánku?",
                 "request_invite": "Požádat o pozvánku?",
@@ -4724,6 +4733,9 @@
                 "memo_placeholder": "Click to add a memo",
                 "listings": "Výpisy",
                 "gallery": "Galerie",
+                "gallery_move_earlier": "Posunout dopředu",
+                "gallery_move_later": "Posunout dozadu",
+                "gallery_delete_image": "Odstranit obrázek",
                 "attributes": "Atributy"
             },
             "performance": {
@@ -4767,6 +4779,7 @@
             },
             "label": {
                 "avatar_gallery_image_uploaded": "Obrázek galerie avatara nahrán",
+                "avatar_gallery_image_deleted": "Obrázek z galerie odstraněn",
                 "local_tags": "Lokální štítky",
                 "vrchat_tags": "Štítky VRChat",
                 "built_in_content_tags": "Vestavěné obsahové štítky",
@@ -4804,6 +4817,8 @@
                 "selected_file_is_not_an_image": "Vybraný soubor není obrázek",
                 "failed_to_upload_avatar_image": "Nepodařilo se nahrát obrázek avatara",
                 "failed_to_upload_avatar_gallery_image": "Nepodařilo se nahrát obrázek do galerie avatara",
+                "failed_to_reorder_avatar_gallery": "Pořadí galerie se nepodařilo změnit",
+                "failed_to_delete_avatar_gallery_image": "Obrázek z galerie se nepodařilo odstranit",
                 "impostor_queued_for_creation": "Impostor zařazen do fronty na vytvoření",
                 "failed_to_create_impostor": "Nepodařilo se vytvořit impostora",
                 "impostor_deleted": "Impostor odstraněn",
@@ -4816,6 +4831,7 @@
                 "select_fallback_avatar": "Vybrat záložního avatara?",
                 "select_fallback": "Vybrat záložního",
                 "delete_avatar": "Odstranit avatara?",
+                "delete_gallery_image": "Odstranit tento obrázek z galerie?",
                 "edit_local_memo": "Upravit lokální poznámku",
                 "create_impostor_title": "Vytvořit impostora?",
                 "create": "Vytvořit",

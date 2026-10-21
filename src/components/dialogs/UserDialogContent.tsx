@@ -131,6 +131,7 @@ export function UserDialogContent({
     const actionStatusRef = useRef('idle');
     const [actionStatus, setActionStatus] = useState('idle');
     const [groupInviteOpen, setGroupInviteOpen] = useState(false);
+    const [reportOpen, setReportOpen] = useState(false);
     const [groupQuickModerationOpen, setGroupQuickModerationOpen] =
         useState(false);
     const [recentActionVersion, setRecentActionVersion] = useState(0);
@@ -163,6 +164,7 @@ export function UserDialogContent({
     useEffect(() => {
         setGroupInviteOpen(false);
         setGroupQuickModerationOpen(false);
+        setReportOpen(false);
     }, [targetIdentity]);
 
     const currentGameLocation = normalizeUserId(gameState?.currentLocation);
@@ -474,8 +476,8 @@ export function UserDialogContent({
                     onAvatarOverride: (type: AvatarOverrideType) => {
                         userActions.setAvatarOverrideModeration(type);
                     },
-                    onReportHacking: () => {
-                        userActions.reportHacking();
+                    onReportUser: () => {
+                        setReportOpen(true);
                     },
                     onInviteToGroup: () => {
                         setGroupInviteOpen(true);
@@ -505,6 +507,12 @@ export function UserDialogContent({
                     allowImageUpload: isLocalUserVrcPlusSupporter,
                     targetLabel: profile?.displayName || profile?.id,
                     onUse: selectInviteMessage
+                }}
+                reportDialog={{
+                    open: reportOpen,
+                    targetUserId: normalizedUserId,
+                    targetLabel: profile?.displayName || profile?.id,
+                    onOpenChange: setReportOpen
                 }}
                 groupInviteDialog={{
                     open: groupInviteOpen,

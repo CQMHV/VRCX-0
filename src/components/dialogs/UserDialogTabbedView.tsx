@@ -143,7 +143,7 @@ interface UserDialogTabbedViewProps {
             enabled: boolean
         ) => void;
         onAvatarOverride: (type: AvatarOverrideType) => void;
-        onReportHacking: () => void;
+        onReportUser: () => void;
         onInviteToGroup: () => void;
         onGroupModeration: () => void;
     };
@@ -282,7 +282,7 @@ export function UserDialogTabbedView({
         onModeration,
         onExtendedModeration,
         onAvatarOverride,
-        onReportHacking,
+        onReportUser,
         onInviteToGroup,
         onGroupModeration
     } = friendControls;
@@ -640,7 +640,7 @@ export function UserDialogTabbedView({
             }),
         onOpenUserUrl: () => openExternalLink(userUrl),
         onRefresh,
-        onReportHacking,
+        onReportUser,
         onShowAvatarAuthor: showAvatarAuthor,
         onShowInstanceHistory: openInstanceHistory,
         onToggleBadgeShowcased,

@@ -47,10 +47,11 @@ pub struct VrchatToolsUserNoteSaveInput {
 #[derive(Debug, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct VrchatToolsUserReportInput {
-    #[serde(default)]
     pub(crate) user_id: String,
-    #[serde(default)]
+    pub(crate) category: String,
     pub(crate) reason: String,
+    #[serde(default)]
+    pub(crate) description: String,
 }
 
 #[derive(Debug, Deserialize, specta::Type)]

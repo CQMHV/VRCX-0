@@ -113,21 +113,26 @@ pub fn user_note_save_input(
 pub fn user_report_input(
     endpoint: String,
     user_id: String,
+    category: String,
     reason: String,
+    description: String,
 ) -> Result<(String, HttpApiRequestInput), HttpApiError> {
     let user_id = require_text(user_id, "VrchatToolsUserReport requires userId.")?;
+    let category = require_text(category, "VrchatToolsUserReport requires category.")?;
+    let reason = require_text(reason, "VrchatToolsUserReport requires reason.")?;
+    let mut body = json!({
+        "type": "user",
+        "category": category,
+        "reason": reason,
+        "contentId": user_id,
+    });
+    let description = description.trim();
+    if !description.is_empty() {
+        body["description"] = json!(description);
+    }
     Ok((
-        user_id.clone(),
-        api_input(
-            endpoint,
-            "POST",
-            format!("feedback/{}/user", encode_path_segment(&user_id)),
-            Some(json!({
-                "contentType": "user",
-                "reason": reason,
-                "type": "report",
-            })),
-        ),
+        user_id,
+        api_input(endpoint, "POST", "moderationReports", Some(body)),
     ))
 }
 
@@ -316,14 +321,35 @@ mod tests {
             &json!({ "targetUserId": "usr/1", "note": "  keep note whitespace  " })
         );
 
-        let (_, report) =
-            user_report_input("endpoint".into(), " usr/1 ".into(), "reason".into()).unwrap();
+        let (_, report) = user_report_input(
+            "endpoint".into(),
+            " usr/1 ".into(),
+            "behavior".into(),
+            "hacking".into(),
+            "  ".into(),
+        )
+        .unwrap();
         assert_eq!(report.method.as_deref(), Some("POST"));
-        assert_eq!(report.path.as_deref(), Some("feedback/usr%2F1/user"));
+        assert_eq!(report.path.as_deref(), Some("moderationReports"));
         assert_eq!(
             json_body(&report),
-            &json!({ "contentType": "user", "reason": "reason", "type": "report" })
+            &json!({
+                "type": "user",
+                "category": "behavior",
+                "reason": "hacking",
+                "contentId": "usr/1",
+            })
         );
+
+        let (_, described) = user_report_input(
+            "endpoint".into(),
+            "usr_1".into(),
+            "chat".into(),
+            "harassing".into(),
+            "  spam in chat  ".into(),
+        )
+        .unwrap();
+        assert_eq!(json_body(&described)["description"], json!("spam in chat"));
 
         let (slot, edit) = invite_message_edit_input(
             "endpoint".into(),
@@ -412,7 +438,22 @@ mod tests {
         assert!(group_event_follow_input("".into(), "group".into(), " ".into(), false,).is_err());
         assert!(group_calendar_ics_get_input("".into(), " ".into(), "event".into()).is_err());
         assert!(user_note_save_input("".into(), " ".into(), "note".into()).is_err());
-        assert!(user_report_input("".into(), " ".into(), "reason".into(),).is_err());
+        assert!(user_report_input(
+            "".into(),
+            " ".into(),
+            "behavior".into(),
+            "hacking".into(),
+            String::new(),
+        )
+        .is_err());
+        assert!(user_report_input(
+            "".into(),
+            "usr_1".into(),
+            "behavior".into(),
+            " ".into(),
+            String::new(),
+        )
+        .is_err());
         assert!(moderation_reports_get_input("".into(), " ".into(), 100, 0, false, None).is_err());
         assert!(moderation_report_delete_input("".into(), " ".into()).is_err());
         assert!(serde_json::from_str::<InviteMessageType>(r#""invite""#).is_err());

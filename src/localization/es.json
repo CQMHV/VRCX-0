@@ -2310,6 +2310,8 @@
                 "all_favorite_friends": "Todos los amigos favoritos",
                 "selected_favorite_groups": "Grupos de favoritos seleccionados",
                 "selected_favorite_groups_label": "Grupos de favoritos seleccionados",
+                "allowed_statuses_label": "Solo cuando mi estado sea",
+                "allowed_statuses_description": "Si no marcas ninguno, se responde con cualquier estado.",
                 "automatic_replies_note": "Solo funciona mientras VRChat esté abierto y tu ubicación permita enviar invitaciones. Cada remitente tiene un tiempo de espera.",
                 "failed_to_load_schedule_rules": "No se pudieron cargar las reglas de programación.",
                 "failed_to_save_schedule_rules": "No se pudieron guardar las reglas de programación.",
@@ -4058,7 +4060,7 @@
                 "moderation_enable_chatbox": "Dejar de silenciar el chatbox",
                 "moderation_disable_chatbox": "Silenciar el chatbox",
                 "edit_status": "Editar estado social",
-                "report_hacking": "Denunciar por trampas",
+                "report_user": "Denunciar usuario…",
                 "unfriend": "Eliminar amigo",
                 "edit_note_memo": "Editar nota y nota local",
                 "edit_profile": "Editar perfil"
@@ -4250,6 +4252,14 @@
             "note_memo": {
                 "header": "Editar nota y nota local"
             },
+            "report": {
+                "header": "Denunciar usuario",
+                "category": "Categoría",
+                "reason": "Motivo",
+                "description": "Detalles (opcional)",
+                "description_placeholder": "Describe lo que pasó",
+                "no_options": "Aún no se han cargado las opciones de denuncia de VRChat. Inténtalo más tarde."
+            },
             "action": {
                 "open_user_icon": "Abrir icono de usuario",
                 "invite_message_slot_must_be_a_number": "La ranura del mensaje de invitación debe ser un número",
@@ -4376,7 +4386,6 @@
                 "failed_to_update_group_order": "No se pudo actualizar el orden de los grupos"
             },
             "modal": {
-                "report_hacking": "¿Denunciar trampas?",
                 "report": "Denunciar",
                 "send_invite": "¿Enviar invitación?",
                 "request_invite": "¿Solicitar invitación?",
@@ -4704,6 +4713,9 @@
                 "memo_placeholder": "Haz clic para agregar una nota local",
                 "listings": "Listados",
                 "gallery": "Galería",
+                "gallery_move_earlier": "Mover antes",
+                "gallery_move_later": "Mover después",
+                "gallery_delete_image": "Eliminar imagen",
                 "attributes": "Atributos"
             },
             "performance": {
@@ -4791,6 +4803,7 @@
             },
             "label": {
                 "avatar_gallery_image_uploaded": "Imagen subida a la galería del avatar",
+                "avatar_gallery_image_deleted": "Imagen de la galería eliminada",
                 "local_tags": "Etiquetas locales",
                 "vrchat_tags": "Etiquetas de VRChat",
                 "built_in_content_tags": "Etiquetas de contenido integradas",
@@ -4828,6 +4841,8 @@
                 "selected_file_is_not_an_image": "El archivo seleccionado no es una imagen",
                 "failed_to_upload_avatar_image": "No se pudo subir la imagen del avatar",
                 "failed_to_upload_avatar_gallery_image": "No se pudo subir la imagen a la galería del avatar",
+                "failed_to_reorder_avatar_gallery": "No se pudo reordenar la galería",
+                "failed_to_delete_avatar_gallery_image": "No se pudo eliminar la imagen de la galería",
                 "impostor_queued_for_creation": "Impostor en cola para su creación",
                 "failed_to_create_impostor": "No se pudo crear el impostor",
                 "impostor_deleted": "Impostor eliminado",
@@ -4840,6 +4855,7 @@
                 "select_fallback_avatar": "¿Seleccionar avatar de respaldo?",
                 "select_fallback": "Seleccionar respaldo",
                 "delete_avatar": "¿Eliminar avatar?",
+                "delete_gallery_image": "¿Eliminar esta imagen de la galería?",
                 "edit_local_memo": "Editar nota local",
                 "create_impostor_title": "¿Crear impostor?",
                 "create": "Crear",

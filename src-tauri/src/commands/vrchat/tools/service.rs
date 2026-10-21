@@ -92,7 +92,12 @@ pub async fn app__vrchat_tools_user_report(
     state
         .runtime_host()
         .vrchat_remote()
-        .report_user(input.user_id, input.reason)
+        .report_user(
+            input.user_id,
+            input.category,
+            input.reason,
+            input.description,
+        )
         .await
         .map_err(AppError::from)
 }

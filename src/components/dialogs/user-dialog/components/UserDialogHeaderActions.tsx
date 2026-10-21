@@ -1,8 +1,8 @@
 import {
     BanIcon,
-    BugIcon,
     EyeIcon,
     EyeOffIcon,
+    FlagIcon,
     HandIcon,
     HistoryIcon,
     MailPlusIcon,
@@ -80,7 +80,7 @@ type UserActionMenuCommands = Pick<
     | 'onModeration'
     | 'onAvatarOverride'
     | 'onExtendedModeration'
-    | 'onReportHacking'
+    | 'onReportUser'
 >;
 
 export function UserDialogHeaderActions({
@@ -127,7 +127,7 @@ export function UserDialogHeaderActions({
         onModeration,
         onAvatarOverride,
         onExtendedModeration,
-        onReportHacking
+        onReportUser
     } = commands;
     const isBusy = loadStatus === 'running' || actionStatus !== 'idle';
     const actionsDisabled = actionStatus !== 'idle';
@@ -462,12 +462,12 @@ export function UserDialogHeaderActions({
                             </EntityActionItem>
                         ) : null}
                         <EntityActionItem
-                            icon={BugIcon}
+                            icon={FlagIcon}
                             destructive
                             disabled={actionsDisabled}
-                            onClick={onReportHacking}
+                            onClick={onReportUser}
                         >
-                            {t('dialog.user.actions.report_hacking')}
+                            {t('dialog.user.actions.report_user')}
                         </EntityActionItem>
                     </>
                 ) : null}

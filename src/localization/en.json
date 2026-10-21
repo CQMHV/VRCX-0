@@ -2310,6 +2310,8 @@
                 "all_favorite_friends": "All favorite friends",
                 "selected_favorite_groups": "Selected favorite groups",
                 "selected_favorite_groups_label": "Selected favorite groups",
+                "allowed_statuses_label": "Only when my status is",
+                "allowed_statuses_description": "Leave all unchecked to reply in any status.",
                 "automatic_replies_note": "Only runs while VRChat is running and your location allows invites. Each sender has a cooldown.",
                 "failed_to_load_schedule_rules": "Failed to load schedule rules.",
                 "failed_to_save_schedule_rules": "Failed to save schedule rules.",
@@ -4058,7 +4060,7 @@
                 "moderation_enable_chatbox": "Unmute Chatbox",
                 "moderation_disable_chatbox": "Mute Chatbox",
                 "edit_status": "Edit Social Status",
-                "report_hacking": "Report for Hacking",
+                "report_user": "Report User…",
                 "unfriend": "Unfriend",
                 "edit_note_memo": "Edit Note and Local Note",
                 "edit_profile": "Edit Profile"
@@ -4250,6 +4252,14 @@
             "note_memo": {
                 "header": "Edit Note and Local Note"
             },
+            "report": {
+                "header": "Report User",
+                "category": "Category",
+                "reason": "Reason",
+                "description": "Details (optional)",
+                "description_placeholder": "Describe what happened",
+                "no_options": "Report options haven't loaded from VRChat yet. Try again later."
+            },
             "action": {
                 "open_user_icon": "Open User Icon",
                 "invite_message_slot_must_be_a_number": "Invite message slot must be a number",
@@ -4376,7 +4386,6 @@
                 "failed_to_update_group_order": "Failed to update group order"
             },
             "modal": {
-                "report_hacking": "Report hacking?",
                 "report": "Report",
                 "send_invite": "Send invite?",
                 "request_invite": "Request invite?",
@@ -4704,6 +4713,9 @@
                 "memo_placeholder": "Click to add a local note",
                 "listings": "Listings",
                 "gallery": "Gallery",
+                "gallery_move_earlier": "Move earlier",
+                "gallery_move_later": "Move later",
+                "gallery_delete_image": "Delete image",
                 "attributes": "Attributes"
             },
             "performance": {
@@ -4791,6 +4803,7 @@
             },
             "label": {
                 "avatar_gallery_image_uploaded": "Avatar gallery image uploaded",
+                "avatar_gallery_image_deleted": "Gallery image deleted",
                 "local_tags": "Local Tags",
                 "vrchat_tags": "VRChat Tags",
                 "built_in_content_tags": "Built-in content tags",
@@ -4828,6 +4841,8 @@
                 "selected_file_is_not_an_image": "Selected file is not an image",
                 "failed_to_upload_avatar_image": "Failed to upload avatar image",
                 "failed_to_upload_avatar_gallery_image": "Failed to upload avatar gallery image",
+                "failed_to_reorder_avatar_gallery": "Failed to reorder the gallery",
+                "failed_to_delete_avatar_gallery_image": "Failed to delete the gallery image",
                 "impostor_queued_for_creation": "Impostor queued for creation",
                 "failed_to_create_impostor": "Failed to create impostor",
                 "impostor_deleted": "Impostor deleted",
@@ -4840,6 +4855,7 @@
                 "select_fallback_avatar": "Select fallback avatar?",
                 "select_fallback": "Select Fallback",
                 "delete_avatar": "Delete avatar?",
+                "delete_gallery_image": "Delete this gallery image?",
                 "edit_local_memo": "Edit local note",
                 "create_impostor_title": "Create impostor?",
                 "create": "Create",

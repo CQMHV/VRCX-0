@@ -477,6 +477,7 @@ pub fn builder() -> Builder<tauri::Wry> {
             commands::vrchat::instances::service::app__vrchat_instance_self_invite,
             commands::vrchat::instances::service::app__vrchat_instance_short_name_get,
             commands::vrchat::media::service::app__vrchat_media_avatar_gallery_image_upload,
+            commands::vrchat::media::service::app__vrchat_media_avatar_gallery_order_set,
             commands::vrchat::media::service::app__vrchat_media_avatar_image_upload_legacy,
             commands::vrchat::media::service::app__vrchat_media_asset_upload,
             commands::vrchat::media::service::app__vrchat_media_emoji_upload,

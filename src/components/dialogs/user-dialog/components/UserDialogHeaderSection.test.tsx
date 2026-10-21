@@ -155,7 +155,7 @@ function createHeaderCommands(): UserHeaderCommands {
         onOpenUserIcon: noop,
         onOpenUserUrl: noop,
         onRefresh: noop,
-        onReportHacking: noop,
+        onReportUser: noop,
         onShowAvatarAuthor: noop,
         onShowInstanceHistory: noop,
         onToggleBadgeShowcased: noop,
