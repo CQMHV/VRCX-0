@@ -5109,6 +5109,18 @@
                 "self_invite": "自我邀請"
             },
             "subtitle_fallback": "VRChat 房間",
+            "avatar_switch": {
+                "toggle": "進房前切換角色",
+                "placeholder": "選擇角色",
+                "search_placeholder": "搜尋角色",
+                "hint": "角色透過 VRChat API 切換，生效時間取決於 VRChat 伺服器，不保證立即生效。",
+                "timeout": "VRChat 伺服器未回應角色切換，已暫停進房",
+                "group": {
+                    "current": "目前角色",
+                    "own": "我的角色",
+                    "favorite": "收藏角色"
+                }
+            },
             "tile": {
                 "vr": "VR",
                 "desktop": "桌面模式",

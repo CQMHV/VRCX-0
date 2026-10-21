@@ -5080,6 +5080,18 @@
                 "self_invite": "Auto-convite"
             },
             "subtitle_fallback": "Instância do VRChat",
+            "avatar_switch": {
+                "toggle": "Trocar de avatar antes de entrar",
+                "placeholder": "Escolha um avatar",
+                "search_placeholder": "Buscar avatares",
+                "hint": "O avatar é trocado pela API do VRChat. O tempo para aplicar depende do VRChat, então pode não ser imediato.",
+                "timeout": "O servidor do VRChat não respondeu à troca de avatar. A entrada foi pausada.",
+                "group": {
+                    "current": "Avatar atual",
+                    "own": "Meus Avatares",
+                    "favorite": "Avatares Favoritos"
+                }
+            },
             "tile": {
                 "vr": "VR",
                 "desktop": "Desktop",

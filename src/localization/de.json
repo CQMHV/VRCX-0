@@ -5080,6 +5080,18 @@
                 "self_invite": "Selbsteinladung"
             },
             "subtitle_fallback": "VRChat-Instanz",
+            "avatar_switch": {
+                "toggle": "Avatar vor dem Beitreten wechseln",
+                "placeholder": "Avatar auswählen",
+                "search_placeholder": "Avatare durchsuchen",
+                "hint": "Der Avatar wird über die VRChat-API gewechselt. Wie schnell das greift, hängt von VRChat ab, daher wirkt der Wechsel nicht unbedingt sofort.",
+                "timeout": "Der VRChat-Server hat auf den Avatarwechsel nicht geantwortet. Das Beitreten wurde angehalten.",
+                "group": {
+                    "current": "Aktueller Avatar",
+                    "own": "Meine Avatare",
+                    "favorite": "Favoriten-Avatare"
+                }
+            },
             "tile": {
                 "vr": "VR",
                 "desktop": "Desktop",

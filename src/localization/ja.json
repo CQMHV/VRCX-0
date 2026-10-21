@@ -5118,6 +5118,18 @@
                 "self_invite": "自分への招待"
             },
             "subtitle_fallback": "VRChat のインスタンス",
+            "avatar_switch": {
+                "toggle": "入室前にアバターを切り替える",
+                "placeholder": "アバターを選択",
+                "search_placeholder": "アバターを検索",
+                "hint": "アバターは VRChat API 経由で切り替えます。反映までの時間は VRChat 次第のため、すぐに切り替わらない場合があります。",
+                "timeout": "VRChat サーバーがアバターの切り替えに応答しなかったため、入室を中断しました",
+                "group": {
+                    "current": "現在のアバター",
+                    "own": "自分のアバター",
+                    "favorite": "お気に入りのアバター"
+                }
+            },
             "tile": {
                 "vr": "VR",
                 "desktop": "デスクトップ",

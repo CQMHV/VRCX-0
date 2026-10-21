@@ -5118,6 +5118,18 @@
                 "self_invite": "自我邀请"
             },
             "subtitle_fallback": "VRChat 房间",
+            "avatar_switch": {
+                "toggle": "进房前切换模型",
+                "placeholder": "选择模型",
+                "search_placeholder": "搜索模型",
+                "hint": "模型通过 VRChat API 切换，生效时间取决于 VRChat 服务器，不保证立即生效。",
+                "timeout": "VRChat 服务器未响应模型切换，已暂停进房",
+                "group": {
+                    "current": "当前模型",
+                    "own": "我的模型",
+                    "favorite": "模型收藏"
+                }
+            },
             "tile": {
                 "vr": "VR",
                 "desktop": "桌面模式",

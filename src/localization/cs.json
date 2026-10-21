@@ -5104,6 +5104,18 @@
                 "self_invite": "Pozvat sám sebe"
             },
             "subtitle_fallback": "Instance VRChatu",
+            "avatar_switch": {
+                "toggle": "Před připojením změnit avatara",
+                "placeholder": "Vyberte avatara",
+                "search_placeholder": "Hledat avatary",
+                "hint": "Avatar se mění přes VRChat API. Jak rychle se změna projeví, záleží na VRChatu, takže nemusí být okamžitá.",
+                "timeout": "Server VRChatu na změnu avatara neodpověděl. Připojení bylo pozastaveno.",
+                "group": {
+                    "current": "Aktuální avatar",
+                    "own": "Moji avataři",
+                    "favorite": "Oblíbení avataři"
+                }
+            },
             "tile": {
                 "vr": "VR",
                 "desktop": "Desktop",

@@ -5128,6 +5128,18 @@
                 "self_invite": "Self Invite"
             },
             "subtitle_fallback": "VRChat instance",
+            "avatar_switch": {
+                "toggle": "Switch avatar before joining",
+                "placeholder": "Choose an avatar",
+                "search_placeholder": "Search avatars",
+                "hint": "Avatars are switched through the VRChat API. How long it takes to apply depends on VRChat, so it may not take effect right away.",
+                "timeout": "The VRChat server didn't respond to the avatar switch. Joining was paused.",
+                "group": {
+                    "current": "Current Avatar",
+                    "own": "My Avatars",
+                    "favorite": "Favorite Avatars"
+                }
+            },
             "tile": {
                 "vr": "VR",
                 "desktop": "Desktop",
