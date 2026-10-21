@@ -108,9 +108,55 @@ pub fn instance_close_input(
     ))
 }
 
+pub fn instance_calendar_link_input(
+    endpoint: String,
+    location: String,
+    calendar_entry_id: Option<String>,
+) -> Result<(String, HttpApiRequestInput), HttpApiError> {
+    let location = require_text(location, "VrchatInstanceCalendarLink requires location.")?;
+    let calendar_entry_id = calendar_entry_id
+        .map(|value| value.trim().to_string())
+        .filter(|value| !value.is_empty());
+    Ok((
+        location.clone(),
+        api_input(
+            endpoint,
+            "PUT",
+            format!("instances/{location}"),
+            json!({ "calendarEntryId": calendar_entry_id }),
+        ),
+    ))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn calendar_link_sets_or_clears_the_instance_calendar_entry() {
+        let (_, link) = instance_calendar_link_input(
+            "endpoint".into(),
+            "wrld_1:123~group(grp_1)".into(),
+            Some(" gcal_1 ".into()),
+        )
+        .unwrap();
+        assert_eq!(link.method.as_deref(), Some("PUT"));
+        assert_eq!(
+            link.path.as_deref(),
+            Some("instances/wrld_1:123~group(grp_1)")
+        );
+        assert_eq!(
+            link.body.as_json(),
+            Some(&json!({ "calendarEntryId": "gcal_1" }))
+        );
+
+        let (_, unlink) =
+            instance_calendar_link_input("endpoint".into(), "wrld_1:123".into(), None).unwrap();
+        assert_eq!(
+            unlink.body.as_json(),
+            Some(&json!({ "calendarEntryId": null }))
+        );
+    }
 
     fn public_instance() -> InstanceCreateRequest {
         InstanceCreateRequest {

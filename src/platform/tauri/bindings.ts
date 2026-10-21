@@ -1785,6 +1785,47 @@ const generatedCommands = {
     ): Promise<HttpApiExecuteResponse> {
         return await TAURI_INVOKE('app__vrchat_group_unblock', { input });
     },
+    async appVrchatGroupMembershipListGet(
+        input: VrchatGroupMembershipListInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_group_membership_list_get', {
+            input
+        });
+    },
+    async appVrchatGroupInviteDecline(
+        input: VrchatGroupUserInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_group_invite_decline', {
+            input
+        });
+    },
+    async appVrchatGroupRolesGet(
+        input: VrchatGroupIdInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_group_roles_get', { input });
+    },
+    async appVrchatGroupPermissionsGet(
+        input: VrchatGroupIdInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_group_permissions_get', {
+            input
+        });
+    },
+    async appVrchatGroupRoleCreate(
+        input: VrchatGroupRoleCreateInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_group_role_create', { input });
+    },
+    async appVrchatGroupRoleUpdate(
+        input: VrchatGroupRoleUpdateInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_group_role_update', { input });
+    },
+    async appVrchatGroupRoleDelete(
+        input: VrchatGroupRoleInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_group_role_delete', { input });
+    },
     async appVrchatGroupUserGroupsGet(
         input: VrchatGroupUserGroupsInput
     ): Promise<HttpApiExecuteResponse> {
@@ -1803,6 +1844,13 @@ const generatedCommands = {
         input: VrchatInstanceCloseInput
     ): Promise<HttpApiExecuteResponse> {
         return await TAURI_INVOKE('app__vrchat_instance_close', { input });
+    },
+    async appVrchatInstanceCalendarLinkSet(
+        input: VrchatInstanceCalendarLinkInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_instance_calendar_link_set', {
+            input
+        });
     },
     async appVrchatInstanceCreate(
         input: VrchatInstanceCreateInput
@@ -2158,6 +2206,27 @@ const generatedCommands = {
         input: VrchatToolsFollowGroupEventInput
     ): Promise<HttpApiExecuteResponse> {
         return await TAURI_INVOKE('app__vrchat_tools_group_event_follow', {
+            input
+        });
+    },
+    async appVrchatToolsGroupEventCreate(
+        input: VrchatToolsGroupEventCreateInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_tools_group_event_create', {
+            input
+        });
+    },
+    async appVrchatToolsGroupEventUpdate(
+        input: VrchatToolsGroupEventUpdateInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_tools_group_event_update', {
+            input
+        });
+    },
+    async appVrchatToolsGroupEventDelete(
+        input: VrchatToolsCalendarEventInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_tools_group_event_delete', {
             input
         });
     },
@@ -5047,7 +5116,37 @@ export type GroupBanImportStatus = {
     finishedAt: string | null;
     lastError: string | null;
 };
+export type GroupCalendarEventAccessType = 'group' | 'public';
+export type GroupCalendarEventMutation = {
+    title: string;
+    description: string;
+    startsAt: string;
+    endsAt: string;
+    category: string;
+    accessType: GroupCalendarEventAccessType;
+    tags?: string[];
+    languages?: string[];
+    platforms?: string[];
+    roleIds?: string[];
+    imageId: string | null;
+    sendCreationNotification?: boolean;
+    hostEarlyJoinMinutes: number;
+    guestEarlyJoinMinutes: number;
+    closeInstanceAfterEndMinutes: number;
+    recurrence?: GroupCalendarRecurrence | null;
+};
 export type GroupCalendarInput = { date: string; includeFeatured?: boolean };
+export type GroupCalendarRecurrence = {
+    frequency: GroupCalendarRecurrenceFrequency;
+    interval: number;
+    timezone: string;
+    daysOfWeek: string[];
+    end?: GroupCalendarRecurrenceEnd | null;
+};
+export type GroupCalendarRecurrenceEnd =
+    | { type: 'afterOccurrences'; count: number }
+    | { type: 'afterDate'; date: string };
+export type GroupCalendarRecurrenceFrequency = 'weekly' | 'monthly' | 'yearly';
 export type GroupCalendarSnapshot = {
     events: RawJson[];
     followingEventIds: string[];
@@ -5096,6 +5195,7 @@ export type GroupMembershipBatchResult = {
     items: GroupMembershipBatchItemResult[];
     lastError: string | null;
 };
+export type GroupMembershipListStatus = 'invited' | 'requested' | 'userblocked';
 export type GroupModerationBatchAction =
     | { type: 'kick' }
     | { type: 'ban' }
@@ -5200,6 +5300,16 @@ export type GroupQuickModerationOutput = {
     kickGroups: GroupQuickModerationGroup[];
     banGroups: GroupQuickModerationGroup[];
     membershipErrorCount: number;
+};
+export type GroupRoleMutation = {
+    name?: string | null;
+    description?: string | null;
+    isSelfAssignable?: boolean | null;
+    isAddedOnJoin?: boolean | null;
+    requiresTwoFactor?: boolean | null;
+    requiresPurchase?: boolean | null;
+    permissions?: string[] | null;
+    order?: number | null;
 };
 export type GroupSearchParams = {
     query?: string | null;
@@ -6969,6 +7079,10 @@ export type VrchatGroupMembersSearchInput = {
     offset?: number;
     query?: string;
 };
+export type VrchatGroupMembershipListInput = {
+    userId?: string;
+    status: GroupMembershipListStatus;
+};
 export type VrchatGroupPagedInput = {
     groupId?: string;
     n?: number;
@@ -6992,12 +7106,26 @@ export type VrchatGroupRepresentationInput = {
     groupId?: string;
     isRepresenting?: boolean;
 };
+export type VrchatGroupRoleCreateInput = {
+    groupId?: string;
+    params: GroupRoleMutation;
+};
+export type VrchatGroupRoleInput = { groupId?: string; roleId?: string };
+export type VrchatGroupRoleUpdateInput = {
+    groupId?: string;
+    roleId?: string;
+    params: GroupRoleMutation;
+};
 export type VrchatGroupUpdateInput = {
     groupId?: string;
     params: GroupProfileUpdate;
 };
 export type VrchatGroupUserGroupsInput = { userId?: string };
 export type VrchatGroupUserInput = { groupId?: string; userId?: string };
+export type VrchatInstanceCalendarLinkInput = {
+    location: string;
+    calendarEntryId: string | null;
+};
 export type VrchatInstanceCloseInput = {
     location?: string;
     hardClose?: boolean;
@@ -7153,6 +7281,15 @@ export type VrchatToolsFollowGroupEventInput = {
     groupId?: string;
     eventId?: string;
     isFollowing?: boolean;
+};
+export type VrchatToolsGroupEventCreateInput = {
+    groupId: string;
+    event: GroupCalendarEventMutation;
+};
+export type VrchatToolsGroupEventUpdateInput = {
+    groupId: string;
+    eventId: string;
+    event: GroupCalendarEventMutation;
 };
 export type VrchatToolsInviteMessageEditInput = {
     currentUserId?: string;

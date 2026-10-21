@@ -12,8 +12,8 @@ use vrcx_0_vrchat_client::avatars::{
 use vrcx_0_vrchat_client::favorites::{favorite_groups_get_input, favorite_worlds_get_input};
 use vrcx_0_vrchat_client::friends::friend_status_get_input;
 use vrcx_0_vrchat_client::instances::{
-    instance_close_input, instance_create_input, instance_get_input, instance_self_invite_input,
-    instance_short_name_get_input, InstanceCreateRequest,
+    instance_calendar_link_input, instance_close_input, instance_create_input, instance_get_input,
+    instance_self_invite_input, instance_short_name_get_input, InstanceCreateRequest,
 };
 use vrcx_0_vrchat_client::media::{
     asset_upload_input, avatar_gallery_image_upload_input, file_delete_input, files_get_input,
@@ -36,9 +36,11 @@ use vrcx_0_vrchat_client::search::{
 };
 use vrcx_0_vrchat_client::tools::{
     following_calendars_get_input, group_calendar_get_input, group_calendar_ics_get_input,
-    group_event_follow_input, invite_message_edit_input, invite_messages_get_input,
+    group_event_create_input, group_event_delete_input, group_event_follow_input,
+    group_event_update_input, invite_message_edit_input, invite_messages_get_input,
     moderation_report_delete_input, moderation_reports_get_input, user_note_save_input,
-    user_report_input, CalendarListParams, InviteMessageType, ModerationReportType,
+    user_report_input, CalendarListParams, GroupCalendarEventMutation, InviteMessageType,
+    ModerationReportType,
 };
 use vrcx_0_vrchat_client::users::{profile_get_input, user_represented_group_get_input};
 
@@ -324,6 +326,25 @@ impl DesktopVrchatRemoteFacade {
         .await
     }
 
+    pub async fn instance_calendar_link(
+        &self,
+        location: String,
+        calendar_entry_id: Option<String>,
+    ) -> Result<VrchatApiResponse> {
+        let (location, request) = instance_calendar_link_input(
+            VRCHAT_API_DEFAULT_ENDPOINT.into(),
+            location,
+            calendar_entry_id,
+        )?;
+        self.execute(
+            "app__vrchat_instance_calendar_link_set",
+            format!("Updating the calendar event of instance {location}."),
+            request,
+            VrchatScope::Vrchat,
+        )
+        .await
+    }
+
     pub async fn search_worlds(
         &self,
         params: WorldSearchParams,
@@ -426,6 +447,59 @@ impl DesktopVrchatRemoteFacade {
         self.execute(
             "app__vrchat_tools_group_event_follow",
             format!("Updating follow state for event {event_id}."),
+            request,
+            VrchatScope::Vrchat,
+        )
+        .await
+    }
+
+    pub async fn create_group_event(
+        &self,
+        group_id: String,
+        event: GroupCalendarEventMutation,
+    ) -> Result<VrchatApiResponse> {
+        let (group_id, request) =
+            group_event_create_input(VRCHAT_API_DEFAULT_ENDPOINT.into(), group_id, event)?;
+        self.execute(
+            "app__vrchat_tools_group_event_create",
+            format!("Creating an event for group {group_id}."),
+            request,
+            VrchatScope::Vrchat,
+        )
+        .await
+    }
+
+    pub async fn update_group_event(
+        &self,
+        group_id: String,
+        event_id: String,
+        event: GroupCalendarEventMutation,
+    ) -> Result<VrchatApiResponse> {
+        let (event_id, request) = group_event_update_input(
+            VRCHAT_API_DEFAULT_ENDPOINT.into(),
+            group_id,
+            event_id,
+            event,
+        )?;
+        self.execute(
+            "app__vrchat_tools_group_event_update",
+            format!("Updating group event {event_id}."),
+            request,
+            VrchatScope::Vrchat,
+        )
+        .await
+    }
+
+    pub async fn delete_group_event(
+        &self,
+        group_id: String,
+        event_id: String,
+    ) -> Result<VrchatApiResponse> {
+        let (event_id, request) =
+            group_event_delete_input(VRCHAT_API_DEFAULT_ENDPOINT.into(), group_id, event_id)?;
+        self.execute(
+            "app__vrchat_tools_group_event_delete",
+            format!("Deleting group event {event_id}."),
             request,
             VrchatScope::Vrchat,
         )

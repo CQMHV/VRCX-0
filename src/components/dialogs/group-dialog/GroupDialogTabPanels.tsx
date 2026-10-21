@@ -210,6 +210,7 @@ export function GroupDialogTabPanels({
         activeTab,
         announcement,
         bannerUrl,
+        canManageCalendar,
         canManagePosts,
         currentUserId,
         filteredPosts,
@@ -233,7 +234,10 @@ export function GroupDialogTabPanels({
     } = model;
     const {
         onChangeTab,
+        onCreateEvent,
+        onDeleteEvent,
         onDeletePost,
+        onEditEvent,
         onEditPost,
         onExportMembers,
         onLoadMoreMembers,
@@ -531,8 +535,12 @@ export function GroupDialogTabPanels({
                     status={groupEventsStatus}
                     error={groupEventsError}
                     group={group}
+                    canManage={canManageCalendar}
                     onRefresh={onRefreshEvents}
                     onToggleFollow={onToggleEventFollow}
+                    onCreate={onCreateEvent}
+                    onEdit={onEditEvent}
+                    onDelete={onDeleteEvent}
                 />
             </EntityDialogTabContent>
             <EntityDialogTabContent

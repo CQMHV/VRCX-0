@@ -10,7 +10,9 @@ import {
     type LocationObjectRecord
 } from '@/components/location/locationModel';
 import { instanceLocationKey } from '@/domain/presence/instancePresence';
+import { commands } from '@/platform/tauri/bindings';
 import vrchatInstanceRepository from '@/repositories/vrchatInstanceRepository';
+import { unwrapVrchatResponse } from '@/repositories/vrchatRequest';
 import { tryOpenLaunchLocation } from '@/services/directAccessService';
 import { recordLocationHintsFromInstances } from '@/services/domainIngestionService';
 import { selfInviteToInstance } from '@/services/launchService';
@@ -39,6 +41,7 @@ export type InstanceActionRecord = Record<string, unknown> & {
     world?: { capacity?: number | null };
     platforms?: Record<string, number>;
     ownerId?: string | null;
+    calendarEntryId?: string | null;
     closedAt?: string | null;
     gameServerVersion?: number | null;
     queueEnabled?: boolean;
@@ -128,6 +131,18 @@ function canCloseInstance(
     );
 }
 
+function canLinkInstanceCalendarEvent(instance: InstanceActionRecord | null) {
+    const ownerId = normalizeLocationText(instance?.ownerId);
+    if (!hasGroupIdPrefix(ownerId)) {
+        return false;
+    }
+    return [instance?.group, instance?.owner].some(
+        (group) =>
+            hasGroupPermission(group, 'group-instance-manage') &&
+            hasGroupPermission(group, 'group-instance-calendar-link')
+    );
+}
+
 export interface InstanceActionBarControllerInput {
     target: LocationObjectRecord | null;
     instance: unknown;
@@ -185,6 +200,13 @@ export function useInstanceActionBarController({
         instanceInfo,
         currentUserId
     );
+    const canLinkCalendarEvent = canLinkInstanceCalendarEvent(instanceInfo);
+    const calendarEntryId = normalizeLocationText(
+        instanceInfo?.calendarEntryId
+    );
+    const calendarGroupId = canLinkCalendarEvent
+        ? normalizeLocationText(instanceInfo?.ownerId)
+        : '';
     const activeContextRef = useRef({
         endpoint,
         location: actionTarget.instanceLocation
@@ -350,6 +372,51 @@ export function useInstanceActionBarController({
         }
     }
 
+    async function setCalendarLink(eventId: string | null) {
+        const requestLocation = actionTarget.instanceLocation;
+        const requestEndpoint = endpoint;
+        if (!requestLocation || busy) {
+            return false;
+        }
+        setBusy('calendar-link');
+        try {
+            const response = unwrapVrchatResponse<unknown>(
+                await commands.appVrchatInstanceCalendarLinkSet({
+                    location: requestLocation,
+                    calendarEntryId: eventId
+                }),
+                `instances/${requestLocation}`
+            );
+            if (
+                activeContextRef.current.location === requestLocation &&
+                activeContextRef.current.endpoint === requestEndpoint &&
+                isInstanceActionRecord(response.json)
+            ) {
+                setInstanceInfo(resolveInstanceSource(response.json));
+            }
+            toast.add({
+                type: 'success',
+                title: eventId
+                    ? t('component.instance_action_bar.calendar_link.linked')
+                    : t('component.instance_action_bar.calendar_link.unlinked')
+            });
+            return true;
+        } catch (error) {
+            toast.add({
+                type: 'error',
+                title:
+                    error instanceof Error
+                        ? error.message
+                        : t(
+                              'component.instance_action_bar.calendar_link.failed'
+                          )
+            });
+            return false;
+        } finally {
+            setBusy('');
+        }
+    }
+
     async function closeInstance() {
         if (!actionTarget.instanceLocation || busy) {
             return;
@@ -406,7 +473,10 @@ export function useInstanceActionBarController({
     return {
         actionTarget,
         busy,
+        calendarEntryId,
+        calendarGroupId,
         canCloseCurrentInstance,
+        canLinkCalendarEvent,
         canOpenInstanceInGame,
         canShowLaunchAction,
         capacity,
@@ -421,6 +491,7 @@ export function useInstanceActionBarController({
         queueSize,
         refreshInstance,
         resolvedUserCount,
+        setCalendarLink,
         selfInvite
     };
 }

@@ -327,6 +327,40 @@ describe('InstanceActionBar', () => {
         });
     });
 
+    it('offers event linking only to group managers who may link calendar events', () => {
+        const groupInstance = (permissions: string[]) =>
+            renderActionBar({
+                target: { location: 'wrld_test:12345~group(grp_team)' },
+                instance: {
+                    ownerId: 'grp_team',
+                    group: { myMember: { permissions } }
+                },
+                showLaunch: false,
+                showInvite: false
+            });
+        const linkLabel =
+            'aria-label="component.instance_action_bar.calendar_link.header"';
+
+        expect(
+            groupInstance([
+                'group-instance-manage',
+                'group-instance-calendar-link'
+            ])
+        ).toContain(linkLabel);
+        expect(groupInstance(['group-instance-manage'])).not.toContain(
+            linkLabel
+        );
+        expect(
+            renderActionBar({
+                target: { location: 'wrld_test:12345' },
+                instance: {
+                    ownerId: 'usr_self',
+                    group: { myMember: { permissions: ['*'] } }
+                }
+            })
+        ).not.toContain(linkLabel);
+    });
+
     it('can show instance info while keeping action tooltips disabled', () => {
         render(
             <InstanceActionBar

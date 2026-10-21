@@ -8,8 +8,8 @@ use crate::state::AppState;
 use vrcx_0_application_core::vrchat_api::VrchatApiResponse;
 
 use super::types::{
-    VrchatInstanceCloseInput, VrchatInstanceCreateInput, VrchatInstanceIdentityInput,
-    VrchatInstanceSelfInviteInput, VrchatInstanceShortNameInput,
+    VrchatInstanceCalendarLinkInput, VrchatInstanceCloseInput, VrchatInstanceCreateInput,
+    VrchatInstanceIdentityInput, VrchatInstanceSelfInviteInput, VrchatInstanceShortNameInput,
 };
 
 #[tauri::command]
@@ -78,6 +78,20 @@ pub async fn app__vrchat_instance_join(
         .runtime_host()
         .instance_launch()
         .join(input)
+        .await
+        .map_err(AppError::from)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn app__vrchat_instance_calendar_link_set(
+    state: State<'_, AppState>,
+    input: VrchatInstanceCalendarLinkInput,
+) -> Result<VrchatApiResponse, AppError> {
+    state
+        .runtime_host()
+        .vrchat_remote()
+        .instance_calendar_link(input.location, input.calendar_entry_id)
         .await
         .map_err(AppError::from)
 }

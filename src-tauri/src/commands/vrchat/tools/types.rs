@@ -1,5 +1,7 @@
 use serde::Deserialize;
-use vrcx_0_application::remote::{CalendarListParams, InviteMessageType, ModerationReportType};
+use vrcx_0_application::remote::{
+    CalendarListParams, GroupCalendarEventMutation, InviteMessageType, ModerationReportType,
+};
 
 #[derive(Debug, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -22,6 +24,21 @@ pub struct VrchatToolsCalendarEventInput {
     pub(crate) group_id: String,
     #[serde(default)]
     pub(crate) event_id: String,
+}
+
+#[derive(Debug, Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct VrchatToolsGroupEventCreateInput {
+    pub(crate) group_id: String,
+    pub(crate) event: GroupCalendarEventMutation,
+}
+
+#[derive(Debug, Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct VrchatToolsGroupEventUpdateInput {
+    pub(crate) group_id: String,
+    pub(crate) event_id: String,
+    pub(crate) event: GroupCalendarEventMutation,
 }
 
 #[derive(Debug, Deserialize, specta::Type)]

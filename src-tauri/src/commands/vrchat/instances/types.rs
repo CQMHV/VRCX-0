@@ -40,6 +40,13 @@ pub struct VrchatInstanceSelfInviteInput {
 
 #[derive(Debug, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct VrchatInstanceCalendarLinkInput {
+    pub(crate) location: String,
+    pub(crate) calendar_entry_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct VrchatInstanceCloseInput {
     #[serde(default)]
     pub(crate) location: String,

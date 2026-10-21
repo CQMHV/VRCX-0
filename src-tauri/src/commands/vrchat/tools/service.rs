@@ -8,7 +8,8 @@ use vrcx_0_application_core::vrchat_api::VrchatApiResponse;
 
 use super::types::{
     VrchatToolsCalendarEventInput, VrchatToolsCalendarGroupInput, VrchatToolsCalendarListInput,
-    VrchatToolsFollowGroupEventInput, VrchatToolsInviteMessageEditInput,
+    VrchatToolsFollowGroupEventInput, VrchatToolsGroupEventCreateInput,
+    VrchatToolsGroupEventUpdateInput, VrchatToolsInviteMessageEditInput,
     VrchatToolsInviteMessagesInput, VrchatToolsModerationReportDeleteInput,
     VrchatToolsModerationReportsInput, VrchatToolsUserNoteSaveInput, VrchatToolsUserReportInput,
 };
@@ -51,6 +52,48 @@ pub async fn app__vrchat_tools_group_event_follow(
         .runtime_host()
         .vrchat_remote()
         .follow_group_event(input.group_id, input.event_id, input.is_following)
+        .await
+        .map_err(AppError::from)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn app__vrchat_tools_group_event_create(
+    state: State<'_, AppState>,
+    input: VrchatToolsGroupEventCreateInput,
+) -> Result<VrchatApiResponse, AppError> {
+    state
+        .runtime_host()
+        .vrchat_remote()
+        .create_group_event(input.group_id, input.event)
+        .await
+        .map_err(AppError::from)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn app__vrchat_tools_group_event_update(
+    state: State<'_, AppState>,
+    input: VrchatToolsGroupEventUpdateInput,
+) -> Result<VrchatApiResponse, AppError> {
+    state
+        .runtime_host()
+        .vrchat_remote()
+        .update_group_event(input.group_id, input.event_id, input.event)
+        .await
+        .map_err(AppError::from)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn app__vrchat_tools_group_event_delete(
+    state: State<'_, AppState>,
+    input: VrchatToolsCalendarEventInput,
+) -> Result<VrchatApiResponse, AppError> {
+    state
+        .runtime_host()
+        .vrchat_remote()
+        .delete_group_event(input.group_id, input.event_id)
         .await
         .map_err(AppError::from)
 }
