@@ -8,6 +8,7 @@ import { resolveObservedPlayerUserIds } from '@/domain/friends/sameInstanceFrien
 import { recordKnownUser } from '@/services/domainIngestionService';
 import { userImage } from '@/services/entityMediaService';
 import { subscribeRecentActions } from '@/services/recentActionService';
+import { recordToolOpen } from '@/services/telemetry/telemetryToolUsage';
 import { dialogTargetKey } from '@/services/userDialogSessionCacheService';
 import { isRecord } from '@/shared/utils/record';
 import { useDialogStore } from '@/state/dialogStore';
@@ -544,6 +545,7 @@ export function UserDialogContent({
                     targetImageUrl: imageUrl,
                     onOpenChange: setGroupQuickModerationOpen,
                     onDetailedManagement: (groupId: string) => {
+                        recordToolOpen('group-moderation');
                         closeDialog();
                         navigate(`/tools/group-moderation/${groupId}`);
                     }

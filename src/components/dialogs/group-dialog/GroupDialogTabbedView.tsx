@@ -18,6 +18,7 @@ import {
     convertFileUrlToImageUrl,
     openExternalLink
 } from '@/services/entityMediaService';
+import { recordToolOpen } from '@/services/telemetry/telemetryToolUsage';
 import { toast } from '@/services/toastService';
 import { vrchatGroupUrl } from '@/shared/constants/vrchatWebUrls';
 import { useDialogStore } from '@/state/dialogStore';
@@ -706,6 +707,7 @@ export function GroupDialogTabbedView({
         onLeave,
         onOpenGroupPage: () => openExternalLink(groupUrl),
         onOpenModeration: () => {
+            recordToolOpen('group-moderation');
             closeDialog();
             navigate(`/tools/group-moderation/${group.id}`);
         },
