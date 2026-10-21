@@ -382,7 +382,7 @@ describe('InstanceActionBar', () => {
         expect(render({ ownerId: 'usr_other' })).not.toContain(renameLabel);
     });
 
-    it('shows the custom instance name and the linked event marker', () => {
+    it('shows the linked event marker', () => {
         const html = renderActionBar({
             target: { location: 'wrld_test:12345~group(grp_team)' },
             instance: {
@@ -394,7 +394,6 @@ describe('InstanceActionBar', () => {
             showInvite: false
         });
 
-        expect(html).toContain('Movie night');
         expect(html).toContain(
             'aria-label="component.instance_action_bar.calendar_event"'
         );

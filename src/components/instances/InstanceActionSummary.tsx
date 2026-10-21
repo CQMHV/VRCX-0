@@ -1,4 +1,4 @@
-import { TagIcon, UsersRoundIcon, XCircleIcon } from 'lucide-react';
+import { UsersRoundIcon, XCircleIcon } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -190,8 +190,12 @@ export function InstanceActionSummary({
                 </span>
             ) : null}
             {model.hasAgeGate ? (
-                <Badge className="bg-amber-500/15 text-amber-300">
-                    {t('dialog.new_instance.ageGate')}
+                <Badge
+                    className="h-4 bg-amber-500/15 px-1 text-[10px] text-amber-300"
+                    title={t('dialog.new_instance.ageGate')}
+                    aria-label={t('dialog.new_instance.ageGate')}
+                >
+                    18+
                 </Badge>
             ) : null}
         </>
@@ -248,16 +252,8 @@ export function InstanceActionSummary({
         ) : null;
 
     const instance = model.instance;
-    const displayName = text(instance?.displayName);
     const calendarEntryId = text(instance?.calendarEntryId);
     const calendarGroupId = text(instance?.ownerId);
-    const instanceNameLabel =
-        options.show && displayName ? (
-            <span className="text-muted-foreground inline-flex max-w-40 min-w-0 items-center gap-0.5 text-xs">
-                <TagIcon className="size-3.5 shrink-0" />
-                <span className="truncate">{displayName}</span>
-            </span>
-        ) : null;
     const calendarMarker =
         options.show && calendarEntryId && calendarGroupId ? (
             <span className="text-muted-foreground inline-flex">
@@ -270,18 +266,12 @@ export function InstanceActionSummary({
             </span>
         ) : null;
 
-    if (
-        !instanceInfoSummary &&
-        !closeInstanceButton &&
-        !instanceNameLabel &&
-        !calendarMarker
-    ) {
+    if (!instanceInfoSummary && !closeInstanceButton && !calendarMarker) {
         return null;
     }
 
     return (
         <div className="inline-flex items-center gap-1">
-            {instanceNameLabel}
             {calendarMarker}
             {options.order === 'markers-first'
                 ? closeInstanceButton

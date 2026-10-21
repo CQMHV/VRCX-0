@@ -5,7 +5,6 @@ import { CurrentInstanceBadge } from '@/components/instances/CurrentInstanceBadg
 import { InstanceActionBar } from '@/components/instances/InstanceActionBar';
 import { InstanceVisitedBadge } from '@/components/instances/InstanceVisitedBadge';
 import { normalizeLocationText } from '@/components/location/locationModel';
-import { LocationWorld } from '@/components/LocationWorld';
 import { ScreenshotThumbnailCard } from '@/components/media/ScreenshotThumbnailCard';
 import { useScreenshotGalleryGrid } from '@/components/media/useScreenshotGalleryGrid';
 import { formatDateFilterOrFallback, timeToText } from '@/lib/dateTime';
@@ -45,6 +44,7 @@ import {
     platformDisplayName,
     resolveLaunchLocation
 } from './WorldDialogViewParts';
+import { WorldInstanceRowTitle } from './WorldInstanceRowTitle';
 import { WorldSidebarPinButton } from './WorldSidebarPinButton';
 
 const WORLD_DATE_FALLBACKS = {
@@ -295,41 +295,47 @@ export function WorldDialogTabPanels({
                                 >
                                     <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                                         <div className="flex min-w-0 flex-1 items-center gap-1.5">
-                                            <LocationWorld
-                                                className="min-w-0 text-sm"
-                                                locationObject={{
-                                                    ...record(instance.ref),
-                                                    ...instance,
-                                                    tag: location,
-                                                    location,
-                                                    shortName,
-                                                    launchToken
+                                            <WorldInstanceRowTitle
+                                                location={location}
+                                                displayName={normalizeLocationText(
+                                                    instanceRef.displayName ||
+                                                        instanceRecord.displayName
+                                                )}
+                                                languageSource={{
+                                                    ...instanceRef,
+                                                    ...instanceRecord
                                                 }}
-                                                currentUserId={currentUserId}
-                                                worldDialogShortName={
-                                                    worldDialogShortName
-                                                }
-                                                grouphint={
-                                                    normalizeLocationText(
-                                                        instanceRecord.groupName
-                                                    ) ||
-                                                    normalizeLocationText(
-                                                        instanceGroup.name
-                                                    )
-                                                }
-                                                playerCount={playerCount}
-                                                capacity={capacity}
-                                                showWorldName={false}
-                                                showPlayerSummary={false}
-                                                hint={
-                                                    world.name ||
-                                                    normalizeLocationText(
-                                                        instanceRecord.worldName
-                                                    ) ||
-                                                    normalizeLocationText(
-                                                        instanceWorld.name
-                                                    )
-                                                }
+                                                locationWorldProps={{
+                                                    locationObject: {
+                                                        ...record(instance.ref),
+                                                        ...instance,
+                                                        tag: location,
+                                                        location,
+                                                        shortName,
+                                                        launchToken
+                                                    },
+                                                    currentUserId,
+                                                    worldDialogShortName,
+                                                    grouphint:
+                                                        normalizeLocationText(
+                                                            instanceRecord.groupName
+                                                        ) ||
+                                                        normalizeLocationText(
+                                                            instanceGroup.name
+                                                        ),
+                                                    playerCount,
+                                                    capacity,
+                                                    showWorldName: false,
+                                                    showPlayerSummary: false,
+                                                    hint:
+                                                        world.name ||
+                                                        normalizeLocationText(
+                                                            instanceRecord.worldName
+                                                        ) ||
+                                                        normalizeLocationText(
+                                                            instanceWorld.name
+                                                        )
+                                                }}
                                             />
                                             {isClosed ? (
                                                 <Badge
