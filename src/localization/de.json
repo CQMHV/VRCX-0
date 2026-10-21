@@ -2469,7 +2469,8 @@
         "profile": {
             "game_info": {
                 "online_users": "Online-Nutzer",
-                "user_online": "{count} Nutzer online."
+                "user_online": "{count} Nutzer online.",
+                "instances_active": "{count} aktive Instanzen."
             },
             "config_json": "Konfigurations-JSON"
         },
@@ -4471,6 +4472,7 @@
             },
             "instances": {
                 "header": "Instanzen",
+                "closed": "Geschlossen",
                 "public_count": "Öffentlich {count}",
                 "private_count": "Privat {count}",
                 "capacity_count": "Kapazität {count} ({max})",
@@ -6049,6 +6051,7 @@
                 "android": "Android:",
                 "ios": "iOS:",
                 "game_version": "Spielversion",
+                "languages": "Sprachen:",
                 "instance_queuing_enabled": "Instanz-Warteschlange aktiviert",
                 "disabled_content": "Deaktivierte Inhalte",
                 "instance_closed": "Instanz geschlossen",
@@ -6693,6 +6696,13 @@
                 "linked": "Gruppen-Event dieser Instanz zugewiesen",
                 "unlinked": "Gruppen-Event von dieser Instanz entfernt",
                 "failed": "Das Gruppen-Event der Instanz konnte nicht aktualisiert werden"
+            },
+            "calendar_event": "Verknüpftes Gruppen-Event",
+            "rename": {
+                "header": "Instanz umbenennen",
+                "description": "Leer lassen, um den Namen zu entfernen.",
+                "renamed": "Instanz umbenannt",
+                "failed": "Instanz konnte nicht umbenannt werden"
             },
             "modal": {
                 "close_instance": "Instanz schließen?"

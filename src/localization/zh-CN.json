@@ -2467,7 +2467,8 @@
         "profile": {
             "game_info": {
                 "online_users": "总在线玩家",
-                "user_online": "现有 {count} 位玩家在线"
+                "user_online": "现有 {count} 位玩家在线",
+                "instances_active": "现有 {count} 个活跃实例"
             },
             "config_json": "API 端点返回的配置信息"
         },
@@ -4465,6 +4466,7 @@
             },
             "instances": {
                 "header": "房间",
+                "closed": "已关闭",
                 "public_count": "公开房间有{count}人在线",
                 "private_count": "私人房间有{count}人在线",
                 "capacity_count": "推荐人数: {count}人（上限:{max}人）",
@@ -6087,6 +6089,7 @@
                 "android": "Android：",
                 "ios": "iOS：",
                 "game_version": "游戏版本",
+                "languages": "语言：",
                 "instance_queuing_enabled": "房间已启用排队功能",
                 "disabled_content": "已禁用功能",
                 "instance_closed": "房间已关闭",
@@ -6739,6 +6742,13 @@
                 "linked": "已为此实例关联群组活动",
                 "unlinked": "已解除此实例的群组活动关联",
                 "failed": "更新实例的群组活动失败"
+            },
+            "calendar_event": "已关联群组活动",
+            "rename": {
+                "header": "重命名实例",
+                "description": "留空则清除名称。",
+                "renamed": "已重命名实例",
+                "failed": "重命名实例失败"
             },
             "modal": {
                 "close_instance": "关闭房间？"

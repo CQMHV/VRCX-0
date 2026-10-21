@@ -4,6 +4,7 @@ import {
     HistoryIcon,
     LogInIcon,
     MailIcon,
+    PencilIcon,
     RefreshCwIcon
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -125,6 +126,7 @@ export function InstanceActionBar({
         canCloseCurrentInstance,
         canLinkCalendarEvent,
         canOpenInstanceInGame,
+        canRename,
         canShowLaunchAction,
         capacity,
         closeInstance,
@@ -137,6 +139,7 @@ export function InstanceActionBar({
         openInstanceInGame,
         queueSize,
         refreshInstance,
+        renameInstance,
         resolvedUserCount,
         selfInvite,
         setCalendarLink
@@ -228,6 +231,19 @@ export function InstanceActionBar({
                     disabled={Boolean(busy)}
                     onClick={() => {
                         selfInvite();
+                    }}
+                />
+            ) : null}
+            {canRename && actionTarget.isRealInstanceLocation ? (
+                <ActionButton
+                    label={t('component.instance_action_bar.rename.header')}
+                    icon={PencilIcon}
+                    disableTooltip={disableTooltip}
+                    variant={actionVariant}
+                    loading={busy === 'rename'}
+                    disabled={Boolean(busy)}
+                    onClick={() => {
+                        void renameInstance();
                     }}
                 />
             ) : null}

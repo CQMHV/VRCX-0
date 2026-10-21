@@ -9,6 +9,7 @@ import { LocationWorld } from '@/components/LocationWorld';
 import { ScreenshotThumbnailCard } from '@/components/media/ScreenshotThumbnailCard';
 import { useScreenshotGalleryGrid } from '@/components/media/useScreenshotGalleryGrid';
 import { formatDateFilterOrFallback, timeToText } from '@/lib/dateTime';
+import { cn } from '@/lib/utils';
 import { openExternalLink } from '@/services/entityMediaService';
 import { isRecord } from '@/shared/utils/record';
 import { Badge } from '@/ui/shadcn/badge';
@@ -281,10 +282,16 @@ export function WorldDialogTabPanels({
                                 instanceRefWorld.capacity,
                                 world.capacity
                             );
+                            const isClosed = Boolean(
+                                instanceRef.closedAt || instanceRecord.closedAt
+                            );
                             return (
                                 <div
                                     key={instance.id}
-                                    className="bg-muted/10 hover:bg-muted/25 rounded-md border px-2.5 py-2 text-sm transition-colors"
+                                    className={cn(
+                                        'bg-muted/10 hover:bg-muted/25 rounded-md border px-2.5 py-2 text-sm transition-colors',
+                                        isClosed && 'opacity-60'
+                                    )}
                                 >
                                     <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                                         <div className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -324,6 +331,16 @@ export function WorldDialogTabPanels({
                                                     )
                                                 }
                                             />
+                                            {isClosed ? (
+                                                <Badge
+                                                    variant="outline"
+                                                    className="shrink-0"
+                                                >
+                                                    {t(
+                                                        'dialog.world.instances.closed'
+                                                    )}
+                                                </Badge>
+                                            ) : null}
                                             {instance.isCurrentInstance ? (
                                                 <CurrentInstanceBadge className="shrink-0" />
                                             ) : (

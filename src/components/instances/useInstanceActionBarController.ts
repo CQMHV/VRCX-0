@@ -24,6 +24,7 @@ import { useModalStore } from '@/state/modalStore';
 import { useRuntimeStore } from '@/state/runtimeStore';
 
 type GroupPermissionRecord = Record<string, unknown> & {
+    name?: string;
     myMember?: { permissions?: string[]; roleIds?: string[] };
     roles?: Array<{ id?: string; permissions?: string[] }>;
 };
@@ -41,6 +42,7 @@ export type InstanceActionRecord = Record<string, unknown> & {
     world?: { capacity?: number | null };
     platforms?: Record<string, number>;
     ownerId?: string | null;
+    displayName?: string | null;
     calendarEntryId?: string | null;
     closedAt?: string | null;
     gameServerVersion?: number | null;
@@ -143,6 +145,26 @@ function canLinkInstanceCalendarEvent(instance: InstanceActionRecord | null) {
     );
 }
 
+function canRenameInstance(
+    instance: InstanceActionRecord | null,
+    currentUserId: string | null,
+    isVrcPlusSupporter: boolean
+) {
+    const ownerId = normalizeLocationText(instance?.ownerId);
+    if (!ownerId || !currentUserId) {
+        return false;
+    }
+    if (ownerId === currentUserId) {
+        return isVrcPlusSupporter;
+    }
+    return (
+        hasGroupIdPrefix(ownerId) &&
+        [instance?.group, instance?.owner].some((group) =>
+            hasGroupPermission(group, 'group-instance-manage')
+        )
+    );
+}
+
 export interface InstanceActionBarControllerInput {
     target: LocationObjectRecord | null;
     instance: unknown;
@@ -171,6 +193,16 @@ export function useInstanceActionBarController({
         (state) => state.gameState.isGameRunning === true
     );
     const confirm = useModalStore((state) => state.confirm);
+    const prompt = useModalStore((state) => state.prompt);
+    const isVrcPlusSupporter = useRuntimeStore((state) =>
+        Boolean(
+            state.auth.currentUserSnapshot?.$isVRCPlus ||
+            state.auth.currentUserSnapshot?.tags?.includes?.(
+                'system_supporter'
+            ) ||
+            globalThis.$debug?.debugVrcPlus
+        )
+    );
     const showLaunchDialog = useLaunchStore((state) => state.showLaunchDialog);
     const [busy, setBusy] = useState('');
     const [instanceInfo, setInstanceInfo] = useState(() =>
@@ -201,6 +233,11 @@ export function useInstanceActionBarController({
         currentUserId
     );
     const canLinkCalendarEvent = canLinkInstanceCalendarEvent(instanceInfo);
+    const canRename = canRenameInstance(
+        instanceInfo,
+        currentUserId,
+        isVrcPlusSupporter
+    );
     const calendarEntryId = normalizeLocationText(
         instanceInfo?.calendarEntryId
     );
@@ -372,6 +409,61 @@ export function useInstanceActionBarController({
         }
     }
 
+    async function renameInstance() {
+        const requestLocation = actionTarget.instanceLocation;
+        const requestEndpoint = endpoint;
+        if (!requestLocation || busy) {
+            return;
+        }
+        const currentName = normalizeLocationText(instanceInfo?.displayName);
+        const result = await prompt({
+            title: t('component.instance_action_bar.rename.header'),
+            description: t('component.instance_action_bar.rename.description'),
+            inputValue: currentName,
+            confirmText: t('common.actions.save'),
+            cancelText: t('common.actions.cancel')
+        });
+        if (!result.ok) {
+            return;
+        }
+        const nextName =
+            typeof result.value === 'string' ? result.value.trim() : '';
+        if (nextName === currentName) {
+            return;
+        }
+        setBusy('rename');
+        try {
+            const response = unwrapVrchatResponse<unknown>(
+                await commands.appVrchatInstanceDisplayNameSet({
+                    location: requestLocation,
+                    displayName: nextName || null
+                }),
+                `instances/${requestLocation}`
+            );
+            if (
+                activeContextRef.current.location === requestLocation &&
+                activeContextRef.current.endpoint === requestEndpoint &&
+                isInstanceActionRecord(response.json)
+            ) {
+                setInstanceInfo(resolveInstanceSource(response.json));
+            }
+            toast.add({
+                type: 'success',
+                title: t('component.instance_action_bar.rename.renamed')
+            });
+        } catch (error) {
+            toast.add({
+                type: 'error',
+                title:
+                    error instanceof Error
+                        ? error.message
+                        : t('component.instance_action_bar.rename.failed')
+            });
+        } finally {
+            setBusy('');
+        }
+    }
+
     async function setCalendarLink(eventId: string | null) {
         const requestLocation = actionTarget.instanceLocation;
         const requestEndpoint = endpoint;
@@ -477,6 +569,7 @@ export function useInstanceActionBarController({
         calendarGroupId,
         canCloseCurrentInstance,
         canLinkCalendarEvent,
+        canRename,
         canOpenInstanceInGame,
         canShowLaunchAction,
         capacity,
@@ -490,6 +583,7 @@ export function useInstanceActionBarController({
         openInstanceInGame,
         queueSize,
         refreshInstance,
+        renameInstance,
         resolvedUserCount,
         setCalendarLink,
         selfInvite

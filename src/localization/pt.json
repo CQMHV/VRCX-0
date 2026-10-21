@@ -2469,7 +2469,8 @@
         "profile": {
             "game_info": {
                 "online_users": "Usuários Online",
-                "user_online": "{count} usuários online."
+                "user_online": "{count} usuários online.",
+                "instances_active": "{count} instâncias ativas."
             },
             "config_json": "JSON de configuração"
         },
@@ -4471,6 +4472,7 @@
             },
             "instances": {
                 "header": "Instâncias",
+                "closed": "Fechada",
                 "public_count": "Público {count}",
                 "private_count": "Privado {count}",
                 "capacity_count": "Capacidade {count} ({max})",
@@ -6049,6 +6051,7 @@
                 "android": "Android:",
                 "ios": "iOS:",
                 "game_version": "Versão do jogo",
+                "languages": "Idiomas:",
                 "instance_queuing_enabled": "Fila de instância ativada",
                 "disabled_content": "Conteúdo desativado",
                 "instance_closed": "Instância fechada",
@@ -6693,6 +6696,13 @@
                 "linked": "Evento do grupo atribuído a esta instância",
                 "unlinked": "Evento do grupo removido desta instância",
                 "failed": "Falha ao atualizar o evento do grupo da instância"
+            },
+            "calendar_event": "Evento do grupo vinculado",
+            "rename": {
+                "header": "Renomear instância",
+                "description": "Deixe em branco para remover o nome.",
+                "renamed": "Instância renomeada",
+                "failed": "Falha ao renomear a instância"
             },
             "modal": {
                 "close_instance": "Fechar instância?"

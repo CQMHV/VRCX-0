@@ -12,7 +12,8 @@ use vrcx_0_vrchat_client::avatars::{
 use vrcx_0_vrchat_client::favorites::{favorite_groups_get_input, favorite_worlds_get_input};
 use vrcx_0_vrchat_client::friends::friend_status_get_input;
 use vrcx_0_vrchat_client::instances::{
-    instance_calendar_link_input, instance_close_input, instance_create_input, instance_get_input,
+    instance_calendar_link_input, instance_close_input, instance_count_get_input,
+    instance_create_input, instance_display_name_input, instance_get_input,
     instance_self_invite_input, instance_short_name_get_input, InstanceCreateRequest,
 };
 use vrcx_0_vrchat_client::media::{
@@ -35,12 +36,12 @@ use vrcx_0_vrchat_client::search::{
     WorldSearchParams,
 };
 use vrcx_0_vrchat_client::tools::{
-    following_calendars_get_input, group_calendar_get_input, group_calendar_ics_get_input,
-    group_event_create_input, group_event_delete_input, group_event_follow_input,
-    group_event_update_input, invite_message_edit_input, invite_messages_get_input,
-    moderation_report_delete_input, moderation_reports_get_input, user_note_save_input,
-    user_report_input, CalendarListParams, GroupCalendarEventMutation, InviteMessageType,
-    ModerationReportType,
+    following_calendars_get_input, group_calendar_event_get_input, group_calendar_get_input,
+    group_calendar_ics_get_input, group_event_create_input, group_event_delete_input,
+    group_event_follow_input, group_event_update_input, invite_message_edit_input,
+    invite_messages_get_input, moderation_report_delete_input, moderation_reports_get_input,
+    user_note_save_input, user_report_input, CalendarListParams, GroupCalendarEventMutation,
+    InviteMessageType, ModerationReportType,
 };
 use vrcx_0_vrchat_client::users::{profile_get_input, user_represented_group_get_input};
 
@@ -345,6 +346,35 @@ impl DesktopVrchatRemoteFacade {
         .await
     }
 
+    pub async fn instance_display_name(
+        &self,
+        location: String,
+        display_name: Option<String>,
+    ) -> Result<VrchatApiResponse> {
+        let (location, request) = instance_display_name_input(
+            VRCHAT_API_DEFAULT_ENDPOINT.into(),
+            location,
+            display_name,
+        )?;
+        self.execute(
+            "app__vrchat_instance_display_name_set",
+            format!("Renaming instance {location}."),
+            request,
+            VrchatScope::Vrchat,
+        )
+        .await
+    }
+
+    pub async fn instance_count(&self) -> Result<VrchatApiResponse> {
+        self.execute(
+            "app__vrchat_instance_count_get",
+            "Getting the active instance count.",
+            instance_count_get_input(VRCHAT_API_DEFAULT_ENDPOINT.into()),
+            VrchatScope::Vrchat,
+        )
+        .await
+    }
+
     pub async fn search_worlds(
         &self,
         params: WorldSearchParams,
@@ -500,6 +530,22 @@ impl DesktopVrchatRemoteFacade {
         self.execute(
             "app__vrchat_tools_group_event_delete",
             format!("Deleting group event {event_id}."),
+            request,
+            VrchatScope::Vrchat,
+        )
+        .await
+    }
+
+    pub async fn group_calendar_event(
+        &self,
+        group_id: String,
+        event_id: String,
+    ) -> Result<VrchatApiResponse> {
+        let (event_id, request) =
+            group_calendar_event_get_input(VRCHAT_API_DEFAULT_ENDPOINT.into(), group_id, event_id)?;
+        self.execute(
+            "app__vrchat_tools_group_calendar_event_get",
+            format!("Getting group event {event_id}."),
             request,
             VrchatScope::Vrchat,
         )

@@ -2467,7 +2467,8 @@
         "profile": {
             "game_info": {
                 "online_users": "線上用戶",
-                "user_online": "{count} 位用戶在線上"
+                "user_online": "{count} 位用戶在線上",
+                "instances_active": "{count} 個活躍實例"
             },
             "config_json": "JSON 資料"
         },
@@ -4465,6 +4466,7 @@
             },
             "instances": {
                 "header": "房間",
+                "closed": "已關閉",
                 "public_count": "公開 {count}",
                 "private_count": "私人 {count}",
                 "capacity_count": "用戶上限 {count} ({max})",
@@ -6078,6 +6080,7 @@
                 "android": "Android：",
                 "ios": "iOS：",
                 "game_version": "遊戲版本",
+                "languages": "語言：",
                 "instance_queuing_enabled": "房間排隊已啟用",
                 "disabled_content": "已停用內容",
                 "instance_closed": "房間已關閉",
@@ -6730,6 +6733,13 @@
                 "linked": "已為此實例關聯群組活動",
                 "unlinked": "已解除此實例的群組活動關聯",
                 "failed": "更新實例的群組活動失敗"
+            },
+            "calendar_event": "已關聯群組活動",
+            "rename": {
+                "header": "重新命名實例",
+                "description": "留空則清除名稱。",
+                "renamed": "已重新命名實例",
+                "failed": "重新命名實例失敗"
             },
             "modal": {
                 "close_instance": "關閉房間？"

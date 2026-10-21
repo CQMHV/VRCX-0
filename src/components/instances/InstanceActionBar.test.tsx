@@ -361,6 +361,45 @@ describe('InstanceActionBar', () => {
         ).not.toContain(linkLabel);
     });
 
+    it('offers renaming for group managers and VRC+ owners only', () => {
+        const renameLabel =
+            'aria-label="component.instance_action_bar.rename.header"';
+        const render = (instance: Record<string, unknown>) =>
+            renderActionBar({
+                target: { location: 'wrld_test:12345' },
+                instance,
+                showLaunch: false,
+                showInvite: false
+            });
+
+        expect(
+            render({
+                ownerId: 'grp_team',
+                group: { myMember: { permissions: ['group-instance-manage'] } }
+            })
+        ).toContain(renameLabel);
+        expect(render({ ownerId: 'usr_self' })).not.toContain(renameLabel);
+        expect(render({ ownerId: 'usr_other' })).not.toContain(renameLabel);
+    });
+
+    it('shows the custom instance name and the linked event marker', () => {
+        const html = renderActionBar({
+            target: { location: 'wrld_test:12345~group(grp_team)' },
+            instance: {
+                ownerId: 'grp_team',
+                displayName: 'Movie night',
+                calendarEntryId: 'gcal_1'
+            },
+            showLaunch: false,
+            showInvite: false
+        });
+
+        expect(html).toContain('Movie night');
+        expect(html).toContain(
+            'aria-label="component.instance_action_bar.calendar_event"'
+        );
+    });
+
     it('can show instance info while keeping action tooltips disabled', () => {
         render(
             <InstanceActionBar

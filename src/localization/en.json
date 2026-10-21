@@ -2473,7 +2473,8 @@
         "profile": {
             "game_info": {
                 "online_users": "Online Users",
-                "user_online": "{count} users online."
+                "user_online": "{count} users online.",
+                "instances_active": "{count} active instances."
             },
             "config_json": "Config JSON"
         },
@@ -4475,6 +4476,7 @@
             },
             "instances": {
                 "header": "Instances",
+                "closed": "Closed",
                 "public_count": "Public {count}",
                 "private_count": "Private {count}",
                 "capacity_count": "Capacity {count} (max {max})",
@@ -6097,6 +6099,7 @@
                 "android": "Android:",
                 "ios": "iOS:",
                 "game_version": "Game version",
+                "languages": "Languages:",
                 "instance_queuing_enabled": "Instance queuing enabled",
                 "disabled_content": "Disabled content",
                 "instance_closed": "Instance closed",
@@ -6749,6 +6752,13 @@
                 "linked": "Group event assigned to this instance",
                 "unlinked": "Group event removed from this instance",
                 "failed": "Failed to update the instance's group event"
+            },
+            "calendar_event": "Linked group event",
+            "rename": {
+                "header": "Rename Instance",
+                "description": "Leave empty to clear the name.",
+                "renamed": "Instance renamed",
+                "failed": "Failed to rename the instance"
             },
             "modal": {
                 "close_instance": "Close instance?"

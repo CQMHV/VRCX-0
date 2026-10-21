@@ -1852,6 +1852,16 @@ const generatedCommands = {
             input
         });
     },
+    async appVrchatInstanceDisplayNameSet(
+        input: VrchatInstanceDisplayNameInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_instance_display_name_set', {
+            input
+        });
+    },
+    async appVrchatInstanceCountGet(): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE('app__vrchat_instance_count_get');
+    },
     async appVrchatInstanceCreate(
         input: VrchatInstanceCreateInput
     ): Promise<HttpApiExecuteResponse> {
@@ -2208,6 +2218,14 @@ const generatedCommands = {
         return await TAURI_INVOKE('app__vrchat_tools_group_event_follow', {
             input
         });
+    },
+    async appVrchatToolsGroupCalendarEventGet(
+        input: VrchatToolsCalendarEventInput
+    ): Promise<HttpApiExecuteResponse> {
+        return await TAURI_INVOKE(
+            'app__vrchat_tools_group_calendar_event_get',
+            { input }
+        );
     },
     async appVrchatToolsGroupEventCreate(
         input: VrchatToolsGroupEventCreateInput
@@ -7131,6 +7149,10 @@ export type VrchatInstanceCloseInput = {
     hardClose?: boolean;
 };
 export type VrchatInstanceCreateInput = { params: InstanceCreateRequest };
+export type VrchatInstanceDisplayNameInput = {
+    location: string;
+    displayName: string | null;
+};
 export type VrchatInstanceIdentityInput = {
     worldId?: string;
     instanceId?: string;

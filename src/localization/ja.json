@@ -2467,7 +2467,8 @@
         "profile": {
             "game_info": {
                 "online_users": "オンラインユーザー数",
-                "user_online": "{count} 人のユーザーがオンライン"
+                "user_online": "{count} 人のユーザーがオンライン",
+                "instances_active": "{count} 個のインスタンスが稼働中"
             },
             "config_json": "設定の JSON"
         },
@@ -4465,6 +4466,7 @@
             },
             "instances": {
                 "header": "インスタンス",
+                "closed": "終了済み",
                 "public_count": "パブリック {count}",
                 "private_count": "プライベート {count}",
                 "capacity_count": "定員 {count}（最大 {max}）",
@@ -6087,6 +6089,7 @@
                 "android": "Android:",
                 "ios": "iOS:",
                 "game_version": "ゲームバージョン",
+                "languages": "言語:",
                 "instance_queuing_enabled": "インスタンスキューが有効です",
                 "disabled_content": "無効化されたコンテンツ",
                 "instance_closed": "閉じたインスタンス",
@@ -6739,6 +6742,13 @@
                 "linked": "このインスタンスにグループイベントを割り当てました",
                 "unlinked": "このインスタンスのグループイベントの割り当てを解除しました",
                 "failed": "インスタンスのグループイベントを更新できませんでした"
+            },
+            "calendar_event": "グループイベントに割り当て済み",
+            "rename": {
+                "header": "インスタンス名を変更",
+                "description": "空欄にすると名前を消去します。",
+                "renamed": "インスタンス名を変更しました",
+                "failed": "インスタンス名を変更できませんでした"
             },
             "modal": {
                 "close_instance": "インスタンスを閉じますか？"

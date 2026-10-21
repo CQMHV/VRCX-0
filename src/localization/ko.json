@@ -2410,7 +2410,8 @@
         "profile": {
             "game_info": {
                 "online_users": "온라인 사용자 수",
-                "user_online": "{count}명 온라인"
+                "user_online": "{count}명 온라인",
+                "instances_active": "{count}개 인스턴스 활성"
             },
             "config_json": "VRChat 설정 JSON"
         },
@@ -4408,6 +4409,7 @@
             },
             "instances": {
                 "header": "인스턴스",
+                "closed": "닫힘",
                 "public_count": "공개 {count}",
                 "private_count": "비공개 {count}",
                 "capacity_count": "인원 제한 {count} (최대 {max})",
@@ -6031,6 +6033,7 @@
                 "android": "안드로이드:",
                 "ios": "iOS:",
                 "game_version": "게임 버전",
+                "languages": "언어:",
                 "instance_queuing_enabled": "인스턴스 대기열 활성화",
                 "disabled_content": "비활성화된 콘텐츠",
                 "instance_closed": "인스턴스가 닫혔습니다.",
@@ -6683,6 +6686,13 @@
                 "linked": "이 인스턴스에 그룹 이벤트를 연결했습니다.",
                 "unlinked": "이 인스턴스의 그룹 이벤트 연결을 해제했습니다.",
                 "failed": "인스턴스의 그룹 이벤트를 업데이트하지 못했습니다."
+            },
+            "calendar_event": "연결된 그룹 이벤트",
+            "rename": {
+                "header": "인스턴스 이름 변경",
+                "description": "비워 두면 이름이 지워집니다.",
+                "renamed": "인스턴스 이름을 변경했습니다.",
+                "failed": "인스턴스 이름을 변경하지 못했습니다."
             },
             "modal": {
                 "close_instance": "인스턴스를 닫으시겠어요?"

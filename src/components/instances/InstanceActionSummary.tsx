@@ -1,7 +1,8 @@
-import { UsersRoundIcon, XCircleIcon } from 'lucide-react';
+import { TagIcon, UsersRoundIcon, XCircleIcon } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useSpokenLanguageSelection } from '@/components/dialogs/useSpokenLanguageSelection';
 import { formatDateFilter, timeToText } from '@/lib/dateTime';
 import { useNowMs } from '@/lib/useNowMs';
 import { cn } from '@/lib/utils';
@@ -10,7 +11,15 @@ import { Button } from '@/ui/shadcn/button';
 import { Spinner } from '@/ui/shadcn/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip';
 
+import { InstanceCalendarEventMarker } from './InstanceCalendarEventMarker';
+import { instanceLanguageRows } from './instanceLanguages';
 import type { InstanceActionRecord } from './useInstanceActionBarController';
+
+const NO_LANGUAGE_KEYS: string[] = [];
+
+function text(value: unknown) {
+    return typeof value === 'string' ? value.trim() : '';
+}
 
 function platformCount(
     instance: InstanceActionRecord | null,
@@ -51,6 +60,11 @@ function InstanceInfoTooltip({
 }) {
     const { t } = useTranslation();
     const disabledContent = disabledContentSettings(instance);
+    const { languageOptionsMap } = useSpokenLanguageSelection(NO_LANGUAGE_KEYS);
+    const languages = instanceLanguageRows(
+        instance,
+        (key) => languageOptionsMap.get(key)?.value
+    );
 
     if (disableTooltip) {
         return children;
@@ -82,6 +96,17 @@ function InstanceInfoTooltip({
                         {t('dialog.instance.label.ios')}{' '}
                         {platformCount(instance, 'ios')}
                     </div>
+                    {languages.length ? (
+                        <div>
+                            {t('dialog.instance.label.languages')}{' '}
+                            {languages
+                                .map(
+                                    (language) =>
+                                        `${language.label} ${language.percent}%`
+                                )
+                                .join(' · ')}
+                        </div>
+                    ) : null}
                     {instance?.gameServerVersion ? (
                         <div>
                             {t('dialog.instance.label.game_version')}{' '}
@@ -222,12 +247,42 @@ export function InstanceActionSummary({
             </InstanceInfoTooltip>
         ) : null;
 
-    if (!instanceInfoSummary && !closeInstanceButton) {
+    const instance = model.instance;
+    const displayName = text(instance?.displayName);
+    const calendarEntryId = text(instance?.calendarEntryId);
+    const calendarGroupId = text(instance?.ownerId);
+    const instanceNameLabel =
+        options.show && displayName ? (
+            <span className="text-muted-foreground inline-flex max-w-40 min-w-0 items-center gap-0.5 text-xs">
+                <TagIcon className="size-3.5 shrink-0" />
+                <span className="truncate">{displayName}</span>
+            </span>
+        ) : null;
+    const calendarMarker =
+        options.show && calendarEntryId && calendarGroupId ? (
+            <span className="text-muted-foreground inline-flex">
+                <InstanceCalendarEventMarker
+                    groupId={calendarGroupId}
+                    groupName={text(instance?.group?.name)}
+                    eventId={calendarEntryId}
+                    canLoad={Boolean(instance?.group?.myMember)}
+                />
+            </span>
+        ) : null;
+
+    if (
+        !instanceInfoSummary &&
+        !closeInstanceButton &&
+        !instanceNameLabel &&
+        !calendarMarker
+    ) {
         return null;
     }
 
     return (
         <div className="inline-flex items-center gap-1">
+            {instanceNameLabel}
+            {calendarMarker}
             {options.order === 'markers-first'
                 ? closeInstanceButton
                 : instanceInfoSummary}

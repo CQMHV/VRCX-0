@@ -146,6 +146,33 @@ pub fn group_event_delete_input(
     ))
 }
 
+pub fn group_calendar_event_get_input(
+    endpoint: String,
+    group_id: String,
+    event_id: String,
+) -> Result<(String, HttpApiRequestInput), HttpApiError> {
+    let group_id = require_text(
+        group_id,
+        "VrchatToolsGroupCalendarEventGet requires groupId.",
+    )?;
+    let event_id = require_text(
+        event_id,
+        "VrchatToolsGroupCalendarEventGet requires eventId.",
+    )?;
+    Ok((
+        event_id.clone(),
+        get_input(
+            endpoint,
+            format!(
+                "calendar/{}/{}",
+                encode_path_segment(&group_id),
+                encode_path_segment(&event_id)
+            ),
+            HashMap::new(),
+        ),
+    ))
+}
+
 pub fn group_calendar_ics_get_input(
     endpoint: String,
     group_id: String,
@@ -571,6 +598,12 @@ mod tests {
                 "end": { "type": "afterOccurrences", "count": 4 },
             })
         );
+
+        let (_, event) =
+            group_calendar_event_get_input("endpoint".into(), "grp_1".into(), "gcal_1".into())
+                .unwrap();
+        assert_eq!(event.method.as_deref(), Some("GET"));
+        assert_eq!(event.path.as_deref(), Some("calendar/grp%5F1/gcal%5F1"));
 
         let (_, delete) =
             group_event_delete_input("endpoint".into(), "grp_1".into(), "gcal_1".into()).unwrap();

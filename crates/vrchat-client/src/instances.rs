@@ -128,9 +128,58 @@ pub fn instance_calendar_link_input(
     ))
 }
 
+pub fn instance_display_name_input(
+    endpoint: String,
+    location: String,
+    display_name: Option<String>,
+) -> Result<(String, HttpApiRequestInput), HttpApiError> {
+    let location = require_text(location, "VrchatInstanceDisplayName requires location.")?;
+    let display_name = display_name
+        .map(|value| value.trim().to_string())
+        .filter(|value| !value.is_empty());
+    Ok((
+        location.clone(),
+        api_input(
+            endpoint,
+            "PUT",
+            format!("instances/{location}"),
+            json!({ "displayName": display_name }),
+        ),
+    ))
+}
+
+pub fn instance_count_get_input(endpoint: String) -> HttpApiRequestInput {
+    get_input(endpoint, "instances/count", HashMap::new())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn display_name_sets_or_clears_the_instance_name() {
+        let (_, rename) = instance_display_name_input(
+            "endpoint".into(),
+            "wrld_1:123".into(),
+            Some(" Movie night ".into()),
+        )
+        .unwrap();
+        assert_eq!(rename.method.as_deref(), Some("PUT"));
+        assert_eq!(rename.path.as_deref(), Some("instances/wrld_1:123"));
+        assert_eq!(
+            rename.body.as_json(),
+            Some(&json!({ "displayName": "Movie night" }))
+        );
+
+        let (_, clear) =
+            instance_display_name_input("endpoint".into(), "wrld_1:123".into(), Some(" ".into()))
+                .unwrap();
+        assert_eq!(clear.body.as_json(), Some(&json!({ "displayName": null })));
+
+        let count = instance_count_get_input("endpoint".into());
+        assert_eq!(count.method.as_deref(), Some("GET"));
+        assert_eq!(count.path.as_deref(), Some("instances/count"));
+    }
 
     #[test]
     fn calendar_link_sets_or_clears_the_instance_calendar_entry() {

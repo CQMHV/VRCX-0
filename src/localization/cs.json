@@ -2479,7 +2479,8 @@
         "profile": {
             "game_info": {
                 "online_users": "Online Hráči",
-                "user_online": "{count} hráčů online."
+                "user_online": "{count} hráčů online.",
+                "instances_active": "{count} aktivních instancí."
             },
             "config_json": "Konfigurační JSON"
         },
@@ -4495,6 +4496,7 @@
             },
             "instances": {
                 "header": "Instance",
+                "closed": "Zavřená",
                 "public_count": "Veřejné {count}",
                 "private_count": "Soukromé {count}",
                 "capacity_count": "Kapacita {count} ({max})",
@@ -6073,6 +6075,7 @@
                 "android": "Android:",
                 "ios": "iOS:",
                 "game_version": "Verze hry",
+                "languages": "Jazyky:",
                 "instance_queuing_enabled": "Fronta do instance povolena",
                 "disabled_content": "Zakázaný obsah",
                 "instance_closed": "Instance uzavřena",
@@ -6717,6 +6720,13 @@
                 "linked": "Událost skupiny byla přiřazena k této instanci",
                 "unlinked": "Událost skupiny byla od této instance odebrána",
                 "failed": "Událost skupiny pro instanci se nepodařilo aktualizovat"
+            },
+            "calendar_event": "Přiřazená událost skupiny",
+            "rename": {
+                "header": "Přejmenovat instanci",
+                "description": "Prázdné pole název odstraní.",
+                "renamed": "Instance přejmenována",
+                "failed": "Instanci se nepodařilo přejmenovat"
             },
             "modal": {
                 "close_instance": "Zavřít instanci?"

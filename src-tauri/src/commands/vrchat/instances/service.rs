@@ -9,7 +9,8 @@ use vrcx_0_application_core::vrchat_api::VrchatApiResponse;
 
 use super::types::{
     VrchatInstanceCalendarLinkInput, VrchatInstanceCloseInput, VrchatInstanceCreateInput,
-    VrchatInstanceIdentityInput, VrchatInstanceSelfInviteInput, VrchatInstanceShortNameInput,
+    VrchatInstanceDisplayNameInput, VrchatInstanceIdentityInput, VrchatInstanceSelfInviteInput,
+    VrchatInstanceShortNameInput,
 };
 
 #[tauri::command]
@@ -78,6 +79,33 @@ pub async fn app__vrchat_instance_join(
         .runtime_host()
         .instance_launch()
         .join(input)
+        .await
+        .map_err(AppError::from)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn app__vrchat_instance_display_name_set(
+    state: State<'_, AppState>,
+    input: VrchatInstanceDisplayNameInput,
+) -> Result<VrchatApiResponse, AppError> {
+    state
+        .runtime_host()
+        .vrchat_remote()
+        .instance_display_name(input.location, input.display_name)
+        .await
+        .map_err(AppError::from)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn app__vrchat_instance_count_get(
+    state: State<'_, AppState>,
+) -> Result<VrchatApiResponse, AppError> {
+    state
+        .runtime_host()
+        .vrchat_remote()
+        .instance_count()
         .await
         .map_err(AppError::from)
 }

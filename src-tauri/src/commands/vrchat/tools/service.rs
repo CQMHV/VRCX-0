@@ -100,6 +100,20 @@ pub async fn app__vrchat_tools_group_event_delete(
 
 #[tauri::command]
 #[specta::specta]
+pub async fn app__vrchat_tools_group_calendar_event_get(
+    state: State<'_, AppState>,
+    input: VrchatToolsCalendarEventInput,
+) -> Result<VrchatApiResponse, AppError> {
+    state
+        .runtime_host()
+        .vrchat_remote()
+        .group_calendar_event(input.group_id, input.event_id)
+        .await
+        .map_err(AppError::from)
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn app__vrchat_tools_group_calendar_ics_get(
     state: State<'_, AppState>,
     input: VrchatToolsCalendarEventInput,
