@@ -95,6 +95,7 @@ pub struct AssistantTurn {
     pub content: String,
     pub tool_calls: Vec<ToolCall>,
     pub reasoning_details: Vec<Value>,
+    pub truncated: bool,
 }
 
 impl AssistantTurn {
