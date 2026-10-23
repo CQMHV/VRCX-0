@@ -2,6 +2,7 @@ import { CircleHelpIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { HighlightedCodeBlock } from '@/components/HighlightedCodeBlock';
 import type {
     NotificationWebhookFormat,
     WebhookDeliveryChannelSnapshot,
@@ -642,11 +643,12 @@ function WebhookExampleBlock({
     value: string;
 }) {
     return (
-        <section className="flex min-w-0 flex-col gap-2">
-            <div className="text-sm font-medium">{title}</div>
-            <pre className="bg-muted/30 max-h-80 overflow-auto rounded-md border p-3 text-xs leading-relaxed">
-                <code>{value}</code>
-            </pre>
-        </section>
+        <HighlightedCodeBlock
+            code={value}
+            language="json"
+            title={title}
+            size="sm"
+            contentClassName="max-h-80"
+        />
     );
 }
