@@ -134,6 +134,10 @@
         "untitled": "新對話",
         "close": "關閉",
         "thinking": "正在產生回覆",
+        "trace": {
+            "working": "正在查閱資料",
+            "done": "已查閱資料"
+        },
         "scroll_to_latest": "捲動到底部",
         "connection": {
             "checking": "檢查連線",

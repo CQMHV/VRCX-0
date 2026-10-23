@@ -134,6 +134,10 @@
         "untitled": "Nová konverzace",
         "close": "Zavřít",
         "thinking": "Generuji odpověď",
+        "trace": {
+            "working": "Procházím vaše data",
+            "done": "Data prohledána"
+        },
         "scroll_to_latest": "Posunout na konec",
         "connection": {
             "checking": "Kontrola připojení",

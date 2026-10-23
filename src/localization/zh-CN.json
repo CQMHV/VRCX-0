@@ -134,6 +134,10 @@
         "untitled": "新对话",
         "close": "关闭",
         "thinking": "正在生成回答",
+        "trace": {
+            "working": "正在查阅数据",
+            "done": "已查阅数据"
+        },
         "scroll_to_latest": "滚动到底部",
         "connection": {
             "checking": "正在检查连接",

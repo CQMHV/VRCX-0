@@ -134,6 +134,10 @@
         "untitled": "新しい会話",
         "close": "閉じる",
         "thinking": "回答を生成中",
+        "trace": {
+            "working": "データを確認中",
+            "done": "データを確認しました"
+        },
         "scroll_to_latest": "一番下までスクロール",
         "connection": {
             "checking": "接続を確認中",

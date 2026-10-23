@@ -134,6 +134,10 @@
         "untitled": "New conversation",
         "close": "Close",
         "thinking": "Generating response",
+        "trace": {
+            "working": "Looking through your data",
+            "done": "Looked through your data"
+        },
         "scroll_to_latest": "Scroll to bottom",
         "connection": {
             "checking": "Checking connection",

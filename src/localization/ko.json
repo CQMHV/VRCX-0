@@ -134,6 +134,10 @@
         "untitled": "새 대화",
         "close": "닫기",
         "thinking": "답변 생성 중",
+        "trace": {
+            "working": "데이터를 살펴보는 중",
+            "done": "데이터를 살펴봤습니다"
+        },
         "scroll_to_latest": "맨 아래로 스크롤",
         "connection": {
             "checking": "연결 확인 중",

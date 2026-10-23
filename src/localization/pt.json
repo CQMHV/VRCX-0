@@ -134,6 +134,10 @@
         "untitled": "Nova conversa",
         "close": "Fechar",
         "thinking": "Gerando resposta",
+        "trace": {
+            "working": "Consultando seus dados",
+            "done": "Dados consultados"
+        },
         "scroll_to_latest": "Rolar até o fim",
         "connection": {
             "checking": "Verificando conexão",

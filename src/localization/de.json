@@ -134,6 +134,10 @@
         "untitled": "Neue Unterhaltung",
         "close": "Schließen",
         "thinking": "Antwort wird generiert",
+        "trace": {
+            "working": "Durchsuche deine Daten",
+            "done": "Daten durchsucht"
+        },
         "scroll_to_latest": "Zum Ende scrollen",
         "connection": {
             "checking": "Verbindung wird geprüft",
