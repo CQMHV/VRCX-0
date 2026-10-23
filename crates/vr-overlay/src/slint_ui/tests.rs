@@ -369,12 +369,116 @@ fn wrist_device_tokens_prioritize_abnormal_trackers_and_filter_normal_other_devi
         device("Camera", DeviceRole::Other, DeviceStatus::Normal, None, 10),
     ];
 
-    let labels = wrist_device_tokens(&devices, 512.0)
-        .into_iter()
-        .map(|token| token.label)
+    let tokens = wrist_device_tokens(&devices, 512.0, true);
+    let labels = tokens
+        .iter()
+        .map(|token| token.label.as_str())
         .collect::<Vec<_>>();
 
-    assert_eq!(labels, ["HMD", "L", "R", "T2", "T1", "+1", "T×1", "Dongle"]);
+    assert_eq!(labels, ["HMD", "L", "R", "T2", "T1", "T×2", "Dongle"]);
+    assert_eq!(
+        wrist_device_item(&tokens[5], true, true).percent.as_str(),
+        "21%"
+    );
+}
+
+#[test]
+fn wrist_shows_each_tracker_battery_while_the_header_has_room() {
+    let mut devices = headset_and_controllers();
+    devices.extend((1..=3).map(|index| tracker(index, DeviceStatus::Normal, 60 + index as u8)));
+
+    for size in overlay_size_presets() {
+        let tokens = wrist_device_tokens(&devices, size.width as f32, true);
+        let shown = tokens
+            .iter()
+            .skip(3)
+            .map(|token| {
+                (
+                    token.label.clone(),
+                    wrist_device_item(token, true, true).percent.to_string(),
+                )
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            shown,
+            [("T1", "61%"), ("T2", "62%"), ("T3", "63%")]
+                .map(|(label, percent)| (label.to_string(), percent.to_string())),
+            "at {}x{}",
+            size.width,
+            size.height
+        );
+    }
+}
+
+#[test]
+fn wrist_collapses_overflowing_trackers_into_their_lowest_battery() {
+    let mut devices = headset_and_controllers();
+    devices.extend((1..=11).map(|index| tracker(index, DeviceStatus::Normal, 40 + index as u8)));
+    devices.push(tracker(12, DeviceStatus::LowBattery, 19));
+
+    let tokens = wrist_device_tokens(&devices, 512.0, true);
+    let labels = tokens
+        .iter()
+        .map(|token| token.label.as_str())
+        .collect::<Vec<_>>();
+    let shown = &labels[3..labels.len() - 1];
+    let collapsed = &tokens[tokens.len() - 1];
+
+    assert_eq!(shown[..2], ["T12", "T1"]);
+    assert_eq!(collapsed.label, format!("T×{}", 12 - shown.len()));
+    assert_eq!(
+        wrist_device_item(collapsed, true, true).percent.as_str(),
+        format!("{}%", 40 + shown.len())
+    );
+}
+
+#[test]
+fn wrist_header_keeps_trackers_clear_of_the_edge_at_every_overlay_size_preset() {
+    let header_right_edge = |frame: &RgbaFrame| {
+        let width = frame.size.width;
+        (10..34)
+            .flat_map(|y| (0..width - 2).map(move |x| (x, y)))
+            .filter(|(x, y)| {
+                let pixel = ((y * width + x) * 4) as usize;
+                frame.data[pixel..pixel + 3]
+                    .iter()
+                    .any(|channel| *channel > 120)
+            })
+            .map(|(x, _)| x)
+            .max()
+            .unwrap()
+    };
+    let scenarios = [
+        (DeviceStatus::Normal, 100, 3),
+        (DeviceStatus::Normal, 100, 12),
+        (DeviceStatus::Charging, 100, 8),
+        (DeviceStatus::LowBattery, 19, 12),
+    ];
+
+    for size in overlay_size_presets() {
+        for show_battery_percent in [true, false] {
+            for (status, battery, count) in scenarios {
+                let mut renderer = SlintWristRenderer::new();
+                let mut model = sample_wrist_model();
+                model.size = size;
+                model.show_battery_percent = show_battery_percent;
+                model.devices = headset_and_controllers();
+                model
+                    .devices
+                    .extend((1..=count).map(|index| tracker(index, status, battery)));
+
+                let frame = renderer.render(&model).unwrap();
+
+                assert!(
+                    header_right_edge(&frame) + 16 < size.width - 18,
+                    "{count} {status:?} trackers crowd the edge at {}x{} with percent {show_battery_percent}",
+                    size.width,
+                    size.height
+                );
+            }
+        }
+    }
 }
 
 #[test]
@@ -386,7 +490,7 @@ fn wrist_device_without_a_battery_reading_does_not_draw_a_full_battery() {
         None,
         10,
     )];
-    let tokens = wrist_device_tokens(&devices, 512.0);
+    let tokens = wrist_device_tokens(&devices, 512.0, true);
     let item = wrist_device_item(&tokens[0], true, true);
 
     assert!(!item.show_battery);
@@ -410,11 +514,11 @@ fn wrist_battery_glyph_only_survives_when_it_still_carries_information() {
         Some(18),
         20,
     )];
-    let healthy_token = &wrist_device_tokens(&healthy, 512.0)[0];
+    let healthy_token = &wrist_device_tokens(&healthy, 512.0, true)[0];
 
     assert!(!wrist_device_item(healthy_token, true, true).show_battery);
     assert!(wrist_device_item(healthy_token, false, true).show_battery);
-    assert!(wrist_device_item(&wrist_device_tokens(&low, 512.0)[0], true, true).show_battery);
+    assert!(wrist_device_item(&wrist_device_tokens(&low, 512.0, true)[0], true, true).show_battery);
 }
 
 #[test]
@@ -426,7 +530,7 @@ fn wrist_secondary_text_lifts_when_the_background_stops_being_opaque() {
         Some(82),
         20,
     )];
-    let token = &wrist_device_tokens(&devices, 512.0)[0];
+    let token = &wrist_device_tokens(&devices, 512.0, true)[0];
 
     let opaque = wrist_device_item(token, true, true);
     let translucent = wrist_device_item(token, true, false);
@@ -448,7 +552,7 @@ fn wrist_charging_device_shows_a_charging_marker() {
         Some(82),
         20,
     )];
-    let tokens = wrist_device_tokens(&devices, 512.0);
+    let tokens = wrist_device_tokens(&devices, 512.0, true);
     let item = wrist_device_item(&tokens[0], true, true);
 
     assert_eq!(item.percent.as_str(), "82% ⚡");
@@ -599,6 +703,40 @@ fn feed_row(index: u32) -> FeedLine {
         severity: FeedSeverity::Normal,
         accent: FeedAccent::None,
     }
+}
+
+fn headset_and_controllers() -> Vec<DeviceChip> {
+    vec![
+        device("HMD", DeviceRole::Hmd, DeviceStatus::Normal, Some(100), 10),
+        device(
+            "L",
+            DeviceRole::LeftController,
+            DeviceStatus::Normal,
+            Some(100),
+            10,
+        ),
+        device(
+            "R",
+            DeviceRole::RightController,
+            DeviceStatus::Normal,
+            Some(100),
+            10,
+        ),
+    ]
+}
+
+fn tracker(index: usize, status: DeviceStatus, battery_percent: u8) -> DeviceChip {
+    device(
+        &format!("T{index}"),
+        DeviceRole::Tracker,
+        status,
+        Some(battery_percent),
+        if status == DeviceStatus::LowBattery {
+            30
+        } else {
+            10
+        },
+    )
 }
 
 fn device(
