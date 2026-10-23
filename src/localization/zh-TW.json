@@ -599,6 +599,7 @@
             "database_initialization_is_still_pending": "資料庫仍在啟動中，請稍後再試。"
         },
         "label": {
+            "terminal": "終端機",
             "authenticated_and_prepared_the_session": "已登入",
             "auto_login": "自動登入",
             "vrchat_launched": "已啟動 VRChat"
@@ -2646,13 +2647,13 @@
                     "port_active_connections": "連接埠 {port} · {count} 個使用中連線",
                     "client_config": "客戶端設定",
                     "client_config_description": "選擇適合你的用戶端。\nClaude Code：執行一次 `claude mcp add` 終端機命令即可完成設定。\nGeneric（HTTP）：透過 JSON 設定直接建立 HTTP 連線，無需額外工具。\nGeneric（mcp-remote）：透過 JSON 設定並經由 Node.js Proxy 建立通道，適用於不支援原生 HTTP 的用戶端（例如 Claude Desktop）；需先將 Node.js 加入 PATH。\n啟用 LAN 連線後，複製的設定會使用 `YOUR-LAN-IP`。若要在其他裝置上使用，請先將它替換為這台電腦的本機 IP 位址。",
+                    "view_client_config": "查看設定",
                     "copy_mcp_remote": "通用（mcp-remote）",
                     "copy_generic": "通用 (HTTP)",
                     "security_note": "用戶端設定包含明文 Token。請僅與你信任的工具或裝置分享。",
                     "rotate_token": "輪替權杖",
                     "rotate_token_description": "權杖輪替後，舊的用戶端設定將無法再使用。",
                     "token_rotated": "MCP 權杖已輪替",
-                    "copied": "{target} 設定檔已複製",
                     "status": {
                         "loading": "載入中",
                         "disabled": "已停止",

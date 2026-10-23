@@ -599,6 +599,7 @@
             "database_initialization_is_still_pending": "数据库仍在启动，请稍后再试。"
         },
         "label": {
+            "terminal": "终端",
             "authenticated_and_prepared_the_session": "登录成功，欢迎使用",
             "auto_login": "自动登录",
             "vrchat_launched": "已启动 VRChat"
@@ -2646,13 +2647,13 @@
                     "port_active_connections": "端口 {port}；活动连接 {count}",
                     "client_config": "客户端配置",
                     "client_config_description": "Claude Code：执行一次终端命令即可。通用（HTTP）：用于直连的 JSON 配置。通用（mcp-remote）：通过 Node.js 代理连接的 JSON 配置，适用于不支持原生 HTTP 的客户端，需要 PATH 中有 Node.js。开启局域网连接后，配置中会使用 `YOUR-LAN-IP`，请替换为本机的局域网 IP。",
+                    "view_client_config": "查看配置",
                     "copy_mcp_remote": "mcp-remote 方式",
                     "copy_generic": "HTTP 方式",
                     "security_note": "客户端配置包含明文 token，应只提供给你信任的工具或设备。",
                     "rotate_token": "重新生成 Token",
                     "rotate_token_description": "重新生成后，旧客户端配置将会立即失效。",
                     "token_rotated": "MCP token 已重新生成",
-                    "copied": "已复制 {target} 配置",
                     "status": {
                         "loading": "正在加载",
                         "disabled": "已停止",

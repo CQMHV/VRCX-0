@@ -599,6 +599,7 @@
             "database_initialization_is_still_pending": "Inicializace databáze stále probíhá"
         },
         "label": {
+            "terminal": "Terminál",
             "authenticated_and_prepared_the_session": "Přihlášeno",
             "auto_login": "Automatické přihlášení",
             "vrchat_launched": "VRChat spuštěn"
@@ -2666,13 +2667,13 @@
                     "port_active_connections": "Port {port}; active connections {count}",
                     "client_config": "Konfigurace klienta",
                     "client_config_description": "Claude Code: jednorázový terminálový příkaz. Obecné (HTTP): JSON konfigurace pro přímé připojení. Obecné (mcp-remote): JSON konfigurace přes proxy Node.js pro klienty bez nativní podpory HTTP; vyžaduje Node.js v PATH. Při povoleném LAN konfigurace obsahují `YOUR-LAN-IP` — nahraďte lokální IP adresou tohoto počítače.",
+                    "view_client_config": "Zobrazit konfiguraci",
                     "copy_mcp_remote": "Obecné (mcp-remote)",
                     "copy_generic": "Obecné (HTTP)",
                     "security_note": "Konfigurace klienta obsahují token v čitelném textu. Sdílejte je pouze s nástroji nebo zařízeními, kterým důvěřujete.",
                     "rotate_token": "Obnovit token",
                     "rotate_token_description": "Po obnovení tokenu přestanou staré konfigurace klienta fungovat.",
                     "token_rotated": "MCP token byl obnoven",
-                    "copied": "Konfigurace {target} zkopírována",
                     "status": {
                         "loading": "Načítání",
                         "disabled": "Zastaveno",

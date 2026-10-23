@@ -599,6 +599,7 @@
             "database_initialization_is_still_pending": "Datenbankinitialisierung steht noch aus"
         },
         "label": {
+            "terminal": "Terminal",
             "authenticated_and_prepared_the_session": "Angemeldet",
             "auto_login": "Auto-Anmeldung",
             "vrchat_launched": "VRChat gestartet"
@@ -2648,13 +2649,13 @@
                     "port_active_connections": "Port {port} · {count} aktive Verbindungen",
                     "client_config": "Client-Konfiguration",
                     "client_config_description": "Claude Code: einmaliger Terminalbefehl. Generisch (HTTP): JSON-Konfiguration für eine direkte Verbindung. Generisch (mcp-remote): JSON-Konfiguration über einen Node.js-Proxy für Clients ohne native HTTP-Unterstützung; benötigt Node.js im PATH. Bei aktiviertem LAN verwenden Konfigurationen `YOUR-LAN-IP` — ersetze es durch die lokale IP dieses Computers.",
+                    "view_client_config": "Konfiguration anzeigen",
                     "copy_mcp_remote": "Generisch (mcp-remote)",
                     "copy_generic": "Generisch (HTTP)",
                     "security_note": "Client-Konfigurationen enthalten ein Token im Klartext. Teile sie nur mit Tools oder Geräten, denen du vertraust.",
                     "rotate_token": "Token erneuern",
                     "rotate_token_description": "Alte Client-Konfigurationen funktionieren nach der Erneuerung nicht mehr.",
                     "token_rotated": "MCP-Token erneuert",
-                    "copied": "{target}-Konfiguration kopiert",
                     "status": {
                         "loading": "Wird geladen",
                         "disabled": "Gestoppt",

@@ -599,6 +599,7 @@
             "database_initialization_is_still_pending": "Инициализация базы данных ещё не завершена"
         },
         "label": {
+            "terminal": "Терминал",
             "authenticated_and_prepared_the_session": "Выполнен вход",
             "auto_login": "Автологин",
             "vrchat_launched": "VRChat запущено"
@@ -2664,13 +2665,13 @@
                     "port_active_connections": "Порт {port}; активные соединения {count}",
                     "client_config": "Конфигурация клиента",
                     "client_config_description": "Claude Code: одноразовая команда в терминале. Общий (HTTP): JSON-конфигурация для прямого подключения. Общий (mcp-remote): JSON-конфигурация через прокси Node.js для клиентов без встроенной поддержки HTTP; нужен Node.js в PATH. При включённом LAN конфигурации содержат `YOUR-LAN-IP` — замените на локальный IP этого компьютера.",
+                    "view_client_config": "Показать конфигурацию",
                     "copy_mcp_remote": "Универсальный (mcp-remote)",
                     "copy_generic": "Общий (HTTP)",
                     "security_note": "Конфигурации клиентов содержат токен в открытом виде. Передавайте их только доверенным инструментам и устройствам.",
                     "rotate_token": "Сменить токен",
                     "rotate_token_description": "Старые конфигурации клиентов перестают работать после смены токена.",
                     "token_rotated": "Токен MCP сменен",
-                    "copied": "Конфигурация {target} скопирована",
                     "status": {
                         "loading": "Загрузка",
                         "disabled": "Остановлено",

@@ -643,12 +643,14 @@ function WebhookExampleBlock({
     value: string;
 }) {
     return (
-        <HighlightedCodeBlock
-            code={value}
-            language="json"
-            title={title}
-            size="sm"
-            contentClassName="max-h-80"
-        />
+        <section className="flex min-w-0 flex-col gap-2">
+            <div className="text-sm font-medium">{title}</div>
+            <HighlightedCodeBlock
+                code={value}
+                language="json"
+                size="sm"
+                contentClassName="max-h-80"
+            />
+        </section>
     );
 }

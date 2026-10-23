@@ -29,6 +29,11 @@ describe('AssistantMarkdown', () => {
             code.split('\n')
         );
 
+        expect(
+            container.querySelector('[data-slot="code-block-title"]')
+                ?.textContent
+        ).toBe('JSON');
+
         const copyButton = container.querySelector(
             '[data-slot="code-block-copy-button"]'
         );

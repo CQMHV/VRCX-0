@@ -599,6 +599,7 @@
             "database_initialization_is_still_pending": "데이터베이스가 아직 시작 중입니다. 잠시 후 다시 시도하세요."
         },
         "label": {
+            "terminal": "터미널",
             "authenticated_and_prepared_the_session": "로그인 완료",
             "auto_login": "자동 로그인",
             "vrchat_launched": "VRChat 실행됨"
@@ -2589,13 +2590,13 @@
                     "port_active_connections": "포트 {port} · 활성 연결 {count}개",
                     "client_config": "클라이언트 설정",
                     "client_config_description": "Claude Code: 한 번 실행하는 터미널 명령어. 일반 (HTTP): 직접 연결용 JSON 설정. 일반 (mcp-remote): 네이티브 HTTP 미지원 클라이언트용 Node.js 프록시 JSON 설정(PATH에 Node.js 필요). LAN 활성화 시 설정에 `YOUR-LAN-IP`가 들어갑니다. 다른 기기에서 사용하기 전에 이 컴퓨터의 로컬 IP로 바꾸세요.",
+                    "view_client_config": "설정 보기",
                     "copy_mcp_remote": "일반 (mcp-remote)",
                     "copy_generic": "일반 (HTTP)",
                     "security_note": "클라이언트 설정에는 일반 텍스트 토큰이 포함됩니다. 신뢰하는 도구나 기기에만 공유하세요.",
                     "rotate_token": "토큰 다시 생성",
                     "rotate_token_description": "다시 생성하면 이전 클라이언트 설정은 더 이상 작동하지 않습니다.",
                     "token_rotated": "MCP 토큰을 다시 생성했습니다",
-                    "copied": "{target} 설정을 복사했습니다",
                     "status": {
                         "loading": "불러오는 중",
                         "disabled": "중지됨",
