@@ -1164,6 +1164,8 @@
             "title": "Notification Center",
             "view_more": "View More",
             "mark_all_read": "Mark all read",
+            "marking_all_read": "Marking as read…",
+            "mark_read_failed": "Couldn't mark as read",
             "mark_as_read": "Mark as read",
             "more_actions": "More actions",
             "join_now": "Join now",
@@ -6928,6 +6930,7 @@
         "vrc_notification_center": {
             "toast": {
                 "failed_to_mark_notifications_as_seen": "Failed to mark notifications as seen",
+                "mark_all_seen_partially_failed": "Some notifications couldn't be marked as read",
                 "failed_to_accept_friend_request": "Failed to accept friend request",
                 "failed_to_decline_notification": "Failed to decline notification",
                 "failed_to_send_invite": "Failed to send invite",

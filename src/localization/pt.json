@@ -1164,6 +1164,8 @@
             "title": "Central de Notificações",
             "view_more": "Ver Mais",
             "mark_all_read": "Marcar tudo como lido",
+            "marking_all_read": "Marcando como lidas…",
+            "mark_read_failed": "Não foi possível marcar como lida",
             "mark_as_read": "Marcar como lido",
             "more_actions": "Mais ações",
             "join_now": "Entrar agora",
@@ -6872,6 +6874,7 @@
         "vrc_notification_center": {
             "toast": {
                 "failed_to_mark_notifications_as_seen": "Falha ao marcar as notificações como vistas",
+                "mark_all_seen_partially_failed": "Não foi possível marcar algumas notificações como lidas",
                 "failed_to_accept_friend_request": "Falha ao aceitar a solicitação de amizade",
                 "failed_to_decline_notification": "Falha ao recusar a notificação",
                 "failed_to_send_invite": "Falha ao enviar convite",

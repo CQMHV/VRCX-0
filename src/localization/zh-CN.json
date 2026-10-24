@@ -1162,6 +1162,8 @@
             "title": "通知中心",
             "view_more": "查看更多",
             "mark_all_read": "全部标记已读",
+            "marking_all_read": "正在标记已读…",
+            "mark_read_failed": "未能标记已读",
             "mark_as_read": "标记已读",
             "more_actions": "更多操作",
             "join_now": "立即加入",
@@ -6918,6 +6920,7 @@
         "vrc_notification_center": {
             "toast": {
                 "failed_to_mark_notifications_as_seen": "标记通知为已读失败",
+                "mark_all_seen_partially_failed": "部分通知未能标记已读",
                 "failed_to_accept_friend_request": "接受好友请求失败",
                 "failed_to_decline_notification": "拒绝通知失败",
                 "failed_to_send_invite": "发送邀请失败",

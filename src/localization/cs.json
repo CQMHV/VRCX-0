@@ -1176,6 +1176,8 @@
             "title": "Centrum oznámení",
             "view_more": "Zobrazit více",
             "mark_all_read": "Označit vše jako přečtené",
+            "marking_all_read": "Označování jako přečtené…",
+            "mark_read_failed": "Nepodařilo se označit jako přečtené",
             "mark_as_read": "Označit jako přečtené",
             "more_actions": "Další akce",
             "join_now": "Připojit se nyní",
@@ -6904,6 +6906,7 @@
         "vrc_notification_center": {
             "toast": {
                 "failed_to_mark_notifications_as_seen": "Nepodařilo se označit oznámení jako přečtená",
+                "mark_all_seen_partially_failed": "Některá oznámení se nepodařilo označit jako přečtená",
                 "failed_to_accept_friend_request": "Nepodařilo se přijmout žádost o přátelství",
                 "failed_to_decline_notification": "Nepodařilo se odmítnout oznámení",
                 "failed_to_send_invite": "Nepodařilo se odeslat pozvánku",

@@ -1158,6 +1158,8 @@
             "title": "通知センター",
             "view_more": "さらに表示",
             "mark_all_read": "すべて既読にする",
+            "marking_all_read": "既読にしています…",
+            "mark_read_failed": "既読にできませんでした",
             "mark_as_read": "既読にする",
             "more_actions": "その他の操作",
             "join_now": "今すぐ参加",
@@ -6914,6 +6916,7 @@
         "vrc_notification_center": {
             "toast": {
                 "failed_to_mark_notifications_as_seen": "通知を既読にできませんでした",
+                "mark_all_seen_partially_failed": "一部の通知を既読にできませんでした",
                 "failed_to_accept_friend_request": "フレンドリクエストの承認に失敗しました",
                 "failed_to_decline_notification": "通知を断れませんでした",
                 "failed_to_send_invite": "招待の送信に失敗しました",

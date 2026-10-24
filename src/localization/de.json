@@ -1164,6 +1164,8 @@
             "title": "Benachrichtigungszentrale",
             "view_more": "Mehr anzeigen",
             "mark_all_read": "Alle als gelesen markieren",
+            "marking_all_read": "Wird als gelesen markiert…",
+            "mark_read_failed": "Konnte nicht als gelesen markiert werden",
             "mark_as_read": "Als gelesen markieren",
             "more_actions": "Weitere Aktionen",
             "join_now": "Jetzt beitreten",
@@ -6872,6 +6874,7 @@
         "vrc_notification_center": {
             "toast": {
                 "failed_to_mark_notifications_as_seen": "Benachrichtigungen konnten nicht als gesehen markiert werden",
+                "mark_all_seen_partially_failed": "Einige Benachrichtigungen konnten nicht als gelesen markiert werden",
                 "failed_to_accept_friend_request": "Freundschaftsanfrage konnte nicht angenommen werden",
                 "failed_to_decline_notification": "Benachrichtigung konnte nicht abgelehnt werden",
                 "failed_to_send_invite": "Einladung konnte nicht gesendet werden",

@@ -1176,6 +1176,8 @@
             "title": "Центр уведомления",
             "view_more": "Посмотрите больше",
             "mark_all_read": "Отметить всё как прочитанное",
+            "marking_all_read": "Отмечаем как прочитанные…",
+            "mark_read_failed": "Не удалось отметить как прочитанное",
             "mark_as_read": "Отметить как прочитанное",
             "more_actions": "Дополнительные действия",
             "join_now": "Присоединяйтесь.",
@@ -6898,6 +6900,7 @@
         "vrc_notification_center": {
             "toast": {
                 "failed_to_mark_notifications_as_seen": "Не удалось отметить уведомления как просмотренные",
+                "mark_all_seen_partially_failed": "Не удалось отметить некоторые уведомления как прочитанные",
                 "failed_to_accept_friend_request": "Не удалось принять заявку в друзья",
                 "failed_to_decline_notification": "Не удалось отклонить уведомление",
                 "failed_to_send_invite": "Не удалось отправить приглашение",
