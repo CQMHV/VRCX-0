@@ -2917,6 +2917,18 @@ const generatedCommands = {
             { folderPath }
         );
     },
+    async appGetFavoriteScreenshots(): Promise<FavoriteScreenshots> {
+        return await TAURI_INVOKE('app__get_favorite_screenshots');
+    },
+    async appSetScreenshotFavorite(
+        path: string,
+        favorite: boolean
+    ): Promise<null> {
+        return await TAURI_INVOKE('app__set_screenshot_favorite', {
+            path,
+            favorite
+        });
+    },
     async appGetWorldScreenshots(
         worldId: string
     ): Promise<ScreenshotLibraryImage[]> {
@@ -4339,6 +4351,11 @@ export type FavoriteRow = {
     userId?: string | null;
     avatarId?: string | null;
     worldId?: string | null;
+};
+export type FavoriteScreenshots = {
+    paths: string[];
+    images: ScreenshotLibraryImage[];
+    missingCount: number;
 };
 export type FavoriteTransferInput = {
     kind: FavoriteEntityKind;
