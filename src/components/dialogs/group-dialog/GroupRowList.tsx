@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { FadeInImage } from '@/components/media/FadeInImage';
+import { TranslatableText } from '@/components/translation/TranslatableText';
 import type {
     GroupGalleryPhotoRow,
     GroupPostRecord,
@@ -147,10 +148,16 @@ function postDayKey(value: string | undefined) {
     return ms === null ? '' : new Date(ms).toDateString();
 }
 
-function PostBody({ text: body }: { text: string }) {
+function PostBody({
+    text: body,
+    defaultExpanded
+}: {
+    text: string;
+    defaultExpanded: boolean;
+}) {
     const { t } = useTranslation();
     const ref = useRef<HTMLParagraphElement>(null);
-    const [expanded, setExpanded] = useState(false);
+    const [expanded, setExpanded] = useState(defaultExpanded);
     const [overflowing, setOverflowing] = useState(false);
 
     useLayoutEffect(() => {
@@ -214,129 +221,171 @@ function PostCard({
         updatedMs - createdMs > POST_EDIT_THRESHOLD_MS;
 
     return (
-        <article className="bg-card hover:border-foreground/20 group/post rounded-lg border px-4 py-3 transition-colors">
-            <div className="text-muted-foreground flex min-w-0 items-center gap-x-2 text-xs">
-                <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-                    {post.authorId ? (
-                        <GroupPostUserButton
-                            userId={post.authorId}
-                            displayName={post.authorDisplayName}
-                        />
-                    ) : null}
-                    {post.createdAt ? (
-                        <Tooltip>
-                            <TooltipTrigger
-                                render={
-                                    <span>
-                                        {formatRelativeTime(post.createdAt)}
-                                    </span>
-                                }
-                            />
-                            <TooltipContent>
-                                {formatDateFilter(post.createdAt, 'long')}
-                            </TooltipContent>
-                        </Tooltip>
-                    ) : null}
-                    {edited ? (
-                        <Tooltip>
-                            <TooltipTrigger
-                                render={
-                                    <span>
-                                        · {t('dialog.group.posts.edited')}
-                                    </span>
-                                }
-                            />
-                            <TooltipContent>
-                                {t('dialog.group.posts.edited_at')}
-                                {formatDateFilter(post.updatedAt, 'long')}
-                            </TooltipContent>
-                        </Tooltip>
-                    ) : null}
-                    {edited &&
-                    post.editorId &&
-                    post.editorId !== post.authorId ? (
-                        <GroupPostUserButton
-                            userId={post.editorId}
-                            displayName={post.editorDisplayName}
-                            label={
-                                <span>{t('dialog.group.posts.edited_by')}</span>
-                            }
-                        />
-                    ) : null}
-                </div>
-                <div className="ml-auto flex shrink-0 items-center gap-1">
-                    {roleNames.length ? (
-                        <Tooltip>
-                            <TooltipTrigger
-                                render={
-                                    <Badge
-                                        variant="outline"
-                                        className="max-w-48"
-                                    >
-                                        <EyeIcon data-icon="inline-start" />
-                                        <span className="truncate">
-                                            {roleNames.join(', ')}
+        <TranslatableText
+            source={post.text || ''}
+            entityId={post.id || ''}
+            density="icon"
+        >
+            {({ action, meta, error, text: body, isTranslated }) => (
+                <article className="bg-card hover:border-foreground/20 group/post rounded-lg border px-4 py-3 transition-colors">
+                    <div className="text-muted-foreground flex min-w-0 items-center gap-x-2 text-xs">
+                        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                            {post.authorId ? (
+                                <GroupPostUserButton
+                                    userId={post.authorId}
+                                    displayName={post.authorDisplayName}
+                                />
+                            ) : null}
+                            {post.createdAt ? (
+                                <Tooltip>
+                                    <TooltipTrigger
+                                        render={
+                                            <span>
+                                                {formatRelativeTime(
+                                                    post.createdAt
+                                                )}
+                                            </span>
+                                        }
+                                    />
+                                    <TooltipContent>
+                                        {formatDateFilter(
+                                            post.createdAt,
+                                            'long'
+                                        )}
+                                    </TooltipContent>
+                                </Tooltip>
+                            ) : null}
+                            {edited ? (
+                                <Tooltip>
+                                    <TooltipTrigger
+                                        render={
+                                            <span>
+                                                ·{' '}
+                                                {t('dialog.group.posts.edited')}
+                                            </span>
+                                        }
+                                    />
+                                    <TooltipContent>
+                                        {t('dialog.group.posts.edited_at')}
+                                        {formatDateFilter(
+                                            post.updatedAt,
+                                            'long'
+                                        )}
+                                    </TooltipContent>
+                                </Tooltip>
+                            ) : null}
+                            {edited &&
+                            post.editorId &&
+                            post.editorId !== post.authorId ? (
+                                <GroupPostUserButton
+                                    userId={post.editorId}
+                                    displayName={post.editorDisplayName}
+                                    label={
+                                        <span>
+                                            {t('dialog.group.posts.edited_by')}
                                         </span>
-                                    </Badge>
-                                }
-                            />
-                            <TooltipContent>
-                                {t('dialog.group.posts.visibility')}
-                                {roleNames.join(', ')}
-                            </TooltipContent>
-                        </Tooltip>
-                    ) : null}
-                    {canManagePosts ? (
-                        <div className="flex items-center opacity-0 transition-opacity group-focus-within/post:opacity-100 group-hover/post:opacity-100">
-                            <Button
-                                type="button"
-                                size="icon-sm"
-                                variant="ghost"
-                                aria-label={t('common.actions.edit')}
-                                onClick={() => onEditPost?.(post)}
-                            >
-                                <PencilIcon />
-                            </Button>
-                            <Button
-                                type="button"
-                                size="icon-sm"
-                                variant="ghost"
-                                className="text-destructive"
-                                aria-label={t('common.actions.delete')}
-                                onClick={() => onDeletePost?.(post)}
-                            >
-                                <Trash2Icon />
-                            </Button>
+                                    }
+                                />
+                            ) : null}
                         </div>
-                    ) : null}
-                </div>
-            </div>
-            <div className="mt-2 flex gap-3">
-                <div className="min-w-0 flex-1">
-                    <h4 className="text-foreground text-[15px] leading-snug font-medium break-words">
-                        {title}
-                    </h4>
-                    {post.text ? <PostBody text={post.text} /> : null}
-                </div>
-                {image ? (
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        className="h-auto shrink-0 self-start p-0"
-                        aria-label={t('accessibility.preview_image', {
-                            item: title
-                        })}
-                        onClick={() => onPreviewImage?.(image, title)}
-                    >
-                        <FadeInImage
-                            src={convertFileUrlToImageUrl(image, 256)}
-                            alt=""
-                            className="size-24 rounded-md border object-cover"
-                        />
-                    </Button>
-                ) : null}
-            </div>
-        </article>
+                        <div className="ml-auto flex shrink-0 items-center gap-1">
+                            {roleNames.length ? (
+                                <Tooltip>
+                                    <TooltipTrigger
+                                        render={
+                                            <Badge
+                                                variant="outline"
+                                                className="max-w-48"
+                                            >
+                                                <EyeIcon data-icon="inline-start" />
+                                                <span className="truncate">
+                                                    {roleNames.join(', ')}
+                                                </span>
+                                            </Badge>
+                                        }
+                                    />
+                                    <TooltipContent>
+                                        {t('dialog.group.posts.visibility')}
+                                        {roleNames.join(', ')}
+                                    </TooltipContent>
+                                </Tooltip>
+                            ) : null}
+                            <div className="flex items-center opacity-0 transition-opacity group-focus-within/post:opacity-100 group-hover/post:opacity-100">
+                                {action}
+                                {canManagePosts ? (
+                                    <>
+                                        <Button
+                                            type="button"
+                                            size="icon-sm"
+                                            variant="ghost"
+                                            aria-label={t(
+                                                'common.actions.edit'
+                                            )}
+                                            onClick={() => onEditPost?.(post)}
+                                        >
+                                            <PencilIcon />
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            size="icon-sm"
+                                            variant="ghost"
+                                            className="text-destructive"
+                                            aria-label={t(
+                                                'common.actions.delete'
+                                            )}
+                                            onClick={() => onDeletePost?.(post)}
+                                        >
+                                            <Trash2Icon />
+                                        </Button>
+                                    </>
+                                ) : null}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-2 flex gap-3">
+                        <div className="min-w-0 flex-1">
+                            <h4 className="text-foreground text-[15px] leading-snug font-medium break-words">
+                                {title}
+                            </h4>
+                            {body ? (
+                                <>
+                                    {meta ? (
+                                        <div className="mt-1">{meta}</div>
+                                    ) : null}
+                                    <PostBody
+                                        key={
+                                            isTranslated
+                                                ? 'translated'
+                                                : 'original'
+                                        }
+                                        text={body}
+                                        defaultExpanded={isTranslated}
+                                    />
+                                </>
+                            ) : null}
+                            {error}
+                        </div>
+                        {image ? (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                className="h-auto shrink-0 self-start p-0"
+                                aria-label={t('accessibility.preview_image', {
+                                    item: title
+                                })}
+                                onClick={() => onPreviewImage?.(image, title)}
+                            >
+                                <FadeInImage
+                                    src={convertFileUrlToImageUrl(image, 256)}
+                                    alt=""
+                                    className="size-24 rounded-md border object-cover"
+                                />
+                            </Button>
+                        ) : null}
+                    </div>
+                </article>
+            )}
+        </TranslatableText>
     );
 }
 

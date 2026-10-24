@@ -19,7 +19,8 @@ const mocks = vi.hoisted(() => ({
     getUserProfile: vi.fn(() => Promise.resolve({})),
     knownUser: null as Record<string, unknown> | null,
     openUserDialog: vi.fn(),
-    queryData: null as Record<string, unknown> | null
+    queryData: null as Record<string, unknown> | null,
+    translateTextDetailed: vi.fn()
 }));
 
 vi.mock('@tanstack/react-query', async (importOriginal) => {
@@ -57,15 +58,22 @@ vi.mock('@/state/runtimeStore', () => ({
             auth: { currentUserEndpoint: 'https://api.vrchat.cloud' }
         })
 }));
+vi.mock('@/services/translationService', () => ({
+    getTranslationConfig: () =>
+        Promise.resolve({ enabled: true, bioLanguage: 'en', type: 'google' }),
+    translateTextDetailed: mocks.translateTextDetailed
+}));
 vi.mock('@/ui/shadcn/button', () => ({
     Button: ({
         children,
-        onClick
+        onClick,
+        'aria-label': ariaLabel
     }: {
         children: ReactNode;
         onClick?: () => void;
+        'aria-label'?: string;
     }) => (
-        <button type="button" onClick={onClick}>
+        <button type="button" aria-label={ariaLabel} onClick={onClick}>
             {children}
         </button>
     )
@@ -242,10 +250,45 @@ describe('group post cards', () => {
             />
         );
 
-        const buttons = screen.getAllByRole('button');
-        fireEvent.click(buttons[0]);
-        fireEvent.click(buttons[1]);
+        fireEvent.click(
+            screen.getByRole('button', { name: 'common.actions.edit' })
+        );
+        fireEvent.click(
+            screen.getByRole('button', { name: 'common.actions.delete' })
+        );
         expect(onEditPost).toHaveBeenCalledWith(post);
         expect(onDeletePost).toHaveBeenCalledWith(post);
+    });
+
+    it('replaces the body with its translation and shows it expanded', async () => {
+        mocks.translateTextDetailed.mockResolvedValue({
+            text: 'The instance is open!',
+            detectedSourceLang: 'ja'
+        });
+
+        render(
+            <RowList
+                kind="posts"
+                rows={[
+                    {
+                        id: 'post_1',
+                        title: 'Notice',
+                        text: 'インスタンス開きました！'
+                    }
+                ]}
+            />
+        );
+
+        fireEvent.click(
+            screen.getByRole('button', { name: 'translation.translate' })
+        );
+
+        const translated = await screen.findByText('The instance is open!');
+        expect(mocks.translateTextDetailed).toHaveBeenCalledWith(
+            'インスタンス開きました！',
+            'en'
+        );
+        expect(screen.queryByText('インスタンス開きました！')).toBeNull();
+        expect(translated.className).not.toContain('line-clamp-4');
     });
 });
