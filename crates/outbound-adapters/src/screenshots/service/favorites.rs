@@ -29,6 +29,18 @@ pub fn forget_screenshot_favorite(db: &DatabaseService, path: &str) -> Result<()
     store::remove_screenshot_favorite(db, path).map_err(map_persistence_error)
 }
 
+pub fn forget_missing_screenshot_favorites(db: &DatabaseService) -> Result<u32> {
+    let mut removed = 0u32;
+    for favorite in store::list_screenshot_favorites(db).map_err(map_persistence_error)? {
+        if Path::new(&favorite.path).is_file() {
+            continue;
+        }
+        store::remove_screenshot_favorite(db, &favorite.path).map_err(map_persistence_error)?;
+        removed = removed.saturating_add(1);
+    }
+    Ok(removed)
+}
+
 pub fn refresh_screenshot_favorite(db: &DatabaseService, path: &str) -> Result<()> {
     let Some(favorite) = store::get_screenshot_favorite(db, path).map_err(map_persistence_error)?
     else {

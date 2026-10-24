@@ -135,6 +135,7 @@ export function ScreenshotMetadataPage() {
         favoriteImages,
         favoritePaths,
         forgetFavoritePaths,
+        forgetMissingFavorites,
         isLoading: isFavoritesLoading,
         missingCount: favoritesMissingCount,
         reloadFavorites,
@@ -485,6 +486,26 @@ export function ScreenshotMetadataPage() {
         }
     }
 
+    async function confirmForgetMissingFavorites() {
+        const result = await confirm({
+            title: t(
+                'dialog.screenshot_metadata.forget_missing_favorites_confirm_title'
+            ),
+            description: t(
+                'dialog.screenshot_metadata.forget_missing_favorites_confirm_description',
+                { count: favoritesMissingCount }
+            ),
+            confirmText: t(
+                'dialog.screenshot_metadata.forget_missing_favorites'
+            ),
+            cancelText: t('common.actions.cancel'),
+            destructive: true
+        });
+        if (result.ok) {
+            await forgetMissingFavorites();
+        }
+    }
+
     async function uploadScreenshotToGallery() {
         if (!metadata?.filePath) {
             return;
@@ -733,6 +754,9 @@ export function ScreenshotMetadataPage() {
                         missingCount: favoritesMissingCount,
                         onToggle: (path, favorite) => {
                             void setFavorite(path, favorite);
+                        },
+                        onForgetMissing: () => {
+                            void confirmForgetMissingFavorites();
                         }
                     }}
                 />

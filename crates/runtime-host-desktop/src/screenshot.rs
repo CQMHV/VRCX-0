@@ -154,6 +154,10 @@ impl DesktopScreenshotRuntime {
         )?)
     }
 
+    pub fn forget_missing_favorites(&self) -> Result<u32> {
+        Ok(screenshot::forget_missing_screenshot_favorites(&self.db)?)
+    }
+
     pub fn favorites(&self) -> Result<FavoriteScreenshots> {
         Ok(screenshot::list_favorite_screenshots(
             &self.db,

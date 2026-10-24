@@ -126,6 +126,20 @@ fn favorite_stays_missing_when_no_file_has_the_same_content() {
 }
 
 #[test]
+fn removing_missing_favorites_keeps_the_ones_still_on_disk() {
+    let library = Library::new("favorite-forget-missing");
+    let gone = library.write_png("2026-05/VRChat_gone.png", 10);
+    let kept = library.write_png("2026-05/VRChat_kept.png", 20);
+    library.scan_and_relink();
+    set_screenshot_favorite(&library.db, &gone, true).unwrap();
+    set_screenshot_favorite(&library.db, &kept, true).unwrap();
+    std::fs::remove_file(&gone).unwrap();
+
+    assert_eq!(forget_missing_screenshot_favorites(&library.db).unwrap(), 1);
+    assert_eq!(library.favorite_paths(), vec![kept]);
+}
+
+#[test]
 fn copy_that_is_already_a_favorite_is_not_claimed_by_a_missing_favorite() {
     let library = Library::new("favorite-copy");
     let original = library.write_png("2026-05/VRChat_sea.png", 10);

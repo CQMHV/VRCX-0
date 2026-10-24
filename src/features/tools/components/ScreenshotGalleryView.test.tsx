@@ -94,7 +94,8 @@ const noFavorites: ScreenshotGalleryFavorites = {
     paths: new Set(),
     count: 0,
     missingCount: 0,
-    onToggle: () => undefined
+    onToggle: () => undefined,
+    onForgetMissing: () => undefined
 };
 
 const folderTree = {
@@ -508,6 +509,36 @@ describe('ScreenshotGalleryView favorites', () => {
             galleryImages[1].path,
             false
         );
+    });
+
+    it('offers to remove missing favorites only in the favorites view', () => {
+        const onForgetMissing = vi.fn();
+        const favorites = { ...noFavorites, missingCount: 2, onForgetMissing };
+        const view = render(
+            <GalleryHarness
+                images={[]}
+                selectedFolder={julyFolder}
+                onDeleteSelection={() => undefined}
+                favorites={favorites}
+            />
+        );
+        const forgetButtonName =
+            'dialog.screenshot_metadata.forget_missing_favorites';
+        expect(
+            screen.queryByRole('button', { name: forgetButtonName })
+        ).toBeNull();
+
+        view.rerender(
+            <GalleryHarness
+                images={[]}
+                selectedFolder={SCREENSHOT_FAVORITES_FOLDER}
+                onDeleteSelection={() => undefined}
+                favorites={favorites}
+            />
+        );
+        fireEvent.click(screen.getByRole('button', { name: forgetButtonName }));
+
+        expect(onForgetMissing).toHaveBeenCalledTimes(1);
     });
 
     it('explains an empty favorites view and how many favorites are missing', () => {

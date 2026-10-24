@@ -2929,6 +2929,9 @@ const generatedCommands = {
             favorite
         });
     },
+    async appForgetMissingScreenshotFavorites(): Promise<number> {
+        return await TAURI_INVOKE('app__forget_missing_screenshot_favorites');
+    },
     async appGetWorldScreenshots(
         worldId: string
     ): Promise<ScreenshotLibraryImage[]> {

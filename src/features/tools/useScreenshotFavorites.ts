@@ -89,11 +89,27 @@ export function useScreenshotFavorites(enabled: boolean) {
         [forgetFavoritePaths, reloadFavorites, t]
     );
 
+    const forgetMissingFavorites = useCallback(async () => {
+        try {
+            await commands.appForgetMissingScreenshotFavorites();
+            await reloadFavorites();
+        } catch (error) {
+            toast.add({
+                type: 'error',
+                title:
+                    error instanceof Error
+                        ? error.message
+                        : t('common.errors.action_failed')
+            });
+        }
+    }, [reloadFavorites, t]);
+
     return useMemo(
         () => ({
             favoriteImages,
             favoritePaths,
             forgetFavoritePaths,
+            forgetMissingFavorites,
             isLoading,
             missingCount,
             reloadFavorites,
@@ -103,6 +119,7 @@ export function useScreenshotFavorites(enabled: boolean) {
             favoriteImages,
             favoritePaths,
             forgetFavoritePaths,
+            forgetMissingFavorites,
             isLoading,
             missingCount,
             reloadFavorites,

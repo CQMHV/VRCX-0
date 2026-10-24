@@ -676,6 +676,7 @@ pub fn builder() -> Builder<tauri::Wry> {
             commands::host::screenshots::app__pick_random_screenshot_in_folder_tree,
             commands::host::screenshots::app__get_favorite_screenshots,
             commands::host::screenshots::app__set_screenshot_favorite,
+            commands::host::screenshots::app__forget_missing_screenshot_favorites,
             commands::host::screenshots::app__get_world_screenshots,
             commands::host::screenshots::app__get_screenshots_in_windows,
             commands::host::screenshots::app__ensure_screenshot_thumbnail,

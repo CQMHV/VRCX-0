@@ -4,7 +4,8 @@ import {
     DicesIcon,
     FolderIcon,
     RefreshCwIcon,
-    StarIcon
+    StarIcon,
+    Trash2Icon
 } from 'lucide-react';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -66,6 +67,7 @@ export type ScreenshotGalleryFavorites = {
     count: number;
     missingCount: number;
     onToggle: (path: string, favorite: boolean) => void;
+    onForgetMissing: () => void;
 };
 
 type FolderTreeNodeModel = ScreenshotFolderInfo & {
@@ -691,6 +693,19 @@ export function ScreenshotGalleryView({
                                 count: images.length
                             })}
                         </span>
+                        {isFavoritesFolder && favorites.missingCount > 0 ? (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={favorites.onForgetMissing}
+                            >
+                                <Trash2Icon data-icon="inline-start" />
+                                {t(
+                                    'dialog.screenshot_metadata.forget_missing_favorites'
+                                )}
+                            </Button>
+                        ) : null}
                         <Button
                             type="button"
                             variant="outline"

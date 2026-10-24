@@ -148,6 +148,19 @@ pub async fn app__get_favorite_screenshots(
 
 #[tauri::command]
 #[specta::specta]
+pub async fn app__forget_missing_screenshot_favorites(
+    state: State<'_, AppState>,
+) -> Result<u32, AppError> {
+    require_host_capability(HostCapability::ScreenshotCache)?;
+    let screenshots = state.runtime_host().screenshots().clone();
+    run_blocking("missing screenshot favorites", move || {
+        screenshots.forget_missing_favorites()
+    })
+    .await
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn app__set_screenshot_favorite(
     state: State<'_, AppState>,
     path: String,
