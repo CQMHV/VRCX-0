@@ -6739,7 +6739,8 @@
         "desktop_widget_off": "デスクトップのオーバーレイはオフです",
         "desktop_widget_on": "デスクトップのオーバーレイはオンです",
         "desktop_widget_click_through": "デスクトップのオーバーレイはオンです（クリックを透過中）",
-        "desktop_widget_failed": "デスクトップのオーバーレイを変更できませんでした"
+        "desktop_widget_failed": "デスクトップのオーバーレイを変更できませんでした",
+        "desktop_widget_menu_hint": "右クリックでメニューを表示"
     },
     "component": {
         "favorite_action_menu": {

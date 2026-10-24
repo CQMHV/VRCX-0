@@ -679,6 +679,15 @@ const generatedCommands = {
             enabled
         });
     },
+    async appDesktopWidgetPinnedToggle(): Promise<DesktopWidgetSnapshot> {
+        return await TAURI_INVOKE('app__desktop_widget_pinned_toggle');
+    },
+    async appDesktopWidgetClickThroughToggle(): Promise<DesktopWidgetSnapshot> {
+        return await TAURI_INVOKE('app__desktop_widget_click_through_toggle');
+    },
+    async appDesktopWidgetShow(): Promise<void> {
+        await TAURI_INVOKE('app__desktop_widget_show');
+    },
     async appVrOverlayEnabledSet(
         enabled: boolean
     ): Promise<VrOverlayRuntimeSnapshot> {

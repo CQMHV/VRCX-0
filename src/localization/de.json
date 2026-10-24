@@ -6697,7 +6697,8 @@
         "desktop_widget_off": "Desktop-Overlay ist aus",
         "desktop_widget_on": "Desktop-Overlay ist an",
         "desktop_widget_click_through": "Desktop-Overlay ist an (Mausklicks werden durchgelassen)",
-        "desktop_widget_failed": "Desktop-Overlay konnte nicht geändert werden"
+        "desktop_widget_failed": "Desktop-Overlay konnte nicht geändert werden",
+        "desktop_widget_menu_hint": "Rechtsklick für weitere Optionen"
     },
     "component": {
         "favorite_action_menu": {

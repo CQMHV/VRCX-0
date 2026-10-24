@@ -6734,7 +6734,8 @@
         "desktop_widget_off": "桌面疊加介面已關閉",
         "desktop_widget_on": "桌面疊加介面已開啟",
         "desktop_widget_click_through": "桌面疊加介面已開啟（滑鼠穿透）",
-        "desktop_widget_failed": "無法更新桌面疊加介面"
+        "desktop_widget_failed": "無法更新桌面疊加介面",
+        "desktop_widget_menu_hint": "按右鍵開啟更多選項"
     },
     "component": {
         "favorite_action_menu": {

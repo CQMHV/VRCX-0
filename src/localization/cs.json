@@ -6729,7 +6729,8 @@
         "desktop_widget_off": "Desktopový overlay je vypnutý",
         "desktop_widget_on": "Desktopový overlay je zapnutý",
         "desktop_widget_click_through": "Desktopový overlay je zapnutý (propouští kliknutí myši)",
-        "desktop_widget_failed": "Desktopový overlay se nepodařilo změnit"
+        "desktop_widget_failed": "Desktopový overlay se nepodařilo změnit",
+        "desktop_widget_menu_hint": "Pravým kliknutím zobrazíte další možnosti"
     },
     "component": {
         "favorite_action_menu": {

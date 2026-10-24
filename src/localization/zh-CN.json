@@ -6743,7 +6743,8 @@
         "desktop_widget_off": "桌面叠加界面已关闭",
         "desktop_widget_on": "桌面叠加界面已开启",
         "desktop_widget_click_through": "桌面叠加界面已开启（鼠标穿透）",
-        "desktop_widget_failed": "无法更新桌面叠加界面"
+        "desktop_widget_failed": "无法更新桌面叠加界面",
+        "desktop_widget_menu_hint": "右键打开更多选项"
     },
     "component": {
         "favorite_action_menu": {

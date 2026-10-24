@@ -6723,7 +6723,8 @@
         "desktop_widget_off": "Оверлей рабочего стола выключен",
         "desktop_widget_on": "Оверлей рабочего стола включён",
         "desktop_widget_click_through": "Оверлей рабочего стола включён (пропускает клики мыши)",
-        "desktop_widget_failed": "Не удалось изменить оверлей рабочего стола"
+        "desktop_widget_failed": "Не удалось изменить оверлей рабочего стола",
+        "desktop_widget_menu_hint": "Правый клик — дополнительные действия"
     },
     "component": {
         "favorite_action_menu": {

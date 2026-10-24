@@ -6687,7 +6687,8 @@
         "desktop_widget_off": "데스크톱 오버레이가 꺼져 있습니다",
         "desktop_widget_on": "데스크톱 오버레이가 켜져 있습니다",
         "desktop_widget_click_through": "데스크톱 오버레이가 켜져 있습니다(마우스 클릭 통과)",
-        "desktop_widget_failed": "데스크톱 오버레이를 변경하지 못했습니다"
+        "desktop_widget_failed": "데스크톱 오버레이를 변경하지 못했습니다",
+        "desktop_widget_menu_hint": "오른쪽 클릭으로 메뉴 열기"
     },
     "component": {
         "favorite_action_menu": {

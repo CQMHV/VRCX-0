@@ -6697,7 +6697,8 @@
         "desktop_widget_off": "O overlay da área de trabalho está desativado",
         "desktop_widget_on": "O overlay da área de trabalho está ativado",
         "desktop_widget_click_through": "O overlay da área de trabalho está ativado (deixa passar cliques)",
-        "desktop_widget_failed": "Não foi possível atualizar o overlay da área de trabalho"
+        "desktop_widget_failed": "Não foi possível atualizar o overlay da área de trabalho",
+        "desktop_widget_menu_hint": "Clique com o botão direito para mais opções"
     },
     "component": {
         "favorite_action_menu": {

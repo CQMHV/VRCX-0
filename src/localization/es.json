@@ -6753,7 +6753,8 @@
         "desktop_widget_off": "El overlay de escritorio está desactivado",
         "desktop_widget_on": "El overlay de escritorio está activado",
         "desktop_widget_click_through": "El overlay de escritorio está activado (deja pasar los clics)",
-        "desktop_widget_failed": "No se pudo actualizar el overlay de escritorio"
+        "desktop_widget_failed": "No se pudo actualizar el overlay de escritorio",
+        "desktop_widget_menu_hint": "Clic derecho para más opciones"
     },
     "component": {
         "favorite_action_menu": {

@@ -6753,7 +6753,8 @@
         "desktop_widget_off": "Desktop Overlay is off",
         "desktop_widget_on": "Desktop Overlay is on",
         "desktop_widget_click_through": "Desktop Overlay is on (Click-Through)",
-        "desktop_widget_failed": "Failed to update Desktop Overlay"
+        "desktop_widget_failed": "Failed to update Desktop Overlay",
+        "desktop_widget_menu_hint": "Right-click for more options"
     },
     "component": {
         "favorite_action_menu": {
