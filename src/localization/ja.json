@@ -4991,7 +4991,10 @@
                 "edited_at": "編集日時:",
                 "created_at": "作成日時:",
                 "edited_by": "編集者:",
-                "search_placeholder": "検索"
+                "search_placeholder": "検索",
+                "expand": "続きを読む",
+                "collapse": "閉じる",
+                "edited": "編集済み"
             },
             "role_name": {
                 "group_owner": "グループ所有者",

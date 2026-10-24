@@ -4989,7 +4989,10 @@
                 "edited_at": "Upraveno:",
                 "created_at": "Vytvořeno:",
                 "edited_by": "Upravil(a):",
-                "search_placeholder": "Hledat"
+                "search_placeholder": "Hledat",
+                "expand": "Zobrazit více",
+                "collapse": "Zobrazit méně",
+                "edited": "Upraveno"
             },
             "role_name": {
                 "group_owner": "Vlastník skupiny",

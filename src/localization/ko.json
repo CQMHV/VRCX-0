@@ -4938,7 +4938,10 @@
                 "edited_at": "편집 날짜:",
                 "created_at": "생성일:",
                 "edited_by": "편집자:",
-                "search_placeholder": "검색"
+                "search_placeholder": "검색",
+                "expand": "더 보기",
+                "collapse": "접기",
+                "edited": "수정됨"
             },
             "members": {
                 "header": "멤버",

@@ -164,3 +164,88 @@ describe('group post authors', () => {
         expect(screen.queryByText('usr_author')).toBeNull();
     });
 });
+
+describe('group post cards', () => {
+    afterEach(cleanup);
+
+    it('marks a post as edited only when it changed after creation', () => {
+        render(
+            <RowList
+                kind="posts"
+                rows={[
+                    {
+                        id: 'post_edited',
+                        title: 'Revised',
+                        createdAt: '2026-10-08T12:00:00.000Z',
+                        updatedAt: '2026-10-08T14:00:00.000Z'
+                    },
+                    {
+                        id: 'post_fresh',
+                        title: 'Untouched',
+                        createdAt: '2026-10-08T10:00:00.000Z',
+                        updatedAt: '2026-10-08T10:00:00.500Z'
+                    }
+                ]}
+            />
+        );
+
+        expect(
+            screen.getByText('Revised').closest('article')?.textContent
+        ).toContain('dialog.group.posts.edited');
+        expect(
+            screen.getByText('Untouched').closest('article')?.textContent
+        ).not.toContain('dialog.group.posts.edited');
+    });
+
+    it('separates posts from different days', () => {
+        const { container } = render(
+            <RowList
+                kind="posts"
+                rows={[
+                    {
+                        id: 'post_1',
+                        title: 'Late post',
+                        createdAt: '2026-10-24T12:30:00.000Z'
+                    },
+                    {
+                        id: 'post_2',
+                        title: 'Same day post',
+                        createdAt: '2026-10-24T12:00:00.000Z'
+                    },
+                    {
+                        id: 'post_3',
+                        title: 'Older post',
+                        createdAt: '2026-10-08T12:00:00.000Z'
+                    }
+                ]}
+            />
+        );
+
+        expect(container.querySelectorAll('article')).toHaveLength(3);
+        expect(
+            container.querySelectorAll('[data-slot="separator"]')
+        ).toHaveLength(2);
+    });
+
+    it('routes edit and delete actions to the clicked post', () => {
+        const onEditPost = vi.fn();
+        const onDeletePost = vi.fn();
+        const post = { id: 'post_1', title: 'Managed post' };
+
+        render(
+            <RowList
+                kind="posts"
+                rows={[post]}
+                canManagePosts
+                onEditPost={onEditPost}
+                onDeletePost={onDeletePost}
+            />
+        );
+
+        const buttons = screen.getAllByRole('button');
+        fireEvent.click(buttons[0]);
+        fireEvent.click(buttons[1]);
+        expect(onEditPost).toHaveBeenCalledWith(post);
+        expect(onDeletePost).toHaveBeenCalledWith(post);
+    });
+});

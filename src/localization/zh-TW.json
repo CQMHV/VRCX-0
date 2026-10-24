@@ -4986,7 +4986,10 @@
                 "edited_at": "最後編輯於：",
                 "created_at": "創建時間：",
                 "edited_by": "編輯：",
-                "search_placeholder": "搜尋"
+                "search_placeholder": "搜尋",
+                "expand": "展開全文",
+                "collapse": "收合",
+                "edited": "已編輯"
             },
             "role_name": {
                 "group_owner": "群組所有者",

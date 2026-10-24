@@ -4995,7 +4995,10 @@
                 "edited_at": "最后编辑时间：",
                 "created_at": "创建于：",
                 "edited_by": "最后编辑者：",
-                "search_placeholder": "搜索帖子"
+                "search_placeholder": "搜索帖子",
+                "expand": "展开全文",
+                "collapse": "收起",
+                "edited": "已编辑"
             },
             "role_name": {
                 "group_owner": "群组所有者",

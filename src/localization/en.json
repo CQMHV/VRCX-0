@@ -5005,7 +5005,10 @@
                 "edited_at": "Edited At:",
                 "created_at": "Created At:",
                 "edited_by": "Edited by:",
-                "search_placeholder": "Search"
+                "search_placeholder": "Search",
+                "expand": "Show more",
+                "collapse": "Show less",
+                "edited": "Edited"
             },
             "role_name": {
                 "group_owner": "Group Owner",

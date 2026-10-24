@@ -4983,7 +4983,10 @@
                 "edited_at": "Отредактированно в:",
                 "created_at": "Создана:",
                 "edited_by": "Отредактированно:",
-                "search_placeholder": "Поиск"
+                "search_placeholder": "Поиск",
+                "expand": "Показать полностью",
+                "collapse": "Свернуть",
+                "edited": "Изменено"
             },
             "role_name": {
                 "group_owner": "Владелец группы",

@@ -4957,7 +4957,10 @@
                 "edited_at": "Editado em:",
                 "created_at": "Criado em:",
                 "edited_by": "Editado por:",
-                "search_placeholder": "Pesquisar"
+                "search_placeholder": "Pesquisar",
+                "expand": "Ver mais",
+                "collapse": "Ver menos",
+                "edited": "Editado"
             },
             "role_name": {
                 "group_owner": "Proprietário do grupo",
