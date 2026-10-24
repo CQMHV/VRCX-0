@@ -642,6 +642,7 @@ pub fn builder() -> Builder<tauri::Wry> {
             commands::host::legacy_migration::app__request_legacy_migration,
             commands::host::legacy_migration::app__request_legacy_vrcx_force_migration,
             commands::host::clipboard::app__get_clipboard,
+            commands::host::clipboard::app__read_clipboard_image,
             commands::host::clipboard::app__copy_image_to_clipboard,
             commands::host::window::app__set_startup,
             commands::host::registry::app__delete_vrchat_registry_folder,

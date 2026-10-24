@@ -5345,6 +5345,7 @@
             "inventory": "インベントリ",
             "refresh": "更新",
             "upload": "アップロード",
+            "paste_upload": "画像を貼り付け",
             "clear": "消去",
             "banner": "プロフィール写真",
             "profile_photo": "プロフィール写真",
@@ -6399,6 +6400,7 @@
         "file": {
             "not_image": "ファイルが画像ではありません",
             "too_large": "ファイルサイズが大きすぎます",
+            "clipboard_no_image": "クリップボードに画像がありません。先に画像か画像ファイルをコピーしてください",
             "folder_opened": "フォルダを開きました",
             "folder_missing": "フォルダが存在しません"
         },

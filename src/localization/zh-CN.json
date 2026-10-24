@@ -5349,6 +5349,7 @@
             "inventory": "库存",
             "refresh": "刷新",
             "upload": "上传",
+            "paste_upload": "粘贴图片",
             "clear": "清除",
             "banner": "横幅",
             "profile_photo": "横幅",
@@ -6403,6 +6404,7 @@
         "file": {
             "not_image": "文件不是有效的图片格式",
             "too_large": "文件大小过大",
+            "clipboard_no_image": "剪贴板里没有图片，请先复制图片或图片文件",
             "folder_opened": "已打开文件夹",
             "folder_missing": "文件夹不存在"
         },

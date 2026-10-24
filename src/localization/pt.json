@@ -5311,6 +5311,7 @@
             "inventory": "Inventário",
             "refresh": "Atualizar",
             "upload": "Enviar",
+            "paste_upload": "Colar imagem",
             "clear": "Limpar",
             "banner": "Banner",
             "profile_photo": "Banner",
@@ -6365,6 +6366,7 @@
         "file": {
             "not_image": "Arquivo não é uma imagem",
             "too_large": "Tamanho do arquivo muito grande",
+            "clipboard_no_image": "Nenhuma imagem na área de transferência. Copie uma imagem ou um arquivo de imagem primeiro.",
             "folder_opened": "Pasta aberta",
             "folder_missing": "Pasta não existe"
         },

@@ -2724,6 +2724,9 @@ const generatedCommands = {
     async appGetClipboard(): Promise<string> {
         return await TAURI_INVOKE('app__get_clipboard');
     },
+    async appReadClipboardImage(): Promise<ClipboardImage | null> {
+        return await TAURI_INVOKE('app__read_clipboard_image');
+    },
     async appCopyImageToClipboard(path: string): Promise<null> {
         return await TAURI_INVOKE('app__copy_image_to_clipboard', { path });
     },
@@ -3856,6 +3859,11 @@ export type ClientConfigSnippets = {
     claudeCodeCommand: string;
     mcpRemoteJson: string;
     genericJson: string;
+};
+export type ClipboardImage = {
+    fileName: string;
+    mimeType: string;
+    dataBase64: string;
 };
 export type CommunityThemeAuthor = {
     name: string;

@@ -5359,6 +5359,7 @@
             "inventory": "Inventory",
             "refresh": "Refresh",
             "upload": "Upload",
+            "paste_upload": "Paste Image",
             "clear": "Clear",
             "banner": "Banner",
             "profile_photo": "Banner",
@@ -6413,6 +6414,7 @@
         "file": {
             "not_image": "File isn't an image",
             "too_large": "File is too large",
+            "clipboard_no_image": "No image on the clipboard. Copy an image or an image file first.",
             "folder_opened": "Folder opened",
             "folder_missing": "Folder doesn't exist"
         },

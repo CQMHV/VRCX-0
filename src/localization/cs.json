@@ -5343,6 +5343,7 @@
             "inventory": "Inventář",
             "refresh": "Obnovit",
             "upload": "Nahrát",
+            "paste_upload": "Vložit obrázek",
             "clear": "Vymazat",
             "banner": "Banner",
             "profile_photo": "Banner",
@@ -6397,6 +6398,7 @@
         "file": {
             "not_image": "Soubor není obrázek",
             "too_large": "Soubor je příliš velký",
+            "clipboard_no_image": "Ve schránce není žádný obrázek. Nejprve zkopírujte obrázek nebo soubor s obrázkem.",
             "folder_opened": "Složka otevřena",
             "folder_missing": "Složka neexistuje"
         },

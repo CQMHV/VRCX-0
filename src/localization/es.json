@@ -5359,6 +5359,7 @@
             "inventory": "Inventario",
             "refresh": "Actualizar",
             "upload": "Subir",
+            "paste_upload": "Pegar imagen",
             "clear": "Limpiar",
             "banner": "Banner",
             "profile_photo": "Banner",
@@ -6413,6 +6414,7 @@
         "file": {
             "not_image": "El archivo no es una imagen",
             "too_large": "El archivo es demasiado grande",
+            "clipboard_no_image": "No hay ninguna imagen en el portapapeles. Copia primero una imagen o un archivo de imagen.",
             "folder_opened": "Carpeta abierta",
             "folder_missing": "La carpeta no existe"
         },

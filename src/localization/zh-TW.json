@@ -5340,6 +5340,7 @@
             "inventory": "庫存",
             "refresh": "重新整理",
             "upload": "上傳",
+            "paste_upload": "貼上圖片",
             "clear": "清除",
             "banner": "橫幅",
             "profile_photo": "橫幅",
@@ -6394,6 +6395,7 @@
         "file": {
             "not_image": "檔案不是圖片",
             "too_large": "檔案大小過大",
+            "clipboard_no_image": "剪貼簿裡沒有圖片，請先複製圖片或圖片檔案",
             "folder_opened": "資料夾已開啟",
             "folder_missing": "資料夾不存在"
         },
