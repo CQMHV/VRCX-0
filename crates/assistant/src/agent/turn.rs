@@ -180,6 +180,8 @@ pub(crate) async fn run_turn(ctx: TurnContext) {
     let mut last_error_tool_summary: Option<String> = None;
     let mut last_supported_tool_summary: Option<String> = None;
     let mut dispatched_tools = HashSet::new();
+    let mut last_finish_reason: Option<String> = None;
+    let mut retry_finish_reason: Option<String> = None;
 
     for _round in 0..MAX_TOOL_ROUNDS {
         if ctx.cancel.is_cancelled() {
@@ -207,6 +209,7 @@ pub(crate) async fn run_turn(ctx: TurnContext) {
             Ok(turn) => turn,
             Err(error) => return finish_llm_error(&ctx, &error),
         };
+        last_finish_reason = turn.finish_reason.clone();
 
         if turn.tool_calls.is_empty() {
             final_answer = turn.content;
@@ -231,7 +234,7 @@ pub(crate) async fn run_turn(ctx: TurnContext) {
                     tool_defs,
                     ctx.tool_defs.as_slice(),
                     utc_offset_minutes,
-                    turn.truncated,
+                    turn.truncated(),
                     &mut dispatched_tools,
                 )
             })
@@ -289,6 +292,7 @@ pub(crate) async fn run_turn(ctx: TurnContext) {
         match turn {
             Ok(turn) => {
                 final_answer = turn.content;
+                retry_finish_reason = turn.finish_reason;
             }
             Err(error) => return finish_llm_error(&ctx, &error),
         }
@@ -326,7 +330,10 @@ pub(crate) async fn run_turn(ctx: TurnContext) {
         return finish_error(
             &ctx,
             "no_answer",
-            "The model returned no reply after a direct retry. Try rephrasing or checking the selected model.",
+            &no_answer_message(
+                last_finish_reason.as_deref(),
+                retry_finish_reason.as_deref(),
+            ),
         );
     }
 
@@ -551,6 +558,14 @@ fn llm_error_summary(error: &AssistantLlmError) -> String {
         AssistantLlmError::Api { status, .. } => format!("LLM API error ({status})"),
         _ => error.to_string(),
     }
+}
+
+fn no_answer_message(first: Option<&str>, retry: Option<&str>) -> String {
+    format!(
+        "The model returned no reply after a direct retry (finish_reason: {} → {}). Try rephrasing or checking the selected model.",
+        first.unwrap_or("none"),
+        retry.unwrap_or("none"),
+    )
 }
 
 fn finish_error(ctx: &TurnContext, code: &str, message: &str) {
