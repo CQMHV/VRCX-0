@@ -65,6 +65,8 @@ export function useGalleryPageController() {
         {}
     );
     const [uploadingTab, setUploadingTab] = useState('');
+    const clipboardPastingRef = useRef(false);
+    const [clipboardPasting, setClipboardPasting] = useState(false);
     const [mutatingKey, setMutatingKey] = useState('');
     const [cropRequest, setCropRequest] = useState<GalleryCropRequest | null>(
         null
@@ -104,6 +106,7 @@ export function useGalleryPageController() {
         redeemReward
     } = useGalleryActions({
         activeTab,
+        clipboardPastingRef,
         cropRequest,
         currentEndpoint,
         currentUserId,
@@ -116,6 +119,7 @@ export function useGalleryPageController() {
         emojiAnimationStyle,
         isVrcPlusSupporter,
         setAssets,
+        setClipboardPasting,
         setCropRequest,
         setEmojiAnimFps,
         setEmojiAnimFrameCount,
@@ -131,8 +135,13 @@ export function useGalleryPageController() {
     } satisfies GalleryControllerDeps);
     const { bulkRunning, deleteSelection, setFavoriteSelection } =
         useGalleryBulkActions({ setAssets });
+    const dropOrPasteEnabled =
+        Boolean(currentUserId) &&
+        !cropRequest &&
+        !uploadingTab &&
+        !clipboardPasting;
     const fileDropActive = useFileDropTarget({
-        enabled: Boolean(currentUserId) && !cropRequest && !uploadingTab,
+        enabled: dropOrPasteEnabled,
         onDrop: async (paths) => {
             const file = await readDroppedUploadImage(paths, t);
             if (file) {
@@ -140,12 +149,8 @@ export function useGalleryPageController() {
             }
         }
     });
-    useImagePasteShortcut({
-        enabled:
-            Boolean(currentUserId) &&
-            !cropRequest &&
-            !uploadingTab &&
-            (activeTab !== 'prints' || isVrcPlusSupporter),
+    const imagePasteRef = useImagePasteShortcut<HTMLDivElement>({
+        enabled: dropOrPasteEnabled,
         onPaste: () => pasteClipboardUpload(activeTab)
     });
     const refreshAllRef = useRef(refreshAllAssets);
@@ -197,6 +202,7 @@ export function useGalleryPageController() {
         uploadingTab,
         uploadSelectedFile,
         fileDropActive,
+        imagePasteRef,
         gridDensity,
         changeGridDensity,
         navigate,
@@ -220,6 +226,7 @@ export function useGalleryPageController() {
         refreshTab,
         activeTab,
         assets,
+        clipboardPasting,
         currentUserId,
         emojiAnimFps,
         emojiAnimFrameCount,

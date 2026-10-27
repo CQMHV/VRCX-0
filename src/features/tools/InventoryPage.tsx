@@ -368,7 +368,7 @@ export function InventoryPage() {
     const inventory = useInventoryPageState();
 
     return (
-        <PageScaffold className="gallery-page">
+        <PageScaffold ref={inventory.imagePasteRef} className="gallery-page">
             <FileDropOverlay
                 active={inventory.fileDropActive}
                 label={t('view.tools.file_drop.upload_to', {
@@ -457,7 +457,9 @@ export function InventoryPage() {
                         const loading =
                             inventory.loadingByScope[selectedScopeKey];
                         const selectedUploadTarget = selectedTab?.uploadTarget;
-                        const selectedCanUpload = Boolean(selectedUploadTarget);
+                        const uploadDisabled =
+                            !inventory.isVrcPlusSupporter ||
+                            Boolean(inventory.uploadingTarget);
                         const showEmojiUploadOptions =
                             category === 'emojis' &&
                             categorySubTab === 'custom';
@@ -512,7 +514,7 @@ export function InventoryPage() {
                                         }
                                         actions={
                                             showEmojiUploadOptions ||
-                                            selectedCanUpload ? (
+                                            selectedUploadTarget ? (
                                                 <>
                                                     {showEmojiUploadOptions ? (
                                                         <Popover>
@@ -581,26 +583,19 @@ export function InventoryPage() {
                                                             </PopoverContent>
                                                         </Popover>
                                                     ) : null}
-                                                    {selectedCanUpload ? (
+                                                    {selectedUploadTarget ? (
                                                         <>
                                                             <Button
                                                                 variant="outline"
                                                                 size="sm"
                                                                 disabled={
-                                                                    !inventory.isVrcPlusSupporter ||
-                                                                    Boolean(
-                                                                        inventory.uploadingTarget
+                                                                    uploadDisabled
+                                                                }
+                                                                onClick={() =>
+                                                                    inventory.beginUpload(
+                                                                        selectedUploadTarget
                                                                     )
                                                                 }
-                                                                onClick={() => {
-                                                                    if (
-                                                                        selectedUploadTarget
-                                                                    ) {
-                                                                        inventory.beginUpload(
-                                                                            selectedUploadTarget
-                                                                        );
-                                                                    }
-                                                                }}
                                                             >
                                                                 <UploadIcon data-icon="inline-start" />
                                                                 {t(
@@ -611,19 +606,13 @@ export function InventoryPage() {
                                                                 variant="outline"
                                                                 size="sm"
                                                                 disabled={
-                                                                    !inventory.isVrcPlusSupporter ||
-                                                                    Boolean(
-                                                                        inventory.uploadingTarget
-                                                                    )
+                                                                    uploadDisabled ||
+                                                                    inventory.clipboardPasting
                                                                 }
                                                                 onClick={() => {
-                                                                    if (
+                                                                    void inventory.pasteClipboardUpload(
                                                                         selectedUploadTarget
-                                                                    ) {
-                                                                        void inventory.pasteClipboardUpload(
-                                                                            selectedUploadTarget
-                                                                        );
-                                                                    }
+                                                                    );
                                                                 }}
                                                             >
                                                                 <ClipboardPasteIcon data-icon="inline-start" />

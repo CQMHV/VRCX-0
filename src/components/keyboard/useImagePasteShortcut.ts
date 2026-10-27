@@ -1,12 +1,18 @@
-import { useEffect, useEffectEvent } from 'react';
+import { useEffect, useEffectEvent, useRef } from 'react';
 
-export function useImagePasteShortcut({
+import {
+    TEXT_ENTRY_SELECTOR,
+    isKeyboardShortcutBlocked
+} from './keyboardShortcutGuards';
+
+export function useImagePasteShortcut<TElement extends HTMLElement>({
     enabled,
     onPaste
 }: {
     enabled: boolean;
     onPaste(): void | Promise<void>;
 }) {
+    const scopeRef = useRef<TElement>(null);
     const handlePasteShortcut = useEffectEvent((event: KeyboardEvent) => {
         if (
             event.defaultPrevented ||
@@ -20,12 +26,10 @@ export function useImagePasteShortcut({
             return;
         }
 
-        const editableSelector =
-            'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]';
-        const target = event.target instanceof Element ? event.target : null;
+        const scope = scopeRef.current;
         if (
-            target?.closest(editableSelector) ||
-            document.activeElement?.closest(editableSelector)
+            !scope ||
+            isKeyboardShortcutBlocked(event, scope, TEXT_ENTRY_SELECTOR)
         ) {
             return;
         }
@@ -42,4 +46,6 @@ export function useImagePasteShortcut({
         window.addEventListener('keydown', listener);
         return () => window.removeEventListener('keydown', listener);
     }, [enabled]);
+
+    return scopeRef;
 }

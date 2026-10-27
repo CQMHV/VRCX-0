@@ -178,6 +178,8 @@ export function useInventoryPageState() {
         setProfileDecorationMutationPending
     ] = useState(false);
     const [uploadingTarget, setUploadingTarget] = useState('');
+    const clipboardPastingRef = useRef(false);
+    const [clipboardPasting, setClipboardPasting] = useState(false);
     const [cropRequest, setCropRequest] = useState<InventoryCropRequest | null>(
         null
     );
@@ -203,12 +205,14 @@ export function useInventoryPageState() {
         CATEGORY_DEFINITIONS[activeCategory].tabs.find(
             (entry) => entry.key === activeSubTab
         )?.uploadTarget ?? null;
+    const dropOrPasteEnabled =
+        Boolean(currentUserId) &&
+        Boolean(activeUploadTarget) &&
+        !cropRequest &&
+        !uploadingTarget &&
+        !clipboardPasting;
     const fileDropActive = useFileDropTarget({
-        enabled:
-            Boolean(currentUserId) &&
-            Boolean(activeUploadTarget) &&
-            !cropRequest &&
-            !uploadingTarget,
+        enabled: dropOrPasteEnabled,
         onDrop: async (paths) => {
             if (!activeUploadTarget) {
                 return;
@@ -220,13 +224,8 @@ export function useInventoryPageState() {
         }
     });
 
-    useImagePasteShortcut({
-        enabled:
-            Boolean(currentUserId) &&
-            Boolean(activeUploadTarget) &&
-            isVrcPlusSupporter &&
-            !cropRequest &&
-            !uploadingTarget,
+    const imagePasteRef = useImagePasteShortcut<HTMLDivElement>({
+        enabled: dropOrPasteEnabled,
         onPaste: () => {
             if (activeUploadTarget) {
                 return pasteClipboardUpload(activeUploadTarget);
@@ -354,10 +353,20 @@ export function useInventoryPageState() {
     }
 
     async function pasteClipboardUpload(target: InventoryUploadTarget) {
+        if (clipboardPastingRef.current) {
+            return;
+        }
+        clipboardPastingRef.current = true;
+        setClipboardPasting(true);
         const authTarget = getInventoryAuthTarget();
-        const file = await readClipboardUploadImage(t);
-        if (file && isCurrentInventoryAuthTarget(authTarget)) {
-            requestUpload(file, target);
+        try {
+            const file = await readClipboardUploadImage(t);
+            if (file && isCurrentInventoryAuthTarget(authTarget)) {
+                requestUpload(file, target);
+            }
+        } finally {
+            clipboardPastingRef.current = false;
+            setClipboardPasting(false);
         }
     }
 
@@ -736,7 +745,9 @@ export function useInventoryPageState() {
         emojiAnimLoopPingPong,
         emojiAnimType,
         emojiAnimationStyle,
+        clipboardPasting,
         fileDropActive,
+        imagePasteRef,
         gridDensity,
         gridDensityConfig,
         isVrcPlusSupporter,
