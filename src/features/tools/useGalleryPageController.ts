@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { useFileDropTarget } from '@/components/file-drop/useFileDropTarget';
+import { useImagePasteShortcut } from '@/components/keyboard/useImagePasteShortcut';
 
 import {
     EMPTY_ASSETS,
@@ -139,53 +140,14 @@ export function useGalleryPageController() {
             }
         }
     });
-    useEffect(() => {
-        if (
-            !currentUserId ||
-            cropRequest ||
-            uploadingTab ||
-            (activeTab === 'prints' && !isVrcPlusSupporter)
-        ) {
-            return;
-        }
-
-        function handlePasteShortcut(event: KeyboardEvent) {
-            if (
-                event.defaultPrevented ||
-                event.repeat ||
-                event.isComposing ||
-                event.altKey ||
-                event.shiftKey ||
-                !(event.ctrlKey || event.metaKey) ||
-                event.key.toLowerCase() !== 'v'
-            ) {
-                return;
-            }
-
-            const editableSelector =
-                'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]';
-            const target = event.target instanceof Element ? event.target : null;
-            if (
-                target?.closest(editableSelector) ||
-                document.activeElement?.closest(editableSelector)
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-            void pasteClipboardUpload(activeTab);
-        }
-
-        window.addEventListener('keydown', handlePasteShortcut);
-        return () => window.removeEventListener('keydown', handlePasteShortcut);
-    }, [
-        activeTab,
-        cropRequest,
-        currentUserId,
-        isVrcPlusSupporter,
-        pasteClipboardUpload,
-        uploadingTab
-    ]);
+    useImagePasteShortcut({
+        enabled:
+            Boolean(currentUserId) &&
+            !cropRequest &&
+            !uploadingTab &&
+            (activeTab !== 'prints' || isVrcPlusSupporter),
+        onPaste: () => pasteClipboardUpload(activeTab)
+    });
     const refreshAllRef = useRef(refreshAllAssets);
     useEffect(() => {
         refreshAllRef.current = refreshAllAssets;

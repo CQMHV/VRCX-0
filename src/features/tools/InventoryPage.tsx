@@ -1,5 +1,6 @@
 import {
     ArchiveIcon,
+    ClipboardPasteIcon,
     GiftIcon,
     ImageIcon,
     PackageIcon,
@@ -581,30 +582,56 @@ export function InventoryPage() {
                                                         </Popover>
                                                     ) : null}
                                                     {selectedCanUpload ? (
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            disabled={
-                                                                !inventory.isVrcPlusSupporter ||
-                                                                Boolean(
-                                                                    inventory.uploadingTarget
-                                                                )
-                                                            }
-                                                            onClick={() => {
-                                                                if (
-                                                                    selectedUploadTarget
-                                                                ) {
-                                                                    inventory.beginUpload(
-                                                                        selectedUploadTarget
-                                                                    );
+                                                        <>
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                disabled={
+                                                                    !inventory.isVrcPlusSupporter ||
+                                                                    Boolean(
+                                                                        inventory.uploadingTarget
+                                                                    )
                                                                 }
-                                                            }}
-                                                        >
-                                                            <UploadIcon data-icon="inline-start" />
-                                                            {t(
-                                                                'dialog.gallery_icons.upload'
-                                                            )}
-                                                        </Button>
+                                                                onClick={() => {
+                                                                    if (
+                                                                        selectedUploadTarget
+                                                                    ) {
+                                                                        inventory.beginUpload(
+                                                                            selectedUploadTarget
+                                                                        );
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <UploadIcon data-icon="inline-start" />
+                                                                {t(
+                                                                    'dialog.gallery_icons.upload'
+                                                                )}
+                                                            </Button>
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                disabled={
+                                                                    !inventory.isVrcPlusSupporter ||
+                                                                    Boolean(
+                                                                        inventory.uploadingTarget
+                                                                    )
+                                                                }
+                                                                onClick={() => {
+                                                                    if (
+                                                                        selectedUploadTarget
+                                                                    ) {
+                                                                        void inventory.pasteClipboardUpload(
+                                                                            selectedUploadTarget
+                                                                        );
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <ClipboardPasteIcon data-icon="inline-start" />
+                                                                {t(
+                                                                    'dialog.gallery_icons.paste_upload'
+                                                                )}
+                                                            </Button>
+                                                        </>
                                                     ) : null}
                                                 </>
                                             ) : null

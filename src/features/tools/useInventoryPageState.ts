@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useFileDropTarget } from '@/components/file-drop/useFileDropTarget';
+import { useImagePasteShortcut } from '@/components/keyboard/useImagePasteShortcut';
 import { resolveProfileDecorationMutation } from '@/domain/entities/inventory';
 import vrchatMediaRepository, {
     type InventoryItemRecord,
@@ -27,6 +28,7 @@ import {
     INITIAL_INVENTORY_SUB_TABS,
     getInventoryGridDensityConfig,
     parseEmojiUploadSettings,
+    readClipboardUploadImage,
     readDroppedUploadImage,
     readGridDensityPreference,
     scopeKey,
@@ -218,6 +220,20 @@ export function useInventoryPageState() {
         }
     });
 
+    useImagePasteShortcut({
+        enabled:
+            Boolean(currentUserId) &&
+            Boolean(activeUploadTarget) &&
+            isVrcPlusSupporter &&
+            !cropRequest &&
+            !uploadingTarget,
+        onPaste: () => {
+            if (activeUploadTarget) {
+                return pasteClipboardUpload(activeUploadTarget);
+            }
+        }
+    });
+
     function changeGridDensity(nextValue: GalleryGridDensity) {
         setGridDensity(nextValue);
         writeGridDensityPreference(nextValue);
@@ -335,6 +351,14 @@ export function useInventoryPageState() {
             return;
         }
         requestUpload(file, target);
+    }
+
+    async function pasteClipboardUpload(target: InventoryUploadTarget) {
+        const authTarget = getInventoryAuthTarget();
+        const file = await readClipboardUploadImage(t);
+        if (file && isCurrentInventoryAuthTarget(authTarget)) {
+            requestUpload(file, target);
+        }
     }
 
     function requestUpload(file: File, target: InventoryUploadTarget) {
@@ -718,6 +742,7 @@ export function useInventoryPageState() {
         isVrcPlusSupporter,
         mutatingKey,
         openImagePreview,
+        pasteClipboardUpload,
         profileDecorationMutationPending,
         redeemReward,
         refreshScope,
